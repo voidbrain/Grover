@@ -6,7 +6,9 @@
   "dependencies": {
     "ds18x20": "^0.2.0",
     "esm": "^3.2.25",
+    "i2c-bus": "^4.0.10",
     "motor-l298n": "0.0.1",
+    "node-wiring-pi": "0.0.5",
     "pigpio": "^1.2.3",
     "query-string": "^6.8.2"
   },

@@ -15,7 +15,7 @@ class Server extends EventEmitter {
   }
   callRemote(page, message){
     const self = this;
-    console.log(self.remoteServer+page + '?message=' + message)
+    // console.log(self.remoteServer+page + '?message=' + message)
     https.get(self.remoteServer+page + '?message=' + message, (resp) => {
       let data = '';
       resp.on('data', (chunk) => {
@@ -27,9 +27,6 @@ class Server extends EventEmitter {
     }).on("error", (err) => {
       console.log("Error: " + err.message);
     });
-  }
-  listner() {
-   console.log('listner2 executed.');
   }
   startServer(){
     const self = this;

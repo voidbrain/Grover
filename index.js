@@ -3,14 +3,19 @@
  * Author: Voidbrain.net
  */
 
+const http = require('http');
+const https = require('https');
+const url = require('url');
+
 import Pot from './app/envoirement/pot/pot';
 import Room from './app/envoirement/room/room';
-import Server from './app/services/server/server';
 
 class Main {
   constructor(){
+    this.webserver = http.createServer();
+    this.remoteServer = 'https://www.voidbrain.net/grover/ajax/moduli/api/device/';
+
     this.mainClock = 5 * 1000; // ms
-    this.server = new Server();
     this.appSetup();
   }
   appSetup(){
@@ -40,39 +45,83 @@ class Main {
       phBalancerID: 'pot2PhBalancerID',
       ecBalancerID: 'pot2EcBalancerID',
     });
+    this.pots = [this.pot1, this.pot2];
+
     this.room = new Room({
       roomID: 1,
       waterTemperatureProbeID: null,
       envoirementTemperatureProbeId: null,
       lightSwitchID: null,
-      fanMotorID: null
+      fanMotorID: null,
+      pots: this.pots
     });
 
-    this.server.startServer();
-    this.server.listen();
-    this.server.on('remoteCall', (path, queryData) => {
-      console.log('remoteCall', path, queryData);
-      this.server.emit('callback', 'ok')
-    });
-    this.server.callRemote('strains', 'START');
+    this.serverStart();
+    this.serverListen();
+    this.serverCallRemote('ping', 'START');
     this.mainLoop();
   }
   mainLoop(){
     const self = this;
     setInterval(function(){
-        self.pot1.waterTemperature.getTemperature().then(res=>{
-         console.log('pot1WaterTemp', res);
-       });
-       self.pot1.waterLevel.getWaterLevelMeasure().then(res=>{
-         console.log('pot1WaterLevel',res);
-       });
+       self.room.pots.forEach((pot)=>{
+            // pot.waterTemperature.getTemperature().then(res=>{
+            //    console.log("Pot id: " + pot.id, " Value: " + res);
+            // })
+        });
+    },  self.mainClock);
+  }
 
-       self.pot2.waterTemperature.getTemperature().then(res=>{
-         console.log('pot1WaterTemp', res);
-       });
+  /**
+ * HTTP Server
+ */
 
-       console.log('\n');
-    }, self.mainClock);
+  serverCallRemote(page, action=null){
+    const self = this;
+    https.get(self.remoteServer+page + '?action=' + action, (resp) => {
+      let data = '';
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+      resp.on('end', () => {
+        console.log(JSON.parse(data));
+      });
+    }).on("error", (err) => {
+      console.log("Error: " + err.message);
+    });
+  }
+  serverStart(){
+    const self = this;
+    self.webserver.on('request', async (req, res) => {
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      const q = url.parse(req.url, true);
+      if (q.pathname === '/favicon.ico') {
+        res.writeHead(200, {'Content-Type': 'image/x-icon'} );
+        res.end();
+        return;
+      }
+      const path = q.pathname;
+      const queryData = q.query;
+      let el;
+
+      if(queryData.environmentType==='pot'){
+        el = self.room.pots.filter(function (el) { return el.id === queryData.environmentID; });
+        el = el[0]
+      } else {
+        el = self.room;
+      }
+      let probeType;
+      if(queryData.probeType==='probe'){ probeType = 'probes'; } else { probeType = 'actuators'; }
+      let probe = queryData.probe;
+      let action = queryData.action;
+      const execute = await el[probeType][probe][action]();
+      res.write(JSON.stringify({environmentType: queryData.environmentType, el: el.id, probe: probe, action: action, result: execute}));
+      res.end();
+    });
+  }
+  serverListen(){
+    this.webserver.listen(8080);
+    return
   }
 }
 

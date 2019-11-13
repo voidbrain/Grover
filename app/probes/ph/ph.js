@@ -2,17 +2,28 @@
  * pH Sensors
  */
 
+var MiniPh = require('./index.js');
+
+var miniPh = new MiniPh('/dev/i2c-0', 0x4d);
+
 class PhProbe {
   constructor(id) {
     this.id = id;
   }
-  async getPhMeasure() {
+  async read() {
     const self = this;
     return new Promise(resolve => {
-      // sensor.get(self.id, function (err, tempObj) {
-      //  if (err) { throw err; }
-      //  resolve({id: self.id, value: tempObj});
-      //  });
+      miniPh.readPh(function (err, m) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log({
+            raw : m.raw,
+            pH : m.ph,
+            filter: m.filter
+          });
+        }
+      });
       resolve;
     });
   }

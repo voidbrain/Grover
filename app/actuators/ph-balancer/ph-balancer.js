@@ -9,7 +9,7 @@ class PhBalancer {
   constructor(id) {
     this.id = id;
   }
-  async runPhBalancer() {
+  async run() {
     const self = this;
     return new Promise(resolve => {
       // sensor.get(self.id, function (err, tempObj) {

@@ -11,8 +11,7 @@ class WaterLevel {
     this.triggerPin = triggerPin;
     this.echoPin = echoPin;
   }
-  async getWaterLevelMeasure() {
-    console.log('oi')
+  async read() {
     const self = this;
     return new Promise(resolve => {
       const trigger = new Gpio(self.triggerPin, {mode: Gpio.OUTPUT});
@@ -27,6 +26,7 @@ class WaterLevel {
             const endTick = tick;
             const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
             console.log(diff / 2 / MICROSECDONDS_PER_CM);
+            resolve('water level result');
           }
         });
        };
@@ -35,7 +35,7 @@ class WaterLevel {
       setInterval(() => {
         trigger.trigger(10, 1); // Set trigger high for 10 microseconds
       }, 1000);
-      resolve;
+
     });
   }
 }

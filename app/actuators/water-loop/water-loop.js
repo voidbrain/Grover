@@ -6,7 +6,7 @@ class WaterLoop {
   constructor(id) {
     this.id = id;
   }
-  async runWaterLoop() {
+  async run() {
     const self = this;
     return new Promise(resolve => {
       // sensor.get(self.id, function (err, tempObj) {

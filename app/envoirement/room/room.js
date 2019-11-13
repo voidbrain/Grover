@@ -9,12 +9,17 @@ import FanMotor from '../../actuators/fan-motor/fan-motor';
 
 class Room {
   constructor({roomID, waterTemperatureProbeID, envoirementTemperatureProbeId,
-    lightSwitchID, fanMotorID}) {
+    lightSwitchID, fanMotorID, pots}) {
     this.id = roomID;
-    this.waterTemperature = new Temperature(waterTemperatureProbeID);
-    this.envoirementTemperature = new Temperature(waterTemperatureProbeID);
-    this.lightSwitch = new LightSwitch(lightSwitchID);
-    this.fanMotor = new FanMotor(fanMotorID);
+    this.pots = pots;
+    this.probes = {
+        waterTemperature: new Temperature(waterTemperatureProbeID),
+        envoirementTemperature: new Temperature(envoirementTemperatureProbeId),
+    };
+    this.actuators = {
+        lightSwitch: new LightSwitch(lightSwitchID),
+        fanMotor: new FanMotor(fanMotorID),
+    };
   }
 }
 export default Room;

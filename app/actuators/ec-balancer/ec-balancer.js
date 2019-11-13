@@ -6,7 +6,7 @@ class EcBalancer {
   constructor(id) {
     this.id = id;
   }
-  async runEcBalancer() {
+  async run() {
     const self = this;
     return new Promise(resolve => {
       // sensor.get(self.id, function (err, tempObj) {
