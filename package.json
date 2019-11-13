@@ -12,7 +12,11 @@
     "pigpio": "^1.2.3",
     "query-string": "^6.8.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/register": "^7.7.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node -r esm index.js"
