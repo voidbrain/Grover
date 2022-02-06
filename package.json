@@ -6,11 +6,11 @@
   "dependencies": {
     "ds18x20": "^0.2.0",
     "esm": "^3.2.25",
-    "i2c-bus": "^4.0.10",
-    "motor-l298n": "0.0.1",
-    "node-wiring-pi": "0.0.5",
-    "pigpio": "^1.2.3",
-    "query-string": "^6.8.2"
+    "i2c-bus": "^5.2.2",
+    "pigpio": "^3.3.1",
+    "pigpio-l298n": "^0.0.3",
+    "query-string": "^7.1.0",
+    "temp": "^0.9.4"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
