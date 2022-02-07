@@ -1,59 +1,59 @@
+#!/usr/bin/env node
+
 /**
  * Grover/RedNeck System
  * Author: Voidbrain.net
  */
 
-const http = require('http');
-const https = require('https');
-const url = require('url');
+import * as http from 'http';
+import * as https from 'https';
+import * as url from 'url';
 
-import Pot from './app/envoirement/pot/pot';
-import Room from './app/envoirement/room/room';
+import Location from './app/environment/location/location.js';
+import Room from './app/environment/room/room.js';
 
 class Main {
+  localserver;
+  remoteServer;
+  mainClock;
+
+  location1: Location;
+  location2: Location;
+  locations: Location[];
+  room: Room;
+
   constructor(){
-    this.webserver = http.createServer();
+    this.localserver = http.createServer();
     this.remoteServer = 'https://www.voidbrain.net/grover/ajax/moduli/api/device/';
 
     this.mainClock = 5 * 1000; // ms
     this.appSetup();
   }
   appSetup(){
-    this.pot1 = new Pot({
-      potID: 'pot1',
+    this.location1 = new Location({
+      locationID: 'location1',
+      // probes
       waterTemperatureProbeID: '28-0114502296aa',
+      phProbeID: 'location1PhProbeID',
+      ecProbeID: 'location1ECProbeID',
+      waterLevelProbeID: 'location1WaterLevelProbeID',
+      // actuators
       waterLevelProbeTriggerPin: 1,
       waterLevelProbeEchoPin: 2,
-      phProbeID: 'pot1PhProbeID',
-      ecProbeID: 'pot1ECProbeID',
-      waterLevelProbeID: 'pot1WaterLevelProbeID',
-      waterLoopID: 'pot1WaterLoopID',
-      waterRefillID: 'pot1WaterRefillID',
-      phBalancerID: 'pot1PhBalancerID',
-      ecBalancerID: 'pot1EcBalancerID',
+      waterLoopID: 'location1WaterLoopID',
+      waterRefillID: 'location1WaterRefillID',
+      phBalancerID: 'location1PhBalancerID',
+      ecBalancerID: 'location1EcBalancerID',
     });
-    this.pot2 = new Pot({
-      potID: 'pot2',
-      waterTemperatureProbeID: '28-0114504ea1aa',
-      waterLevelProbeTriggerPin: 3,
-      waterLevelProbeEchoPin: 4,
-      phProbeID: 'pot2PhProbeID',
-      ecProbeID: 'pot2ECProbeID',
-      waterLevelProbeID: 'pot2WaterLevelProbeID',
-      waterLoopID: 'pot1WaterLoopID',
-      waterRefillID: 'pot2WaterRefillID',
-      phBalancerID: 'pot2PhBalancerID',
-      ecBalancerID: 'pot2EcBalancerID',
-    });
-    this.pots = [this.pot1, this.pot2];
+    this.locations = [this.location1];
 
     this.room = new Room({
       roomID: 1,
       waterTemperatureProbeID: null,
-      envoirementTemperatureProbeId: null,
+      environmentTemperatureProbeId: null,
       lightSwitchID: null,
       fanMotorID: null,
-      pots: this.pots
+      locations: this.locations
     });
 
     this.serverStart();
@@ -64,11 +64,12 @@ class Main {
   mainLoop(){
     const self = this;
     setInterval(function(){
-       self.room.pots.forEach((pot)=>{
-            // pot.waterTemperature.getTemperature().then(res=>{
-            //    console.log("Pot id: " + pot.id, " Value: " + res);
-            // })
-        });
+      console.log('main loop')
+      self.room.locations.forEach((location)=>{
+        // location.waterTemperature.getTemperature().then(res=>{
+        //    console.log("Location id: " + location.id, " Value: " + res);
+        // })
+      });
     },  self.mainClock);
   }
 
@@ -92,7 +93,7 @@ class Main {
   }
   serverStart(){
     const self = this;
-    self.webserver.on('request', async (req, res) => {
+    self.localserver.on('request', async (req, res) => {
       res.writeHead(200, {'Content-Type': 'text/plain'});
       const q = url.parse(req.url, true);
       if (q.pathname === '/favicon.ico') {
@@ -104,8 +105,8 @@ class Main {
       const queryData = q.query;
       let el;
 
-      if(queryData.environmentType==='pot'){
-        el = self.room.pots.filter(function (el) { return el.id === queryData.environmentID; });
+      if(queryData.environmentType==='location'){
+        el = self.room.locations.filter(function (el) { return el.id === queryData.environmentID; });
         el = el[0]
       } else {
         el = self.room;
@@ -114,13 +115,14 @@ class Main {
       if(queryData.probeType==='probe'){ probeType = 'probes'; } else { probeType = 'actuators'; }
       let probe = queryData.probe;
       let action = queryData.action;
-      const execute = await el[probeType][probe][action]();
+      console.log(el);
+      const execute = null; // await el[probeType][probe][action]();
       res.write(JSON.stringify({environmentType: queryData.environmentType, el: el.id, probe: probe, action: action, result: execute}));
       res.end();
     });
   }
   serverListen(){
-    this.webserver.listen(8080);
+    this.localserver.listen(8080);
     return
   }
 }
