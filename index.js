@@ -83,14 +83,14 @@ class Main {
     //   this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000).then(() => {
     //   });
     // });
-
-    // const e0 = await this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
+    
+    const e0 = await this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
     // const e1 = await this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000);
     
     // const e0 = this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
     // const e1 = this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000);
 
-    const e0 = await this.room.pots[0].actuators.waterRefill.run1ml('forward');
+    // const e0 = await this.room.pots[0].actuators.waterRefill.run1ml('forward');
     
   }
   mainLoop(){
