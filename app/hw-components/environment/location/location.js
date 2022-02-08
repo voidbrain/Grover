@@ -54,7 +54,7 @@
      // this.phBalancer = new PhBalancer(phBalancerID);
      // this.ecBalancer = new EcBalancer(ecBalancerID);
      this.probes = {
-       waterTemperatureProbeID: new Temperature(waterTemperatureProbeID),
+       waterTemperatureProbe: new Temperature(waterTemperatureProbeID),
        phProbeID: null, 
        ecProbeID: null,
        waterLevelProbeID: null,

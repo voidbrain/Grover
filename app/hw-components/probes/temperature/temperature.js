@@ -2,7 +2,7 @@
  * Temperature DS18B20 Sensors
  */
 
-import * as sensor from 'ds18x20';
+import sensor from 'ds18x20';
 
 class Temperature {
   constructor(id) {

@@ -1,4 +1,7 @@
-var sensor = require('ds18x20');
+// 
+// PIN7 (GPIO4)
+
+import sensor from 'ds18x20';
 sensor.loadDriver(function (err) {
   if (err) console.log('something went wrong loading the driver:', err)
   else {

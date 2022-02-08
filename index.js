@@ -26,7 +26,7 @@ class Main {
   appSetup(){
     const pot1 = new Location({
       id: 'pot1',
-      waterTemperatureProbeID: '28-0114502296aa',
+      waterTemperatureProbeID: '28-0119140ee870',
       // waterLevelProbeTriggerPin: 1,
       // waterLevelProbeEchoPin: 2,
       // phProbeID: 'pot1PhProbeID',
@@ -44,7 +44,7 @@ class Main {
     });
     const pot2 = new Location({
       id: 'pot2',
-      waterTemperatureProbeID: '28-0114502296ab',
+      waterTemperatureProbeID: '28-01191380b7f5',
       // waterLevelProbeTriggerPin: 1,
       // waterLevelProbeEchoPin: 2,
       // phProbeID: 'pot1PhProbeID',
@@ -77,23 +77,27 @@ class Main {
 
     this.webClient.callRemote('ping', 'START');
 
-    // this.mainLoop();
+    this.mainLoop();
     
-    this.room.pots[1].actuators.waterRefill.setSpeed(100);
-    this.room.pots[1].actuators.waterRefill.forward();
-    setTimeout(() => {
-      this.room.pots[1].actuators.waterRefill.stop();
-    }, 3000)
+    // this.room.pots[1].actuators.waterRefill.setSpeed(100);
+    // this.room.pots[1].actuators.waterRefill.forward();
+    // setTimeout(() => {
+    //   this.room.pots[1].actuators.waterRefill.stop();
+    //   this.room.pots[0].actuators.waterRefill.setSpeed(100);
+    // this.room.pots[0].actuators.waterRefill.forward();
+    // setTimeout(() => {
+    //   this.room.pots[0].actuators.waterRefill.stop();
+    // }, 3000)
+    // }, 3000)
     
   }
   mainLoop(){
     const self = this;
     setInterval(function(){
       self.room.pots.map((pot)=>{
-        console.log("====", pot);
-        // pot.waterTemperature.getTemperature().then(res=>{
-        //    console.log("Pot id: " + pot.id, " Value: " + res);
-        // })
+        pot.probes.waterTemperatureProbe.read().then(res=>{
+           console.log("Pot id: " + pot.id, " Value: " + res, pot.probes.waterTemperatureProbe.id);
+        })
       });
     },  self.mainClock);
   }
