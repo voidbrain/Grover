@@ -1,5 +1,5 @@
 'use strict';
-const L298N = require('pigpio-l298n');
+import L298N from 'pigpio-l298n';
 
 // enableA,in1,in2,enableB,in3,in4
 let l298n = new L298N(14,15,18, 21,20,16);
