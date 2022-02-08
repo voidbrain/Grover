@@ -23,7 +23,7 @@ class Main {
     this.appSetup();
   }
 
-  appSetup(){
+  async appSetup(){
     const pot1 = new Location({
       id: 'pot1',
       waterTemperatureProbeID: '28-0119140ee870',
@@ -75,20 +75,22 @@ class Main {
     this.webServer.start();
     this.webServer.listen();
 
-    this.webClient.callRemote('ping', 'START');
-
-    this.mainLoop();
+    // this.webClient.callRemote('ping', 'START');
+    // this.mainLoop();
     
-    // this.room.pots[1].actuators.waterRefill.setSpeed(100);
-    // this.room.pots[1].actuators.waterRefill.forward();
-    // setTimeout(() => {
-    //   this.room.pots[1].actuators.waterRefill.stop();
-    //   this.room.pots[0].actuators.waterRefill.setSpeed(100);
-    // this.room.pots[0].actuators.waterRefill.forward();
-    // setTimeout(() => {
-    //   this.room.pots[0].actuators.waterRefill.stop();
-    // }, 3000)
-    // }, 3000)
+    
+    // this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000).then(() => {
+    //   this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000).then(() => {
+    //   });
+    // });
+
+    // const e0 = await this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
+    // const e1 = await this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000);
+    
+    // const e0 = this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
+    // const e1 = this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000);
+
+    const e0 = await this.room.pots[0].actuators.waterRefill.run1ml('forward');
     
   }
   mainLoop(){

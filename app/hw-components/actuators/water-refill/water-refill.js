@@ -7,6 +7,11 @@ import PinWrite from 'pigpio-l298n/PinWrite.js';
 // enableA,in1,in2, enableB,in3,in4
 // let l298n = new l298nModule(14,15,18, 21,20,16);
 
+const Direction = {
+  forward: 'forward',
+  backward: 'backward'
+};
+
 class WaterRefill {
   deviceList = [];
   dNum;
@@ -40,9 +45,25 @@ class WaterRefill {
       return this.deviceList[this.dNum].in2Gpio;
   }
 
-  // WaterRefill(dNum, en, in1, in2) {
-  //   initDevice(this.dNum, en, in1, in2);
-  // }
+  doJob(direction, speed, time) {
+    return new Promise(resolve => {
+      this.setSpeed(speed);
+      const d = Direction[direction];
+      eval('this.'+d+'()');
+      setTimeout(() => {
+        this.stop();
+        resolve(true);
+      }, time);
+    });
+  }
+
+  run1ml(direction) {
+    return new Promise(resolve => {
+      this.doJob('forward', 60, 4000).then(() => {
+        resolve(true);
+      })
+    });
+  }
 
   setSpeed(speed) {
     this.enPort(this.dNum).setSpeedPercent(speed);
