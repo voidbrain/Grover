@@ -13,13 +13,13 @@
     "pigpio-l298n": "^0.0.3",
     "query-string": "^7.1.0",
     "sqlite3": "^5.0.2",
-    "temp": "^0.9.4",
-    "ts-node": "^10.4.0"
+    "temp": "^0.9.4"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/preset-env": "^7.7.1",
     "@babel/register": "^7.7.0",
+    "ts-node": "^10.5.0",
     "typescript": "^4.5.5"
   },
   "scripts": {

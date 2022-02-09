@@ -66,21 +66,21 @@ class WaterRefill {
   }
 
   setSpeed(speed) {
-    this.enPort(this.dNum).setSpeedPercent(speed);
+    this.enPort().setSpeedPercent(speed);
   }
   forward() {
-    this.in1Port(this.dNum).HIGH();
-    this.in2Port(this.dNum).LOW();
+    this.in1Port().HIGH();
+    this.in2Port().LOW();
   }
 
   backward() {
-    this.in1Port(this.dNum).LOW();
-    this.in2Port(this.dNum).HIGH();
+    this.in1Port().LOW();
+    this.in2Port().HIGH();
   }
 
   stop() {
-    this.in1Port(this.dNum).LOW();
-    this.in2Port(this.dNum).LOW();
+    this.in1Port().LOW();
+    this.in2Port().LOW();
   }
 }
 export default WaterRefill;

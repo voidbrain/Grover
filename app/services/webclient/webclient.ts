@@ -5,13 +5,13 @@
 import https from 'https';
 
 class WebClient {
-  remoteServer
+  remoteServer: string;
 
   constructor(){
     this.remoteServer = 'https://www.voidbrain.net/grover/ajax/moduli/api/';
   }
   
-  async callRemote(page, action=null){
+  async callRemote(page: string, action: string = null){
     const self = this;
     https.get(self.remoteServer+page + '?action=' + action, (resp) => {
       let data = '';

@@ -2,17 +2,19 @@
  * Location Environment
  */
 
- import Temperature from '../../probes/temperature/temperature.js';
+ import Temperature from '../../probes/temperature/temperature';
  // import PhProbe from '../../probes/ph/ph';
  // import EcProbe from '../../probes/ec/ec';
  // import WaterLevel from '../../probes/water-level/water-level';
  // import WaterLoop from '../../actuators/water-loop/water-loop';
- import WaterRefill from '../../actuators/water-refill/water-refill.js';
+ import WaterRefill from '../../actuators/water-refill/water-refill';
  // import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
  // import EcBalancer from '../../actuators/ec-balancer/ec-balancer';
  
  class Location {
-
+  id: string;
+  probes: {};
+  actuators: {};
 //    probes: {
 //      waterTemperatureProbeID: Temperature,
 //      phProbeID: number, 

@@ -7,6 +7,9 @@ import url from 'url';
 import EventEmitter from  'events' ;
 
 class WebServer extends EventEmitter {
+  server: http.Server;
+  webServerPort: number;
+
   constructor(){
     super();
     this.server = http.createServer();

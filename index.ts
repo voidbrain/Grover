@@ -3,20 +3,18 @@
  * Author: Voidbrain.net
  */
 
- 'use strict';
+import Location from './app/hw-components/environment/location/location';
+import Room from './app/hw-components/environment/room/room';
 
-import Location from './app/hw-components/environment/location/location.js';
-import Room from './app/hw-components/environment/room/room.js';
-
-import WebServer from './app/services/webserver/webserver.js';
-import WebClient from './app/services/webclient/webclient.js';
+import WebServer from './app/services/webserver/webserver';
+import WebClient from './app/services/webclient/webclient';
 
 class Main {
   mainClock  = 5 * 1000; // ms
   webServer = new WebServer();
   webClient = new WebClient();
 
-  room; 
+  room;
   pots;
 
   constructor(){
@@ -65,38 +63,36 @@ class Main {
     this.room = new Room({
       roomID: 1,
       waterTemperatureProbeID: null,
-      envoirementTemperatureProbeId: null,
+      environmentTemperatureProbeID: null,
       lightSwitchID: null,
       fanMotorID: null,
-      pots: null
+      locations: this.pots
     });
-    this.room.pots = this.pots;
 
     this.webServer.start();
     this.webServer.listen();
 
-    // this.webClient.callRemote('ping', 'START');
-    // this.mainLoop();
+    this.webClient.callRemote('ping', 'START');
+    this.mainLoop();
     
     
-    // this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000).then(() => {
-    //   this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000).then(() => {
+    // this.room.locations[0].actuators.waterRefill.doJob('forward', 100, 2000).then(() => {
+    //   this.room.locations[1].actuators.waterRefill.doJob('backward', 100, 2000).then(() => {
     //   });
     // });
     
-    const e0 = await this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
-    // const e1 = await this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000);
+    // const e0 = await this.room.locations[0].actuators.waterRefill.doJob('forward', 100, 2000);
+    // const e1 = await this.room.locations[1].actuators.waterRefill.doJob('backward', 100, 2000);
     
-    // const e0 = this.room.pots[0].actuators.waterRefill.doJob('forward', 100, 2000);
-    // const e1 = this.room.pots[1].actuators.waterRefill.doJob('backward', 100, 2000);
-
-    // const e0 = await this.room.pots[0].actuators.waterRefill.run1ml('forward');
+    // const e0 = this.room.locations[0].actuators.waterRefill.doJob('forward', 100, 2000);
+    // const e1 = this.room.locations[1].actuators.waterRefill.doJob('backward', 100, 2000);
+    const e0 = await this.room.locations[0].actuators.waterRefill.run1ml('forward');
     
   }
   mainLoop(){
     const self = this;
     setInterval(function(){
-      self.room.pots.map((pot)=>{
+      self.room.locations.map((pot)=>{
         pot.probes.waterTemperatureProbe.read().then(res=>{
            console.log("Pot id: " + pot.id, " Value: " + res, pot.probes.waterTemperatureProbe.id);
         })
