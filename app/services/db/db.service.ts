@@ -1,27 +1,24 @@
-
 import { ApiService } from '../api/api.service';
 import { SettingsService } from '../settings/settings.service';
 
-import { Plant } from '../../interfaces/plant'
+import { Plant } from '../../interfaces/plant';
 import { Strain } from '../../interfaces/strain';
 import { Company } from '../../interfaces/company';
 import { Dose } from '../../interfaces/dose';
 import { Calendar } from '../../interfaces/calendar';
 
-const sqlite3 = require('sqlite3').verbose();
-
 export class DbService {
 
-	private db = new sqlite3.Database("database.db");
+	private db: IDBDatabase;
 	private tables = [];
   private debug = false;
 
   	constructor(
   		private appSettings: SettingsService,
-      public api: ApiService,
+        public api: ApiService,
   	) {
-      this.tables = this.appSettings.datatables;
-      this.api.init();
+        this.tables = this.appSettings.getTables();
+        this.api.init();
     }
 
     async load(): Promise<any> {
@@ -30,12 +27,13 @@ export class DbService {
           const resetDb = false; const forceLoading = true;
           this.initDb(resetDb).then(()=>{
               this.initService((resetDb?resetDb:forceLoading)).then(()=>{
-                  this.api.networkService.status.subscribe((networkStatus) => {
-                      if(self.debug) { console.info('[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'));}
+                  // this.api.networkService.status.subscribe((networkStatus) => {
+                  //     if(self.debug) { console.info('[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'));}
+                      const networkStatus = 'Online';
                       this.syncAndClean(networkStatus).then(()=>{
                           resolve();
                       });
-                  });
+                  // });
               });
           });
       });
@@ -43,9 +41,8 @@ export class DbService {
 
     async deleteDb(): Promise<any> {
       const self = this;
-      console.log('Database reset');
       localStorage.clear();
-      const request = indexedDB.deleteDatabase(this.appSettings.appName);
+      const request = indexedDB.deleteDatabase(this.appSettings.getAppName());
       return new Promise(function(resolve, reject) {
         request.onsuccess = function() { if(self.debug) { console.info('[DB]: Delete db Ok');} resolve(request.result); };
         request.onerror = function() { console.error('[DB]: Delete db Error'); reject(request.error); };
@@ -55,7 +52,7 @@ export class DbService {
     private createDb(): Promise<void> {
         if (this.db) { this.db.close(); }
         return new Promise(resolve => {
-            const openRequest = indexedDB.open(this.appSettings.appName);
+            const openRequest = indexedDB.open(this.appSettings.getAppName());
             openRequest.onupgradeneeded = event => {
                 const target: any = event.target; const db = target.result; const storeObjects = [];
                 this.tables.map(table => {
@@ -98,7 +95,7 @@ export class DbService {
 
       const promise = this.createDb();
 
-      const lastGlobalUpdate = ( localStorage.getItem(this.appSettings.appName+'_lastglobalupdate') || date.getDate()-1 );
+      const lastGlobalUpdate = ( localStorage.getItem(this.appSettings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
       const hoursWithoutUpdates = (Number(now) - Number(lastGlobalUpdate)) / (1000*60*60);
 
       if (!networkStatus || (hoursWithoutUpdates<1 && forceLoading===false)) {
@@ -107,13 +104,13 @@ export class DbService {
       }
 
       if(self.debug) { console.info('[DB]: Force data sync');}
-      localStorage.setItem(this.appSettings.appName+'_lastglobalupdate', String(now));
+      localStorage.setItem(this.appSettings.getAppName()+'_lastglobalupdate', String(now));
 
       return promise.then(() => Promise.all(this.tables.map( (table) => {
-          lastUpdate[table] = localStorage.getItem(this.appSettings.appName+'_'+table);
+          lastUpdate[table] = localStorage.getItem(this.appSettings.getAppName()+'_'+table);
           return this.loadData(table, lastUpdate[table]);
         }))).then((results) => {
-        this.syncData(results);
+          this.syncData(results);
         return;
       });
     }
@@ -157,7 +154,7 @@ export class DbService {
               lastUpdate = ( (row.lastUpdate > lastUpdate)||!lastUpdate ? row.lastUpdate : lastUpdate);
               tx.oncomplete = e => {
                 if(lastUpdate){
-                    localStorage.setItem(this.appSettings.appName+'_'+table, lastUpdate);
+                    localStorage.setItem(this.appSettings.getAppName()+'_'+table, lastUpdate);
                 }
               };
             });
@@ -193,10 +190,10 @@ export class DbService {
     putItem(objectStore, item: Plant | Strain | Company | Dose | Calendar): Promise<void>{
       return new Promise(resolve => {
         if(!item.id){ delete item.id; }
-        const lastUpdate = localStorage.getItem(this.appSettings.appName+'_'+objectStore);
+        const lastUpdate = localStorage.getItem(this.appSettings.getAppName()+'_'+objectStore);
         const params = { lastUpdate };
         this.api.post(objectStore, item, params)
-          .then((response) => {
+          .then((response: any) => {
             const tx = this.db.transaction(objectStore, 'readwrite');
             const store = tx.objectStore(objectStore);
             const promise = store.put(response.items[0]);
@@ -214,7 +211,7 @@ export class DbService {
       const self = this;
       return new Promise(resolve => {
         this.api.delete(objectStore, itemToDelete)
-          .then((item) => {
+          .then((item:any) => {
             const tx = this.db.transaction(objectStore, 'readwrite');
             const store = tx.objectStore(objectStore);
             if(item.synced!==0){
@@ -253,7 +250,6 @@ export class DbService {
     const self = this;
     const promise = new Promise<void>(resolve => {
       if(networkStatus){
-        console.log('Database sync and cleaning');
         this.syncStoredItems().then(()=>{
           this.removeDeletedItem().then(()=>{
             if(self.debug) { console.info('[DB]: Db cleaned');}
@@ -330,3 +326,5 @@ export class DbService {
     return promise;
   }
 }
+
+export default DbService;

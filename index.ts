@@ -1,49 +1,54 @@
-/**
- * Grover/RedNeck System
- * Author: Voidbrain.net
- */
-
-import LocationComponent from './app/hw-components/environment/location/location';
-import RoomComponent from './app/hw-components/environment/room/room';
-
+import SettingsService from './app/services/settings/settings.service';
 import WebServer from './app/services/webserver/webserver';
-import WebClient from './app/services/webclient/webclient';
+import DbService from './app/services/db/db.service';
 
 import { LocationInterface } from './app/interfaces/location';
 import { RoomInterface }  from './app/interfaces/room';
 
+import LocationComponent from './app/hw-components/environment/location/location';
+import RoomComponent from './app/hw-components/environment/room/room';
+
 class Main {
-  mainClock  = 5 * 1000; // ms
+  
   webServer = new WebServer();
-  webClient = new WebClient();
+  db = new DbService();
+  settings = new SettingsService();
 
   room: RoomComponent;
   pots: LocationComponent[];
+  clock: number;
 
-  constructor(){
+  constructor(
+  ){
     this.appSetup();
   }
 
   async appSetup(){
-    const pot1 = new LocationComponent({
+    this.clock = this.settings.getClock();
+
+    const initializerPot1: LocationInterface = {
       id: 'pot1',
       waterTemperatureProbeID: '28-0119140ee870',
       waterRefillDNum: 0,
       waterRefillEnPin: 14,
       waterRefillIn1Pin: 15,
       waterRefillIn2Pin: 18,       
-    });
-    const pot2 = new LocationComponent({
+    }
+    const pot1 = new LocationComponent(initializerPot1);
+
+    const initializerPot2 = {
       id: 'pot2',
       waterTemperatureProbeID: '28-01191380b7f5',
       waterRefillDNum: 1,
       waterRefillEnPin: 21,
       waterRefillIn1Pin: 20,
       waterRefillIn2Pin: 16, 
-    });
+    }
+    const pot2 = new LocationComponent(initializerPot1);
 
     this.pots = [pot1, pot2];
-    this.room = new RoomComponent({
+
+    const initializerRoom: RoomInterface = {
       id: 'room1',
       waterTemperatureProbeID: '28-01191380b7f5',
       waterRefillDNum: 1,
@@ -51,28 +56,16 @@ class Main {
       waterRefillIn1Pin: 20,
       waterRefillIn2Pin: 16, 
       locations: this.pots,
-    });
+    }
+    this.room = new RoomComponent(initializerRoom);
 
     this.webServer.start();
     this.webServer.listen();
-
-    this.webClient.callRemote('ping', 'START');
-    this.mainLoop();
-    
-    
-    // this.room.locations[0].actuators.waterRefill.doJob('forward', 100, 2000).then(() => {
-    //   this.room.locations[1].actuators.waterRefill.doJob('backward', 100, 2000).then(() => {
-    //   });
-    // });
-    
-    // const e0 = await this.room.locations[0].actuators.waterRefill.doJob('forward', 100, 2000);
-    // const e1 = await this.room.locations[1].actuators.waterRefill.doJob('backward', 100, 2000);
-    
-    // const e0 = this.room.locations[0].actuators.waterRefill.doJob('forward', 100, 2000);
-    // const e1 = this.room.locations[1].actuators.waterRefill.doJob('backward', 100, 2000);
-    
-    const e1 = pot1.probes.waterTemperatureProbe.read();
-    const e0 = await pot1.actuators.waterRefillProbe.run1ml();
+   
+    // this.api.callRemote('START');
+    // this.mainLoop();
+    // const e1 = pot1.probes.waterTemperatureProbe.read();
+    // const e0 = await pot1.actuators.waterRefillProbe.run1ml();
     
     
   }
@@ -84,7 +77,7 @@ class Main {
            console.log("Pot id: " + pot.id, " Value: " + res, pot.probes.waterTemperatureProbe.id);
         })
       });
-    },  self.mainClock);
+    },  self.clock);
   }
 }
 

@@ -1,17 +1,50 @@
 export class SettingsService {
-
+  
 	constructor() { }
 
   private locales = ['en', 'it'];
-	public appName = 'Grover/RedNeck';
-  public serverAddress = 'https://www.voidbrain.net/temp/grover/ajax/moduli/api';
-  public purposes: string[] = ['client', 'worker'];
-  public purpose = 0;
-  public datatables = [
+	private appName = 'Grover/RedNeck';
+  
+  private remoteServerHostname = 'https://www.voidbrain.net/';
+  private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/endpoint?';
+  private purposes: string[] = ['client', 'worker'];
+  private purpose = 1;
+  private datatables = [
     'calendars', 'doses', 'locations', 'generalsettings', 'growingmediums', 'growingscenarios', 'plants', 'companies', 'strains'
   ];
+  private mainClock  = 5 * 1000; // ms
 
-  getLocales() {
+  public getLocales() {
     return this.locales;
   }
+
+  public getClock() {
+    return this.mainClock;
+  }
+
+  public getAppName() {
+    return this.appName;
+  }
+
+  public getPurposes() {
+    return this.purposes;
+  }
+
+  public getTables() {
+    return this.datatables;
+  }
+
+  public getPurpose() {
+    return this.purpose;
+  }
+
+  public getRemoteServerHostname() {
+    return this.remoteServerHostname;
+  }
+
+  public getRemoteServerEndpoint() {
+    return this.remoteServerEndpoint;
+  }
 }
+
+export default SettingsService;
