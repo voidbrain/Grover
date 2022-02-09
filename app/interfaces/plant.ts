@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Strain } from './strain';
-import { Location } from './location';
+import { Pot } from './pot';
 import { Calendar, PhaseExtended } from './calendar';
 
 export interface Plant {
@@ -29,7 +29,7 @@ export interface Plant {
 export interface PlantExtended extends Plant {
   strain: Strain;
   expanded: boolean;
-  location: Location;
+  location: Pot;
   daysFromGrow?: number;
   daysFromBloom?: number;
   phase?: PhaseExtended;

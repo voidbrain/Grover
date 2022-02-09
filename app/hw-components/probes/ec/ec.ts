@@ -2,12 +2,17 @@
  * EC Sensors
  */
 
-class EcProbe {
-  constructor(id) {
-    this.id = id;
+class EcProbeComponent {
+  triggerPin: number;
+  echoPin: number;
+  
+  constructor(triggerPin: number, echoPin: number) {
+    triggerPin = triggerPin;
+    echoPin = echoPin;
   }
+
   async read() {
-    const self = this;
+    
     return new Promise(resolve => {
       // sensor.get(self.id, function (err, tempObj) {
       //  if (err) { throw err; }
@@ -17,4 +22,4 @@ class EcProbe {
     });
   }
 }
-export default EcProbe;
+export default EcProbeComponent;

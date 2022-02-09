@@ -4,19 +4,28 @@
 import PinPWM from 'pigpio-l298n/PinPWM.js';
 import PinWrite from 'pigpio-l298n/PinWrite.js';
 
+import { Device } from '../../../interfaces/water-refill';
+import { WaterRefillInterface } from '../../../interfaces/water-refill';
+
 // enableA,in1,in2, enableB,in3,in4
 // let l298n = new l298nModule(14,15,18, 21,20,16);
+
+
 
 const Direction = {
   forward: 'forward',
   backward: 'backward'
 };
 
-class WaterRefill {
-  deviceList = [];
-  dNum;
-  
-  constructor(dNum, en, in1, in2) {
+class WaterRefillComponent {
+  deviceList: Device[] = [];
+
+  dNum: number;
+  enPin: number;
+  in1Pin: number;
+  in2Pin: number;
+
+  constructor(dNum: number, en: number, in1: number, in2: number) {
     if(dNum !== null && en && in1 && in2) {
       this.dNum = dNum;
       this.deviceList[dNum] = {
@@ -57,7 +66,7 @@ class WaterRefill {
     });
   }
 
-  run1ml(direction) {
+  run1ml() {
     return new Promise(resolve => {
       this.doJob('forward', 60, 4000).then(() => {
         resolve(true);
@@ -83,4 +92,4 @@ class WaterRefill {
     this.in2Port().LOW();
   }
 }
-export default WaterRefill;
+export default WaterRefillComponent;

@@ -1,33 +1,131 @@
+// /**
+//  * Room Environment
+//  */
+
+// import { RoomInterface } from '../../../interfaces/room';
+// import { LocationInterface } from '../../../interfaces/location';
+// import { WaterRefillInterface } from '../../../interfaces/water-refill';
+
+// import TemperatureComponent from '../../probes/temperature/temperature';
+// import WaterLevelComponent from '../../probes/water-level/water-level';
+// import PhProbeComponent from '../../probes/ph/ph';
+// import EcProbeComponent from '../../probes/ec/ec';
+
+// import LightSwitchComponent from '../../actuators/light-switch/light-switch';
+// import FanMotorComponent from '../../actuators/fan-motor/fan-motor';
+// import WaterRefillComponent from '../../actuators/water-refill/water-refill';
+
+// class RoomComponent {
+//   room: RoomInterface;
+//   waterRefill: WaterRefillInterface;
+//   id: number;
+//   probes: any;
+//   actuators: any;
+   
+//   constructor(
+//     id: number,
+//     waterLevelID: number,
+//     triggerPin: number,
+//     echoPin: number,
+
+//     waterRefillDNum: number,
+//     waterRefillEnPin: number,
+//     waterRefillIn1Pin: number,
+//     waterRefillIn2Pin: number,
+
+//     waterTemperatureProbeID: number, environmentTemperatureProbeID: number, lightSwitchID: number, fanMotorID: number, locations: LocationInterface[]
+//     ) {
+//     this.room = {
+//       id: id,
+//       probes: {
+//         waterTemperatureProbe: new TemperatureComponent(waterTemperatureProbeID),
+//         environmentTemperatureProbe: new TemperatureComponent(environmentTemperatureProbeID),
+//         // phProbe: new PhProbeComponent(triggerPin, echoPin),
+//         // ecProbe: new EcProbeComponent(triggerPin, echoPin),
+//         // waterLevelProbe: new WaterLevelComponent(waterLevelID, triggerPin, echoPin),
+//       },
+//       actuators: {
+//         waterRefill: new WaterRefillComponent(waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin),
+//         // lightSwitch: new LightSwitchComponent(lightSwitchID),
+//         // fanMotor: new FanMotorComponent(fanMotorID),
+//       },
+//       locations: locations,
+//     }
+//   }
+// }
+// export default RoomComponent;
+
 /**
- * Room Environment
+ * Location Environment
  */
 
- import Temperature from '../../probes/temperature/temperature';
- import Location from '../../environment/location/location';
- import WaterLevel from '../../probes/water-level/water-level';
- import LightSwitch from '../../actuators/light-switch/light-switch';
- import FanMotor from '../../actuators/fan-motor/fan-motor';
+ // import PhProbe from '../../probes/ph/ph';
+ // import EcProbe from '../../probes/ec/ec';
+ // import WaterLevel from '../../probes/water-level/water-level';
+ // import WaterLoop from '../../actuators/water-loop/water-loop';
+ import WaterRefillComponent from '../../actuators/water-refill/water-refill';
+ import LocationComponent from '../location/location';
+ // import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
+ // import EcBalancer from '../../actuators/ec-balancer/ec-balancer';
  
- class Room {
-   id: any;
-   environmentTemperatureProbeID: any;
-   locations: Location[];
-   probes: { waterTemperature: any; environmentTemperature: any; };
-   actuators: { lightSwitch: any; fanMotor: any; };
-   
-   constructor({roomID, waterTemperatureProbeID, environmentTemperatureProbeID,
-     lightSwitchID, fanMotorID, locations}) {
-     this.id = roomID;
-     this.locations = locations;
-     this.probes = {
-         waterTemperature: new Temperature(waterTemperatureProbeID),
-         environmentTemperature: new Temperature(environmentTemperatureProbeID),
-     };
-     this.actuators = {
-         lightSwitch: new LightSwitch(lightSwitchID),
-         fanMotor: new FanMotor(fanMotorID),
-     };
-   }
+import { RoomInterface } from '../../../interfaces/room';
+import { WaterRefillInterface } from '../../../interfaces/water-refill';
+import TemperatureComponent from '../../probes/temperature/temperature';
+ 
+class RoomComponent {
+  waterRefill: WaterRefillInterface;
+  id: number;
+  probes: any;
+  actuators: any;
+  locations: LocationComponent[];
+
+  constructor({
+    id, 
+    waterTemperatureProbeID, 
+    /* 
+    waterLevelProbeTriggerPin, waterLevelProbeEchoPin, 
+    phProbeID, 
+    ecProbeID, 
+    waterLevelProbeID,
+    waterLoopID,
+    */ 
+    waterRefillDNum,
+    waterRefillEnPin,
+    waterRefillIn1Pin,
+    waterRefillIn2Pin,
+    locations,
+
+    
+    /*, 
+    phBalancerID, 
+    ecBalancerID 
+    */ 
+  }) {
+    // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
+    //// this.waterTemperature = new Temperature(waterTemperatureProbeID);
+    // this.phProbe = new PhProbe(phProbeID);
+    // this.ecProbe = new EcProbe(ecProbeID);
+    // this.waterLevel = new WaterLevel(waterLevelProbeID, waterLevelProbeTriggerPin, waterLevelProbeEchoPin);
+    // this.waterLoop = new WaterLoop(waterLoopID);
+    //// this.waterRefill = new WaterRefill(waterRefillID);
+    // this.phBalancer = new PhBalancer(phBalancerID);
+    // this.ecBalancer = new EcBalancer(ecBalancerID);
+     
+     
+    this.id = id;
+    this.probes = {
+      waterTemperatureProbe: new TemperatureComponent(waterTemperatureProbeID),
+      phProbeID: null, 
+      ecProbeID: null,
+      waterLevelProbeID: null,
+    };
+    this.actuators = {
+      waterRefillProbe: new WaterRefillComponent(waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin),
+      waterLevelProbeTriggerPin: null,
+      waterLevelProbeEchoPin: null,
+    };
+    this.locations = locations;  
+    }
  }
- export default Room;
+ export default RoomComponent;
  

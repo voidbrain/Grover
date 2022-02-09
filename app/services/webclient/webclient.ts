@@ -11,7 +11,7 @@ class WebClient {
     this.remoteServer = 'https://www.voidbrain.net/grover/ajax/moduli/api/';
   }
   
-  async callRemote(page: string, action: string = null){
+  async callRemote(page: string, action: string | null = null){
     const self = this;
     https.get(self.remoteServer+page + '?action=' + action, (resp) => {
       let data = '';

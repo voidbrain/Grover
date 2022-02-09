@@ -1,16 +1,14 @@
 /**
- * pH Balancer Actuator
- */
-/**
- * Water Refill Actuator
+ * Light Switch Actuator
  */
 
-class PhBalancer {
-  constructor(id) {
+class LightSwitchComponent {
+  id: number;
+
+  constructor(id: number) {
     this.id = id;
   }
   async run() {
-    const self = this;
     return new Promise(resolve => {
       // sensor.get(self.id, function (err, tempObj) {
       //  if (err) { throw err; }
@@ -20,4 +18,4 @@ class PhBalancer {
     });
   }
 }
-export default PhBalancer;
+export default LightSwitchComponent;

@@ -2,10 +2,10 @@
  * Water Loop Actuator
  */
 
-class WaterLoop {
-  id: string;
+class WaterLoopComponent {
+  id: number;
 
-  constructor(id) {
+  constructor(id: number) {
     this.id = id;
   }
   async run() {
@@ -19,4 +19,4 @@ class WaterLoop {
     });
   }
 }
-export default WaterLoop;
+export default WaterLoopComponent;

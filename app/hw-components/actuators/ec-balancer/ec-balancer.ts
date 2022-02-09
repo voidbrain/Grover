@@ -1,9 +1,10 @@
 /**
- * Fan Motor Actuator
+ * EC Balancer Actuator
  */
 
-class FanMotor {
-  constructor(id) {
+class EcBalancerComponent {
+  id: number;
+  constructor(id: number) {
     this.id = id;
   }
   async run() {
@@ -17,4 +18,4 @@ class FanMotor {
     });
   }
 }
-export default FanMotor;
+export default EcBalancerComponent;

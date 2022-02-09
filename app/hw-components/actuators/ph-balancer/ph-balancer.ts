@@ -1,9 +1,14 @@
 /**
- * Light Switch Actuator
+ * pH Balancer Actuator
+ */
+/**
+ * Water Refill Actuator
  */
 
-class LightSwitch {
-  constructor(id) {
+class PhBalancerComponent {
+  id: number;
+
+  constructor(id: number) {
     this.id = id;
   }
   async run() {
@@ -17,4 +22,4 @@ class LightSwitch {
     });
   }
 }
-export default LightSwitch;
+export default PhBalancerComponent;

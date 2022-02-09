@@ -3,15 +3,17 @@
  */
 
 var MiniPh = require('./index.js');
-
 var miniPh = new MiniPh('/dev/i2c-0', 0x4d);
 
-class PhProbe {
-  constructor(id) {
-    this.id = id;
+class PhProbeComponent {
+  triggerPin: number;
+  echoPin: number;
+
+  constructor(triggerPin: number, echoPin: number) {
+    triggerPin = triggerPin;
+    echoPin = echoPin;
   }
   async read() {
-    const self = this;
     return new Promise(resolve => {
       miniPh.readPh(function (err, m) {
         if (err) {
@@ -28,4 +30,4 @@ class PhProbe {
     });
   }
 }
-export default PhProbe;
+export default PhProbeComponent;

@@ -3,19 +3,22 @@
  */
 
 import sensor from 'ds18x20';
+  
 
-class Temperature {
-  constructor(id) {
+class TemperatureComponent {
+  id: number;
+  
+  constructor(id:number) {
   this.id = id;
   }
   async read() {
     const self = this;
     return new Promise(resolve => {
-      sensor.get(self.id, function (err, tempObj) {
+      sensor.get(self.id, function (err: any, tempObj: any) {
         if (err) { throw err; }
         resolve(tempObj);
       });
     });
   }
 }
-export default Temperature;
+export default TemperatureComponent;

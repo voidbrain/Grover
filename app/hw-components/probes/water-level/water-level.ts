@@ -2,11 +2,15 @@
  * Water level Sensors
  */
 
-import Gpio from 'pigpio';
+import { Gpio } from 'pigpio';
 const MICROSECDONDS_PER_CM = 1e6/34321; // The number of microseconds it takes sound to travel 1cm at 20 degrees celcius
 
-class WaterLevel {
-  constructor(id, triggerPin, echoPin) {
+class WaterLevelComponent {
+  id: number;
+  triggerPin: number;
+  echoPin: number;
+  
+  constructor(id: number, triggerPin: number, echoPin: number) {
     this.id = id;
     this.triggerPin = triggerPin;
     this.echoPin = echoPin;
@@ -39,4 +43,4 @@ class WaterLevel {
     });
   }
 }
-export default WaterLevel;
+export default WaterLevelComponent;

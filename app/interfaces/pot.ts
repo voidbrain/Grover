@@ -1,4 +1,4 @@
-export interface Location {
+export interface Pot {
   id: number;
   name: string;
   enabled: boolean;
