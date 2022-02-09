@@ -27,6 +27,7 @@ export class ApiService {
     // }
 
     async get(table: string, params?: any) {
+        console.log('==>',this.appSettings.getRemoteServerHostname(), this.appSettings.getRemoteServerEndpoint() + table)
       const res = await this.httpsPost({
         hostname: this.appSettings.getRemoteServerHostname(),
         path: this.appSettings.getRemoteServerEndpoint() + table,
@@ -182,3 +183,5 @@ export class ApiService {
     //     });
     // }
 }
+
+export default ApiService;

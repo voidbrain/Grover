@@ -7,11 +7,15 @@ import { Company } from '../../interfaces/company';
 import { Dose } from '../../interfaces/dose';
 import { Calendar } from '../../interfaces/calendar';
 
+import { LocalStorage } from 'node-localstorage';
+import openDatabase from 'websql';
+
 export class DbService {
 
-	private db: IDBDatabase;
+	private db;
 	private tables = [];
-  private debug = false;
+  private localStorage = new LocalStorage('./data/scratch');
+  private debug = true;
 
   	constructor(
   		private appSettings: SettingsService,
@@ -24,7 +28,7 @@ export class DbService {
     async load(): Promise<any> {
       const self = this;
       return new Promise<void>(resolve=> {
-          const resetDb = false; const forceLoading = true;
+          const resetDb = true; const forceLoading = true;
           this.initDb(resetDb).then(()=>{
               this.initService((resetDb?resetDb:forceLoading)).then(()=>{
                   // this.api.networkService.status.subscribe((networkStatus) => {
@@ -41,8 +45,8 @@ export class DbService {
 
     async deleteDb(): Promise<any> {
       const self = this;
-      localStorage.clear();
-      const request = indexedDB.deleteDatabase(this.appSettings.getAppName());
+      this.localStorage.clear();
+      const request = this.db.deleteDatabase(this.appSettings.getAppName());
       return new Promise(function(resolve, reject) {
         request.onsuccess = function() { if(self.debug) { console.info('[DB]: Delete db Ok');} resolve(request.result); };
         request.onerror = function() { console.error('[DB]: Delete db Error'); reject(request.error); };
@@ -50,26 +54,32 @@ export class DbService {
     }
 
     private createDb(): Promise<void> {
+      console.log(`[DB] => createDb`)
         if (this.db) { this.db.close(); }
         return new Promise(resolve => {
-            const openRequest = indexedDB.open(this.appSettings.getAppName());
-            openRequest.onupgradeneeded = event => {
-                const target: any = event.target; const db = target.result; const storeObjects = [];
-                this.tables.map(table => {
-                    storeObjects['store' + table] = db.createObjectStore(table, {keyPath: 'id', autoIncrement:true});
-                    storeObjects['store' + table].createIndex('id', ['id']);
-                    storeObjects['store' + table].createIndex('enabled, deleted', ['enabled','deleted']);
-                    storeObjects['store' + table].createIndex('synced', ['synced'], { unique: false });
-                    storeObjects['store' + table].createIndex('deleted', ['deleted'], { unique: false });
-                });
-                if(this.debug) { console.info('[DB]: Db forged');}
-            };
-            openRequest.onsuccess = (event) => {
-                this.db = (<any>event.target).result;
-                this.db.onerror = error => { console.error('[DB]: error createDb: '+error); };
-                if(this.debug) { console.info('[DB]: Db Ready');}
-                resolve();
-            };
+            // const openRequest = this.db.open(this.appSettings.getAppName());
+           this.db = openDatabase('./data/mydb.db', '1.0', 'Grover local DB', 1);
+            // openRequest.onupgradeneeded = event => {
+            //     const target: any = event.target; const db = target.result; const storeObjects = [];
+            //     this.tables.map(table => {
+            //         storeObjects['store' + table] = db.createObjectStore(table, {keyPath: 'id', autoIncrement:true});
+            //         storeObjects['store' + table].createIndex('id', ['id']);
+            //         storeObjects['store' + table].createIndex('enabled, deleted', ['enabled','deleted']);
+            //         storeObjects['store' + table].createIndex('synced', ['synced'], { unique: false });
+            //         storeObjects['store' + table].createIndex('deleted', ['deleted'], { unique: false });
+            //     });
+            //     if(this.debug) { console.info('[DB]: Db forged');}
+            // };
+            // this.db.onsuccess = (event) => {
+            //     this.db = (<any>event.target).result;
+            //     this.db.onerror = error => { console.error('[DB]: error createDb: '+error); };
+            //     if(this.debug) { console.info('[DB]: Db Ready');}
+            //     resolve();
+            // };
+            console.log("this.db", this.db);
+            this.db.onerror = error => { console.error('[DB]: error createDb: '+error); };
+            if(this.debug) { console.info('[DB]: Db Ready');}
+            resolve();
         });
     }
 
@@ -88,29 +98,31 @@ export class DbService {
 
     async initService(forceLoading=false): Promise<void> {
       const self = this;
-      const networkStatus = this.api.networkService.status._value;
+      // const networkStatus = this.api.networkService.status._value;
+      const networkStatus = true;
       const date = new Date();
       const now = Date.now();
       const lastUpdate = []; const promises = [];
-
+      console.log(`[DB] => init service`)
       const promise = this.createDb();
 
-      const lastGlobalUpdate = ( localStorage.getItem(this.appSettings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
+      const lastGlobalUpdate = ( this.localStorage.getItem(this.appSettings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
       const hoursWithoutUpdates = (Number(now) - Number(lastGlobalUpdate)) / (1000*60*60);
 
       if (!networkStatus || (hoursWithoutUpdates<1 && forceLoading===false)) {
-          if(self.debug) { console.info('[DB]: Cached data');}
-          return promise;
+        if(self.debug) { console.info('[DB]: Cached data');}
+        return promise;
       }
 
       if(self.debug) { console.info('[DB]: Force data sync');}
-      localStorage.setItem(this.appSettings.getAppName()+'_lastglobalupdate', String(now));
+      this.localStorage.setItem(this.appSettings.getAppName()+'_lastglobalupdate', String(now));
 
-      return promise.then(() => Promise.all(this.tables.map( (table) => {
-          lastUpdate[table] = localStorage.getItem(this.appSettings.getAppName()+'_'+table);
-          return this.loadData(table, lastUpdate[table]);
-        }))).then((results) => {
-          this.syncData(results);
+      return promise.then(() => Promise.all(this.tables.map((table) => {
+        lastUpdate[table] = this.localStorage.getItem(this.appSettings.getAppName()+'_'+table);
+        return this.loadData(table, lastUpdate[table]);
+      }))).then((results) => {
+        console.log("=>",results)
+        this.syncData(results);
         return;
       });
     }
@@ -154,7 +166,7 @@ export class DbService {
               lastUpdate = ( (row.lastUpdate > lastUpdate)||!lastUpdate ? row.lastUpdate : lastUpdate);
               tx.oncomplete = e => {
                 if(lastUpdate){
-                    localStorage.setItem(this.appSettings.getAppName()+'_'+table, lastUpdate);
+                  this.localStorage.setItem(this.appSettings.getAppName()+'_'+table, lastUpdate);
                 }
               };
             });
@@ -178,6 +190,7 @@ export class DbService {
     }
 
     getItems(objectStore, column='enabled, deleted'): Promise<any> {
+      console.log('getItems ==>',this.db)
         const tx = this.db.transaction(objectStore, 'readonly');
         const store = tx.objectStore(objectStore);
         const dataIndex: any = store.index(column);
@@ -190,7 +203,7 @@ export class DbService {
     putItem(objectStore, item: Plant | Strain | Company | Dose | Calendar): Promise<void>{
       return new Promise(resolve => {
         if(!item.id){ delete item.id; }
-        const lastUpdate = localStorage.getItem(this.appSettings.getAppName()+'_'+objectStore);
+        const lastUpdate = this.localStorage.getItem(this.appSettings.getAppName()+'_'+objectStore);
         const params = { lastUpdate };
         this.api.post(objectStore, item, params)
           .then((response: any) => {

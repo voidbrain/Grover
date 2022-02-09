@@ -1,11 +1,14 @@
-var net = require('net');
+import net from 'net';
 
 export class NetworkService {
     status: { _value: any };
 
     constructor() {
+    }
+
+    testConnection() {
         var client = new net.Socket();
-        client.connect(1337, '127.0.0.1', function() {
+        client.connect(80, 'www.google.com', function() {
             console.log('Connected');
             client.write('Hello, server! Love, Client.');
         });

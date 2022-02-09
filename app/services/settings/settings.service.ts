@@ -5,12 +5,21 @@ export class SettingsService {
   private locales = ['en', 'it'];
 	private appName = 'Grover/RedNeck';
   
-  private remoteServerHostname = 'https://www.voidbrain.net/';
+  private remoteServerHostname = 'www.voidbrain.net';
   private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/endpoint?';
   private purposes: string[] = ['client', 'worker'];
   private purpose = 1;
   private datatables = [
-    'calendars', 'doses', 'locations', 'generalsettings', 'growingmediums', 'growingscenarios', 'plants', 'companies', 'strains'
+    'calendars', 
+    // 'doses', 
+    // 'locations', 
+    // 'generalsettings', 
+    // 'growingmediums', 
+    // 'growingscenarios', 
+    // 'plants', 
+    // 'companies', 
+    // 'strains'
+
   ];
   private mainClock  = 5 * 1000; // ms
 

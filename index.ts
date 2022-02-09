@@ -1,6 +1,8 @@
 import SettingsService from './app/services/settings/settings.service';
 import WebServer from './app/services/webserver/webserver';
 import DbService from './app/services/db/db.service';
+import ApiService from './app/services/api/api.service';
+import NetworkService from './app/services/network/network.service';
 
 import { LocationInterface } from './app/interfaces/location';
 import { RoomInterface }  from './app/interfaces/room';
@@ -8,15 +10,16 @@ import { RoomInterface }  from './app/interfaces/room';
 import LocationComponent from './app/hw-components/environment/location/location';
 import RoomComponent from './app/hw-components/environment/room/room';
 
+
 class Main {
-  
-  webServer = new WebServer();
-  db = new DbService();
-  settings = new SettingsService();
 
   room: RoomComponent;
   pots: LocationComponent[];
   clock: number;
+  webServer = new WebServer();
+  settings = new SettingsService();
+  db = new DbService(this.settings, new ApiService(new NetworkService(), this.settings));
+  
 
   constructor(
   ){
@@ -63,12 +66,20 @@ class Main {
     this.webServer.listen();
    
     // this.api.callRemote('START');
-    // this.mainLoop();
+    
     // const e1 = pot1.probes.waterTemperatureProbe.read();
     // const e0 = await pot1.actuators.waterRefillProbe.run1ml();
+
+    const initiDb = this.db.load().then(() => {
+      console.log('done');
+    })
+
+    // const getCalendars = await this.db.getItems('calendars');
     
-    
+    console.log(`[main] => ready`);  
+    // this.mainLoop();
   }
+
   mainLoop(){
     const self = this;
     setInterval(function(){
