@@ -6,11 +6,11 @@ export class SettingsService {
 	private appName = 'Grover/RedNeck';
   
   private remoteServerHostname = 'www.voidbrain.net';
-  private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/endpoint?';
+  private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/';
   private purposes: string[] = ['client', 'worker'];
   private purpose = 1;
   private datatables = [
-    'calendars', 
+    'plants', 
     // 'doses', 
     // 'locations', 
     // 'generalsettings', 
