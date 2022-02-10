@@ -12,7 +12,6 @@ import { RoomInterface }  from './app/interfaces/room';
 import LocationComponent from './app/hw-components/environment/location/location';
 import RoomComponent from './app/hw-components/environment/room/room';
 
-import path from 'path';
 class Main {
 
   room: RoomComponent;
@@ -34,28 +33,45 @@ class Main {
     const initializerPot1: LocationInterface = {
       id: 'pot1',
       waterTemperatureProbeID: '28-0119140ee870',
+      waterTemperatureProbeSchedule: [{
+        cron: '*/10 * * * * *', 
+        action: 'read',
+        options: {
+          busy: true
+        },
+      }],
       waterRefillDNum: 0,
       waterRefillEnPin: 14,
       waterRefillIn1Pin: 15,
-      waterRefillIn2Pin: 18,       
+      waterRefillIn2Pin: 18,
     }
     const pot1 = new LocationComponent(initializerPot1);
 
     const initializerPot2 = {
       id: 'pot2',
       waterTemperatureProbeID: '28-01191380b7f5',
+      waterTemperatureProbeSchedule: [{
+        cron: '*/20 * * * * *', 
+        action: 'read',
+        options: {},
+      }],
       waterRefillDNum: 1,
       waterRefillEnPin: 21,
       waterRefillIn1Pin: 20,
       waterRefillIn2Pin: 16, 
     }
-    const pot2 = new LocationComponent(initializerPot1);
+    const pot2 = new LocationComponent(initializerPot2);
 
     this.pots = [pot1, pot2];
 
     const initializerRoom: RoomInterface = {
       id: 'room1',
       waterTemperatureProbeID: '28-01191380b7f5',
+      waterTemperatureProbeSchedule: [{
+        cron: '*/20 * * * * *', 
+        action: 'read',
+        options: {},
+      }],
       waterRefillDNum: 1,
       waterRefillEnPin: 21,
       waterRefillIn1Pin: 20,
@@ -85,16 +101,16 @@ class Main {
     // this.mainLoop();
   }
 
-  mainLoop(){
-    const self = this;
-    setInterval(function(){
-      self.room.locations.map((pot: LocationComponent)=>{
-        pot.probes.waterTemperatureProbe.read().then((res: unknown)=>{
-           console.log("Pot id: " + pot.id, " Value: " + res, pot.probes.waterTemperatureProbe.id);
-        })
-      });
-    },  self.clock);
-  }
+  // mainLoop(){
+  //   const self = this;
+  //   setInterval(function(){
+  //     self.room.locations.map((pot: LocationComponent)=>{
+  //       pot.probes.waterTemperatureProbe.read().then((res: unknown)=>{
+  //          console.log("Pot id: " + pot.id, " Value: " + res, pot.probes.waterTemperatureProbe.id);
+  //       })
+  //     });
+  //   },  self.clock);
+  // }
 }
 
 const app = new Main();

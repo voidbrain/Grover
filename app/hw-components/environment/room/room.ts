@@ -82,6 +82,7 @@ class RoomComponent {
   constructor({
     id, 
     waterTemperatureProbeID, 
+    waterTemperatureProbeSchedule,
     /* 
     waterLevelProbeTriggerPin, waterLevelProbeEchoPin, 
     phProbeID, 
@@ -114,7 +115,7 @@ class RoomComponent {
      
     this.id = id;
     this.probes = {
-      waterTemperatureProbe: new TemperatureComponent(waterTemperatureProbeID),
+      waterTemperatureProbe: new TemperatureComponent(id, waterTemperatureProbeID, waterTemperatureProbeSchedule),
       phProbeID: null, 
       ecProbeID: null,
       waterLevelProbeID: null,

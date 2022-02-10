@@ -120,7 +120,7 @@ export class DbService {
         lastUpdate[table] = this.localStorage.getItem(this.appSettings.getAppName()+'_'+table);
         return this.loadData(table, lastUpdate[table]);
       }))).then((results) => {
-        if (self.debug) { console.info('[DB]: Db results ', results);}
+        // if (self.debug) { console.info('[DB]: Db results ', results);}
         this.syncData(results);
         return;
       })
@@ -144,7 +144,7 @@ export class DbService {
         dataValues.map((data)=>{
           const table = Object.keys(data)[0];
           const res = data[table];
-          if(self.debug) { console.info('[DB]: Db Sync records ready ',table, res);}
+          // if(self.debug) { console.info('[DB]: Db Sync records ready ',table, res);}
           // const tx = this.db.transaction(table, 'readwrite');
           // const store = tx.objectStore(table);
           // let lastUpdate;
@@ -244,33 +244,35 @@ export class DbService {
     deleteItem(objectStore, itemToDelete: any): Promise<void>{
       const self = this;
       return new Promise(resolve => {
+        console.log(objectStore, itemToDelete);
         this.api.delete(objectStore, itemToDelete)
           .then((item:any) => {
-            const tx = this.db.transaction(objectStore, 'readwrite');
-            const store = tx.objectStore(objectStore);
+            // const tx = this.db.transaction(objectStore, 'readwrite');
+            // const store = tx.objectStore(objectStore);
             if(item.synced!==0){
-              const objectStoreRequest = store.delete(item.id);
-              objectStoreRequest.onsuccess = function(event) {
-                if(self.debug) { console.info('[DB]: item deleted. Table: "'+objectStore+'" id:'+item.id);}
-                resolve();
-              };
+              // const objectStoreRequest = store.delete(item.id);
+              // objectStoreRequest.onsuccess = function(event) {
+              //   if(self.debug) { console.info('[DB]: item deleted. Table: "'+objectStore+'" id:'+item.id);}
+              //   resolve();
+              // };
+              resolve();
             }else{
               if(self.debug) {
                 console.info('[DB]: item still not synced, don\'t remove from db but set to deleted:1. Table: "'
                 +objectStore+'" id:'+item.id);
               }
               item.deleted = 1;
-              const tx1 = this.db.transaction(objectStore, 'readwrite');
-              const store1 = tx1.objectStore(objectStore);
-              const promise = store1.put(item);
-              promise.onsuccess = function(e){
-                  resolve();
-              };
-              promise.onerror = function(e){
-                  console.error('[DB]: Error adding: '+e);
-              };
-              }
-          });
+              // const tx1 = this.db.transaction(objectStore, 'readwrite');
+              // const store1 = tx1.objectStore(objectStore);
+              // const promise = store1.put(item);
+              // promise.onsuccess = function(e){
+              //     resolve();
+              // };
+              // promise.onerror = function(e){
+              //     console.error('[DB]: Error adding: '+e);
+              // };
+            }
+        });
       });
     }
 
