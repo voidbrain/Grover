@@ -53,57 +53,26 @@ export class DbService {
       const self = this;
       this.localStorage.clear();
       const pathToFile = './data/grover.sqlite';
-      if (fs.existsSync(pathToFile)) {
-        fs.unlinkSync(pathToFile)
-      }
+      // if (fs.existsSync(pathToFile)) {
+      //   fs.unlinkSync(pathToFile)
+      // }
       if(this.debug) { console.info('[DB]: Db deleted');}
       return;
     }
 
     private createDb(): Promise<void> {
-      console.log(`[DB] => createDb`)
+      console.log('[DB] => createDb')
         if (this.db) { 
-          console.log(this.db);
           this.db.close(); 
         }
         return new Promise((resolve, reject) => {
-            // const openRequest = this.db.open(this.appSettings.getAppName());
-            // openRequest.onupgradeneeded = event => {
-            //     const target: any = event.target; const db = target.result; const storeObjects = [];
-            //     this.tables.map(table => {
-            //         storeObjects['store' + table] = db.createObjectStore(table, {keyPath: 'id', autoIncrement:true});
-            //         storeObjects['store' + table].createIndex('id', ['id']);
-            //         storeObjects['store' + table].createIndex('enabled, deleted', ['enabled','deleted']);
-            //         storeObjects['store' + table].createIndex('synced', ['synced'], { unique: false });
-            //         storeObjects['store' + table].createIndex('deleted', ['deleted'], { unique: false });
-            //     });
-            //     if(this.debug) { console.info('[DB]: Db forged');}
-            // };
-            // this.db.onsuccess = (event) => {
-            //     this.db = (<any>event.target).result;
-            //     this.db.onerror = error => { console.error('[DB]: error createDb: '+error); };
-            //     if(this.debug) { console.info('[DB]: Db Ready');}
-            //     resolve();
-            // };
 
             const __dirname = path.resolve();
-            console.log(__dirname+'/data/grover.sqlite');
-            this.db = new sqlite3.Database(__dirname+'/data/grover.sqlite', sqlite3.OPEN_READWRITE, err => { 
+            this.db = new sqlite3.Database(__dirname+'/data/db.sqlite', sqlite3.OPEN_READWRITE, err => { 
               if (err) {
                 console.error('[DB]: error createDb: ' + err.message);
                 reject();
               } else {
-                // this.appSettingDelete dbs.getTables().map(table => {
-                //   this.db.serialize( () => {
-                //     this.db.run(
-                //       `create table if not exists ${table} (
-                //         id numeric primary key, 
-                //         enabled boolean, 
-                //         lastUpdate number, 
-                //         deleted boolean)`
-                //     );
-                //   });
-                // });
                 if(this.debug) { console.info('[DB]: Db Ready');}
               }
               resolve();
@@ -189,40 +158,39 @@ export class DbService {
               // console.log( definition)
               return `${definition.name} ${definition.type} ${definition.primary_key ? 'primary key' : ''}`;
             })})`;
-            console.log("definition")
-            console.log(createTableQuery);
             const create = this.db.run(createTableQuery, function(err) {
               if (err) {
                 // return console.error(err.message);
                 reject();
               } else { if(this.debug){console.log(`[DB] Table ${table} ok`); }}
               
-              resolve();
-              // const promises = res.items.map(row => {
-              //   if (row.id) {
-              //     let promise;
-              //     if(row.deleted){
-              //       promise = this.db.run(`DELETE FROM ${table} WHERE id=?`, row.id, function(err) {
-              //         if (err) {
-              //           return console.error(err.message);
-              //         }
-              //         if(this.debug){console.log(`Row(s) deleted ID ${row.id}`);}
-              //       });
-              //     }else{
-              //       let length;
-              //       const values = [];
-              //       Object.keys(row).forEach(function(key, index) {
-              //         length = index;
-              //         values.push(row[key]);
-              //       });
-              //       const query = `insert into ${table} values (${'?,'.repeat(length-1)}?)`;
-              //       console.log("insert");
-              //       console.log(query);
-              //       this.db.run(query);
-              //     }
-              //     resolve();
-              //   }
-              // });
+              const promises = res.items.map(row => {
+                if (row.id) {
+                  let promise;
+                  if(row.deleted){
+                    promise = self.db.run(`DELETE FROM ${table} WHERE id=?`, row.id, function(err) {
+                      if (err) {
+                        return console.error(err.message);
+                      }
+                      if(this.debug){console.log(`Row(s) deleted ID ${row.id}`);}
+                    });
+                  }else{
+                    let length;
+                    const values = [];
+                    Object.keys(row).forEach(function(key, index) {
+                      length = index;
+                      values.push(row[key]);
+                    });
+                    const query = `INSERT or REPLACE into ${table} values (${'?,'.repeat(length)}?)`;
+                    self.db.run(query, values, (err) => {
+                      if(err) {
+                        throw err;
+                      }
+                    });
+                  }
+                  resolve();
+                }
+              });
             });
           }else{ resolve(); }
         });

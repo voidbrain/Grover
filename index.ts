@@ -1,3 +1,5 @@
+// sudo node --loader ts-node/esm --experimental-specifier-resolution=node ./index.ts
+
 import SettingsService from './app/services/settings/settings.service';
 import WebServer from './app/services/webserver/webserver';
 import DbService from './app/services/db/db.service';
