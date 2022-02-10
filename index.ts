@@ -36,6 +36,9 @@ class Main {
       waterTemperatureProbeSchedule: [{
         cron: '*/10 * * * * *', 
         action: 'read',
+        scenarios: [
+          { id: 1, running: true }
+        ],
         options: {
           busy: true
         },
@@ -47,12 +50,15 @@ class Main {
     }
     const pot1 = new LocationComponent(initializerPot1);
 
-    const initializerPot2 = {
+    const initializerPot2: LocationInterface = {
       id: 'pot2',
       waterTemperatureProbeID: '28-01191380b7f5',
       waterTemperatureProbeSchedule: [{
         cron: '*/20 * * * * *', 
         action: 'read',
+        scenarios: [
+          { id: 1, running: false }
+        ],
         options: {},
       }],
       waterRefillDNum: 1,
@@ -70,6 +76,9 @@ class Main {
       waterTemperatureProbeSchedule: [{
         cron: '*/20 * * * * *', 
         action: 'read',
+        scenarios: [
+          { id: 1, running: false }
+        ],
         options: {},
       }],
       waterRefillDNum: 1,
