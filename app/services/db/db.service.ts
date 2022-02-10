@@ -10,6 +10,7 @@ import { Calendar } from '../../interfaces/calendar';
 import { LocalStorage } from 'node-localstorage';
 import sqlite3 from 'sqlite3';
 import * as fs from 'fs';
+import * as path from 'path';
 
 export class DbService {
 
@@ -84,7 +85,10 @@ export class DbService {
             //     if(this.debug) { console.info('[DB]: Db Ready');}
             //     resolve();
             // };
-            this.db = new sqlite3.Database('file:./data/grover.sqlite', sqlite3.OPEN_READWRITE, err => { 
+
+            const __dirname = path.resolve();
+            console.log(__dirname+'/data/grover.sqlite');
+            this.db = new sqlite3.Database(__dirname+'/data/grover.sqlite', sqlite3.OPEN_READWRITE, err => { 
               if (err) {
                 console.error('[DB]: error createDb: ' + err.message);
                 reject();
@@ -192,32 +196,33 @@ export class DbService {
                 // return console.error(err.message);
                 reject();
               } else { if(this.debug){console.log(`[DB] Table ${table} ok`); }}
-
-              const promises = res.items.map(row => {
-                if (row.id) {
-                  let promise;
-                  if(row.deleted){
-                    promise = this.db.run(`DELETE FROM ${table} WHERE id=?`, row.id, function(err) {
-                      if (err) {
-                        return console.error(err.message);
-                      }
-                      if(this.debug){console.log(`Row(s) deleted ID ${row.id}`);}
-                    });
-                  }else{
-                    let length;
-                    const values = [];
-                    Object.keys(row).forEach(function(key, index) {
-                      length = index;
-                      values.push(row[key]);
-                    });
-                    const query = `insert into ${table} values (${'?,'.repeat(length-1)}?)`;
-                    console.log("insert");
-                    console.log(query);
-                    this.db.run(query);
-                  }
-                  resolve();
-                }
-              });
+              
+              resolve();
+              // const promises = res.items.map(row => {
+              //   if (row.id) {
+              //     let promise;
+              //     if(row.deleted){
+              //       promise = this.db.run(`DELETE FROM ${table} WHERE id=?`, row.id, function(err) {
+              //         if (err) {
+              //           return console.error(err.message);
+              //         }
+              //         if(this.debug){console.log(`Row(s) deleted ID ${row.id}`);}
+              //       });
+              //     }else{
+              //       let length;
+              //       const values = [];
+              //       Object.keys(row).forEach(function(key, index) {
+              //         length = index;
+              //         values.push(row[key]);
+              //       });
+              //       const query = `insert into ${table} values (${'?,'.repeat(length-1)}?)`;
+              //       console.log("insert");
+              //       console.log(query);
+              //       this.db.run(query);
+              //     }
+              //     resolve();
+              //   }
+              // });
             });
           }else{ resolve(); }
         });

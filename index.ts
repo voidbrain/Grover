@@ -10,7 +10,7 @@ import { RoomInterface }  from './app/interfaces/room';
 import LocationComponent from './app/hw-components/environment/location/location';
 import RoomComponent from './app/hw-components/environment/room/room';
 
-
+import path from 'path';
 class Main {
 
   room: RoomComponent;
@@ -71,7 +71,10 @@ class Main {
     // const e0 = await pot1.actuators.waterRefillProbe.run1ml();
 
     const initiDb = this.db.load().then(() => {
-      console.log('done');
+      console.log('[main] => initdb done');
+    })
+    .catch(() => {
+      console.error('[main] => initdb error');
     })
 
     // const getCalendars = await this.db.getItems('calendars');
