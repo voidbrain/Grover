@@ -11,8 +11,7 @@ const Owner = {
 class TemperatureComponent {
   id: string;
   parentId: string;
-  scheduleArr: CronJobInterface[] = [];
-  schedule;
+  scheduleArr: CronJobInterface[] = []; 
   
   constructor(parentId: string, id: string, scheduleArr: CronJobInterface[]) {
     this.id = id;
@@ -22,29 +21,35 @@ class TemperatureComponent {
     this.setSchedule(this.id, this.parentId, this.scheduleArr);
   }
 
-  async read(owner) {
+  async read(expectedTime, owner) {
     const self = this;
     return new Promise(resolve => {
       sensor.get(self.id, function (err: any, tempObj: any) {
         if (err) { throw err; }
         // resolve(tempObj);
         
-        console.log("==>", owner, tempObj, 
-        self.parentId, self.id, new Date());
+        resolve({
+          owner, 
+          tempObj, 
+          parentId: self.parentId, 
+          id: self.id, 
+          expectedTime, 
+          executedTime: new Date(),
+        });
       });
     });
   }
 
   async setSchedule(parentId: string, id: string, scheduleArr: CronJobInterface[]){
-    if(scheduleArr !== undefined) {
+    if(parentId && id && scheduleArr) {
       scheduleArr.map(job => {
-        schedule.scheduleJob(job.cron, () => {
+        schedule.scheduleJob(job.cron, async (expectedTime) => {
           const options = JSON.stringify(job.options); 
-          const result = eval(`this.${job.action}('${Owner.schedule}')`)
+          const r = await eval(`this.${job.action}('${expectedTime}','${Owner.schedule}')`);
+          console.log('scheduled');
+          console.log(JSON.stringify(r));
         });
       });
-    } else {
-      console.log('else', parentId, id, scheduleArr)
     }
   }
 

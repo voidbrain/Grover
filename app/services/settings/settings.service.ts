@@ -10,16 +10,8 @@ export class SettingsService {
   private purposes: string[] = ['client', 'worker'];
   private purpose = 1;
   private datatables = [
-    'plants', 
-    // 'doses', 
-    // 'locations', 
-    // 'generalsettings', 
-    // 'growingmediums', 
-    // 'growingscenarios', 
-    // 'plants', 
-    // 'companies', 
-    // 'strains'
-
+    'locations', 
+    'rooms'
   ];
   private mainClock  = 5 * 1000; // ms
 

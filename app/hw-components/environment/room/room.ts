@@ -73,8 +73,8 @@ import { WaterRefillInterface } from '../../../interfaces/water-refill';
 import TemperatureComponent from '../../probes/temperature/temperature';
  
 class RoomComponent {
-  waterRefill: WaterRefillInterface;
   id: number;
+  waterRefill: WaterRefillInterface;
   probes: any;
   actuators: any;
   locations: LocationComponent[];
@@ -94,8 +94,6 @@ class RoomComponent {
     waterRefillEnPin,
     waterRefillIn1Pin,
     waterRefillIn2Pin,
-    locations,
-
     
     /*, 
     phBalancerID, 
@@ -125,7 +123,11 @@ class RoomComponent {
       waterLevelProbeTriggerPin: null,
       waterLevelProbeEchoPin: null,
     };
-    this.locations = locations;  
+    // this.locations = locations;  
+    }
+
+    setLocations(locations) {
+      this.locations = locations;
     }
  }
  export default RoomComponent;

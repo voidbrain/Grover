@@ -10,6 +10,6 @@ export interface RoomInterface {
   waterRefillIn2Pin: number, 
   waterTemperatureProbeSchedule: CronJobInterface[];
   
-  locations: LocationComponent[];
+  // locations?: LocationComponent[];
   
 }

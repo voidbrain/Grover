@@ -1,16 +1,14 @@
 import { ApiService } from '../api/api.service';
 import { SettingsService } from '../settings/settings.service';
 
-import { Plant } from '../../interfaces/plant';
-import { Strain } from '../../interfaces/strain';
-import { Company } from '../../interfaces/company';
-import { Dose } from '../../interfaces/dose';
-import { Calendar } from '../../interfaces/calendar';
+import { LocationInterface } from '../../interfaces/location';
+import { RoomInterface } from '../../interfaces/room';
 
 import { LocalStorage } from 'node-localstorage';
 import sqlite3 from 'sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
+import LocationComponent from '../../hw-components/environment/location/location';
 
 export class DbService {
 
@@ -197,31 +195,41 @@ export class DbService {
       });
     }
 
-    getItem(objectStore, id, column='id'): Promise<any> {
-        // const tx = this.db.transaction(objectStore, 'readonly');
-        // const store = tx.objectStore(objectStore);
-        // const dataIndex: any = store.index(column);
-        const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(resolve => {
-            if(id){
-              //  dataIndex.get(id).onsuccess = e => resolve(e.target.result);
-            } else {
-              resolve(null);
+    getItem(table, value): Promise<LocationInterface | RoomInterface> {
+      const self = this;
+      const promise = new Promise<LocationInterface | RoomInterface>(resolve => {
+          if(value){
+            const query = `SELECT * from ${table} WHERE id=(?)`;
+            self.db.get(query, [value], (err, row) => {
+              if(err) {
+                throw err;
+              }
+              resolve(row);
+            });
+          } else {
+            resolve(null);
+          }
+      });
+      return promise;
+    }
+
+    getItems(table: string, id: number = null): Promise<LocationInterface[] | RoomInterface[]> {
+      const self = this;
+      const promise = new Promise<LocationInterface[] | RoomInterface[]>(resolve => {
+          const query = `SELECT * from ${table} where idParent=(?)`;
+          const where = [];
+          if(id) { where.push(id); }
+          self.db.all(query, where, (err, rows) => {
+            if(err) {
+              throw err;
             }
-        });
-        return promise;
+            resolve(rows);
+          });
+      });
+      return promise;
     }
 
-    getItems(objectStore, column='enabled, deleted'): Promise<any> {
-        // const tx = this.db.transaction(objectStore, 'readonly');
-        // const store = tx.objectStore(objectStore);
-        // const dataIndex: any = store.index(column);
-        const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(resolve => {
-          // dataIndex.getAll([1,0]).onsuccess = e => resolve(e.target.result);
-        });
-        return promise;
-    }
-
-    putItem(objectStore, item: Plant | Strain | Company | Dose | Calendar): Promise<void>{
+    putItem(objectStore, item: LocationInterface | RoomInterface): Promise<void>{
       return new Promise(resolve => {
         if(!item.id){ delete item.id; }
         const lastUpdate = this.localStorage.getItem(this.appSettings.getAppName()+'_'+objectStore);

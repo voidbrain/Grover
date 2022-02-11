@@ -26,7 +26,7 @@ class WaterRefillComponent {
   in2Pin: number;
 
   constructor(dNum: number, en: number, in1: number, in2: number) {
-    if(dNum !== null && en && in1 && in2) {
+    if(dNum && en && in1 && in2) {
       this.dNum = dNum;
       this.deviceList[dNum] = {
         dNum: dNum,
@@ -37,8 +37,6 @@ class WaterRefillComponent {
         in1Gpio: new PinWrite(in1),
         in2Gpio: new PinWrite(in2),
       };
-    } else {
-      console.log('error');
     }
   }
 
