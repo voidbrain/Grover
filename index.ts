@@ -8,24 +8,21 @@ import DbService from './app/services/db/db.service';
 import ApiService from './app/services/api/api.service';
 import NetworkService from './app/services/network/network.service';
 
+import { Owner } from './app/services/settings/enums';
+
 import { LocationInterface } from './app/interfaces/location';
 import { RoomInterface }  from './app/interfaces/room';
 
 import LocationComponent from './app/hw-components/environment/location/location';
 import RoomComponent from './app/hw-components/environment/room/room';
 
-const Owner = {
-  schedule: 'schedule',
-  user: 'user'
-};
-
 class Main {
   server: http.Server;
   webServerPort: number;
 
   room: RoomComponent;
-  rooms: RoomComponent[];
-  locations: LocationComponent[];
+  rooms: RoomComponent[] = [];
+  locations: LocationComponent[] = [];
   clock: number;
   settings = new SettingsService();
   db = new DbService(this.settings, new ApiService(new NetworkService(), this.settings));
@@ -33,7 +30,7 @@ class Main {
   constructor(
   ){
     this.server = http.createServer();
-    this.webServerPort = 8081;
+    this.webServerPort = 8084;
     this.webServerSetup();
     
     this.db.load().then(() => {
@@ -46,50 +43,37 @@ class Main {
     
   }
 
-  isLocationInterface(arg: any): arg is LocationInterface {
-    return arg && arg.prop;
-  }
-  isRoomInterface(arg: any): arg is LocationInterface {
-    return arg && arg.prop;
-  }
-
   async appSetup(){
-    this.clock = this.settings.getClock();
+    const self = this;
+    self.clock = self.settings.getClock();
 
-    const roomSetupParams: RoomInterface = await this.db.getItem('rooms', 1);
-    if(this.isRoomInterface(roomSetupParams)){
-      const room =  new RoomComponent(roomSetupParams);
-      this.rooms.push(room);
-      this.room = this.rooms[0];
-    }
+    const roomSetupParams: RoomInterface = await self.db.getItem('rooms', 1) as RoomInterface;
+    const room = await new RoomComponent(roomSetupParams);
+    self.room = room;
+    self.rooms.push(room);
     
-    if(this.room?.id) {
-      const locationsSetupParams: LocationInterface[] = await this.db.getItems('locations', this.room.id);
-      locationsSetupParams.map((locParams: LocationInterface) => {
-        if(this.isLocationInterface(locParams)) {
-          const location = new LocationComponent(locParams);
-          this.locations.push(location);
-        } 
+    if(self.room?.id) {
+      const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id) as LocationInterface[];
+
+      locationsSetupParams.forEach((locParams: LocationInterface) => {
+        const location = new LocationComponent(locParams);
+        self.locations.push(location); 
       });
 
-      this.room.locations = this.locations;
+      self.room.locations = self.locations;
     }
+
+   
    
     // this.api.callRemote('START');
     console.log(`[main] => ready`);  
-    // this.mainLoop();
   }
 
-  // mainLoop(){
-  //   const self = this;
-  //   setInterval(function(){
-  //     self.room.locations.map((pot: LocationComponent)=>{
-  //       pot.probes.waterTemperatureProbe.read().then((res: unknown)=>{
-  //          console.log("Pot id: " + pot.id, " Value: " + res, pot.probes.waterTemperatureProbe.id);
-  //       })
-  //     });
-  //   },  self.clock);
-  // }
+
+
+  /**
+   * Webserver
+   */
 
   start(){
     const self = this;
@@ -132,4 +116,3 @@ class Main {
 }
 
 const app = new Main();
-export default Main;

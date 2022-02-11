@@ -79,8 +79,22 @@ class RoomComponent {
   actuators: any;
   locations: LocationComponent[];
 
+  name: string;
+  isBlooming: boolean;
+  deviceId?: string;
+  enabled: boolean;
+  deleted: boolean;
+  lastUpdate: number;
+
   constructor({
     id, 
+    // name,
+    // isBlooming,
+    // deviceId,
+    // enabled,
+    // deleted,
+    // lastUpdate,
+
     waterTemperatureProbeID, 
     waterTemperatureProbeSchedule,
     /* 
@@ -99,6 +113,14 @@ class RoomComponent {
     phBalancerID, 
     ecBalancerID 
     */ 
+
+    name: name,
+    isBlooming: isBlooming,
+    deviceId: deviceId,
+    enabled: enabled,
+    deleted: deleted,
+    lastUpdate: lastUpdate,
+    
   }) {
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
     //// this.waterTemperature = new Temperature(waterTemperatureProbeID);

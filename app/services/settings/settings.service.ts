@@ -1,3 +1,5 @@
+import { OperatingMode, Purposes } from './enums';
+
 export class SettingsService {
   
 	constructor() { }
@@ -8,7 +10,8 @@ export class SettingsService {
   private remoteServerHostname = 'www.voidbrain.net';
   private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/';
   private purposes: string[] = ['client', 'worker'];
-  private purpose = 1;
+  private purpose = Purposes.worker;
+  private operatingMode = OperatingMode.On;
   private datatables = [
     'locations', 
     'rooms'
@@ -37,6 +40,10 @@ export class SettingsService {
 
   public getPurpose() {
     return this.purpose;
+  }
+
+  public getOperatingMode() {
+    return this.operatingMode;
   }
 
   public getRemoteServerHostname() {

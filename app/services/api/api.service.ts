@@ -36,7 +36,8 @@ export class ApiService {
     
     async httpsGet({...options}) {
       return new Promise((resolve, reject) => {
-        https.get(`https://${options.hostname}/${options.path}`, (resp) => {
+        const url = `https://${options.hostname}/${options.path}`;
+        https.get(url, resp => {
           let data = '';
 
           // A chunk of data has been received.
@@ -46,7 +47,31 @@ export class ApiService {
 
           // The whole response has been received. Print out the result.
           resp.on('end', () => {
-            resolve(JSON.parse(data));
+            let parseJSON = {}
+            try {
+              parseJSON = JSON.parse(data);
+              resolve(parseJSON);
+            } catch(e) {
+              reject
+            }
+            // const parseJSON = (data) => {
+            //   if (data) {
+            //     try {
+            //       return JSON.parse(data);
+            //     } catch (e) {
+            //       return false;
+            //     }
+            //   }
+            // };
+            // if(parseJSON) {
+            //   console.log('#####');
+            //   console.log(parseJSON);
+            //   console.log('#####');
+
+            //   resolve(parseJSON);
+            // } else {
+            //   reject
+            // }
           });
 
         }).on("error", (err) => {

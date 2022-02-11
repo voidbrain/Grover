@@ -15,7 +15,7 @@ export class DbService {
 	private db;
 	private tables = [];
   private localStorage = new LocalStorage('./data/scratch');
-  private debug = true;
+  private debug = false;
 
   	constructor(
   		private appSettings: SettingsService,
@@ -112,10 +112,12 @@ export class DbService {
 
       if(self.debug) { console.info('[DB]: Force data sync');}
       this.localStorage.setItem(this.appSettings.getAppName()+'_lastglobalupdate', String(now));
+      // console.log('setitem -> ', String(now))
 
       return promiseCreateDb
       .then(() => Promise.all(this.tables.map((table) => {
         lastUpdate[table] = this.localStorage.getItem(this.appSettings.getAppName()+'_'+table);
+        // console.log('getitem -> ',lastUpdate[table])
         return this.loadData(table, lastUpdate[table]);
       }))).then((results) => {
         // if (self.debug) { console.info('[DB]: Db results ', results);}
@@ -140,6 +142,7 @@ export class DbService {
       const self = this;
       return new Promise<void>((resolve, reject) => {
         dataValues.map((data)=>{
+          
           const table = Object.keys(data)[0];
           const res = data[table];
           // if(self.debug) { console.info('[DB]: Db Sync records ready ',table, res);}
@@ -147,7 +150,7 @@ export class DbService {
           // const store = tx.objectStore(table);
           // let lastUpdate;
           if(res.items.length){
-
+           
             // sqlite if table not exist;
             const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
             ${res.tableDefinition.map(el => {
@@ -182,11 +185,14 @@ export class DbService {
                     const query = `INSERT or REPLACE into ${table} values (${'?,'.repeat(length)}?)`;
                     self.db.run(query, values, (err) => {
                       if(err) {
+                        console.log('err')
+                        reject;
                         throw err;
                       }
+                      resolve();
                     });
                   }
-                  resolve();
+                  
                 }
               });
             });
@@ -229,12 +235,12 @@ export class DbService {
       return promise;
     }
 
-    putItem(objectStore, item: LocationInterface | RoomInterface): Promise<void>{
+    putItem(table, item: LocationInterface | RoomInterface): Promise<void>{
       return new Promise(resolve => {
         if(!item.id){ delete item.id; }
-        const lastUpdate = this.localStorage.getItem(this.appSettings.getAppName()+'_'+objectStore);
+        const lastUpdate = this.localStorage.getItem(this.appSettings.getAppName()+'_'+table);
         const params = { lastUpdate };
-        this.api.post(objectStore, item, params)
+        this.api.post(table, item, params)
           .then((response: any) => {
             // const tx = this.db.transaction(objectStore, 'readwrite');
             // const store = tx.objectStore(objectStore);

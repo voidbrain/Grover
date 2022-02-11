@@ -1,11 +1,18 @@
-import { CronJobInterface } from './cron-job';
-
 export interface LocationInterface {
-  id: string;
+  id: number;
+  name: string;
+  isBlooming: boolean;
+  // deviceId?: string;
+
   waterTemperatureProbeID: string;
   waterRefillDNum: number;
   waterRefillEnPin: number;
   waterRefillIn1Pin: number;
   waterRefillIn2Pin: number;
-  waterTemperatureProbeSchedule: CronJobInterface[];
+  waterTemperatureProbeSchedule: string;
+
+  enabled: boolean;
+  deleted: boolean;
+  lastUpdate: number;
+  idParent: number;
 }

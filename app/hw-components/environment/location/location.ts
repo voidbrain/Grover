@@ -21,6 +21,13 @@ class LocationComponent {
   probes: any;
   actuators: any;
 
+  name: string;
+  isBlooming: boolean;
+  enabled: boolean;
+  deleted: boolean;
+  lastUpdate: number;
+  idParent: number;
+
   constructor({
     id, 
     waterTemperatureProbeID, 
@@ -37,7 +44,12 @@ class LocationComponent {
     waterRefillIn1Pin,
     waterRefillIn2Pin,
 
-    
+    name,
+    isBlooming,
+    enabled,
+    deleted,
+    lastUpdate,
+    idParent,
     /*, 
     phBalancerID, 
     ecBalancerID 
@@ -66,7 +78,12 @@ class LocationComponent {
       waterLevelProbeEchoPin: null,
     };
   
-    
+    name = this.name;
+    isBlooming = this.isBlooming;
+    enabled = this.enabled;
+    deleted = this.deleted;
+    lastUpdate = this.lastUpdate;
+    idParent = this.idParent;
   }
 }
 export default LocationComponent;

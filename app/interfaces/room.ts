@@ -1,15 +1,19 @@
-import { CronJobInterface } from './cron-job';
-import LocationComponent  from '../hw-components/environment/location/location';
-
 export interface RoomInterface {
-  id: string,
-  waterTemperatureProbeID: string,
-  waterRefillDNum: number,
-  waterRefillEnPin: number,
-  waterRefillIn1Pin: number,
-  waterRefillIn2Pin: number, 
-  waterTemperatureProbeSchedule: CronJobInterface[];
+  id: number;
+  name: string;
+  isBlooming: boolean;
+  deviceId: string;
+  waterTemperatureProbeID: string;
   
-  // locations?: LocationComponent[];
+  waterRefillDNum: number;
+  waterRefillEnPin: number;
+  waterRefillIn1Pin: number;
+  waterRefillIn2Pin: number; 
+  
+  waterTemperatureProbeSchedule: string;
+
+  enabled: boolean;
+  deleted: boolean;
+  lastUpdate: number;
   
 }
