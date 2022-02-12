@@ -13,3 +13,8 @@ export enum Owner {
   schedule = 'schedule',
   user = 'user'
 };
+
+export enum Actions {
+  read = 'read',
+  execute = 'execute'
+}

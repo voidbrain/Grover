@@ -8,7 +8,7 @@ import DbService from './app/services/db/db.service';
 import ApiService from './app/services/api/api.service';
 import NetworkService from './app/services/network/network.service';
 
-import { Owner } from './app/services/settings/enums';
+import { Owner, Actions } from './app/services/settings/enums';
 
 import { LocationInterface } from './app/interfaces/location';
 import { RoomInterface }  from './app/interfaces/room';
@@ -48,7 +48,7 @@ class Main {
     self.clock = self.settings.getClock();
 
     const roomSetupParams: RoomInterface = await self.db.getItem('rooms', 1) as RoomInterface;
-    const room = await new RoomComponent(roomSetupParams);
+    const room = new RoomComponent(roomSetupParams);
     self.room = room;
     self.rooms.push(room);
     
@@ -85,14 +85,18 @@ class Main {
         res.end();
         return;
       }
-      const path = q.pathname;
-      const queryData = q.query;
+      const action = q.query.action as string;
+      const id = q.query.id as string;
+      const domain = q.query.domain as string;
+      const probe = q.query.probe as string;
+
       const now = new Date();
-      const r = await this.room.locations[0].probes.waterTemperatureProbe.read(now, Owner.user);
-      res.write('owner');
-      res.write(JSON.stringify(r));
-      console.log('owner');
+      const el = self[domain].find(el => el.id === +id)
+      const item = el.probes[probe];
+      const owner = Owner.user;
+      const r = await item[action]({now, owner});
       console.log(JSON.stringify(r));
+      res.write(JSON.stringify(r));
       res.end();
 
       // self.emit('remoteCall', path, JSON.stringify(queryData));
