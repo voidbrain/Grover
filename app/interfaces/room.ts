@@ -1,5 +1,6 @@
 export interface RoomInterface {
   id: number;
+  type?: string;
   name: string;
   isBlooming: boolean;
   deviceId: string;

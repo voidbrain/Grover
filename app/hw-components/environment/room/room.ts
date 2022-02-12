@@ -74,6 +74,7 @@ import TemperatureComponent from '../../probes/temperature/temperature';
  
 class RoomComponent {
   id: number;
+  type: string;
   waterRefill: WaterRefillInterface;
   probes: any;
   actuators: any;
@@ -88,6 +89,7 @@ class RoomComponent {
 
   constructor({
     id, 
+    type,
     // name,
     // isBlooming,
     // deviceId,
@@ -114,12 +116,12 @@ class RoomComponent {
     ecBalancerID 
     */ 
 
-    name: name,
-    isBlooming: isBlooming,
-    deviceId: deviceId,
-    enabled: enabled,
-    deleted: deleted,
-    lastUpdate: lastUpdate,
+    name,
+    isBlooming,
+    deviceId,
+    enabled,
+    deleted,
+    lastUpdate,
     
   }) {
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
@@ -134,8 +136,9 @@ class RoomComponent {
      
      
     this.id = id;
+    this.type = type;
     this.probes = {
-      waterTemperatureProbe: new TemperatureComponent(id, waterTemperatureProbeID, waterTemperatureProbeSchedule),
+      waterTemperatureProbe: new TemperatureComponent(id, type, waterTemperatureProbeID, waterTemperatureProbeSchedule),
       phProbeID: null, 
       ecProbeID: null,
       waterLevelProbeID: null,

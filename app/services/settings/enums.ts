@@ -18,3 +18,8 @@ export enum Actions {
   read = 'read',
   execute = 'execute'
 }
+
+export enum Environments {
+  room = 'room',
+  location = 'location'
+}

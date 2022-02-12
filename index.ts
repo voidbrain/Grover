@@ -8,7 +8,7 @@ import DbService from './app/services/db/db.service';
 import ApiService from './app/services/api/api.service';
 import NetworkService from './app/services/network/network.service';
 
-import { Owner, Actions } from './app/services/settings/enums';
+import { Owner } from './app/services/settings/enums';
 
 import { LocationInterface } from './app/interfaces/location';
 import { RoomInterface }  from './app/interfaces/room';
@@ -48,7 +48,8 @@ class Main {
     self.clock = self.settings.getClock();
 
     const roomSetupParams: RoomInterface = await self.db.getItem('rooms', 1) as RoomInterface;
-    const room = new RoomComponent(roomSetupParams);
+    roomSetupParams.type = 'rooms';
+    const room = new RoomComponent(roomSetupParams as undefined);
     self.room = room;
     self.rooms.push(room);
     
@@ -56,7 +57,8 @@ class Main {
       const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id) as LocationInterface[];
 
       locationsSetupParams.forEach((locParams: LocationInterface) => {
-        const location = new LocationComponent(locParams);
+        locParams.type = 'locations';
+        const location = new LocationComponent(locParams as undefined);
         self.locations.push(location); 
       });
 
@@ -87,16 +89,16 @@ class Main {
       }
       const action = q.query.action as string;
       const id = q.query.id as string;
-      const domain = q.query.domain as string;
+      const type = q.query.type as string;
       const probe = q.query.probe as string;
 
       const now = new Date();
-      const el = self[domain].find(el => el.id === +id)
+      const el = self[type].find(el => el.id === +id);
       const item = el.probes[probe];
       const owner = Owner.user;
-      const r = await item[action]({now, owner});
-      console.log(JSON.stringify(r));
-      res.write(JSON.stringify(r));
+      const doJob = await item[action]({now, owner});
+      console.log(JSON.stringify(doJob));
+      res.write(JSON.stringify(doJob));
       res.end();
 
       // self.emit('remoteCall', path, JSON.stringify(queryData));

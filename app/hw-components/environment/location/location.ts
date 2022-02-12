@@ -18,6 +18,7 @@ class LocationComponent {
   params: LocationInterface;
   // waterRefill: WaterRefillComponent;
   id: number;
+  type: string;
   probes: any;
   actuators: any;
 
@@ -30,6 +31,7 @@ class LocationComponent {
 
   constructor({
     id, 
+    type,
     waterTemperatureProbeID, 
     waterTemperatureProbeSchedule,
     /* 
@@ -66,8 +68,9 @@ class LocationComponent {
     // this.ecBalancer = new EcBalancer(ecBalancerID);
   
     this.id = id;
+    this.type = type;
     this.probes = {
-      waterTemperatureProbe: new TemperatureComponent(id, waterTemperatureProbeID, waterTemperatureProbeSchedule),
+      waterTemperatureProbe: new TemperatureComponent(id, type, waterTemperatureProbeID, waterTemperatureProbeSchedule),
       phProbeID: null, 
       ecProbeID: null,
       waterLevelProbeID: null,

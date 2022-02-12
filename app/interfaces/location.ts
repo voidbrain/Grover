@@ -1,5 +1,6 @@
 export interface LocationInterface {
   id: number;
+  type?: string;
   name: string;
   isBlooming: boolean;
   // deviceId?: string;
