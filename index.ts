@@ -2,6 +2,7 @@
 
 import http from 'http';
 import url from 'url';
+import { LocalStorage } from 'node-localstorage';
 
 import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
@@ -19,6 +20,7 @@ import RoomComponent from './app/hw-components/environment/room/room';
 class Main {
   server: http.Server;
   webServerPort: number;
+  serialNumber: string;
 
   room: RoomComponent;
   rooms: RoomComponent[] = [];
@@ -26,35 +28,48 @@ class Main {
   clock: number;
   settings = new SettingsService();
   db = new DbService(this.settings, new ApiService(new NetworkService(), this.settings));
+  localStorage = new LocalStorage('./data/scratch');
 
   constructor(
   ){
-    this.server = http.createServer();
-    this.webServerPort = 8084;
-    this.webServerSetup();
-    
-    this.db.load().then(() => {
-      console.log('[main] => initdb done');
-      this.appSetup();
-    })
-    .catch(() => {
-      console.error('[main] => initdb error');
-    })
-    
+    this.appSetup();
   }
 
   async appSetup(){
     const self = this;
     self.clock = self.settings.getClock();
+    self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
+   
+    self.server = http.createServer();
+    self.webServerPort = 8084;
+    self.webServerSetup();
 
-    const roomSetupParams: RoomInterface = await self.db.getItem('rooms', 1) as RoomInterface;
+    const endpoint = 'endpoint';
+    const action = 'START';
+    const lastUpdate = this.localStorage.getItem(this.settings.getAppName());
+    const start = await self.db.api.get(endpoint, lastUpdate, action, self.serialNumber);
+
+    self.db.load().then(() => {
+      console.log('[main] => initdb done');
+      self.main();
+    })
+    .catch(() => {
+      console.error('[main] => initdb error');
+    })
+  }
+
+
+
+  async main(){
+    const self = this;
+    const roomSetupParams: RoomInterface = await self.db.getItem('rooms', this.serialNumber, 'deviceSerial') as RoomInterface;
     roomSetupParams.type = 'rooms';
     const room = new RoomComponent(roomSetupParams as undefined);
     self.room = room;
     self.rooms.push(room);
     
     if(self.room?.id) {
-      const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id) as LocationInterface[];
+      const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id, 'idParent') as LocationInterface[];
 
       locationsSetupParams.forEach((locParams: LocationInterface) => {
         locParams.type = 'locations';

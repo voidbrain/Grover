@@ -3,7 +3,7 @@ export interface LocationInterface {
   type?: string;
   name: string;
   isBlooming: boolean;
-  // deviceId?: string;
+  // deviceSerial?: string;
 
   waterTemperatureProbeID: string;
   waterRefillDNum: number;

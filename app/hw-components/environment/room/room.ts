@@ -82,7 +82,7 @@ class RoomComponent {
 
   name: string;
   isBlooming: boolean;
-  deviceId?: string;
+  deviceSerial?: string;
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
@@ -92,7 +92,7 @@ class RoomComponent {
     type,
     // name,
     // isBlooming,
-    // deviceId,
+    // deviceSerial,
     // enabled,
     // deleted,
     // lastUpdate,
@@ -118,7 +118,7 @@ class RoomComponent {
 
     name,
     isBlooming,
-    deviceId,
+    deviceSerial,
     enabled,
     deleted,
     lastUpdate,

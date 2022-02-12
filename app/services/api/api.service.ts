@@ -10,12 +10,12 @@ export class ApiService {
   constructor(
     
     public networkService: NetworkService,
-    private appSettings: SettingsService,
+    private settings: SettingsService,
     ) {}
     
     init(){
-      this.url = this.appSettings.getRemoteServerEndpoint() +'/'+ 
-      this.appSettings.getPurposes()[this.appSettings.getPurpose()] +'/';
+      this.url = this.settings.getRemoteServerEndpoint() +'/'+ 
+      this.settings.getPurposes()[this.settings.getPurpose()] +'/';
     }
     
     // async get(table: string, params?: any): Promise<any> {
@@ -26,15 +26,19 @@ export class ApiService {
     //   });
     // }
     
-    async get(table: string, lastUpdate?: any) {
+    async get(endpont: string, lastUpdate?: any, action?: any, serialNumber?: any) {
+      const path = `${this.settings.getRemoteServerEndpoint()}${endpont}` + 
+      `?lastUpdate=${lastUpdate}&action=${action}&serialNumber=${serialNumber}`;
+      
       const res = await this.httpsGet({
-        hostname: this.appSettings.getRemoteServerHostname(),
-        path: this.appSettings.getRemoteServerEndpoint() + table + '?lastUpdate=' + lastUpdate,
+        hostname: this.settings.getRemoteServerHostname(),
+        path
       })
       return res;
     }
     
     async httpsGet({...options}) {
+      console.log( `https://${options.hostname}/${options.path}`)
       return new Promise((resolve, reject) => {
         const url = `https://${options.hostname}/${options.path}`;
         https.get(url, resp => {
@@ -106,8 +110,8 @@ export class ApiService {
     
     async post(table: string, item: any, params?: any) {
       const res = await this.httpsPost({
-        hostname: this.appSettings.getRemoteServerHostname(),
-        path: this.appSettings.getRemoteServerEndpoint() + table,
+        hostname: this.settings.getRemoteServerHostname(),
+        path: this.settings.getRemoteServerEndpoint() + table,
         headers: {
           'Authorization': `Bearer 123`,
           'Content-Type': 'application/json',
@@ -147,8 +151,8 @@ export class ApiService {
     
     async delete(table: string, item: any) {
       const res = await this.httpsDelete({
-        hostname: this.appSettings.getRemoteServerHostname(),
-        path: this.appSettings.getRemoteServerEndpoint() + table,
+        hostname: this.settings.getRemoteServerHostname(),
+        path: this.settings.getRemoteServerEndpoint() + table,
         headers: {
           'Authorization': `Bearer 123`,
           'Content-Type': 'application/json',

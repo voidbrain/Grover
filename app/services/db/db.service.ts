@@ -13,28 +13,31 @@ import LocationComponent from '../../hw-components/environment/location/location
 export class DbService {
 
 	private db;
+  private serialNumber;
 	private tables = [];
   private localStorage = new LocalStorage('./data/scratch');
   private debug = false;
 
   	constructor(
-  		private appSettings: SettingsService,
+  		private settings: SettingsService,
         public api: ApiService,
   	) {
-        this.tables = this.appSettings.getTables();
+        this.tables = this.settings.getTables();
         this.api.init();
+        
     }
 
     async load(): Promise<any> {
       const self = this;
-      return new Promise<void>((resolve, reject)=> {
+      return new Promise<void>(async (resolve, reject)=> {
+        self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
           const resetDb = false; const forceLoading = true;
-          this.initDb(resetDb).then(()=>{
-              this.initService((resetDb?resetDb:forceLoading)).then(()=>{
-                  // this.api.networkService.status.subscribe((networkStatus) => {
+          self.initDb(resetDb).then(()=>{
+              self.initService((resetDb?resetDb:forceLoading)).then(()=>{
+                  // self.api.networkService.status.subscribe((networkStatus) => {
                   //     if(self.debug) { console.info('[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'));}
                       const networkStatus = 'Online';
-                      this.syncAndClean(networkStatus).then(()=>{
+                      self.syncAndClean(networkStatus).then(()=>{
                           resolve();
                       });
                   // });
@@ -49,12 +52,12 @@ export class DbService {
 
     async deleteDb(): Promise<any> {
       const self = this;
-      this.localStorage.clear();
+      self.localStorage.clear();
       const pathToFile = './data/grover.sqlite';
       // if (fs.existsSync(pathToFile)) {
       //   fs.unlinkSync(pathToFile)
       // }
-      if(this.debug) { console.info('[DB]: Db deleted');}
+      if(self.debug) { console.info('[DB]: Db deleted');}
       return;
     }
 
@@ -84,7 +87,7 @@ export class DbService {
       return new Promise<void>(resolve => {
         if(resetDb===true){
           if(self.debug) { console.info('[DB]: Delete db');}
-          this.deleteDb().then(()=>{ resolve(); });
+          self.deleteDb().then(()=>{ resolve(); });
         }else{
           if(self.debug) { console.info('[DB]: Delete db not required');}
           resolve();
@@ -102,7 +105,7 @@ export class DbService {
       console.log(`[DB] => init service`)
       const promiseCreateDb = this.createDb();
 
-      const lastGlobalUpdate = ( this.localStorage.getItem(this.appSettings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
+      const lastGlobalUpdate = ( this.localStorage.getItem(this.settings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
       const hoursWithoutUpdates = (Number(now) - Number(lastGlobalUpdate)) / (1000*60*60);
 
       if (!networkStatus || (hoursWithoutUpdates<1 && forceLoading===false)) {
@@ -111,12 +114,12 @@ export class DbService {
       }
 
       if(self.debug) { console.info('[DB]: Force data sync');}
-      this.localStorage.setItem(this.appSettings.getAppName()+'_lastglobalupdate', String(now));
+      this.localStorage.setItem(this.settings.getAppName()+'_lastglobalupdate', String(now));
       // console.log('setitem -> ', String(now))
 
       return promiseCreateDb
       .then(() => Promise.all(this.tables.map((table) => {
-        lastUpdate[table] = this.localStorage.getItem(this.appSettings.getAppName()+'_'+table);
+        lastUpdate[table] = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
         // console.log('getitem -> ',lastUpdate[table])
         return this.loadData(table, lastUpdate[table]);
       }))).then((results) => {
@@ -131,7 +134,7 @@ export class DbService {
 
     async loadData(table, lastUpdate): Promise<any> {
       return new Promise((resolve, reject) => {
-        this.api.get(table, lastUpdate)
+        this.api.get(table, lastUpdate, 'read', this.serialNumber)
         .then((res) => {
           resolve({[table] : res});
         });
@@ -201,11 +204,11 @@ export class DbService {
       });
     }
 
-    getItem(table, value): Promise<LocationInterface | RoomInterface> {
+    getItem(table, value, column='id'): Promise<LocationInterface | RoomInterface> {
       const self = this;
       const promise = new Promise<LocationInterface | RoomInterface>(resolve => {
           if(value){
-            const query = `SELECT * from ${table} WHERE id=(?)`;
+            const query = `SELECT * from ${table} WHERE  ${column}=(?)`;
             self.db.get(query, [value], (err, row) => {
               if(err) {
                 throw err;
@@ -219,12 +222,12 @@ export class DbService {
       return promise;
     }
 
-    getItems(table: string, id: number = null): Promise<LocationInterface[] | RoomInterface[]> {
+    getItems(table: string, value: number = null, column: string = 'id'): Promise<LocationInterface[] | RoomInterface[]> {
       const self = this;
       const promise = new Promise<LocationInterface[] | RoomInterface[]>(resolve => {
-          const query = `SELECT * from ${table} where idParent=(?)`;
+          const query = `SELECT * from ${table} where ${column}=(?)`;
           const where = [];
-          if(id) { where.push(id); }
+          if(value) { where.push(value); }
           self.db.all(query, where, (err, rows) => {
             if(err) {
               throw err;
@@ -238,7 +241,7 @@ export class DbService {
     putItem(table, item: LocationInterface | RoomInterface): Promise<void>{
       return new Promise(resolve => {
         if(!item.id){ delete item.id; }
-        const lastUpdate = this.localStorage.getItem(this.appSettings.getAppName()+'_'+table);
+        const lastUpdate = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
         const params = { lastUpdate };
         this.api.post(table, item, params)
           .then((response: any) => {
