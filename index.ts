@@ -49,13 +49,18 @@ class Main {
     const lastUpdate = this.localStorage.getItem(this.settings.getAppName());
     const start = await self.db.api.get(endpoint, lastUpdate, action, self.serialNumber);
 
-    self.db.load().then(() => {
-      console.log('[main] => initdb done');
-      self.main();
-    })
-    .catch(() => {
-      console.error('[main] => initdb error');
-    })
+    const loadDb = await self.db.load(); // .then(async () => {
+    console.log('[main] => initdb done');
+
+    const operationg_modes = await this.db.getItems('operating_modes', null);
+    this.settings.setOperatingModes(operationg_modes);
+
+      
+     // self.main();
+    // })
+    // .catch(() => {
+    //   console.error('[main] => initdb error');
+    // })
   }
 
 
@@ -69,7 +74,7 @@ class Main {
     self.rooms.push(room);
     
     if(self.room?.id) {
-      const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id, 'idParent') as LocationInterface[];
+      const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id, 'idRoom') as LocationInterface[];
 
       locationsSetupParams.forEach((locParams: LocationInterface) => {
         locParams.type = 'locations';

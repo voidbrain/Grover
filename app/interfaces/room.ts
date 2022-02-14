@@ -4,7 +4,7 @@ export interface RoomInterface {
   name: string;
   isBlooming: boolean;
   deviceSerial: string;
-  waterTemperatureProbeID: string;
+  waterTemperatureProbeId: string;
   
   waterRefillDNum: number;
   waterRefillEnPin: number;

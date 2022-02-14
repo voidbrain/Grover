@@ -6,9 +6,7 @@ import { RoomInterface } from '../../interfaces/room';
 
 import { LocalStorage } from 'node-localstorage';
 import sqlite3 from 'sqlite3';
-import * as fs from 'fs';
 import * as path from 'path';
-import LocationComponent from '../../hw-components/environment/location/location';
 
 export class DbService {
 
@@ -31,47 +29,56 @@ export class DbService {
       const self = this;
       return new Promise<void>(async (resolve, reject)=> {
         self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
-          const resetDb = false; const forceLoading = true;
-          self.initDb(resetDb).then(()=>{
-              self.initService((resetDb?resetDb:forceLoading)).then(()=>{
-                  // self.api.networkService.status.subscribe((networkStatus) => {
-                  //     if(self.debug) { console.info('[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'));}
-                      const networkStatus = 'Online';
-                      self.syncAndClean(networkStatus).then(()=>{
-                          resolve();
-                      });
-                  // });
-              })
-              .catch(() => {
-                console.error('Err1');
-                reject();
-            })
-          });
+        const resetDb = false; const forceLoading = true;
+        self.initService((resetDb?resetDb:forceLoading)).then(async ()=>{
+          const networkStatus = 'Online';
+          resolve();
+        })
+        .catch(() => { reject(); });
       });
     }
 
-    async deleteDb(): Promise<any> {
-      const self = this;
-      self.localStorage.clear();
-      const pathToFile = './data/grover.sqlite';
-      // if (fs.existsSync(pathToFile)) {
-      //   fs.unlinkSync(pathToFile)
-      // }
-      if(self.debug) { console.info('[DB]: Db deleted');}
-      return;
-    }
+    // async load(): Promise<any> {
+    //   const self = this;
+    //   return new Promise<void>(async (resolve, reject)=> {
+    //     self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
+    //       const resetDb = false; const forceLoading = true;
+    //       self.initDb(resetDb).then(async ()=>{
+    //           self.initService((resetDb?resetDb:forceLoading)).then(async ()=>{
+    //               // self.api.networkService.status.subscribe((networkStatus) => {
+    //               //     if(self.debug) { console.info('[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'));}
+    //                   const networkStatus = 'Online';
+    //                   // await self.syncAndClean(networkStatus).then(()=>{
+    //                       resolve();
+    //                   // });
+    //               // });
+    //           })
+    //           .catch(() => {
+    //             console.error('Err1');
+    //             reject();
+    //         })
+    //       });
+    //   });
+    // }
 
-    private createDb(): Promise<void> {
-      console.log('[DB] => createDb')
-        if (this.db) { 
-          this.db.close(); 
-        }
+    // async deleteDb(): Promise<any> {
+    //   const self = this;
+    //   self.localStorage.clear();
+    //   const pathToFile = './data/grover.sqlite';
+    //   // if (fs.existsSync(pathToFile)) {
+    //   //   fs.unlinkSync(pathToFile)
+    //   // }
+    //   if(self.debug) { console.info('[DB]: Db deleted');}
+    //   return;
+    // }
+
+    private openDb(): Promise<void> {
+      console.log('[DB] => openDb')
         return new Promise((resolve, reject) => {
-
             const __dirname = path.resolve();
             this.db = new sqlite3.Database(__dirname+'/data/db.sqlite', sqlite3.OPEN_READWRITE, err => { 
               if (err) {
-                console.error('[DB]: error createDb: ' + err.message);
+                console.error('[DB]: error openDb: ' + err.message);
                 reject();
               } else {
                 if(this.debug) { console.info('[DB]: Db Ready');}
@@ -82,18 +89,18 @@ export class DbService {
         });
     }
 
-    async initDb(resetDb=false): Promise<any> {
-      const self = this;
-      return new Promise<void>(resolve => {
-        if(resetDb===true){
-          if(self.debug) { console.info('[DB]: Delete db');}
-          self.deleteDb().then(()=>{ resolve(); });
-        }else{
-          if(self.debug) { console.info('[DB]: Delete db not required');}
-          resolve();
-        }
-      });
-    }
+    // async initDb(resetDb=false): Promise<any> {
+    //   const self = this;
+    //   return new Promise<void>(resolve => {
+    //     if(resetDb===true){
+    //       if(self.debug) { console.info('[DB]: Delete db');}
+    //       self.deleteDb().then(()=>{ resolve(); });
+    //     }else{
+    //       if(self.debug) { console.info('[DB]: Delete db not required');}
+    //       resolve();
+    //     }
+    //   });
+    // }
 
     async initService(forceLoading=false): Promise<void> {
       const self = this;
@@ -102,90 +109,112 @@ export class DbService {
       const date = new Date();
       const now = Date.now();
       const lastUpdate = []; const promises = [];
-      console.log(`[DB] => init service`)
-      const promiseCreateDb = this.createDb();
+      console.log(`[DB]: init service`)
+      const promiseOpenDb = await this.openDb();
 
-      const lastGlobalUpdate = ( this.localStorage.getItem(this.settings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
+      const lastGlobalUpdate = ( self.localStorage.getItem(self.settings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
       const hoursWithoutUpdates = (Number(now) - Number(lastGlobalUpdate)) / (1000*60*60);
 
       if (!networkStatus || (hoursWithoutUpdates<1 && forceLoading===false)) {
         if(self.debug) { console.info('[DB]: Cached data');}
-        return promiseCreateDb;
+        return promiseOpenDb;
       }
 
       if(self.debug) { console.info('[DB]: Force data sync');}
-      this.localStorage.setItem(this.settings.getAppName()+'_lastglobalupdate', String(now));
+      self.localStorage.setItem(self.settings.getAppName()+'_lastglobalupdate', String(now));
       // console.log('setitem -> ', String(now))
 
-      return promiseCreateDb
-      .then(() => Promise.all(this.tables.map((table) => {
-        lastUpdate[table] = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
-        // console.log('getitem -> ',lastUpdate[table])
-        return this.loadData(table, lastUpdate[table]);
-      }))).then((results) => {
-        // if (self.debug) { console.info('[DB]: Db results ', results);}
-        this.syncData(results);
+      if(self.debug) {  console.info('[DB]: Promise all (expected load & syncData)'); }
+      Promise.all(
+        self.tables.map(async (table) => {
+          lastUpdate[table] = self.localStorage.getItem(self.settings.getAppName()+'_'+table);
+          if(self.debug) {  console.info('[DB]: loadData', table); }
+          const loadD = await self.loadData(table, lastUpdate[table]);
+          // console.log('-->loadD ', loadD) //.then(async (loadTable) => { 
+            if(self.debug) {  console.info('[DB]: syncData', table); }
+          const loadTab = await self.syncData(loadD); 
+          // console.log('--> loadTab', loadTab)
+          if(self.debug) {  console.info('[DB]: synced', table); }
+          
+          //   console.info('[DB]: syncData', table);
+            
+          //   console.info('[DB]: synced', table);
+          })
+        );
         return;
-      })
-      .catch(() => {
-        console.error('Err2');
-      })
+      
+        
+        
+      // )
+        // .then(async(loadTables) => {
+        //   console.info('[DB]: Then');
+        //   console.info('[DB]: loadTables');
+        //   const results = await self.syncData(loadTables);
+        //   return;
+        // })
     }
 
     async loadData(table, lastUpdate): Promise<any> {
-      return new Promise((resolve, reject) => {
-        this.api.get(table, lastUpdate, 'read', this.serialNumber)
-        .then((res) => {
-          resolve({[table] : res});
-        });
+      const self = this;
+      
+      return new Promise(async (resolve, reject) => {
+        const res = await self.api.get(table, lastUpdate, 'read', this.serialNumber).then((res) =>{
+        resolve({[table] : res});
+        }).catch((err) => {
+          reject(err)
+        })
       });
     }
 
-    async syncData(dataValues){
+    async syncData(data){
       const self = this;
-      return new Promise<void>((resolve, reject) => {
-        dataValues.map((data)=>{
+      if(self.debug) {console.info('[DB]: entering sync data'); }
+      return new Promise<void>(async (resolve, reject) => {
+        // dataValues.map(async (data)=>{
           
           const table = Object.keys(data)[0];
           const res = data[table];
-          // if(self.debug) { console.info('[DB]: Db Sync records ready ',table, res);}
-          // const tx = this.db.transaction(table, 'readwrite');
-          // const store = tx.objectStore(table);
-          // let lastUpdate;
+          if(self.debug) { console.info('[DB]: Db Sync records ready ',table);}
+          
           if(res.items.length){
            
             // sqlite if table not exist;
+            if(self.debug) { console.info('[DB]: Create'); }
             const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
             ${res.tableDefinition.map(el => {
               const definition = el;
-              
-              // console.log( definition)
               return `${definition.name} ${definition.type} ${definition.primary_key ? 'primary key' : ''}`;
             })})`;
-            const create = this.db.run(createTableQuery, function(err) {
+
+
+            const create = self.db.run(createTableQuery, async function(err) {
               if (err) {
-                // return console.error(err.message);
+                console.error(err.message);
                 reject();
-              } else { if(this.debug){console.log(`[DB] Table ${table} ok`); }}
+              } else { if(self.debug){console.log(`[DB] Table ${table} ok`); }}
               
-              const promises = res.items.map(row => {
+              const promises = await res.items.map(row => {
                 if (row.id) {
                   let promise;
                   if(row.deleted){
-                    promise = self.db.run(`DELETE FROM ${table} WHERE id=?`, row.id, function(err) {
+                    promise = self.db.run(`DELETE FROM ${table} WHERE id=?`, +row.id, function(err) {
                       if (err) {
                         return console.error(err.message);
                       }
-                      if(this.debug){console.log(`Row(s) deleted ID ${row.id}`);}
+                      if(self.debug){console.log(`[DB] Row(s) deleted ID ${row.id}`);}
                     });
                   }else{
                     let length;
-                    const values = [];
+                    const values:any[] = [];
+                    const cols:string[] = [];
                     Object.keys(row).forEach(function(key, index) {
                       length = index;
+                      cols.push(key);
                       values.push(row[key]);
                     });
-                    const query = `INSERT or REPLACE into ${table} values (${'?,'.repeat(length)}?)`;
+                    
+                    const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
+                    
                     self.db.run(query, values, (err) => {
                       if(err) {
                         console.log('err')
@@ -200,7 +229,7 @@ export class DbService {
               });
             });
           }else{ resolve(); }
-        });
+        // });
       });
     }
 
@@ -208,11 +237,15 @@ export class DbService {
       const self = this;
       const promise = new Promise<LocationInterface | RoomInterface>(resolve => {
           if(value){
+            console.info('[DB]: getitem');
             const query = `SELECT * from ${table} WHERE  ${column}=(?)`;
+            console.log(query);
             self.db.get(query, [value], (err, row) => {
               if(err) {
+                console.log(err)
                 throw err;
               }
+              console.log('found?')
               resolve(row);
             });
           } else {
@@ -222,12 +255,15 @@ export class DbService {
       return promise;
     }
 
-    getItems(table: string, value: number = null, column: string = 'id'): Promise<LocationInterface[] | RoomInterface[]> {
+    getItems(table: string, value: number = null, column: string = 'id'): Promise<LocationInterface[] | RoomInterface[] | any[]> {
       const self = this;
       const promise = new Promise<LocationInterface[] | RoomInterface[]>(resolve => {
-          const query = `SELECT * from ${table} where ${column}=(?)`;
+          
+        console.info('[DB]: getitems');
+        let query = `SELECT * from ${table}`;
           const where = [];
-          if(value) { where.push(value); }
+          if(value) { where.push(value); query += ` where ${column}=(?)`; }
+          console.log(query, where)
           self.db.all(query, where, (err, rows) => {
             if(err) {
               throw err;
@@ -321,6 +357,7 @@ export class DbService {
     const promise = new Promise<void>((resolve, reject) => {
       if(self.debug) { console.info('[DB]: Sync stored items with remote');}
       this.tables.map((table) => {
+        console.log('getItemsToBeSynced');
         this.getItemsToBeSynced(table)
           .then((items)=>{
             if(items.length){
@@ -340,21 +377,20 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeSynced(objectStore): Promise<any>{
-    // const tx = this.db.transaction(objectStore, 'readonly');
-    // const store = tx.objectStore(objectStore);
-    // const dataIndex: any = store.index('synced');
-    const promise = new Promise<any>(resolve => {
-      // const request = dataIndex.getAll(0);
-      // request.onsuccess = (e) => {
-      //   resolve(e.target.result);
-      resolve(true)
-      // };
-      // request.onerror = (e) => {
-      //   console.error(e);
-      // };
-    });
-    return promise;
+  getItemsToBeSynced(table): Promise<any>{
+    const self = this;
+      const promise = new Promise<LocationInterface[] | RoomInterface[] | any[]>(resolve => {
+        console.info('[DB]: getitemstobesynced');
+          const query = `SELECT * from ${table} where sinced=(0)`;
+          self.db.all(query, (err, rows) => {
+            if(err) {
+              throw err;
+            }
+            // resolve(rows);
+            resolve([]);
+          });
+      });
+      return promise;
   }
 
   removeDeletedItem(): Promise<void>{

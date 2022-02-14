@@ -13,10 +13,12 @@ export class SettingsService {
   private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/';
   private purposes: string[] = ['client', 'worker'];
   private purpose = Purposes.worker;
-  private operatingMode = OperatingMode.On;
+  private operatingMode = '';
+  private operatingModes = [];
   private datatables = [
     'locations', 
-    'rooms'
+    'rooms',
+    'operating_modes',
   ];
   private mainClock  = 5 * 1000; // ms
 
@@ -46,6 +48,14 @@ export class SettingsService {
 
   public getOperatingMode() {
     return this.operatingMode;
+  }
+
+  public setOperatingMode(operatingModes) {
+    this.operatingModes = operatingModes;
+  }
+
+  public setOperatingModes(operationg_modes) {
+    this.operatingModes = operationg_modes;
   }
 
   public getRemoteServerHostname() {

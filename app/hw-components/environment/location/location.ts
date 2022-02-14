@@ -27,12 +27,12 @@ class LocationComponent {
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
-  idParent: number;
+  idRoom: number;
 
   constructor({
     id, 
     type,
-    waterTemperatureProbeID, 
+    waterTemperatureProbeId, 
     waterTemperatureProbeSchedule,
     /* 
     waterLevelProbeTriggerPin, waterLevelProbeEchoPin, 
@@ -51,14 +51,14 @@ class LocationComponent {
     enabled,
     deleted,
     lastUpdate,
-    idParent,
+    idRoom,
     /*, 
     phBalancerID, 
     ecBalancerID 
     */ 
   }) {
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
-    //// this.waterTemperature = new Temperature(waterTemperatureProbeID);
+    //// this.waterTemperature = new Temperature(waterTemperatureProbeId);
     // this.phProbe = new PhProbe(phProbeID);
     // this.ecProbe = new EcProbe(ecProbeID);
     // this.waterLevel = new WaterLevel(waterLevelProbeID, waterLevelProbeTriggerPin, waterLevelProbeEchoPin);
@@ -70,7 +70,7 @@ class LocationComponent {
     this.id = id;
     this.type = type;
     this.probes = {
-      waterTemperatureProbe: new TemperatureComponent(id, type, waterTemperatureProbeID, waterTemperatureProbeSchedule),
+      waterTemperatureProbe: new TemperatureComponent(id, type, waterTemperatureProbeId, waterTemperatureProbeSchedule),
       phProbeID: null, 
       ecProbeID: null,
       waterLevelProbeID: null,
@@ -86,7 +86,7 @@ class LocationComponent {
     enabled = this.enabled;
     deleted = this.deleted;
     lastUpdate = this.lastUpdate;
-    idParent = this.idParent;
+    idRoom = this.idRoom;
   }
 }
 export default LocationComponent;

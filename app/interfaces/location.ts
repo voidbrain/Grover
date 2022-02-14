@@ -5,7 +5,7 @@ export interface LocationInterface {
   isBlooming: boolean;
   // deviceSerial?: string;
 
-  waterTemperatureProbeID: string;
+  waterTemperatureProbeId: string;
   waterRefillDNum: number;
   waterRefillEnPin: number;
   waterRefillIn1Pin: number;
@@ -15,5 +15,5 @@ export interface LocationInterface {
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
-  idParent: number;
+  idRoom: number;
 }

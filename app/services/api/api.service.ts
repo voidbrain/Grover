@@ -27,20 +27,22 @@ export class ApiService {
     // }
     
     async get(endpont: string, lastUpdate?: any, action?: any, serialNumber?: any) {
-      const path = `${this.settings.getRemoteServerEndpoint()}${endpont}` + 
-      `?lastUpdate=${lastUpdate}&action=${action}&serialNumber=${serialNumber}`;
-      
-      const res = await this.httpsGet({
-        hostname: this.settings.getRemoteServerHostname(),
-        path
-      })
-      return res;
+      return new Promise(async (resolve, reject) => {
+        const path = `${this.settings.getRemoteServerEndpoint()}${endpont}` + 
+        `?lastUpdate=${lastUpdate}&action=${action}&serialNumber=${serialNumber}`;
+        
+        const res = await this.httpsGet({
+          hostname: this.settings.getRemoteServerHostname(),
+          path
+        })
+        resolve(res);
+      });
     }
     
     async httpsGet({...options}) {
-      console.log( `https://${options.hostname}/${options.path}`)
       return new Promise((resolve, reject) => {
         const url = `https://${options.hostname}/${options.path}`;
+        console.log(`[API]: ${url}`);
         https.get(url, resp => {
           let data = '';
 
@@ -58,24 +60,6 @@ export class ApiService {
             } catch(e) {
               reject
             }
-            // const parseJSON = (data) => {
-            //   if (data) {
-            //     try {
-            //       return JSON.parse(data);
-            //     } catch (e) {
-            //       return false;
-            //     }
-            //   }
-            // };
-            // if(parseJSON) {
-            //   console.log('#####');
-            //   console.log(parseJSON);
-            //   console.log('#####');
-
-            //   resolve(parseJSON);
-            // } else {
-            //   reject
-            // }
           });
 
         }).on("error", (err) => {

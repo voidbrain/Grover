@@ -33,12 +33,12 @@
 //     waterRefillIn1Pin: number,
 //     waterRefillIn2Pin: number,
 
-//     waterTemperatureProbeID: number, environmentTemperatureProbeID: number, lightSwitchID: number, fanMotorID: number, locations: LocationInterface[]
+//     waterTemperatureProbeId: number, environmentTemperatureProbeID: number, lightSwitchID: number, fanMotorID: number, locations: LocationInterface[]
 //     ) {
 //     this.room = {
 //       id: id,
 //       probes: {
-//         waterTemperatureProbe: new TemperatureComponent(waterTemperatureProbeID),
+//         waterTemperatureProbe: new TemperatureComponent(waterTemperatureProbeId),
 //         environmentTemperatureProbe: new TemperatureComponent(environmentTemperatureProbeID),
 //         // phProbe: new PhProbeComponent(triggerPin, echoPin),
 //         // ecProbe: new EcProbeComponent(triggerPin, echoPin),
@@ -97,7 +97,7 @@ class RoomComponent {
     // deleted,
     // lastUpdate,
 
-    waterTemperatureProbeID, 
+    waterTemperatureProbeId, 
     waterTemperatureProbeSchedule,
     /* 
     waterLevelProbeTriggerPin, waterLevelProbeEchoPin, 
@@ -125,7 +125,7 @@ class RoomComponent {
     
   }) {
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
-    //// this.waterTemperature = new Temperature(waterTemperatureProbeID);
+    //// this.waterTemperature = new Temperature(waterTemperatureProbeId);
     // this.phProbe = new PhProbe(phProbeID);
     // this.ecProbe = new EcProbe(ecProbeID);
     // this.waterLevel = new WaterLevel(waterLevelProbeID, waterLevelProbeTriggerPin, waterLevelProbeEchoPin);
@@ -138,7 +138,7 @@ class RoomComponent {
     this.id = id;
     this.type = type;
     this.probes = {
-      waterTemperatureProbe: new TemperatureComponent(id, type, waterTemperatureProbeID, waterTemperatureProbeSchedule),
+      waterTemperatureProbe: new TemperatureComponent(id, type, waterTemperatureProbeId, waterTemperatureProbeSchedule),
       phProbeID: null, 
       ecProbeID: null,
       waterLevelProbeID: null,
