@@ -13,13 +13,12 @@ class TemperatureComponent {
   settings;
   
   constructor(id: number, address: string, scheduleArr, api, settings) {
-    this.settings = settings;
-    this.address = address;
-    
     this.id = id;
-    this.api = api;
+    this.address = address;
     this.scheduledCrons = scheduleArr;
     this.setSchedule(this.id, this.scheduledCrons)
+    this.settings = settings;
+    this.api = api;
   }
 
   public async READ({expectedTime, owner, operatingMode}) {
@@ -64,7 +63,6 @@ class TemperatureComponent {
     if(id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map(probeScheduleRow => {
-        console.log(probeScheduleRow)
         const scheduleRow:CronJobInterface = { 
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,

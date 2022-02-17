@@ -124,7 +124,7 @@ class PotComponent {
         worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
         worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
-        
+        console.log(worker);
         switch(worker.workerType) {
           case WorkersTypes.Fan: 
             worker.component = null;
@@ -133,7 +133,7 @@ class PotComponent {
             worker.component = null;
           break;
           case WorkersTypes.Nutrient_refill: 
-            worker.component = new WaterRefillComponent(worker.id, schedule, self.settings)
+            worker.component = null;
           break;
           case WorkersTypes.PH_refill: 
             worker.component = null;
@@ -142,7 +142,7 @@ class PotComponent {
             worker.component = null;
           break;
           case WorkersTypes.Water_refill: 
-            worker.component = null;
+            worker.component = new WaterRefillComponent(worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.api, self.settings)
           break;
         }
       })
