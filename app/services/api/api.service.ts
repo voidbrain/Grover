@@ -6,11 +6,9 @@ import https from 'https';
 export class ApiService {
   
   url = '';
-  
+  settings = new SettingsService();
+  network = new NetworkService();
   constructor(
-    
-    public networkService: NetworkService,
-    private settings: SettingsService,
     ) {}
     
     init(){
@@ -42,7 +40,7 @@ export class ApiService {
     async httpsGet({...options}) {
       return new Promise((resolve, reject) => {
         const url = `https://${options.hostname}/${options.path}`;
-        console.log(`[API]: ${url}`);
+        // console.log(`[API]: ${url}`);
         https.get(url, resp => {
           let data = '';
 

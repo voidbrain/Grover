@@ -3,6 +3,7 @@ import { SettingsService } from '../settings/settings.service';
 
 import { LocationInterface } from '../../interfaces/location';
 import { RoomInterface } from '../../interfaces/room';
+import { PotInterface } from '../../interfaces/pot';
 
 import { LocalStorage } from 'node-localstorage';
 import sqlite3 from 'sqlite3';
@@ -10,24 +11,24 @@ import * as path from 'path';
 
 export class DbService {
 
+  settings = new SettingsService();
+  api = new ApiService();
+
 	private db;
   private serialNumber;
 	private tables = [];
   private localStorage = new LocalStorage('./data/scratch');
   private debug = false;
 
-  	constructor(
-  		private settings: SettingsService,
-        public api: ApiService,
-  	) {
+  	constructor() {
         this.tables = this.settings.getTables();
         this.api.init();
-        
     }
 
     async load(): Promise<any> {
       const self = this;
       return new Promise<void>(async (resolve, reject)=> {
+        console.log(`[DB]: load`)
         self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
         const resetDb = false; const forceLoading = true;
         self.initService((resetDb?resetDb:forceLoading)).then(async ()=>{
@@ -73,19 +74,18 @@ export class DbService {
     // }
 
     private openDb(): Promise<void> {
-      console.log('[DB] => openDb')
+      const self = this;
         return new Promise((resolve, reject) => {
+          console.log(`[DB]: openDb`)
             const __dirname = path.resolve();
-            this.db = new sqlite3.Database(__dirname+'/data/db.sqlite', sqlite3.OPEN_READWRITE, err => { 
+            self.db = new sqlite3.Database(__dirname+'/data/db.sqlite', sqlite3.OPEN_READWRITE, err => { 
               if (err) {
                 console.error('[DB]: error openDb: ' + err.message);
                 reject();
               } else {
-                if(this.debug) { console.info('[DB]: Db Ready');}
+                resolve();
               }
-              resolve();
             });
-            
         });
     }
 
@@ -128,11 +128,9 @@ export class DbService {
       Promise.all(
         self.tables.map(async (table) => {
           lastUpdate[table] = self.localStorage.getItem(self.settings.getAppName()+'_'+table);
-          if(self.debug) {  console.info('[DB]: loadData', table); }
-          const loadD = await self.loadData(table, lastUpdate[table]);
-          // console.log('-->loadD ', loadD) //.then(async (loadTable) => { 
-            if(self.debug) {  console.info('[DB]: syncData', table); }
-          const loadTab = await self.syncData(loadD); 
+          if(self.debug) { console.info('[DB]: loadData', table); }
+          
+          const loadD = await self.loadData(table, lastUpdate[table]); // .then(async loadTab =>);
           // console.log('--> loadTab', loadTab)
           if(self.debug) {  console.info('[DB]: synced', table); }
           
@@ -141,10 +139,9 @@ export class DbService {
           //   console.info('[DB]: synced', table);
           })
         );
+        
         return;
       
-        
-        
       // )
         // .then(async(loadTables) => {
         //   console.info('[DB]: Then');
@@ -158,8 +155,8 @@ export class DbService {
       const self = this;
       
       return new Promise(async (resolve, reject) => {
-        const res = await self.api.get(table, lastUpdate, 'read', this.serialNumber).then((res) =>{
-        resolve({[table] : res});
+        const res = self.api.get(table, lastUpdate, 'read', this.serialNumber).then(async (res) =>{
+          resolve( await self.syncData({[table] : res}));
         }).catch((err) => {
           reject(err)
         })
@@ -168,6 +165,7 @@ export class DbService {
 
     async syncData(data){
       const self = this;
+     
       if(self.debug) {console.info('[DB]: entering sync data'); }
       return new Promise<void>(async (resolve, reject) => {
         // dataValues.map(async (data)=>{
@@ -177,9 +175,6 @@ export class DbService {
           if(self.debug) { console.info('[DB]: Db Sync records ready ',table);}
           
           if(res.items.length){
-           
-            // sqlite if table not exist;
-            if(self.debug) { console.info('[DB]: Create'); }
             const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
             ${res.tableDefinition.map(el => {
               const definition = el;
@@ -196,7 +191,7 @@ export class DbService {
               const promises = await res.items.map(row => {
                 if (row.id) {
                   let promise;
-                  if(row.deleted){
+                  if(row.deleted){ 
                     promise = self.db.run(`DELETE FROM ${table} WHERE id=?`, +row.id, function(err) {
                       if (err) {
                         return console.error(err.message);
@@ -212,15 +207,14 @@ export class DbService {
                       cols.push(key);
                       values.push(row[key]);
                     });
-                    
                     const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
-                    
                     self.db.run(query, values, (err) => {
                       if(err) {
                         console.log('err')
                         reject;
                         throw err;
                       }
+
                       resolve();
                     });
                   }
@@ -233,37 +227,48 @@ export class DbService {
       });
     }
 
-    getItem(table, value, column='id'): Promise<LocationInterface | RoomInterface> {
+    async getItem(table, value, column='id'): Promise<LocationInterface | RoomInterface | PotInterface> {
       const self = this;
-      const promise = new Promise<LocationInterface | RoomInterface>(resolve => {
+      
+      
+      const promise = new Promise<LocationInterface | RoomInterface | PotInterface>(resolve => {
           if(value){
-            console.info('[DB]: getitem');
-            const query = `SELECT * from ${table} WHERE  ${column}=(?)`;
-            console.log(query);
+            const query = `SELECT * from ${table} WHERE ${column}=(?)`;
+            // console.log('[DB]: get', query, [value])
             self.db.get(query, [value], (err, row) => {
               if(err) {
                 console.log(err)
                 throw err;
               }
-              console.log('found?')
               resolve(row);
             });
           } else {
             resolve(null);
-          }
+          }      
       });
       return promise;
     }
 
-    getItems(table: string, value: number = null, column: string = 'id'): Promise<LocationInterface[] | RoomInterface[] | any[]> {
+    closeDb() {
+      this.db.close((err) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        console.log('Close the database connection.');
+      });
+    }
+
+    async getItems(table: string, value: number = null, column: string = 'id'): Promise<LocationInterface[] | RoomInterface[] | any[]> {
       const self = this;
+      
+      
       const promise = new Promise<LocationInterface[] | RoomInterface[]>(resolve => {
           
-        console.info('[DB]: getitems');
+        // console.info('[DB]: getitems');
         let query = `SELECT * from ${table}`;
           const where = [];
           if(value) { where.push(value); query += ` where ${column}=(?)`; }
-          console.log(query, where)
+          // console.log(query, where)
           self.db.all(query, where, (err, rows) => {
             if(err) {
               throw err;
@@ -271,11 +276,14 @@ export class DbService {
             resolve(rows);
           });
       });
+      
       return promise;
     }
 
-    putItem(table, item: LocationInterface | RoomInterface): Promise<void>{
-      return new Promise(resolve => {
+    async putItem(table, item: LocationInterface | RoomInterface): Promise<void>{
+      const self = this;
+      
+      
         if(!item.id){ delete item.id; }
         const lastUpdate = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
         const params = { lastUpdate };
@@ -291,12 +299,11 @@ export class DbService {
             //   console.error('[DB]: Error adding: '+e);
             // };
           });
-      });
+      
     }
 
-    deleteItem(objectStore, itemToDelete: any): Promise<void>{
+    async deleteItem(objectStore, itemToDelete: any): Promise<void>{
       const self = this;
-      return new Promise(resolve => {
         console.log(objectStore, itemToDelete);
         this.api.delete(objectStore, itemToDelete)
           .then((item:any) => {
@@ -308,7 +315,8 @@ export class DbService {
               //   if(self.debug) { console.info('[DB]: item deleted. Table: "'+objectStore+'" id:'+item.id);}
               //   resolve();
               // };
-              resolve();
+              // resolve();
+              return;
             }else{
               if(self.debug) {
                 console.info('[DB]: item still not synced, don\'t remove from db but set to deleted:1. Table: "'
@@ -326,7 +334,7 @@ export class DbService {
               // };
             }
         });
-      });
+      
     }
 
   ////////////////////////////////////////////////
@@ -357,7 +365,7 @@ export class DbService {
     const promise = new Promise<void>((resolve, reject) => {
       if(self.debug) { console.info('[DB]: Sync stored items with remote');}
       this.tables.map((table) => {
-        console.log('getItemsToBeSynced');
+        // console.log('getItemsToBeSynced');
         this.getItemsToBeSynced(table)
           .then((items)=>{
             if(items.length){
@@ -380,7 +388,7 @@ export class DbService {
   getItemsToBeSynced(table): Promise<any>{
     const self = this;
       const promise = new Promise<LocationInterface[] | RoomInterface[] | any[]>(resolve => {
-        console.info('[DB]: getitemstobesynced');
+        // console.info('[DB]: getitemstobesynced');
           const query = `SELECT * from ${table} where sinced=(0)`;
           self.db.all(query, (err, rows) => {
             if(err) {

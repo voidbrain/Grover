@@ -1,20 +1,22 @@
+import { LocationInterface } from "./location";
+import { PotObject } from "./pot";
+
 export interface RoomInterface {
   id: number;
-  type?: string;
   name: string;
   isBlooming: boolean;
-  deviceSerial: string;
-  waterTemperatureProbeId: string;
+  serialNumber: string;
+  locationId: number;
   
-  waterRefillDNum: number;
-  waterRefillEnPin: number;
-  waterRefillIn1Pin: number;
-  waterRefillIn2Pin: number; 
-  
-  waterTemperatureProbeSchedule: string;
+  // probes: any[];
+  // workers: any[];
+  pots: PotObject[];
 
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
   
+  setup: (serialNumber) => {};
 }
+
+export interface RoomObject extends LocationInterface, RoomInterface {}

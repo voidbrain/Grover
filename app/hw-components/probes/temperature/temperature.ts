@@ -18,7 +18,7 @@ class TemperatureComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentType = parentType;
-    this.scheduleArr = JSON.parse(scheduleString).schedule;
+    this.scheduleArr = (scheduleString ? JSON.parse(scheduleString).schedule : null);
     
     this.operatingMode = this.settings.getOperatingMode();
     this.setSchedule(this.id, this.scheduleArr)

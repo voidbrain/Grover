@@ -12,33 +12,39 @@ import NetworkService from './app/services/network/network.service';
 import { Owner } from './app/services/settings/enums';
 
 import { LocationInterface } from './app/interfaces/location';
+import { PotInterface } from './app/interfaces/pot';
 import { RoomInterface }  from './app/interfaces/room';
+import { RoomObject }  from './app/interfaces/room';
 
-import LocationComponent from './app/hw-components/environment/location/location';
+// import PotComponent from './app/hw-components/environment/pot/pot';
+
 import RoomComponent from './app/hw-components/environment/room/room';
+import LocationComponent from './app/hw-components/environment/location/location';
 
 class Main {
   server: http.Server;
   webServerPort: number;
   serialNumber: string;
 
-  room: RoomComponent;
-  rooms: RoomComponent[] = [];
-  locations: LocationComponent[] = [];
+  room: any;
+  rooms: any[] = [];
+  pots: any[] = [];
   clock: number;
   settings = new SettingsService();
-  db = new DbService(this.settings, new ApiService(new NetworkService(), this.settings));
+  db = new DbService();
   localStorage = new LocalStorage('./data/scratch');
 
   constructor(
   ){
+    
     this.appSetup();
   }
 
   async appSetup(){
     const self = this;
-    self.clock = self.settings.getClock();
-    self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
+    await self.db.load();
+    self.clock = self.settings.getClockInterval();
+    self.serialNumber = await self.settings.getSerialNumber();
    
     self.server = http.createServer();
     self.webServerPort = 8084;
@@ -47,45 +53,28 @@ class Main {
     const endpoint = 'endpoint';
     const action = 'START';
     const lastUpdate = this.localStorage.getItem(this.settings.getAppName());
-    const start = await self.db.api.get(endpoint, lastUpdate, action, self.serialNumber);
-
-    const loadDb = await self.db.load(); // .then(async () => {
+    
+    // const loadDb = await self.db.load();
     console.log('[main] => initdb done');
 
-    const operationg_modes = await this.db.getItems('operating_modes', null);
-    this.settings.setOperatingModes(operationg_modes);
-
-      
-     // self.main();
-    // })
-    // .catch(() => {
-    //   console.error('[main] => initdb error');
-    // })
+    const remoteSettings: any = await self.db.api.get(endpoint, lastUpdate, action, self.serialNumber);
+    const found = remoteSettings.device.find(el => el.device === self.serialNumber)
+    if(!found) {
+      console.log('device not found'); 
+    } else {
+      this.settings.setOperatingMode(remoteSettings["device"].mode);
+      self.main();
+    }
   }
 
 
 
   async main(){
     const self = this;
-    const roomSetupParams: RoomInterface = await self.db.getItem('rooms', this.serialNumber, 'deviceSerial') as RoomInterface;
-    roomSetupParams.type = 'rooms';
-    const room = new RoomComponent(roomSetupParams as undefined);
-    self.room = room;
-    self.rooms.push(room);
-    
-    if(self.room?.id) {
-      const locationsSetupParams: LocationInterface[] = await self.db.getItems('locations', self.room.id, 'idRoom') as LocationInterface[];
+    self.room = new RoomComponent(self.db) as unknown as RoomObject;
+    await self.room.setup(self.serialNumber)
 
-      locationsSetupParams.forEach((locParams: LocationInterface) => {
-        locParams.type = 'locations';
-        const location = new LocationComponent(locParams as undefined);
-        self.locations.push(location); 
-      });
-
-      self.room.locations = self.locations;
-    }
-
-   
+    // console.log("[main]: room ", self.room);
    
     // this.api.callRemote('START');
     console.log(`[main] => ready`);  
@@ -111,14 +100,18 @@ class Main {
       const id = q.query.id as string;
       const type = q.query.type as string;
       const probe = q.query.probe as string;
-
       const now = new Date();
-      const el = self[type].find(el => el.id === +id);
-      const item = el.probes[probe];
-      const owner = Owner.user;
-      const doJob = await item[action]({now, owner});
-      console.log(JSON.stringify(doJob));
-      res.write(JSON.stringify(doJob));
+
+      console.log(action, id, probe, type);
+
+      if(action && id && probe && type) {
+        const el = self[type].find(el => el.id === +id);
+        const item = el.probes[probe];
+        const owner = Owner.user;
+        const doJob = await item[action]({now, owner});
+        console.log(JSON.stringify(doJob));
+        res.write(JSON.stringify(doJob));
+      }
       res.end();
 
       // self.emit('remoteCall', path, JSON.stringify(queryData));

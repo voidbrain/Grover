@@ -1,5 +1,5 @@
-import i2cBus from ("i2c-bus");
-import Pca9685Driver from ("pca9685");
+import i2cBus from "i2c-bus";
+import { Pca9685Driver } from "pca9685";
 
 var options = {
     i2c: i2cBus.openSync(1),
@@ -7,7 +7,7 @@ var options = {
     frequency: 50,
     debug: false
 };
-pwm = new Pca9685Driver(options, function(err) {
+const pwm = new Pca9685Driver(options, function(err) {
     if (err) {
         console.error("Error initializing PCA9685");
         process.exit(-1);
@@ -16,7 +16,7 @@ pwm = new Pca9685Driver(options, function(err) {
 
     // Set channel 0 to turn on on step 42 and off on step 255
     // (with optional callback)
-    pwm.setPulseRange(0, 42, 255, function() {
+    pwm.setPulseRange(0, 42, 255, function(err) {
         if (err) {
             console.error("Error setting pulse range.");
         } else {
@@ -32,7 +32,7 @@ pwm = new Pca9685Driver(options, function(err) {
 
     // Turn off all power to channel 6
     // (with optional callback)
-    pwm.channelOff(6, function() {
+    pwm.channelOff(6, function(err) {
         if (err) {
             console.error("Error turning off channel.");
         } else {

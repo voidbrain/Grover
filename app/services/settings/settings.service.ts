@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-
+import moment from 'moment';
 import { OperatingMode, Purposes } from './enums';
 
 export class SettingsService {
@@ -17,17 +17,29 @@ export class SettingsService {
   private operatingModes = [];
   private datatables = [
     'locations', 
+    'pots',
     'rooms',
     'operating_modes',
+    'settings',
+    'probes_list',
+    'workers_list',
+    'probes_type',
+    'workers_type',
+
+
+    'probes_schedule',
+    'probes_log',
+    'workers_schedule',
+    'workers_log',
   ];
-  private mainClock  = 5 * 1000; // ms
+  private mainClockInterval  = 5 * 1000; // ms
 
   public getLocales() {
     return this.locales;
   }
 
-  public getClock() {
-    return this.mainClock;
+  public getClockInterval() {
+    return this.mainClockInterval;
   }
 
   public getAppName() {
@@ -50,12 +62,12 @@ export class SettingsService {
     return this.operatingMode;
   }
 
-  public setOperatingMode(operatingModes) {
-    this.operatingModes = operatingModes;
+  public setOperatingMode(mode) {
+    this.operatingMode = mode;
   }
 
-  public setOperatingModes(operationg_modes) {
-    this.operatingModes = operationg_modes;
+  public setOperatingModes(operationgModes) {
+    this.operatingModes = operationgModes;
   }
 
   public getRemoteServerHostname() {
@@ -75,7 +87,9 @@ export class SettingsService {
         }
         // console.log( `stdout: ${stdout}` );// this is your RPI serial number
         // console.log( `stderr: ${stderr}` );
-        resolve(stdout);
+        let sn = stdout.split(': ')[1]
+        sn = sn.replace(/[\n\r\t\s]+/g, '');
+        resolve(sn);
       });
     });
   }
