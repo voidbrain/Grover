@@ -16,6 +16,7 @@ import { CronJobInterface } from '../../../interfaces/cron-job';
 
 class PotComponent {
   db;
+  api;
   pot: PotInterface = null;
   location: LocationInterface = null;
   probes:any[] = [];
@@ -63,7 +64,7 @@ class PotComponent {
     phBalancerID, 
     ecBalancerID 
     */ 
-    db, settings
+    db, api, settings
   ) {
     
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
@@ -77,6 +78,7 @@ class PotComponent {
     // this.ecBalancer = new EcBalancer(ecBalancerID);
   
     this.db = db;
+    this.api = api;
     this.settings = settings;
     // this.setup(locationId);
   }
@@ -109,7 +111,7 @@ class PotComponent {
           break;
           case ProbesTypes.Water_temperature: 
             // console.log(probe);
-            probe.component = new TemperatureComponent(probe.id, probe.address, schedule, self.settings)
+            probe.component = new TemperatureComponent(probe.id, probe.address, schedule, self.api, self.settings)
           break;
           case ProbesTypes.pH: 
             probe.component = null;

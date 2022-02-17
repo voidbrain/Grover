@@ -9,42 +9,53 @@ class TemperatureComponent {
   address: string;
   
   scheduledCrons: any[] = []; 
+  api;
   settings;
-  operatingMode;
   
-  constructor(id: number, address: string, scheduleArr, settings) {
-    this.id = id;
+  constructor(id: number, address: string, scheduleArr, api, settings) {
     this.settings = settings;
     this.address = address;
     
-    
+    this.id = id;
+    this.api = api;
     this.scheduledCrons = scheduleArr;
     this.setSchedule(this.id, this.scheduledCrons)
   }
 
-  public async READ({expectedTime, owner}) {
+  public async READ({expectedTime, owner, operatingMode}) {
     const self = this;
     return new Promise(resolve => {
-      sensor.get(self.address, function (err: any, tempObj: any) {
-        if (err) { throw err; }
+      const systemOperatingMode = self.settings.getOperatingMode();
+      if(operatingMode >= systemOperatingMode) {
+        sensor.get(self.address, function (err: any, value: any) {
+          if (err) { throw err; }
 
-        const job = {
-          owner, 
-          tempObj, 
-          
-          id: self.id, 
-          expectedTime, 
-          executedTime: new Date(),
-        };
-        switch(owner){
-          case Owner.user: 
-            resolve(job);
-          break;
-          case Owner.schedule: 
-            resolve;
-          break;
-        }
-      });
+          const job = {
+            owner, 
+            value, 
+            id: self.id, 
+            address: self.address,
+            expectedTime, 
+            executedTime: new Date(),
+            operatingMode: operatingMode,
+            systemOperatingMode: systemOperatingMode,
+          };
+          switch(owner){
+            case Owner.user: // manual action
+              console.log("[TEMP]: ", job);
+              // this.api.get()
+              resolve(job);
+            break;
+            case Owner.schedule: // scheduled action
+              console.log("[TEMP]: ", job);
+              // this.api.get()
+              resolve;
+            break;
+          }
+        });
+      } else {
+        console.log(`operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+      }
     });
   }
 
@@ -62,16 +73,15 @@ class TemperatureComponent {
       })
       
       scheduleArr.map(job => {
-        console.log('[temp] => ', self.settings.getOperatingMode());
-        console.log(+job.operatingMode >= +this.settings.getOperatingMode(), +job.operatingMode , this.settings.getOperatingMode())
-        if(+job.operatingMode >= +this.settings.getOperatingMode()) {
-          console.log('schedule');
-          schedule.scheduleJob(job.cron, async (expectedTime) => {
-            const owner = Owner.schedule;
-            console.log(`this.${job.action}({'expectedTime': '${expectedTime}', owner: '${owner}'})`);
-            const doJob = await eval(`this.${job.action}({'expectedTime': '${expectedTime}', owner: '${owner}'})`);
-          })
-        }
+        schedule.scheduleJob(job.cron, async (expectedTime) => {
+          const owner = Owner.schedule;
+          const doJob = await eval(
+            `this.${job.action}({
+              expectedTime: '${expectedTime}', 
+              owner: '${owner}', 
+              operatingMode: ${job.operatingMode}
+            })`);
+        })
       });
     }
   }

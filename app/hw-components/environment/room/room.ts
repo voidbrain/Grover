@@ -5,6 +5,7 @@ import { PotObject } from '../../../interfaces/pot';
 import { LocationInterface } from '../../../interfaces/location';
 class RoomComponent {
   db;
+  api;
   settings;
   room: RoomInterface = null; 
   location: LocationInterface = null;
@@ -23,9 +24,10 @@ class RoomComponent {
 
 
   constructor(
-    db, settings
+    db, api, settings
   ) {
     this.db = db;
+    this.api = api;
     this.settings = settings;
     // this.setup(serialNumber);
   }
@@ -52,7 +54,7 @@ class RoomComponent {
     const potsLocation: LocationInterface[] = await self.db.getItems('locations', self.room.locationId, 'parent') as LocationInterface[];
     await Promise.all(
       potsLocation.map(async (el) => {
-        const pot = new PotComponent(self.db, self.settings) as unknown as PotObject;
+        const pot = new PotComponent(self.db, this.api, self.settings) as unknown as PotObject;
         await pot.setup(el.id);
         self.pots.push(pot);
       })

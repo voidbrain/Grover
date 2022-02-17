@@ -29,7 +29,7 @@ export class DbService {
     async load(): Promise<any> {
       const self = this;
       return new Promise<void>(async (resolve, reject)=> {
-        console.log(`[DB]: load`)
+        if (self.debug) { console.log(`[DB]: load`); }
         self.serialNumber = (await self.settings.getSerialNumber());
         const resetDb = false; const forceLoading = true;
         self.initService((resetDb?resetDb:forceLoading)).then(async ()=>{
@@ -77,7 +77,7 @@ export class DbService {
     private openDb(): Promise<void> {
       const self = this;
         return new Promise((resolve, reject) => {
-          console.log(`[DB]: openDb`)
+          if(self.debug) { console.log(`[DB]: openDb`); }
             const __dirname = path.resolve();
             self.db = new sqlite3.Database(__dirname+'/data/db.sqlite', sqlite3.OPEN_READWRITE, err => { 
               if (err) {
@@ -110,7 +110,7 @@ export class DbService {
       const date = new Date();
       const now = Date.now();
       const lastUpdate = []; const promises = [];
-      console.log(`[DB]: init service`)
+      if(self.debug) { console.log(`[DB]: init service`); }
       const promiseOpenDb = await this.openDb();
 
       const lastGlobalUpdate = ( self.localStorage.getItem(self.settings.getAppName()+'_lastglobalupdate') || date.getDate()-1 );
@@ -230,13 +230,36 @@ export class DbService {
 
     async getItem(table, value, column='id'): Promise<LocationInterface | RoomInterface | PotInterface> {
       const self = this;
-      
-      
       const promise = new Promise<LocationInterface | RoomInterface | PotInterface>(resolve => {
           if(value){
             const query = `SELECT * from ${table} WHERE ${column}=(?)`;
             // console.log('[DB]: get', query, [value])
             self.db.get(query, [value], (err, row) => {
+              if(err) {
+                console.log(err)
+                throw err;
+              }
+              resolve(row);
+            });
+          } else {
+            resolve(null);
+          }      
+      });
+      return promise;
+    }
+
+    async findParent(id): Promise<RoomInterface | PotInterface> {
+      const self = this;
+      const promise = new Promise<RoomInterface | PotInterface>(resolve => {
+          if(id){
+            const query = `
+            SELECT ROOMS.*, ROOMS.name AS roomName, 
+            POTS.*, POTS.name AS potName, 
+            LOCATIONS.* FROM LOCATIONS
+            LEFT JOIN POTS on POTS.locationId = LOCATIONS.id 
+            LEFT JOIN ROOMS on ROOMS.locationId = LOCATIONS.id 
+            WHERE LOCATIONS.id=(?)`;
+            self.db.get(query, [id], (err, row) => {
               if(err) {
                 console.log(err)
                 throw err;

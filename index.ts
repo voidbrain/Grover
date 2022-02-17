@@ -12,6 +12,10 @@ import ApiService from './app/services/api/api.service';
 
 import { RoomObject }  from './app/interfaces/room';
 import RoomComponent from './app/hw-components/environment/room/room';
+import PotComponent from './app/hw-components/environment/pot/pot';
+import { PotInterface } from './app/interfaces/pot';
+import { LocationInterface } from './app/interfaces/location';
+import { RoomInterface } from './app/interfaces/room';
 class Main {
   server: http.Server;
   webServerPort: number;
@@ -35,7 +39,7 @@ class Main {
     self.clock = self.settings.getClockInterval();
     self.serialNumber = await self.settings.getSerialNumber();
     self.server = http.createServer();
-    self.webServerPort = 8084;
+    self.webServerPort = 8085;
     self.webServerSetup();
 
     const endpoint = 'endpoint';
@@ -51,7 +55,9 @@ class Main {
 
   async main(){
     const self = this;
-    self.room = new RoomComponent(self.db, self.settings) as unknown as RoomObject;
+    self.room = new RoomComponent(self.db, self.api, self.settings) as unknown as RoomObject;
+    self.pots = self.room.pots;
+    self.rooms.push(self.room);
     await self.room.setup(self.serialNumber);
 
     console.log(`[main] => ready`);  
@@ -74,18 +80,21 @@ class Main {
       }
       const action = q.query.action as string;
       const id = q.query.id as string;
-      const type = q.query.type as string;
-      const probe = q.query.probe as string;
+      const terminalType = q.query.type as string;
       const now = new Date();
 
-      console.log(action, id, probe, type);
-
-      if(action && id && probe && type) {
-        const el = self[type].find(el => el.id === +id);
-        const item = el.probes[probe];
+      if(action && id && terminalType) {
         const owner = Owner.user;
-        const doJob = await item[action]({now, owner});
-        console.log(JSON.stringify(doJob));
+        const operatingMode = self.settings.getOperatingMode();
+        const terminalsArr: any[] = await self.db.getItems(terminalType+'s_list') as any[];
+        const terminal = terminalsArr.find(el => el.id === +id);
+        const parentLocation: LocationInterface = await self.db.getItem('locations',  terminal.locationId, 'id') as LocationInterface;
+        const parent = await self.db.findParent(parentLocation.id) as any;
+        const environments = (parent.potName ? self.pots : self.rooms) as any;
+        const environmentType = (parent.potName ? 'pot' : 'room');
+        const environment = environments.find(el => el[environmentType].id === parent.id)
+        const el = environment[terminalType+'s'].find(el => el.id === terminal.id);
+        const doJob = await el.component[action]({now, owner, operatingMode});
         res.write(JSON.stringify(doJob));
       }
       res.end();
