@@ -1,40 +1,37 @@
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { SettingsService } from '../../../services/settings/settings.service'
-
 import { Owner } from '../../../services/settings/enums';
 
 import sensor from 'ds18x20';
 import schedule from 'node-schedule';
 
 class TemperatureComponent {
-  id: string;
-  parentId: string;
-  parentType: string;
-  scheduleArr: CronJobInterface[] = []; 
-  settings = new SettingsService();
-  operatingMode
+  id: number;
+  address: string;
   
-  constructor(parentId: string, parentType: string, id: string, scheduleString: string) {
+  scheduledCrons: any[] = []; 
+  settings;
+  operatingMode;
+  
+  constructor(id: number, address: string, scheduleArr, settings) {
     this.id = id;
-    this.parentId = parentId;
-    this.parentType = parentType;
-    this.scheduleArr = (scheduleString ? JSON.parse(scheduleString).schedule : null);
+    this.settings = settings;
+    this.address = address;
     
-    this.operatingMode = this.settings.getOperatingMode();
-    this.setSchedule(this.id, this.scheduleArr)
+    
+    this.scheduledCrons = scheduleArr;
+    this.setSchedule(this.id, this.scheduledCrons)
   }
 
-  public async read({expectedTime, owner}) {
+  public async READ({expectedTime, owner}) {
     const self = this;
     return new Promise(resolve => {
-      sensor.get(self.id, function (err: any, tempObj: any) {
+      sensor.get(self.address, function (err: any, tempObj: any) {
         if (err) { throw err; }
 
         const job = {
           owner, 
           tempObj, 
-          parentId: self.parentId,
-          type: self.parentType, 
+          
           id: self.id, 
           expectedTime, 
           executedTime: new Date(),
@@ -44,7 +41,6 @@ class TemperatureComponent {
             resolve(job);
           break;
           case Owner.schedule: 
-            console.log(JSON.stringify(job));
             resolve;
           break;
         }
@@ -52,13 +48,30 @@ class TemperatureComponent {
     });
   }
 
-  async setSchedule(id: string, scheduleArr: CronJobInterface[]){
-    if(id && scheduleArr) {
+  async setSchedule(id: number, scheduledCrons: any[]){
+    const self = this;
+    if(id && scheduledCrons) {
+      const scheduleArr: CronJobInterface[] = [];
+      scheduledCrons.map(workerScheduleRow => {
+        const scheduleRow:CronJobInterface = { 
+          action: workerScheduleRow.action, 
+          cron: `${workerScheduleRow.atMinute} ${workerScheduleRow.atHour} * * ${workerScheduleRow.atDay}`,
+          operatingMode: workerScheduleRow.operatingMode,
+        };
+        scheduleArr.push(scheduleRow);
+      })
+      
       scheduleArr.map(job => {
-        schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
-          const doJob = await eval(`this.${job.action}({'expectedTime': '${expectedTime}', owner: '${owner}'})`);
-        })
+        console.log('[temp] => ', self.settings.getOperatingMode());
+        console.log(+job.operatingMode >= +this.settings.getOperatingMode(), +job.operatingMode , this.settings.getOperatingMode())
+        if(+job.operatingMode >= +this.settings.getOperatingMode()) {
+          console.log('schedule');
+          schedule.scheduleJob(job.cron, async (expectedTime) => {
+            const owner = Owner.schedule;
+            console.log(`this.${job.action}({'expectedTime': '${expectedTime}', owner: '${owner}'})`);
+            const doJob = await eval(`this.${job.action}({'expectedTime': '${expectedTime}', owner: '${owner}'})`);
+          })
+        }
       });
     }
   }

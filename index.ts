@@ -4,84 +4,60 @@ import http from 'http';
 import url from 'url';
 import { LocalStorage } from 'node-localstorage';
 
+import { Owner } from './app/services/settings/enums';
+
 import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
 import ApiService from './app/services/api/api.service';
-import NetworkService from './app/services/network/network.service';
 
-import { Owner } from './app/services/settings/enums';
-
-import { LocationInterface } from './app/interfaces/location';
-import { PotInterface } from './app/interfaces/pot';
-import { RoomInterface }  from './app/interfaces/room';
 import { RoomObject }  from './app/interfaces/room';
-
-// import PotComponent from './app/hw-components/environment/pot/pot';
-
 import RoomComponent from './app/hw-components/environment/room/room';
-import LocationComponent from './app/hw-components/environment/location/location';
-
 class Main {
   server: http.Server;
   webServerPort: number;
   serialNumber: string;
+  
+  clock: number;
+  settings = new SettingsService();
+  api = new ApiService();
+  db = new DbService(this.settings, this.api);
+  localStorage = new LocalStorage('./data/scratch');
 
   room: any;
   rooms: any[] = [];
   pots: any[] = [];
-  clock: number;
-  settings = new SettingsService();
-  db = new DbService();
-  localStorage = new LocalStorage('./data/scratch');
 
-  constructor(
-  ){
-    
-    this.appSetup();
-  }
+  constructor(){ this.appSetup(); }
 
   async appSetup(){
     const self = this;
     await self.db.load();
     self.clock = self.settings.getClockInterval();
     self.serialNumber = await self.settings.getSerialNumber();
-   
     self.server = http.createServer();
     self.webServerPort = 8084;
     self.webServerSetup();
 
     const endpoint = 'endpoint';
     const action = 'START';
-    const lastUpdate = this.localStorage.getItem(this.settings.getAppName());
-    
-    // const loadDb = await self.db.load();
+    const lastUpdate = self.localStorage.getItem(self.settings.getAppName());
+
+    const device: any = await self.api.get(endpoint, lastUpdate, action, self.serialNumber);
+    self.settings.setOperatingMode(device.operatingMode);
+
     console.log('[main] => initdb done');
-
-    const remoteSettings: any = await self.db.api.get(endpoint, lastUpdate, action, self.serialNumber);
-    const found = remoteSettings.device.find(el => el.device === self.serialNumber)
-    if(!found) {
-      console.log('device not found'); 
-    } else {
-      this.settings.setOperatingMode(remoteSettings["device"].mode);
-      self.main();
-    }
+    self.main();
   }
-
-
 
   async main(){
     const self = this;
-    self.room = new RoomComponent(self.db) as unknown as RoomObject;
-    await self.room.setup(self.serialNumber)
+    self.room = new RoomComponent(self.db, self.settings) as unknown as RoomObject;
+    await self.room.setup(self.serialNumber);
 
-    // console.log("[main]: room ", self.room);
-   
-    // this.api.callRemote('START');
     console.log(`[main] => ready`);  
   }
 
-
-
+  
   /**
    * Webserver
    */
@@ -113,16 +89,9 @@ class Main {
         res.write(JSON.stringify(doJob));
       }
       res.end();
-
-      // self.emit('remoteCall', path, JSON.stringify(queryData));
-
-      // self.on('callback',(data)=>{
-      //   console.log('callback', data);
-      //   // res.write('sei nel callback');
-      //   // res.end();
-      // });
     });
   }
+  
   listen(){
     this.server.listen(this.webServerPort);
     return

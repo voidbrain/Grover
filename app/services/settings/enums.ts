@@ -23,3 +23,20 @@ export enum Environments {
   room = 'room',
   location = 'location'
 }
+
+export enum ProbesTypes {
+  Air_temperature = 1,
+  Water_temperature = 2,
+  Water_level = 3,
+  pH = 4,
+  EC = 5,
+}
+
+export enum WorkersTypes {
+  Fan = 1,
+  Water_loop = 2,
+  Water_refill = 3,
+  Nutrient_refill = 4,
+  PH_refill = 5,
+  Lights = 6,
+}

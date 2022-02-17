@@ -1,21 +1,20 @@
 import { exec } from 'child_process';
-import moment from 'moment';
-import { OperatingMode, Purposes } from './enums';
+import { Purposes } from './enums';
 
 export class SettingsService {
   
 	constructor() { }
 
-  private locales = ['en', 'it'];
-	private appName = 'Grover/RedNeck';
+  private locales:string[] = ['en', 'it'];
+	private appName:string = 'Grover/RedNeck';
   
-  private remoteServerHostname = 'www.voidbrain.net';
-  private remoteServerEndpoint = 'temp/grover/ajax/moduli/api/worker/';
+  private remoteServerHostname:string = 'www.voidbrain.net';
+  private remoteServerEndpoint:string = 'temp/grover/ajax/moduli/api/worker/';
   private purposes: string[] = ['client', 'worker'];
-  private purpose = Purposes.worker;
-  private operatingMode = '';
-  private operatingModes = [];
-  private datatables = [
+  private purpose: number = Purposes.worker;
+  private operatingMode:number = null;
+
+  private datatables:string[] = [
     'locations', 
     'pots',
     'rooms',
@@ -25,71 +24,62 @@ export class SettingsService {
     'workers_list',
     'probes_type',
     'workers_type',
-
-
     'probes_schedule',
     'probes_log',
     'workers_schedule',
     'workers_log',
   ];
-  private mainClockInterval  = 5 * 1000; // ms
+  private mainClockInterval:number = 5 * 1000; // ms
 
-  public getLocales() {
+  public getLocales() :string[] {
     return this.locales;
   }
 
-  public getClockInterval() {
+  public getClockInterval() : number {
     return this.mainClockInterval;
   }
 
-  public getAppName() {
+  public getAppName() :string {
     return this.appName;
   }
 
-  public getPurposes() {
+  public getPurposes() :string[] {
     return this.purposes;
   }
 
-  public getTables() {
+  public getTables() :string[] {
     return this.datatables;
   }
 
-  public getPurpose() {
+  public getPurpose() :number {
     return this.purpose;
   }
 
-  public getOperatingMode() {
+  public getOperatingMode() :number {
     return this.operatingMode;
   }
 
-  public setOperatingMode(mode) {
+  public setOperatingMode(mode: number) : void {
     this.operatingMode = mode;
   }
 
-  public setOperatingModes(operationgModes) {
-    this.operatingModes = operationgModes;
-  }
-
-  public getRemoteServerHostname() {
+  public getRemoteServerHostname() :string {
     return this.remoteServerHostname;
   }
 
-  public getRemoteServerEndpoint() {
+  public getRemoteServerEndpoint() :string {
     return this.remoteServerEndpoint;
   }
 
   public async getSerialNumber(): Promise<string> {
     return new Promise((resolve, reject) => {
-      exec('cat /proc/cpuinfo | grep Serial',(error,stdout,stderr) => {
-        if(error){
-          console.error( `exec error: ${error}` );
-          reject;
+      exec('cat /proc/cpuinfo | grep Serial', (error, stdout, stderr) => {
+        if(stderr){
+          console.log('[SETTINGS]: EXIT on --> Raspberry not found');
+        } else {
+          const sn = stdout.split(': ')[1].trim();
+          resolve(sn);
         }
-        // console.log( `stdout: ${stdout}` );// this is your RPI serial number
-        // console.log( `stderr: ${stderr}` );
-        let sn = stdout.split(': ')[1]
-        sn = sn.replace(/[\n\r\t\s]+/g, '');
-        resolve(sn);
       });
     });
   }

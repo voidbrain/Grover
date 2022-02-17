@@ -1,4 +1,5 @@
-import DbService from '../../../services/db/db.service'; 
+import { ProbesTypes, WorkersTypes } from '../../../services/settings/enums';
+
 import TemperatureComponent from '../../probes/temperature/temperature';
 // import PhProbe from '../../probes/ph/ph';
 // import EcProbe from '../../probes/ec/ec';
@@ -11,13 +12,15 @@ import WaterRefillComponent from '../../actuators/water-refill/water-refill';
 import { LocationInterface } from '../../../interfaces/location';
 import { PotInterface } from '../../../interfaces/pot';
 import { WaterRefillInterface } from '../../../interfaces/water-refill';
+import { CronJobInterface } from '../../../interfaces/cron-job';
 
 class PotComponent {
-  db = new DbService();
+  db;
   pot: PotInterface = null;
   location: LocationInterface = null;
   probes:any[] = [];
   workers :any[]= [];
+  settings;
   // params: PotInterface;
   // // waterRefill: WaterRefillComponent;
   // id: number;
@@ -60,7 +63,7 @@ class PotComponent {
     phBalancerID, 
     ecBalancerID 
     */ 
-    db
+    db, settings
   ) {
     
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
@@ -74,6 +77,7 @@ class PotComponent {
     // this.ecBalancer = new EcBalancer(ecBalancerID);
   
     this.db = db;
+    this.settings = settings;
     // this.setup(locationId);
   }
 
@@ -85,36 +89,69 @@ class PotComponent {
 
     const probesArr: any[] = await self.db.getItems('probes_list', pot.locationId, 'locationId') as any[];
     const workersArr: any[] = await self.db.getItems('workers_list', pot.locationId, 'locationId') as any[];
-    probesArr.forEach(async (el) => {
-      el.type =  await self.db.getItem('probes_type', el.probeType, 'id') as any;
-      el.schedule = await self.db.getItem('probes_schedule', el.id, 'idProbe') as any;
-      el.log =  await self.db.getItem('probes_log', el.id, 'idProbe') as any;
-    });
-    workersArr.forEach(async (el) => {
-      el.type =  await self.db.getItem('workes_type', el.probeType, 'id') as any;
-      el.schedule = await self.db.getItem('workers_schedule', el.id, 'idWorker') as any;
-      el.log =  await self.db.getItem('probes_log', el.id, 'idWorker') as any;
-    });
+
+    // console.log(1, probesArr)
+    await Promise.all(
+      probesArr.map(async (probe) => {
+        probe.type =  await self.db.getItem('probes_type', probe.probeType, 'id') as any;
+        probe.logs = await self.db.getItems('probes_log', probe.id, 'idProbe') as unknown as any[];
+        const schedule: any[] = await self.db.getItems('probes_schedule', probe.id, 'idProbe') as unknown as any[];
+        
+        switch(probe.probeType) {
+          case ProbesTypes.Air_temperature: 
+            probe.component = null;
+          break;
+          case ProbesTypes.EC: 
+            probe.component = null;
+          break;
+          case ProbesTypes.Water_level: 
+            probe.component = null;
+          break;
+          case ProbesTypes.Water_temperature: 
+            // console.log(probe);
+            probe.component = new TemperatureComponent(probe.id, probe.address, schedule, self.settings)
+          break;
+          case ProbesTypes.pH: 
+            probe.component = null;
+          break;
+        }
+      })
+    );
+    await Promise.all(
+      workersArr.map(async (worker) => {
+        worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
+        worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
+        const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
+        
+        switch(worker.workerType) {
+          case WorkersTypes.Fan: 
+            worker.component = null;
+          break;
+          case WorkersTypes.Lights: 
+            worker.component = null;
+          break;
+          case WorkersTypes.Nutrient_refill: 
+            worker.component = new WaterRefillComponent(worker.id, schedule, self.settings)
+          break;
+          case WorkersTypes.PH_refill: 
+            worker.component = null;
+          break;
+          case WorkersTypes.Water_loop: 
+            worker.component = null;
+          break;
+          case WorkersTypes.Water_refill: 
+            worker.component = null;
+          break;
+        }
+      })
+    );
+
+
     self.pot = pot;
     self.location = location;
     self.probes = probesArr;
     self.workers = workersArr;
-
-    console.log("00>", self.probes)
-      
-      // const pot = new PotComponent();
-
-    // const potsLocation: LocationInterface[] = await self.db.getItems('locations', self.room.locationId, 'parent') as LocationInterface[];
-    // console.log("potsLocation", potsLocation)
-    // await Promise.all(
-      // potsLocation.map(async location => {
-        // const potsSetupParams: PotInterface = await self.db.getItem('pots', location.id) as PotInterface;
-        // const pot = new PotComponent(potsSetupParams as undefined);
-        // self.pots.push(pot); 
-      // })
-    // );
-
-    // self.room.pots = self.pots;
+    // console.log('===>', pot.id, workersArr)
   }
 
 }

@@ -1,6 +1,3 @@
-import { ApiService } from '../api/api.service';
-import { SettingsService } from '../settings/settings.service';
-
 import { LocationInterface } from '../../interfaces/location';
 import { RoomInterface } from '../../interfaces/room';
 import { PotInterface } from '../../interfaces/pot';
@@ -11,8 +8,8 @@ import * as path from 'path';
 
 export class DbService {
 
-  settings = new SettingsService();
-  api = new ApiService();
+  settings;
+  api;
 
 	private db;
   private serialNumber;
@@ -20,7 +17,11 @@ export class DbService {
   private localStorage = new LocalStorage('./data/scratch');
   private debug = false;
 
-  	constructor() {
+  	constructor(
+      settings, api
+    ) {
+        this.settings = settings;
+        this.api = api;
         this.tables = this.settings.getTables();
         this.api.init();
     }
@@ -29,7 +30,7 @@ export class DbService {
       const self = this;
       return new Promise<void>(async (resolve, reject)=> {
         console.log(`[DB]: load`)
-        self.serialNumber = (await self.settings.getSerialNumber()).split(': ')[1];
+        self.serialNumber = (await self.settings.getSerialNumber());
         const resetDb = false; const forceLoading = true;
         self.initService((resetDb?resetDb:forceLoading)).then(async ()=>{
           const networkStatus = 'Online';
@@ -174,7 +175,7 @@ export class DbService {
           const res = data[table];
           if(self.debug) { console.info('[DB]: Db Sync records ready ',table);}
           
-          if(res.items.length){
+          if(res.items){
             const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
             ${res.tableDefinition.map(el => {
               const definition = el;

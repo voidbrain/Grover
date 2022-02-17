@@ -1,11 +1,11 @@
-import DbService from '../../../services/db/db.service'; 
 import WaterRefillComponent from '../../actuators/water-refill/water-refill';
 import PotComponent from '../pot/pot'; 
 import { RoomInterface } from '../../../interfaces/room'; 
 import { PotObject } from '../../../interfaces/pot'; 
 import { LocationInterface } from '../../../interfaces/location';
 class RoomComponent {
-  db = new DbService();
+  db;
+  settings;
   room: RoomInterface = null; 
   location: LocationInterface = null;
   probes:any[] = [];
@@ -23,9 +23,10 @@ class RoomComponent {
 
 
   constructor(
-    db
+    db, settings
   ) {
     this.db = db;
+    this.settings = settings;
     // this.setup(serialNumber);
   }
 
@@ -51,13 +52,12 @@ class RoomComponent {
     const potsLocation: LocationInterface[] = await self.db.getItems('locations', self.room.locationId, 'parent') as LocationInterface[];
     await Promise.all(
       potsLocation.map(async (el) => {
-        const pot = new PotComponent(self.db) as unknown as PotObject;
+        const pot = new PotComponent(self.db, self.settings) as unknown as PotObject;
         await pot.setup(el.id);
         self.pots.push(pot);
       })
     );
   }
 
- }
- export default RoomComponent;
- 
+}
+export default RoomComponent;
