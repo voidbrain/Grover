@@ -63,14 +63,15 @@ class TemperatureComponent {
     const self = this;
     if(id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      scheduledCrons.map(workerScheduleRow => {
+      scheduledCrons.map(probeScheduleRow => {
+        console.log(probeScheduleRow)
         const scheduleRow:CronJobInterface = { 
-          action: workerScheduleRow.action, 
-          cron: `${workerScheduleRow.atMinute} ${workerScheduleRow.atHour} * * ${workerScheduleRow.atDay}`,
-          operatingMode: workerScheduleRow.operatingMode,
+          action: probeScheduleRow.action, 
+          cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
+          operatingMode: probeScheduleRow.operatingMode,
         };
         scheduleArr.push(scheduleRow);
-      })
+      });
       
       scheduleArr.map(job => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
