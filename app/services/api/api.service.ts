@@ -61,47 +61,31 @@ export class ApiService {
           });
 
         }).on("error", (err) => {
-          console.log("Error: " + err.message);
+          console.log("[API]: Error: " + err.message);
           reject;
         });
-      //   const req = https.request({
-      //     method: 'GET',
-      //     ...options,
-      //   }, res => {
-      //     const chunks = [];
-      //     res.on('data', data => chunks.push(data))
-      //     res.on('end', () => {
-      //       let resBody = Buffer.concat(chunks);
-            
-      //       switch(res.headers['content-type']) {
-      //         case 'application/json':
-      //         resBody = JSON.parse(resBody.toString());
-      //         break;
-      //       }     
-      //       console.log("resBody => ", resBody, res.headers['content-type'])             
-      //       resolve(resBody)
-      //     })
-      //   })
-      //   req.on('error',reject);
-      //   if(body) {
-      //     req.write(body);
-      //   }
-      //   req.end();
       });
     };
     
-    async post(table: string, item: any, params?: any) {
+    async post(endpont: string, lastUpdate: any, action: any, item: any, serialNumber: any) {
+      const path = `${this.settings.getRemoteServerEndpoint()}${endpont}` + 
+        `?lastUpdate=${lastUpdate}&action=${action}`;
+        const body = JSON.stringify({
+          item, 
+          serialNumber
+        });
+
+        
       const res = await this.httpsPost({
         hostname: this.settings.getRemoteServerHostname(),
-        path: this.settings.getRemoteServerEndpoint() + table,
+        path: path,
         headers: {
           'Authorization': `Bearer 123`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          test1: 'test',
-        })
+        body
       })
+      console.log(path, body, res);
     }
     
     async httpsPost({body, ...options}) {

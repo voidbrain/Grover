@@ -1,11 +1,11 @@
-import i2cBus from 'i2c-bus';
-import MCP23017 from 'node-mcp23017';
+// import i2cBus from 'i2c-bus';
+
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
 import { Owner } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
-
+import moment from 'moment';
 class WaterRefillComponent {
   id: number;
   
@@ -16,15 +16,16 @@ class WaterRefillComponent {
   scheduledCrons: any[] = []; 
   api;
   settings;
-  
+  db;
   mcp;
 
-  constructor(id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, api, settings) {
+  constructor(id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, db, api, settings) {
     this.id = id;
-    this.i2cAddress = i2cAddress.toString(16);;
+    this.i2cAddress = i2cAddress.toString(16);
     this.pin1 = pin1;
     this.pin2 = pin2;
     this.api = api;
+    this.db = db;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
     this.setSchedule(this.id, this.scheduledCrons);
@@ -33,13 +34,18 @@ class WaterRefillComponent {
 
   async setup(){
     const self = this;
-    this.mcp = new MCP23017({
-      address: self.i2cAddress,
-      device: 1,
-      debug: true
-    });
-    this.mcp.pinMode(this.pin1, this.mcp.OUTPUT);
-    this.mcp.pinMode(this.pin2, this.mcp.OUTPUT);
+    if((await self.settings.getSerialNumber()).found) {
+      const MCP23017 = await import('node-mcp23017');
+      this.mcp = new MCP23017({
+        address: self.i2cAddress,
+        device: 1,
+        debug: true
+      });
+      this.mcp.pinMode(this.pin1, this.mcp.OUTPUT);
+      this.mcp.pinMode(this.pin2, this.mcp.OUTPUT);
+    } else {
+      console.log('[WATER-REFILL]: EXIT on --> Raspberry not found');
+    }
   }
 
   async delay (seconds) {
@@ -76,7 +82,7 @@ class WaterRefillComponent {
 
   public async RUN({expectedTime, owner, operatingMode}) {
     const self = this;
-    return new Promise(resolve => {
+    return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if(operatingMode >= systemOperatingMode) {
         // await this.forward();
@@ -86,76 +92,35 @@ class WaterRefillComponent {
         const job = {
           owner, 
           id: self.id, 
-          expectedTime, 
-          executedTime: new Date(),
+          expectedTime: moment(expectedTime), 
+          executedTime: moment(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
         };
             
         switch(owner){
           case Owner.user: // manual action
-            console.log("[WATER-REFILL]: ", job);
-            // this.api.get()
+            console.log("[WATER-REFILL]: RUN manual", job);
+            await self.db.putItem('probes_list', job);
             resolve(job);
           break;
           case Owner.schedule: // scheduled action
-            console.log("[WATER-REFILL]: ", job);
-            // this.api.get()
+            console.log("[WATER-REFILL]: RUN scheduled", job);
+            await self.db.putItem('probes_list', job);
             resolve;
           break;
         };
       } else {
-        console.log(`operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log(`[WATER-REFILL]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
     });
   }
-
-  // public async READ({expectedTime, owner, operatingMode}) {
-  //   const self = this;
-  //   return new Promise(resolve => {
-  //     const systemOperatingMode = self.settings.getOperatingMode();
-  //     if(operatingMode >= systemOperatingMode) {
-        // sensor.get(self.address, function (err: any, value: any) {
-        //   if (err) { throw err; }
-
-        //   const job = {
-        //     owner, 
-        //     value, 
-        //     id: self.id, 
-        //     address: self.address,
-        //     expectedTime, 
-        //     executedTime: new Date(),
-        //     operatingMode: operatingMode,
-        //     systemOperatingMode: systemOperatingMode,
-        //   };
-  //           const job = {}
-
-            
-  //         switch(owner){
-  //           case Owner.user: // manual action
-  //             console.log("[TEMP]: ", job);
-  //             // this.api.get()
-  //             resolve(job);
-  //           break;
-  //           case Owner.schedule: // scheduled action
-  //             console.log("[TEMP]: ", job);
-  //             // this.api.get()
-  //             resolve;
-  //           break;
-  //         }
-  //       // });
-  //     } else {
-  //       console.log(`operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-  //     }
-  //   });
-  // }
 
   async setSchedule(id: number, scheduledCrons: any[]){
     const self = this;
     if(id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map(probeScheduleRow => {
-        console.log(probeScheduleRow)
         const scheduleRow:CronJobInterface = { 
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,

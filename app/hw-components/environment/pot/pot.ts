@@ -4,15 +4,15 @@ import TemperatureComponent from '../../probes/temperature/temperature';
 // import PhProbe from '../../probes/ph/ph';
 // import EcProbe from '../../probes/ec/ec';
 // import WaterLevel from '../../probes/water-level/water-level';
+
 // import WaterLoop from '../../actuators/water-loop/water-loop';
 import WaterRefillComponent from '../../actuators/water-refill/water-refill';
+import LightSwitchComponent from '../../actuators/light-switch/light-switch';
 // import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
 // import EcBalancer from '../../actuators/ec-balancer/ec-balancer';
 
 import { LocationInterface } from '../../../interfaces/location';
 import { PotInterface } from '../../../interfaces/pot';
-import { WaterRefillInterface } from '../../../interfaces/water-refill';
-import { CronJobInterface } from '../../../interfaces/cron-job';
 
 class PotComponent {
   db;
@@ -92,7 +92,6 @@ class PotComponent {
     const probesArr: any[] = await self.db.getItems('probes_list', pot.locationId, 'locationId') as any[];
     const workersArr: any[] = await self.db.getItems('workers_list', pot.locationId, 'locationId') as any[];
 
-    // console.log(1, probesArr)
     await Promise.all(
       probesArr.map(async (probe) => {
         probe.type =  await self.db.getItem('probes_type', probe.probeType, 'id') as any;
@@ -110,8 +109,7 @@ class PotComponent {
             probe.component = null;
           break;
           case ProbesTypes.Water_temperature: 
-            // console.log(probe);
-            probe.component = new TemperatureComponent(probe.id, probe.address, schedule, self.api, self.settings)
+            probe.component = new TemperatureComponent(probe.id, probe.address, schedule, self.db, self.api, self.settings)
           break;
           case ProbesTypes.pH: 
             probe.component = null;
@@ -124,13 +122,12 @@ class PotComponent {
         worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
         worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
-        console.log(worker);
         switch(worker.workerType) {
           case WorkersTypes.Fan: 
             worker.component = null;
           break;
           case WorkersTypes.Lights: 
-            worker.component = null;
+          worker.component = new LightSwitchComponent(worker.id, worker.i2cAddress, worker.pin, schedule, self.db, self.api, self.settings)
           break;
           case WorkersTypes.Nutrient_refill: 
             worker.component = null;
@@ -142,18 +139,15 @@ class PotComponent {
             worker.component = null;
           break;
           case WorkersTypes.Water_refill: 
-            worker.component = new WaterRefillComponent(worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.api, self.settings)
+            worker.component = new WaterRefillComponent(worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
           break;
         }
       })
     );
-
-
     self.pot = pot;
     self.location = location;
     self.probes = probesArr;
     self.workers = workersArr;
-    // console.log('===>', pot.id, workersArr)
   }
 
 }

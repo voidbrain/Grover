@@ -3,57 +3,62 @@ import { Owner } from '../../../services/settings/enums';
 
 import sensor from 'ds18x20';
 import schedule from 'node-schedule';
-
+import moment from 'moment';
 class TemperatureComponent {
   id: number;
   address: string;
   
   scheduledCrons: any[] = []; 
   api;
+  db;
   settings;
   
-  constructor(id: number, address: string, scheduleArr, api, settings) {
+  constructor(id: number, address: string, scheduleArr, db, api, settings) {
     this.id = id;
     this.address = address;
     this.scheduledCrons = scheduleArr;
     this.setSchedule(this.id, this.scheduledCrons)
     this.settings = settings;
     this.api = api;
+    this.db = db;
   }
 
   public async READ({expectedTime, owner, operatingMode}) {
     const self = this;
-    return new Promise(resolve => {
+    return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
-      if(operatingMode >= systemOperatingMode) {
-        sensor.get(self.address, function (err: any, value: any) {
-          if (err) { throw err; }
-
-          const job = {
-            owner, 
-            value, 
-            id: self.id, 
-            address: self.address,
-            expectedTime, 
-            executedTime: new Date(),
-            operatingMode: operatingMode,
-            systemOperatingMode: systemOperatingMode,
-          };
-          switch(owner){
-            case Owner.user: // manual action
-              console.log("[TEMP]: ", job);
-              // this.api.get()
-              resolve(job);
-            break;
-            case Owner.schedule: // scheduled action
-              console.log("[TEMP]: ", job);
-              // this.api.get()
-              resolve;
-            break;
-          }
-        });
+      if((await self.settings.getSerialNumber()).found) {
+        if(operatingMode >= systemOperatingMode) {
+          sensor.get(self.address, async function (err: any, value: any) {
+            if(err) { throw err; }
+            const job = {
+              owner, 
+              value, 
+              id: self.id, 
+              address: self.address,
+              expectedTime: moment(expectedTime), 
+              executedTime: moment(),
+              operatingMode: operatingMode,
+              systemOperatingMode: systemOperatingMode,
+            };
+            switch(owner){
+              case Owner.user: // manual action
+                console.log("[TEMP]: READ manual", job);
+                await self.db.putItem('probes_list', job);
+                resolve(job);
+              break;
+              case Owner.schedule: // scheduled action
+                console.log("[TEMP]: READ schedule", job);
+                await self.db.putItem('probes_list', job);
+                resolve;
+              break;
+            }
+          });
+        } else {
+          console.log(`[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        }
       } else {
-        console.log(`operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log('[TEMP]: EXIT on --> Raspberry not found');
       }
     });
   }

@@ -71,14 +71,14 @@ export class SettingsService {
     return this.remoteServerEndpoint;
   }
 
-  public async getSerialNumber(): Promise<string> {
+  public async getSerialNumber(): Promise<{ found:boolean, sn:string }> {
     return new Promise((resolve, reject) => {
       exec('cat /proc/cpuinfo | grep Serial', (error, stdout, stderr) => {
         if(stderr){
-          console.log('[SETTINGS]: EXIT on --> Raspberry not found');
+          resolve({found: false, sn:'10000000ce6b74fc'});
         } else {
           const sn = stdout.split(': ')[1].trim();
-          resolve(sn);
+          resolve({found: true, sn: sn});
         }
       });
     });

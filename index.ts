@@ -3,6 +3,7 @@
 import http from 'http';
 import url from 'url';
 import { LocalStorage } from 'node-localstorage';
+import moment from 'moment';
 
 import { Owner } from './app/services/settings/enums';
 
@@ -37,7 +38,7 @@ class Main {
     const self = this;
     await self.db.load();
     self.clock = self.settings.getClockInterval();
-    self.serialNumber = await self.settings.getSerialNumber();
+    self.serialNumber = (await self.settings.getSerialNumber()).sn;
     self.server = http.createServer();
     self.webServerPort = 8085;
     self.webServerSetup();
@@ -81,7 +82,7 @@ class Main {
       const action = q.query.action as string;
       const id = q.query.id as string;
       const terminalType = q.query.type as string;
-      const now = new Date();
+      const now = moment();
 
       if(action && id && terminalType) {
         const owner = Owner.user;
