@@ -24,6 +24,11 @@ export enum Environments {
   location = 'location'
 }
 
+export enum Peripherals {
+  Probe = 1,
+  Worker = 2,
+}
+
 export enum ProbesTypes {
   Air_temperature = 1,
   Water_temperature = 2,

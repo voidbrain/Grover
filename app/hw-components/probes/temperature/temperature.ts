@@ -1,20 +1,26 @@
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner } from '../../../services/settings/enums';
+import { Owner, Peripherals } from '../../../services/settings/enums';
 
 import sensor from 'ds18x20';
 import schedule from 'node-schedule';
 import moment from 'moment';
 class TemperatureComponent {
   id: number;
+  parentId: number;
+  parentName: string;
   address: string;
+
+  serialNumber: { sn: string, found: boolean };
   
   scheduledCrons: any[] = []; 
   api;
   db;
   settings;
   
-  constructor(id: number, address: string, scheduleArr, db, api, settings) {
+  constructor(parentId: number, parentName: string, id: number, address: string, scheduleArr, db, api, settings) {
     this.id = id;
+    this.parentId = parentId;
+    this.parentName = parentName;
     this.address = address;
     this.scheduledCrons = scheduleArr;
     this.setSchedule(this.id, this.scheduledCrons)
@@ -27,19 +33,24 @@ class TemperatureComponent {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
-      if((await self.settings.getSerialNumber()).found) {
+      self.serialNumber = await self.settings.getSerialNumber();
+      if(self.serialNumber.found) {
         if(operatingMode >= systemOperatingMode) {
           sensor.get(self.address, async function (err: any, value: any) {
             if(err) { throw err; }
             const job = {
               owner, 
               value, 
-              id: self.id, 
+              idProbe: self.id, 
+              parentId: self.parentId, 
+              parentName: self.parentName, 
+              type: Peripherals.Probe,
               address: self.address,
               expectedTime: moment(expectedTime), 
               executedTime: moment(),
               operatingMode: operatingMode,
               systemOperatingMode: systemOperatingMode,
+              serialNumber: self.serialNumber.sn,
             };
             switch(owner){
               case Owner.user: // manual action

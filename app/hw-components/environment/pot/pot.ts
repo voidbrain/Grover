@@ -7,7 +7,7 @@ import TemperatureComponent from '../../probes/temperature/temperature';
 
 // import WaterLoop from '../../actuators/water-loop/water-loop';
 import WaterRefillComponent from '../../actuators/water-refill/water-refill';
-import LightSwitchComponent from '../../actuators/light-switch/light-switch';
+// import LightSwitchComponent from '../../actuators/light-switch/light-switch';
 // import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
 // import EcBalancer from '../../actuators/ec-balancer/ec-balancer';
 
@@ -109,7 +109,7 @@ class PotComponent {
             probe.component = null;
           break;
           case ProbesTypes.Water_temperature: 
-            probe.component = new TemperatureComponent(probe.id, probe.address, schedule, self.db, self.api, self.settings)
+            probe.component = new TemperatureComponent(pot.id, pot.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
           break;
           case ProbesTypes.pH: 
             probe.component = null;
@@ -123,12 +123,12 @@ class PotComponent {
         worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         switch(worker.workerType) {
-          case WorkersTypes.Fan: 
-            worker.component = null;
-          break;
-          case WorkersTypes.Lights: 
-          worker.component = new LightSwitchComponent(worker.id, worker.i2cAddress, worker.pin, schedule, self.db, self.api, self.settings)
-          break;
+          // case WorkersTypes.Fan: 
+          // worker.component = null;
+          // break;
+          // case WorkersTypes.Lights: 
+          // worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin, schedule, self.db, self.api, self.settings)
+          // break;
           case WorkersTypes.Nutrient_refill: 
             worker.component = null;
           break;
@@ -139,7 +139,7 @@ class PotComponent {
             worker.component = null;
           break;
           case WorkersTypes.Water_refill: 
-            worker.component = new WaterRefillComponent(worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            worker.component = new WaterRefillComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
           break;
         }
       })

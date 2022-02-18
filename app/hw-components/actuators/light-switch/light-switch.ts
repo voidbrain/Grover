@@ -2,12 +2,15 @@ import moment from "moment";
 
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner } from '../../../services/settings/enums';
+import { Owner, Peripherals } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
 
 class LightSwitchComponent {
   id: number;
+  parentId: number;
+  parentName: string;
+  serialNumber: { sn: string, found: boolean };
   
   i2cAddress: string; 
   pin: number; 
@@ -20,10 +23,12 @@ class LightSwitchComponent {
   
   mcp;
 
-  constructor(id: number, i2cAddress: number, pin: number, scheduleArr, db, api, settings) {
+  constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin: number, scheduleArr, db, api, settings) {
     this.id = id;
-    this.i2cAddress = i2cAddress.toString(16);
-    this.pin = pin;
+    this.parentId = parentId;
+    this.parentName = parentName;
+    this.i2cAddress = '0x'+parseInt(i2cAddress.toString(10)).toString(16);
+    this.pin = +pin;
     this.db = db;
     this.api = api;
     this.settings = settings;
@@ -34,14 +39,16 @@ class LightSwitchComponent {
 
   async setup(){
     const self = this;
-    if((await self.settings.getSerialNumber()).found) {
-      const MCP23017 = await import('node-mcp23017');
-      this.mcp = new MCP23017({
-        address: self.i2cAddress,
-        device: 1,
-        debug: true
+    self.serialNumber = await self.settings.getSerialNumber();
+    if(self.serialNumber.found) {
+      import('node-mcp23017').then(({default: MCP23017}) => {
+        this.mcp = new MCP23017({
+          address: +self.i2cAddress,
+          device: 1,
+          debug: true
+        });
+        this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
       });
-      this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
     } else {
       console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry not found');
     }
@@ -54,11 +61,15 @@ class LightSwitchComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
-          id: self.id, 
+          idWorker: self.id, 
+          parentId: self.parentId, 
+          parentName: self.parentName, 
+          type: Peripherals.Worker,
           expectedTime, 
           executedTime: moment(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
+          serialNumber: self.serialNumber.sn,
         };
         switch(owner){
           case Owner.user: // manual action
@@ -85,11 +96,15 @@ class LightSwitchComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
-          id: self.id, 
+          idWorker: self.id, 
+          parentId: self.parentId, 
+          parentName: self.parentName, 
+          type: Peripherals.Worker,
           expectedTime: moment(expectedTime), 
           executedTime: moment(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
+          serialNumber: self.serialNumber.sn,
         };
         switch(owner){
           case Owner.user: // manual action
