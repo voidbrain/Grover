@@ -40,7 +40,7 @@ class Main {
     self.clock = self.settings.getClockInterval();
     self.serialNumber = (await self.settings.getSerialNumber()).sn;
     self.server = http.createServer();
-    self.webServerPort = 8085;
+    self.webServerPort = 8084;
     self.webServerSetup();
 
     const endpoint = 'endpoint';
@@ -51,7 +51,7 @@ class Main {
     self.settings.setOperatingMode(device.operatingMode);
 
     console.log('[main] => initdb done');
-    self.main();
+    //self.main();
   }
 
   async main(){

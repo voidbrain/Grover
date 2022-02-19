@@ -109,14 +109,13 @@ export class DbService {
         const res = data[table];
         if(self.debug) { console.info('[DB]: Db Sync records ready ',table);}
         
-        if(res.items){
-          const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
+        const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
           ${res.tableDefinition.map(el => {
             const definition = el;
             return `${definition.name} ${definition.type} ${definition.primary_key ? 'primary key' : ''}`;
           })})`;
-
-
+          
+          if(res.items){
           const create = self.db.run(createTableQuery, async function(err) {
             if (err) {
               console.error(err.message);
@@ -149,7 +148,6 @@ export class DbService {
                       reject;
                       throw err;
                     }
-
                     resolve();
                   });
                 }
@@ -157,8 +155,9 @@ export class DbService {
               }
             });
           });
-        }else{ resolve(); }
+       
       // });
+      }else{ resolve(); }
     });
   }
 
