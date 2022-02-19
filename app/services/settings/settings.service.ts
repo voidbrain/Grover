@@ -20,14 +20,16 @@ export class SettingsService {
     'rooms',
     'operating_modes',
     'settings',
+    
     'probes_list',
     'workers_list',
     'probes_type',
     'workers_type',
     'probes_schedule',
-    'probes_log',
+
     'workers_schedule',
     'workers_log',
+    'probes_log',
   ];
   private mainClockInterval:number = 5 * 1000; // ms
 
