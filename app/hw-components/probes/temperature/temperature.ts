@@ -23,10 +23,20 @@ class TemperatureComponent {
     this.parentName = parentName;
     this.address = address;
     this.scheduledCrons = scheduleArr;
-    this.setSchedule(this.id, this.scheduledCrons)
     this.settings = settings;
     this.api = api;
     this.db = db;
+    this.setup();
+  }
+
+  async setup(){
+    const self = this;
+    self.serialNumber = await self.settings.getSerialNumber();
+    if(self.serialNumber.found) {
+      this.setSchedule(this.id, this.scheduledCrons);
+    } else {
+      console.log('[TEMPERATURE]: EXIT on --> Raspberry not found');
+    }
   }
 
   public async READ({expectedTime, owner, operatingMode}) {
@@ -40,14 +50,15 @@ class TemperatureComponent {
             if(err) { throw err; }
             const job = {
               owner, 
+              action: 'READ',
               value, 
               idProbe: self.id, 
               parentId: self.parentId, 
               parentName: self.parentName, 
               type: Peripherals.Probe,
               address: self.address,
-              expectedTime: moment(expectedTime), 
-              executedTime: moment(),
+              expectedTime: expectedTime ? new Date(expectedTime) : null, 
+              executedTime: new Date(),
               operatingMode: operatingMode,
               systemOperatingMode: systemOperatingMode,
               serialNumber: self.serialNumber.sn,
@@ -55,12 +66,12 @@ class TemperatureComponent {
             switch(owner){
               case Owner.user: // manual action
                 console.log("[TEMP]: READ manual", job);
-                await self.db.putItem('probes_list', job);
+                await self.db.logItem('probes_log', job);
                 resolve(job);
               break;
               case Owner.schedule: // scheduled action
                 console.log("[TEMP]: READ schedule", job);
-                await self.db.putItem('probes_list', job);
+                await self.db.logItem('probes_log', job);
                 resolve;
               break;
             }

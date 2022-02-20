@@ -33,7 +33,6 @@ class WaterRefillComponent {
     this.db = db;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.setSchedule(this.id, this.scheduledCrons);
     this.setup();
   }
 
@@ -50,6 +49,7 @@ class WaterRefillComponent {
         this.mcp.pinMode(this.pin1, this.mcp.OUTPUT);
         this.mcp.pinMode(this.pin2, this.mcp.OUTPUT);
       });
+      this.setSchedule(this.id, this.scheduledCrons);
     } else {
       console.log('[WATER-REFILL]: EXIT on --> Raspberry not found');
     }
@@ -98,12 +98,13 @@ class WaterRefillComponent {
 
         const job = {
           owner, 
+          action: 'RUN',
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
           type: Peripherals.Worker,
-          expectedTime: moment(expectedTime), 
-          executedTime: moment(),
+          expectedTime: new Date(expectedTime), 
+          executedTime: new Date,
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,
@@ -112,12 +113,12 @@ class WaterRefillComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[WATER-REFILL]: RUN manual", job);
-            await self.db.putItem('probes_list', job);
+            await self.db.logItem('workers_log', job);
             resolve(job);
           break;
           case Owner.schedule: // scheduled action
             console.log("[WATER-REFILL]: RUN scheduled", job);
-            await self.db.putItem('probes_list', job);
+            await self.db.logItem('workers_log', job);
             resolve;
           break;
         };

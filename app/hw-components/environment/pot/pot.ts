@@ -99,9 +99,6 @@ class PotComponent {
         const schedule: any[] = await self.db.getItems('probes_schedule', probe.id, 'idProbe') as unknown as any[];
         
         switch(probe.probeType) {
-          case ProbesTypes.Air_temperature: 
-            probe.component = null;
-          break;
           case ProbesTypes.EC: 
             probe.component = null;
           break;
@@ -123,12 +120,6 @@ class PotComponent {
         worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         switch(worker.workerType) {
-          // case WorkersTypes.Fan: 
-          // worker.component = null;
-          // break;
-          // case WorkersTypes.Lights: 
-          // worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin, schedule, self.db, self.api, self.settings)
-          // break;
           case WorkersTypes.Nutrient_refill: 
             worker.component = null;
           break;

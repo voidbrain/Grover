@@ -8,7 +8,7 @@ export class SettingsService {
   private locales:string[] = ['en', 'it'];
 	private appName:string = 'Grover/RedNeck';
   
-  private remoteServerHostname:string = 'www.voidbrain.net';
+  private remoteServerHostname:string = 'https://www.voidbrain.net';
   private remoteServerEndpoint:string = 'temp/grover/ajax/moduli/api/worker/';
   private purposes: string[] = ['client', 'worker'];
   private purpose: number = Purposes.worker;

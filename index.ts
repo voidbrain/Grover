@@ -51,7 +51,7 @@ class Main {
     self.settings.setOperatingMode(device.operatingMode);
 
     console.log('[main] => initdb done');
-    //self.main();
+    self.main();
   }
 
   async main(){
@@ -87,16 +87,21 @@ class Main {
       if(action && id && terminalType) {
         const owner = Owner.user;
         const operatingMode = self.settings.getOperatingMode();
-        const terminalsArr: any[] = await self.db.getItems(terminalType+'s_list') as any[];
-        const terminal = terminalsArr.find(el => el.id === +id);
-        const parentLocation: LocationInterface = await self.db.getItem('locations',  terminal.locationId, 'id') as LocationInterface;
+        const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
+        const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
         const parent = await self.db.findParent(parentLocation.id) as any;
-        const environments = (parent.potName ? self.pots : self.rooms) as any;
-        const environmentType = (parent.potName ? 'pot' : 'room');
-        const environment = environments.find(el => el[environmentType].id === parent.id)
-        const el = environment[terminalType+'s'].find(el => el.id === terminal.id);
-        const doJob = await el.component[action]({now, owner, operatingMode});
-        res.write(JSON.stringify(doJob));
+        const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
+        const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
+        const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
+        if(environment) {
+          const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
+          const doJob = await el.component[action]({now, owner, operatingMode});
+          res.write(JSON.stringify(doJob));
+        } else {
+          const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
+          console.log(err);
+          res.write(err);
+        }
       }
       res.end();
     });

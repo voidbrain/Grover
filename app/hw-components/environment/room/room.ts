@@ -1,8 +1,12 @@
+import { ProbesTypes, WorkersTypes } from '../../../services/settings/enums';
 import WaterRefillComponent from '../../actuators/water-refill/water-refill';
 import PotComponent from '../pot/pot'; 
 import { RoomInterface } from '../../../interfaces/room'; 
 import { PotObject } from '../../../interfaces/pot'; 
 import { LocationInterface } from '../../../interfaces/location';
+
+import TemperatureComponent from '../../probes/temperature/temperature';
+import LightSwitchComponent from '../../actuators/light-switch/light-switch';
 class RoomComponent {
   db;
   api;
@@ -59,6 +63,48 @@ class RoomComponent {
         self.pots.push(pot);
       })
     );
+    
+    await Promise.all(
+      probesArr.map(async (probe) => {
+        probe.type =  await self.db.getItem('probes_type', probe.probeType, 'id') as any;
+        probe.logs = await self.db.getItems('probes_log', probe.id, 'idProbe') as unknown as any[];
+        const schedule: any[] = await self.db.getItems('probes_schedule', probe.id, 'idProbe') as unknown as any[];
+        
+        switch(probe.probeType) {
+          case ProbesTypes.Air_temperature: 
+            probe.component = null;
+          break;
+          case ProbesTypes.Water_level: 
+            probe.component = null;
+          break;
+          case ProbesTypes.Water_temperature: 
+            probe.component = new TemperatureComponent(room.id, room.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
+          break;
+        }
+      })
+    );
+    await Promise.all(
+      workersArr.map(async (worker) => {
+        worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
+        worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
+        const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
+        switch(worker.workerType) {
+          case WorkersTypes.Fan: 
+            worker.component = null;
+          break;
+          case WorkersTypes.Lights: 
+            worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings)
+          break;
+          case WorkersTypes.Water_refill: 
+            worker.component = new WaterRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+          break;
+        }
+      })
+    );
+    self.room = room;
+    self.location = location;
+    self.probes = probesArr;
+    self.workers = workersArr;
   }
 
 }

@@ -3,6 +3,7 @@ import { SettingsService } from '../settings/settings.service';
 
 import * as http from 'http';
 import https from 'https';
+import axios from 'axios';
 export class ApiService {
   
   url = '';
@@ -39,8 +40,7 @@ export class ApiService {
     
     async httpsGet({...options}) {
       return new Promise((resolve, reject) => {
-        const url = `https://${options.hostname}/${options.path}`;
-        // console.log(`[API]: ${url}`);
+        const url = `${options.hostname}/${options.path}`;
         https.get(url, resp => {
           let data = '';
 
@@ -68,49 +68,25 @@ export class ApiService {
     };
     
     async post(endpont: string, lastUpdate: any, action: any, item: any, serialNumber: any) {
-      const path = `${this.settings.getRemoteServerEndpoint()}${endpont}` + 
+      const path = `${this.settings.getRemoteServerHostname()}/${this.settings.getRemoteServerEndpoint()}${endpont}` + 
         `?lastUpdate=${lastUpdate}&action=${action}`;
-        const body = JSON.stringify({
-          item, 
-          serialNumber
-        });
-
-        
-      const res = await this.httpsPost({
-        hostname: this.settings.getRemoteServerHostname(),
-        path: path,
-        headers: {
-          'Authorization': `Bearer 123`,
-          'Content-Type': 'application/json',
-        },
-        body
-      })
-      console.log(path, body, res);
+      const body = {item, serialNumber};
+      const res = await this.httpsPost(path, body);
+      return res;
     }
     
-    async httpsPost({body, ...options}) {
+    async httpsPost(path, body) {
       return new Promise((resolve,reject) => {
-        const req = https.request({
+        axios({
           method: 'POST',
-          ...options,
-        }, res => {
-          const chunks = [];
-          res.on('data', data => chunks.push(data))
-          res.on('end', () => {
-            let resBody = Buffer.concat(chunks);
-            switch(res.headers['content-type']) {
-              case 'application/json':
-              resBody = JSON.parse(resBody.toString());
-              break;
-            }
-            resolve(resBody)
-          })
-        })
-        req.on('error',reject);
-        if(body) {
-          req.write(body);
-        }
-        req.end();
+          url: path,
+          data: body
+        }).then(function (response) {
+          resolve(response.data);
+        }).catch(err => {
+          console.log("[API]: POST error", err);
+          reject;
+        });
       })
     };
     

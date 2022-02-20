@@ -4,6 +4,7 @@
   "description": "Grover - RedNeck IoT device",
   "type": "module",
   "dependencies": {
+    "axios": "^0.26.0",
     "ds18x20": "^0.2.0",
     "esm": "^3.2.25",
     "i2c-bus": "^5.2.2",

@@ -208,11 +208,11 @@ export class DbService {
     const promise = new Promise<RoomInterface | PotInterface>(resolve => {
         if(id){
           const query = `
-          SELECT ROOMS.*, ROOMS.name AS roomName, 
-          POTS.*, POTS.name AS potName, 
+          SELECT ROOMS.*, ROOMS.name AS roomName, ROOMS.locationId AS roomLocationId, 
+          POTS.*, POTS.name AS potName, POTS.locationId AS potLocationId, 
           LOCATIONS.* FROM LOCATIONS
-          LEFT JOIN POTS on POTS.locationId = LOCATIONS.id 
-          LEFT JOIN ROOMS on ROOMS.locationId = LOCATIONS.id 
+          LEFT JOIN POTS on POTS.locationId = LOCATIONS.id AND LOCATIONS.parent > 0
+          LEFT JOIN ROOMS on ROOMS.locationId = LOCATIONS.id AND LOCATIONS.parent = 0
           WHERE LOCATIONS.id=(?)`;
           self.db.get(query, [id], (err, row) => {
             if(err) {
@@ -246,28 +246,84 @@ export class DbService {
     
       self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {
+          console.log(["[DB]: response", response])
           if(response){
-            console.log('[DB]: API POST response', response);
-            const row = response.item;
+            const row = response;
             let length;
             const values:any[] = [];
             const cols:string[] = [];
-            Object.keys(response).forEach(function(key, index) {
-              length = index;
-              cols.push(key);
-              values.push(row[key]);
-            });
-            const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
-            self.db.run(query, values, (err) => {
-              if(err) {
-                console.log('[DB]:', err)
-                reject;
-                throw err;
-              }
-              resolve(values);
-            });
+            if(row) {
+              Object.keys(row).forEach(function(key, index) {
+                length = index;
+                cols.push(key);
+                values.push(row[key]);
+              });
+              const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
+              self.db.run(query, values, (err) => {
+                // console.log(["[DB]: query, values", query, values])
+                if(err) {
+                  console.log('[DB]: err', err)
+                  reject;
+                  throw err;
+                }
+                resolve(values);
+              });
+            } else {
+              console.log('[DB]: API POST response void', response);
+            }
           } else {
             console.log('[DB]: API POST response undefined', response);
+          }
+        });
+
+        // const tx = this.db.transaction(objectStore, 'readwrite');
+        // const store = tx.objectStore(objectStore);
+        // const promise = store.put(response.items[0]);
+        // promise.onsuccess = function(e){
+        //   resolve();
+        // };
+        // promise.onerror = function(e){
+        //   console.error('[DB]: Error adding: '+e);
+        // };
+      }); 
+  }
+
+  async logItem(table, item: any): Promise<void>{
+    const self = this;
+    const promise = new Promise<LocationInterface[] | RoomInterface[]>((resolve, reject) => {
+      const lastUpdate = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
+      const endpoint = 'endpoint';
+      const action = 'LOG';
+    
+      self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
+        .then((response: any) => {
+          console.log(["[DB]: response", response])
+          if(response){
+            const row = response;
+            let length;
+            const values:any[] = [];
+            const cols:string[] = [];
+            if(row) {
+              Object.keys(row).forEach(function(key, index) {
+                length = index;
+                cols.push(key);
+                values.push(row[key]);
+              });
+              const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
+              self.db.run(query, values, (err) => {
+                // console.log(["[DB]: query, values", query, values])
+                if(err) {
+                  console.log('[DB]: err', err)
+                  reject;
+                  throw err;
+                }
+                resolve(values);
+              });
+            } else {
+              console.log('[DB]: logItem API POST response void', response);
+            }
+          } else {
+            console.log('[DB]: logItem API POST response undefined', response);
           }
         });
 

@@ -33,7 +33,6 @@ class LightSwitchComponent {
     this.api = api;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.setSchedule(this.id, this.scheduledCrons);
     this.setup();
   }
 
@@ -49,6 +48,8 @@ class LightSwitchComponent {
         });
         this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
       });
+
+      this.setSchedule(this.id, this.scheduledCrons);
     } else {
       console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry not found');
     }
@@ -61,6 +62,7 @@ class LightSwitchComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
+          action: 'ON',
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
@@ -74,12 +76,12 @@ class LightSwitchComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[LIGHT-SWITCH]: ON manual", job);
-            await self.db.putItem('workers_list', job);
+            await self.db.logItem('workers_log', job);
             resolve(job);
           break;
           case Owner.schedule: // scheduled action
             console.log("[LIGHT-SWITCH]: ON scheduled", job);
-            await self.db.putItem('workers_list', job);
+            await self.db.logItem('workers_log', job);
             resolve;
           break;
         };
@@ -96,25 +98,26 @@ class LightSwitchComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
+          action: 'OFF',
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
           type: Peripherals.Worker,
-          expectedTime: moment(expectedTime), 
-          executedTime: moment(),
+          expectedTime: new Date(expectedTime), 
+          executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[LIGHT-SWITCH]: OFF manual", job);
-            await self.db.putItem('workers_list', job);
+            console.log("[LIGHT-SWITCH]: OFF manual");
+            await self.db.logItem('workers_log', job);
             resolve(job);
           break;
           case Owner.schedule: // scheduled action
-            console.log("[LIGHT-SWITCH]: OFF scheduled", job);
-            await self.db.putItem('workers_list', job);
+            console.log("[LIGHT-SWITCH]: OFF scheduled");
+            await self.db.logItem('workers_log', job);
             resolve;
           break;
         };
@@ -142,7 +145,9 @@ class LightSwitchComponent {
     });
     self.status = status;
     console.log('[LIGHT-SWITCH]: status', self.status);
-    self[self.status]({ expectedTime: scheduledStart, owner: owner, operatingMode });
+    if(self.status) {
+      self[self.status]({ expectedTime: scheduledStart, owner: owner, operatingMode });
+    }
   }
 
   async setSchedule(id: number, scheduledCrons: any[]){
