@@ -39,19 +39,18 @@ class LightSwitchComponent {
   async setup(){
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if(self.serialNumber.found) {
+    if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
         this.mcp = new MCP23017({
           address: +self.i2cAddress,
-          device: 1,
-          debug: true
+          debug: false
         });
         this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
       });
 
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
-      console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry not found');
+      console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found');
     }
   }
 

@@ -35,7 +35,7 @@ class TemperatureComponent {
     if(self.serialNumber.found) {
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
-      console.log('[TEMPERATURE]: EXIT on --> Raspberry not found');
+      console.log('[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found');
     }
   }
 
@@ -43,8 +43,6 @@ class TemperatureComponent {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
-      self.serialNumber = await self.settings.getSerialNumber();
-      if(self.serialNumber.found) {
         if(operatingMode >= systemOperatingMode) {
           sensor.get(self.address, async function (err: any, value: any) {
             if(err) { throw err; }
@@ -79,9 +77,6 @@ class TemperatureComponent {
         } else {
           console.log(`[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
         }
-      } else {
-        console.log('[TEMP]: EXIT on --> Raspberry not found');
-      }
     });
   }
 

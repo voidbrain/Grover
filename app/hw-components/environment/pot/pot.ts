@@ -5,7 +5,7 @@ import TemperatureComponent from '../../probes/temperature/temperature';
 // import EcProbe from '../../probes/ec/ec';
 // import WaterLevel from '../../probes/water-level/water-level';
 
-// import WaterLoop from '../../actuators/water-loop/water-loop';
+import WaterLoopComponent from '../../actuators/water-loop/water-loop';
 import WaterRefillComponent from '../../actuators/water-refill/water-refill';
 // import LightSwitchComponent from '../../actuators/light-switch/light-switch';
 // import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
@@ -99,9 +99,6 @@ class PotComponent {
         const schedule: any[] = await self.db.getItems('probes_schedule', probe.id, 'idProbe') as unknown as any[];
         
         switch(probe.probeType) {
-          case ProbesTypes.EC: 
-            probe.component = null;
-          break;
           case ProbesTypes.Water_level: 
             probe.component = null;
           break;
@@ -109,6 +106,9 @@ class PotComponent {
             probe.component = new TemperatureComponent(pot.id, pot.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
           break;
           case ProbesTypes.pH: 
+            probe.component = null;
+          break;
+          case ProbesTypes.EC: 
             probe.component = null;
           break;
         }
@@ -127,7 +127,7 @@ class PotComponent {
             worker.component = null;
           break;
           case WorkersTypes.Water_loop: 
-            worker.component = null;
+          worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
           break;
           case WorkersTypes.Water_refill: 
             worker.component = new WaterRefillComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)

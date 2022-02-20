@@ -1,12 +1,16 @@
 import { ProbesTypes, WorkersTypes } from '../../../services/settings/enums';
-import WaterRefillComponent from '../../actuators/water-refill/water-refill';
-import PotComponent from '../pot/pot'; 
+
 import { RoomInterface } from '../../../interfaces/room'; 
 import { PotObject } from '../../../interfaces/pot'; 
 import { LocationInterface } from '../../../interfaces/location';
 
+import PotComponent from '../pot/pot'; 
+
 import TemperatureComponent from '../../probes/temperature/temperature';
+
+import WaterRefillComponent from '../../actuators/water-refill/water-refill';
 import LightSwitchComponent from '../../actuators/light-switch/light-switch';
+import FanComponent from '../../actuators/fan-motor/fan-motor';
 class RoomComponent {
   db;
   api;
@@ -72,7 +76,7 @@ class RoomComponent {
         
         switch(probe.probeType) {
           case ProbesTypes.Air_temperature: 
-            probe.component = null;
+            probe.component = new TemperatureComponent(room.id, room.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
           break;
           case ProbesTypes.Water_level: 
             probe.component = null;
@@ -90,13 +94,13 @@ class RoomComponent {
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         switch(worker.workerType) {
           case WorkersTypes.Fan: 
-            worker.component = null;
+            worker.component = new FanComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
           break;
           case WorkersTypes.Lights: 
-            worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings)
+            worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
           break;
           case WorkersTypes.Water_refill: 
-            worker.component = new WaterRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            worker.component = new WaterRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings);
           break;
         }
       })
