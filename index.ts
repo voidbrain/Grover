@@ -14,7 +14,7 @@ import ApiService from './app/services/api/api.service';
 import { RoomObject }  from './app/interfaces/room';
 import RoomComponent from './app/hw-components/environment/room/room';
 import PotComponent from './app/hw-components/environment/pot/pot';
-import { PotInterface } from './app/interfaces/pot';
+import { PotInterface, PotObject } from './app/interfaces/pot';
 import { LocationInterface } from './app/interfaces/location';
 import { RoomInterface } from './app/interfaces/room';
 class Main {
@@ -28,9 +28,9 @@ class Main {
   db = new DbService(this.settings, this.api);
   localStorage = new LocalStorage('./data/scratch');
 
-  room: any;
-  rooms: any[] = [];
-  pots: any[] = [];
+  room: RoomObject;
+  rooms: RoomObject[] = [];
+  pots: PotObject[] = [];
 
   constructor(){ this.appSetup(); }
 
@@ -64,6 +64,19 @@ class Main {
     console.log(`[main] => ready`);  
   }
 
+  async updateOperatingMode(mode: number) {
+    const self = this;
+    self.settings.setOperatingMode(mode);
+    self.rooms.map(room => {
+      room.probes.map(probe => {})
+      room.workers.map(worker => {})
+      room.pots.map(pot => {
+        pot.probes.map(probe => {})
+        pot.workers.map(worker => {})
+      })
+    })
+  }
+
   
   /**
    * Webserver
@@ -80,29 +93,48 @@ class Main {
         return;
       }
       const action = q.query.action as string;
-      const id = q.query.id as string;
-      const terminalType = q.query.type as string;
+      const page = q.pathname;
+      const owner = Owner.user;
+      const operatingMode = self.settings.getOperatingMode();
       const now = moment();
-
-      if(action && id && terminalType) {
-        const owner = Owner.user;
-        const operatingMode = self.settings.getOperatingMode();
-        const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
-        const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
-        const parent = await self.db.findParent(parentLocation.id) as any;
-        const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
-        const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
-        const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
-        if(environment) {
-          const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
-          const doJob = await el.component[action]({now, owner, operatingMode});
-          res.write(JSON.stringify(doJob));
-        } else {
-          const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
-          console.log(err);
-          res.write(err);
-        }
+      switch(page){
+        case '/log':
+          const id = q.query.id as string;
+          const terminalType = q.query.type as string;
+         
+          if(action && id && terminalType) {
+            const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
+            const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
+            const parent = await self.db.findParent(parentLocation.id) as any;
+            const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
+            const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
+            const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
+            if(environment) {
+              const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
+              const doJob = await el.component[action]({now, owner, operatingMode});
+              res.write(JSON.stringify(doJob));
+            } else {
+              const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
+              console.log(err);
+              res.write(err);
+            }
+          }
+        break;
+        case '/system':
+          switch (action){
+            case 'set-mode':
+              const mode = +q.query.mode as number;
+              const doJob = await self.updateOperatingMode(mode);
+              res.write(JSON.stringify(doJob));
+            break;
+            default:
+            break;
+          }
+        break;
+        default:
+        break;
       }
+      
       res.end();
     });
   }

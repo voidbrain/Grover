@@ -43,6 +43,7 @@ class FanComponent {
       import('node-mcp23017').then(({default: MCP23017}) => {
         this.mcp = new MCP23017({
           address: +self.i2cAddress,
+          device: 1,
           debug: false
         });
         this.mcp.pinMode(this.pin, this.mcp.OUTPUT);

@@ -8,8 +8,8 @@ export interface RoomInterface {
   serialNumber: string;
   locationId: number;
   
-  // probes: any[];
-  // workers: any[];
+  probes: any[];
+  workers: any[];
   pots: PotObject[];
 
   enabled: boolean;

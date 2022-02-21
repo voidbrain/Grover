@@ -4,8 +4,8 @@ export interface PotInterface {
   name: string;
   locationId: number;
   
-  probes?: any[];
-  workers?: any[];
+  probes: any[];
+  workers: any[];
 
   enabled: boolean;
   deleted: boolean;
