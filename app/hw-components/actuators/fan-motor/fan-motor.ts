@@ -76,13 +76,17 @@ class FanComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[FAN-MOTOR]: ON manual", job);
-            await self.db.logItem('workers_log', job);
-            resolve(job);
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve(job);
+            }
           break;
           case Owner.schedule: // scheduled action
             console.log("[FAN-MOTOR]: ON scheduled", job);
-            await self.db.logItem('workers_log', job);
-            resolve;
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve;
+            }
           break;
         };
       } else {
@@ -112,13 +116,17 @@ class FanComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[FAN-MOTOR]: OFF manual");
-            await self.db.logItem('workers_log', job);
-            resolve(job);
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve(job);
+            }
           break;
           case Owner.schedule: // scheduled action
             console.log("[FAN-MOTOR]: OFF scheduled");
-            await self.db.logItem('workers_log', job);
-            resolve;
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve;
+            }
           break;
         };
       } else {

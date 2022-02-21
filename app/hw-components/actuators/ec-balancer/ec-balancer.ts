@@ -2,8 +2,10 @@
  * EC Balancer Actuator
  */
 
-class EcBalancerComponent {
+ class EcBalancerComponent {
   id: number;
+  status: string;
+  
   constructor(id: number) {
     this.id = id;
   }
@@ -16,6 +18,10 @@ class EcBalancerComponent {
       //  });
       resolve;
     });
+  }
+
+  async setStatus(){
+    this.status = null;
   }
 }
 export default EcBalancerComponent;

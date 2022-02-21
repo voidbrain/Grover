@@ -1,7 +1,12 @@
-export enum OperatingMode {
+export enum OperatingModes {
   On = 1,
   Off = 2,
   Silent = 3
+}
+
+export enum LogModes {
+  true = 1,
+  false = 0
 }
 
 export enum Purposes {
@@ -42,6 +47,7 @@ export enum WorkersTypes {
   Water_loop = 2,
   Water_refill = 3,
   Nutrient_refill = 4,
-  PH_refill = 5,
-  Lights = 6,
+  PHdown_refill = 5,
+  Light = 6,
+  Room_Water_refill = 7,
 }

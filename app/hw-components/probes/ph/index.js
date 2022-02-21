@@ -117,10 +117,10 @@ MiniPh.prototype.readPh = function (callback) {
   m = this;
   let buffer= Buffer.alloc(32);
   this.wire.readWord(0x00, 2, function (err, res) {
-    console.log('running');
+    console.log("[PH]:", 'running');
 
-    console.log(res);
-    console.log(res[0]);
+    console.log("[PH]:", res);
+    console.log("[PH]:", res[0]);
 
     m.raw = res[0] * 256 + res[1];
     if (m.filter === undefined) {

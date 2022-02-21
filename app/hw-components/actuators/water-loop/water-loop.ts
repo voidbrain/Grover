@@ -49,7 +49,7 @@ class WaterLoopComponent {
         this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
       });
 
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.setSchedule();
     } else {
       console.log('[WATER-LOOP]: EXIT on --> Raspberry OR i2c Address not found');
     }
@@ -76,13 +76,17 @@ class WaterLoopComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[WATER-LOOP]: ON manual", job);
-            await self.db.logItem('workers_log', job);
-            resolve(job);
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve(job);
+            }
           break;
           case Owner.schedule: // scheduled action
             console.log("[WATER-LOOP]: ON scheduled", job);
-            await self.db.logItem('workers_log', job);
-            resolve;
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve;
+            }
           break;
         };
       } else {
@@ -112,13 +116,17 @@ class WaterLoopComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[WATER-LOOP]: OFF manual");
-            await self.db.logItem('workers_log', job);
-            resolve(job);
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve(job);
+            }
           break;
           case Owner.schedule: // scheduled action
             console.log("[WATER-LOOP]: OFF scheduled");
-            await self.db.logItem('workers_log', job);
-            resolve;
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve;
+            }
           break;
         };
       } else {
@@ -127,14 +135,14 @@ class WaterLoopComponent {
     });
   }
 
-  async setStatus(scheduledCrons) {
+  async setStatus() {
     const self = this;
     const owner = Owner.schedule;
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    scheduledCrons.map(cron => {
+    self.scheduledCrons.map(cron => {
       const statusStart = moment({'year': now.year(), 'month': now.month(), 'day': now.date(), 
       'hour': cron.atHour, 'minute': cron.atMinute});
       if(statusStart <= now) {
@@ -150,11 +158,11 @@ class WaterLoopComponent {
     }
   }
 
-  async setSchedule(id: number, scheduledCrons: any[]){
+  async setSchedule(){
     const self = this;
-    if(id && scheduledCrons) {
+    if(self.id && self.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      scheduledCrons.map(probeScheduleRow => {
+      self.scheduledCrons.map(probeScheduleRow => {
       
         const scheduleRow:CronJobInterface = { 
           action: probeScheduleRow.action, 
@@ -163,7 +171,7 @@ class WaterLoopComponent {
         };
         scheduleArr.push(scheduleRow);
       });
-      self.setStatus(scheduledCrons)
+      self.setStatus()
       
       scheduleArr.map(job => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {

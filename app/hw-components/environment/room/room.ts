@@ -8,7 +8,7 @@ import PotComponent from '../pot/pot';
 
 import TemperatureComponent from '../../probes/temperature/temperature';
 
-import WaterRefillComponent from '../../actuators/water-refill/water-refill';
+import RoomWaterRefillComponent from '../../actuators/room-water-refill/room-water-refill';
 import LightSwitchComponent from '../../actuators/light-switch/light-switch';
 import FanComponent from '../../actuators/fan-motor/fan-motor';
 class RoomComponent {
@@ -32,12 +32,13 @@ class RoomComponent {
 
 
   constructor(
-    db, api, settings
+    serialNumber, db, api, settings
   ) {
     this.db = db;
     this.api = api;
     this.settings = settings;
-    // this.setup(serialNumber);
+    this.serialNumber = serialNumber;
+    this.setup(serialNumber);
   }
 
   async setup(serialNumber) {
@@ -56,18 +57,7 @@ class RoomComponent {
     });
     self.room = room;
     self.location = location;
-    self.probes = probesArr;
-    self.workers = workersArr;
 
-    const potsLocation: LocationInterface[] = await self.db.getItems('locations', self.room.locationId, 'parent') as LocationInterface[];
-    await Promise.all(
-      potsLocation.map(async (el) => {
-        const pot = new PotComponent(self.db, this.api, self.settings) as unknown as PotObject;
-        await pot.setup(el.id);
-        self.pots.push(pot);
-      })
-    );
-    
     await Promise.all(
       probesArr.map(async (probe) => {
         probe.type =  await self.db.getItem('probes_type', probe.probeType, 'id') as any;
@@ -87,28 +77,43 @@ class RoomComponent {
         }
       })
     );
+    
     await Promise.all(
       workersArr.map(async (worker) => {
         worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
         worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
+        
         switch(worker.workerType) {
           case WorkersTypes.Fan: 
             worker.component = new FanComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
           break;
-          case WorkersTypes.Lights: 
+          case WorkersTypes.Light: 
             worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
           break;
           case WorkersTypes.Water_refill: 
-            worker.component = new WaterRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings);
+            worker.component = new RoomWaterRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
           break;
         }
       })
     );
-    self.room = room;
-    self.location = location;
+
     self.probes = probesArr;
     self.workers = workersArr;
+
+    const primaryPump: RoomWaterRefillComponent = self.workers.find(el => {
+      return el.workerType === WorkersTypes.Room_Water_refill;
+    });
+
+    const potsLocation: LocationInterface[] = await self.db.getItems('locations', self.room.locationId, 'parent') as LocationInterface[];
+    await Promise.all(
+      potsLocation.map(async (el) => {
+        const pot = new PotComponent(primaryPump, self.db, this.api, self.settings) as unknown as PotObject;
+        await pot.setup(el.id);
+        self.pots.push(pot);
+      })
+    );
+  
   }
 
 }

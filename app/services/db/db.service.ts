@@ -155,7 +155,6 @@ export class DbService {
               }
             });
           });
-       
       // });
       }else{ resolve(); }
     });
@@ -228,6 +227,27 @@ export class DbService {
     return promise;
   }
 
+  async findTable(table): Promise<any> {
+    const self = this;
+    const promise = new Promise<any>(resolve => {
+        if(table){
+          const query = `
+          SELECT count(*) as found FROM sqlite_master WHERE type='table' AND name='${table}';
+          `;
+          self.db.get(query, [], (err, row) => {
+            if(err) {
+              console.log('[DB]:', err)
+              throw err;
+            }
+            resolve(row);
+          });
+        } else {
+          resolve(null);
+        }      
+    });
+    return promise;
+  }
+
   closeDb() {
     this.db.close((err) => {
       if (err) {
@@ -246,7 +266,7 @@ export class DbService {
     
       self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {
-          console.log(["[DB]: response", response])
+          // console.log(["[DB]: response", response])
           if(response){
             const row = response;
             let length;
@@ -297,7 +317,6 @@ export class DbService {
     
       self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {
-          console.log(["[DB]: response", response])
           if(response){
             const row = response;
             let length;

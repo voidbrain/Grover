@@ -2,13 +2,19 @@
  * EC Sensors
  */
 
-class EcProbeComponent {
+ class EcProbeComponent {
   triggerPin: number;
   echoPin: number;
+
+  status: string;
   
   constructor(triggerPin: number, echoPin: number) {
     triggerPin = triggerPin;
     echoPin = echoPin;
+  }
+
+  async setStatus(){
+    this.status = null;
   }
 
   async read() {

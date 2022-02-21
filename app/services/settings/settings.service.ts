@@ -13,6 +13,7 @@ export class SettingsService {
   private purposes: string[] = ['client', 'worker'];
   private purpose: number = Purposes.worker;
   private operatingMode:number = null;
+  private logMode:boolean = true;
 
   private datatables:string[] = [
     'locations', 
@@ -55,6 +56,11 @@ export class SettingsService {
 
   public getPurpose() :number {
     return this.purpose;
+  }
+
+
+  public setLogMode(mode: boolean) : void {
+    this.logMode = mode;
   }
 
   public getOperatingMode() :number {

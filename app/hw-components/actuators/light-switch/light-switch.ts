@@ -15,7 +15,7 @@ class LightSwitchComponent {
   i2cAddress: string; 
   pin: number; 
   status: string;
-  
+  defaultStatus: string = 'OFF';
   scheduledCrons: any[] = []; 
   api;
   settings;
@@ -49,7 +49,7 @@ class LightSwitchComponent {
         this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
       });
 
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.setSchedule();
     } else {
       console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found');
     }
@@ -76,13 +76,17 @@ class LightSwitchComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[LIGHT-SWITCH]: ON manual", job);
-            await self.db.logItem('workers_log', job);
-            resolve(job);
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve(job);
+            }
           break;
           case Owner.schedule: // scheduled action
             console.log("[LIGHT-SWITCH]: ON scheduled", job);
-            await self.db.logItem('workers_log', job);
-            resolve;
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve;
+            }
           break;
         };
       } else {
@@ -112,13 +116,17 @@ class LightSwitchComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[LIGHT-SWITCH]: OFF manual");
-            await self.db.logItem('workers_log', job);
-            resolve(job);
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve(job);
+            }
           break;
           case Owner.schedule: // scheduled action
             console.log("[LIGHT-SWITCH]: OFF scheduled");
-            await self.db.logItem('workers_log', job);
-            resolve;
+            if (self.settings.logMode === true) { 
+              await self.db.logItem('workers_log', job);
+              resolve;
+            }
           break;
         };
       } else {
@@ -127,34 +135,40 @@ class LightSwitchComponent {
     });
   }
 
-  async setStatus(scheduledCrons) {
+  public async getStatus() {
+    return this.status;
+  }
+
+  async setStatus() {
     const self = this;
     const owner = Owner.schedule;
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    scheduledCrons.map(cron => {
+    const systemOperatingMode = self.settings.getOperatingMode();
+    self.scheduledCrons.map(cron => {
       const statusStart = moment({'year': now.year(), 'month': now.month(), 'day': now.date(), 
       'hour': cron.atHour, 'minute': cron.atMinute});
-      if(statusStart <= now) {
+      if(statusStart <= now && cron.operatingMode >= systemOperatingMode) {
         status = cron.action;
         scheduledStart = statusStart;
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
-    console.log('[LIGHT-SWITCH]: status', self.status);
+    self.status = (status ? status : self.defaultStatus);
+    scheduledStart = null;
+    operatingMode = systemOperatingMode;
     if(self.status) {
       self[self.status]({ expectedTime: scheduledStart, owner: owner, operatingMode });
     }
   }
 
-  async setSchedule(id: number, scheduledCrons: any[]){
+  async setSchedule(){
     const self = this;
-    if(id && scheduledCrons) {
+    if(self.id && self.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      scheduledCrons.map(probeScheduleRow => {
+      self.scheduledCrons.map(probeScheduleRow => {
       
         const scheduleRow:CronJobInterface = { 
           action: probeScheduleRow.action, 
@@ -163,7 +177,7 @@ class LightSwitchComponent {
         };
         scheduleArr.push(scheduleRow);
       });
-      self.setStatus(scheduledCrons)
+      self.setStatus()
       
       scheduleArr.map(job => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {

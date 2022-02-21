@@ -16,6 +16,8 @@ class TemperatureComponent {
   api;
   db;
   settings;
+
+  status: string;
   
   constructor(parentId: number, parentName: string, id: number, address: string, scheduleArr, db, api, settings) {
     this.id = id;
@@ -29,11 +31,15 @@ class TemperatureComponent {
     this.setup();
   }
 
+  async setStatus(){
+    this.status = null;
+  }
+
   async setup(){
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found) {
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.setSchedule();
     } else {
       console.log('[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found');
     }
@@ -41,37 +47,48 @@ class TemperatureComponent {
 
   public async READ({expectedTime, owner, operatingMode}) {
     const self = this;
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
       const systemOperatingMode = self.settings.getOperatingMode();
         if(operatingMode >= systemOperatingMode) {
           sensor.get(self.address, async function (err: any, value: any) {
-            if(err) { throw err; }
-            const job = {
-              owner, 
-              action: 'READ',
-              value, 
-              idProbe: self.id, 
-              parentId: self.parentId, 
-              parentName: self.parentName, 
-              type: Peripherals.Probe,
-              address: self.address,
-              expectedTime: expectedTime ? new Date(expectedTime) : null, 
-              executedTime: new Date(),
-              operatingMode: operatingMode,
-              systemOperatingMode: systemOperatingMode,
-              serialNumber: self.serialNumber.sn,
-            };
-            switch(owner){
-              case Owner.user: // manual action
-                console.log("[TEMP]: READ manual", job);
-                await self.db.logItem('probes_log', job);
-                resolve(job);
-              break;
-              case Owner.schedule: // scheduled action
-                console.log("[TEMP]: READ schedule", job);
-                await self.db.logItem('probes_log', job);
-                resolve;
-              break;
+            if(err) {
+              console.log(`[TEMP]: READ ${owner}, error: ${err}`);
+              reject(err);
+              // throw err; 
+            } else {
+              const job = {
+                owner, 
+                action: 'READ',
+                value, 
+                idProbe: self.id, 
+                parentId: self.parentId, 
+                parentName: self.parentName, 
+                type: Peripherals.Probe,
+                address: self.address,
+                expectedTime: expectedTime ? new Date(expectedTime) : null, 
+                executedTime: new Date(),
+                operatingMode: operatingMode,
+                systemOperatingMode: systemOperatingMode,
+                serialNumber: self.serialNumber.sn,
+              }
+              switch(owner){
+                case Owner.user: // manual action
+                  console.log("[TEMP]: READ manual", job);
+                  if (self.settings.logMode === true) { 
+                    await self.db.logItem('probes_log', job);
+                    resolve(job);
+                  } else {
+                    console.log("don't log ");
+                  }
+                break;
+                case Owner.schedule: // scheduled action
+                  console.log("[TEMP]: READ schedule", job);
+                  if (self.settings.logMode === true) { 
+                    await self.db.logItem('probes_log', job);
+                    resolve;
+                  }
+                break;
+              }
             }
           });
         } else {
@@ -80,11 +97,11 @@ class TemperatureComponent {
     });
   }
 
-  async setSchedule(id: number, scheduledCrons: any[]){
+  async setSchedule(){
     const self = this;
-    if(id && scheduledCrons) {
+    if(self.id && self.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      scheduledCrons.map(probeScheduleRow => {
+      self.scheduledCrons.map(probeScheduleRow => {
         const scheduleRow:CronJobInterface = { 
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,

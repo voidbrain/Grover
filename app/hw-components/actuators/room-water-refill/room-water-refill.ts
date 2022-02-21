@@ -4,20 +4,17 @@
 import { CronJobInterface } from '../../../interfaces/cron-job';
 import { Owner, Peripherals } from '../../../services/settings/enums';
 
-import RoomWaterRefillComponent from '../room-water-refill/room-water-refill';
-
 import schedule from 'node-schedule';
 import moment from 'moment';
 
-class WaterRefillComponent {
+class RoomWaterRefillComponent {
   id: number;
   parentId: number;
   parentName: string;
   i2cAddress: string; 
   pin1: number; 
   pin2: number;
-  primaryPump: RoomWaterRefillComponent;
-  secondaryPump;
+  primaryPump
 
   serialNumber: { sn: string, found: boolean };
   
@@ -28,7 +25,7 @@ class WaterRefillComponent {
 
   status: string;
 
-  constructor(primaryPump: RoomWaterRefillComponent, parentId: number, parentName: string, id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, db, api, settings) {
+  constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, db, api, settings) {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
@@ -39,8 +36,7 @@ class WaterRefillComponent {
     this.db = db;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.primaryPump = primaryPump;
-    this.setup();
+    this.setup(); 
   }
 
   async setup(){
@@ -48,13 +44,13 @@ class WaterRefillComponent {
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
-        this.secondaryPump = new MCP23017({
+        this.primaryPump = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
           debug: true
         });
-        this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
-        this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
+        this.primaryPump.pinMode(this.pin1, this.primaryPump.OUTPUT);
+        this.primaryPump.pinMode(this.pin2, this.primaryPump.OUTPUT);
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
@@ -66,7 +62,7 @@ class WaterRefillComponent {
     this.status = null;
   }
 
-  async delay (seconds) {
+  public async delay (seconds) {
     return new Promise<void>(resolve => {
       return setTimeout(() => {
         resolve();
@@ -74,26 +70,27 @@ class WaterRefillComponent {
     });
   }
 
-  async forward () {
+  public async forward () {
+    console.log("[ROOM]: forward")
     return new Promise<void>(resolve => {
-      this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.HIGH);
-      this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.LOW);
+      this.primaryPump.digitalWrite(this.pin1, this.primaryPump.HIGH);
+      this.primaryPump.digitalWrite(this.pin2, this.primaryPump.LOW);
       resolve();
     });
   };
 
-  async backward () {
+  public async backward () {
     return new Promise<void>(resolve => {
-      this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.LOW);
-      this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.HIGH);
+      this.primaryPump.digitalWrite(this.pin1, this.primaryPump.LOW);
+      this.primaryPump.digitalWrite(this.pin2, this.primaryPump.HIGH);
       resolve();
     });
   };
 
-  async stop () {
+  public async stop () {
     return new Promise<void>(resolve => {
-      this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.LOW);
-      this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.LOW);
+      this.primaryPump.digitalWrite(this.pin1, this.primaryPump.LOW);
+      this.primaryPump.digitalWrite(this.pin2, this.primaryPump.LOW);
       resolve();
     });
   };
@@ -103,14 +100,9 @@ class WaterRefillComponent {
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if(operatingMode >= systemOperatingMode) {
-        
-        await self.primaryPump.forward();
-        await self.primaryPump.delay(2000);
-        await self.primaryPump.stop();
-        await self.delay(2000);
-        await self.forward();
-        await self.delay(2000);
-        await self.stop();
+        // await this.forward();
+        // await this.delay(2000);
+        // await this.stop();
 
         const job = {
           owner, 
@@ -176,4 +168,4 @@ class WaterRefillComponent {
   }
 
 }
-export default WaterRefillComponent
+export default RoomWaterRefillComponent

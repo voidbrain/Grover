@@ -1,22 +1,14 @@
-import DbService from '../../../services/db/db.service'; 
- 
- // import PhProbe from '../../probes/ph/ph';
- // import EcProbe from '../../probes/ec/ec';
- // import WaterLevel from '../../probes/water-level/water-level';
- // import WaterLoop from '../../actuators/water-loop/water-loop';
- import WaterRefillComponent from '../../actuators/water-refill/water-refill';
- import PotComponent from '../pot/pot';
- // import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
- // import EcBalancer from '../../actuators/ec-balancer/ec-balancer';
- 
-import { LocationInterface } from '../../../interfaces/location';
-// import { WaterRefillInterface } from '../../../interfaces/water-refill';
-// import TemperatureComponent from '../../probes/temperature/temperature';
- 
+import { TemperatureInterface } from '../../../interfaces/temperature';
+import { PhProbeInterface } from '../../../interfaces/ph-probe';
+import { EcProbeInterface } from '../../../interfaces/ec-probe';
+
+import { WaterRefillInterface } from '../../../interfaces/water-refill';
+import { LightSwitchInterface } from '../../../interfaces/light-switch';
+
 class LocationComponent {
   id: number;
-  probes = [];
-  actuators = [];
+  probes: TemperatureInterface | PhProbeInterface | EcProbeInterface [] = [];
+  actuators: WaterRefillInterface | LightSwitchInterface [] = [];
   locationId: number
   name: string;
   enabled: boolean;

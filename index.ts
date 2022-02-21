@@ -5,7 +5,7 @@ import url from 'url';
 import { LocalStorage } from 'node-localstorage';
 import moment from 'moment';
 
-import { Owner } from './app/services/settings/enums';
+import { Owner, OperatingModes, LogModes } from './app/services/settings/enums';
 
 import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
@@ -13,16 +13,14 @@ import ApiService from './app/services/api/api.service';
 
 import { RoomObject }  from './app/interfaces/room';
 import RoomComponent from './app/hw-components/environment/room/room';
-import PotComponent from './app/hw-components/environment/pot/pot';
-import { PotInterface, PotObject } from './app/interfaces/pot';
+import { PotObject } from './app/interfaces/pot';
 import { LocationInterface } from './app/interfaces/location';
-import { RoomInterface } from './app/interfaces/room';
 class Main {
   server: http.Server;
   webServerPort: number;
   serialNumber: string;
-  
   clock: number;
+  
   settings = new SettingsService();
   api = new ApiService();
   db = new DbService(this.settings, this.api);
@@ -56,25 +54,39 @@ class Main {
 
   async main(){
     const self = this;
-    self.room = new RoomComponent(self.db, self.api, self.settings) as unknown as RoomObject;
+    self.room = new RoomComponent(self.serialNumber, self.db, self.api, self.settings) as unknown as RoomObject;
     self.pots = self.room.pots;
     self.rooms.push(self.room);
-    await self.room.setup(self.serialNumber);
 
     console.log(`[main] => ready`);  
   }
 
+  async updateLogMode(mode: boolean) {
+    const self = this;
+    if (Object.values(LogModes)?.includes(+mode)) {
+      self.settings.setLogMode(mode);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async updateOperatingMode(mode: number) {
     const self = this;
-    self.settings.setOperatingMode(mode);
-    self.rooms.map(room => {
-      room.probes.map(probe => {})
-      room.workers.map(worker => {})
-      room.pots.map(pot => {
-        pot.probes.map(probe => {})
-        pot.workers.map(worker => {})
+    if (Object.values(OperatingModes)?.includes(mode)) {
+      self.settings.setOperatingMode(mode);
+      self.rooms.map(async room => {
+        room.probes.map(async probe => { await probe.component?.setStatus(); });
+        room.workers.map(async worker => { await worker.component?.setStatus(); })
+        room.pots.map(async pot => {
+          pot.probes.map(async probe => { await probe.component?.setStatus(); })
+          pot.workers.map(async worker => { await worker.component?.setStatus(); })
+        })
       })
-    })
+      return true;
+    } else {
+      return false;
+    }
   }
 
   
@@ -98,34 +110,53 @@ class Main {
       const operatingMode = self.settings.getOperatingMode();
       const now = moment();
       switch(page){
-        case '/log':
+        case '/actuators':
           const id = q.query.id as string;
           const terminalType = q.query.type as string;
-         
           if(action && id && terminalType) {
-            const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
-            const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
-            const parent = await self.db.findParent(parentLocation.id) as any;
-            const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
-            const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
-            const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
-            if(environment) {
-              const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
-              const doJob = await el.component[action]({now, owner, operatingMode});
-              res.write(JSON.stringify(doJob));
+            const logTable = terminalType+'s_list';
+            const foundTable = await self.db.findTable(logTable) as any;
+            if (foundTable.found > 0) {
+              const terminal: any = await self.db.getItem(logTable, +id, 'id') as any;
+              const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
+              const parent = await self.db.findParent(parentLocation.id) as any;
+              const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
+              const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
+              const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
+              if(environment) {
+                const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
+                const doJob = await el.component[action]({now, owner, operatingMode})
+                  .catch(err => {
+                    // console.log(`[SERVER]: READ ${owner}, error: ${err}`);
+                    res.write(JSON.stringify(err));
+                  })
+                if(doJob) { res.write(JSON.stringify(doJob)) };
+              } else {
+                const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
+                console.log(`[SERVER]: error: ${err}`);
+                res.write(err);
+              }
             } else {
-              const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
+              const err = `[SERVER]: DB table not found:`;
               console.log(err);
               res.write(err);
             }
+          } else {
+            console.log(`[SERVER]: Execution error: ${action} ${id} ${terminalType}`);
           }
         break;
         case '/system':
+          const mode = +q.query.mode as number;
           switch (action){
             case 'set-mode':
-              const mode = +q.query.mode as number;
-              const doJob = await self.updateOperatingMode(mode);
-              res.write(JSON.stringify(doJob));
+              const doSetMode = await self.updateOperatingMode(mode);
+              if(doSetMode) {  res.write(`Operating mode ${mode} set`);
+              } else { res.write(`Operating mode ${mode} NOT set`); }
+            break;
+            case 'set-log-mode':
+              const doSetLogMode = await self.updateLogMode(Boolean(mode));
+              if(doSetLogMode) {  res.write(`Operating mode ${mode} set`);
+              } else { res.write(`Operating mode ${mode} NOT set`); }
             break;
             default:
             break;

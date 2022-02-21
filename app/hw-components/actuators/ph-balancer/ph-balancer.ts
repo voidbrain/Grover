@@ -1,12 +1,6 @@
-/**
- * pH Balancer Actuator
- */
-/**
- * Water Refill Actuator
- */
-
-class PhBalancerComponent {
+ class PhBalancerComponent {
   id: number;
+  status: string;
 
   constructor(id: number) {
     this.id = id;
@@ -20,6 +14,10 @@ class PhBalancerComponent {
       //  });
       resolve;
     });
+  }
+
+  async setStatus(){
+    this.status = null;
   }
 }
 export default PhBalancerComponent;
