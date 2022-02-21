@@ -108,15 +108,19 @@ class PotComponent {
         switch(probe.probeType) {
           case ProbesTypes.Water_level: 
             probe.component = null;
+            // await probe.component.setup();
           break;
           case ProbesTypes.Water_temperature: 
             probe.component = new TemperatureComponent(pot.id, pot.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
+            await probe.component.setup();
           break;
           case ProbesTypes.pH: 
             probe.component = null;
+            // await probe.component.setup();
           break;
           case ProbesTypes.EC: 
             probe.component = null;
+            // await probe.component.setup();
           break;
         }
       })
@@ -130,15 +134,19 @@ class PotComponent {
         switch(worker.workerType) {
           case WorkersTypes.Nutrient_refill: 
             worker.component = null;
+            // await worker.component.setup();
           break;
           case WorkersTypes.PHdown_refill: 
             worker.component = null;
+            // await worker.component.setup();
           break;
           case WorkersTypes.Water_loop: 
-          worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
+            worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
+            await worker.component.setup();
           break;
           case WorkersTypes.Water_refill: 
             worker.component = new WaterRefillComponent(self.primaryPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            await worker.component.setup();
           break;
         }
       })

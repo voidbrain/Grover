@@ -1,5 +1,5 @@
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals } from '../../../services/settings/enums';
+import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
 
 import sensor from 'ds18x20';
 import schedule from 'node-schedule';
@@ -28,11 +28,6 @@ class TemperatureComponent {
     this.settings = settings;
     this.api = api;
     this.db = db;
-    this.setup();
-  }
-
-  async setStatus(){
-    this.status = null;
   }
 
   async setup(){
@@ -43,6 +38,10 @@ class TemperatureComponent {
     } else {
       console.log('[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found');
     }
+  }
+
+  async setStatus(){
+    this.status = null;
   }
 
   public async READ({expectedTime, owner, operatingMode}) {
@@ -58,14 +57,14 @@ class TemperatureComponent {
             } else {
               const job = {
                 owner, 
-                action: 'READ',
+                action: ServerCommands.READ,
                 value, 
                 idProbe: self.id, 
                 parentId: self.parentId, 
                 parentName: self.parentName, 
                 type: Peripherals.Probe,
                 address: self.address,
-                expectedTime: expectedTime ? new Date(expectedTime) : null, 
+                expectedTime: (expectedTime ? new Date(expectedTime) : null),
                 executedTime: new Date(),
                 operatingMode: operatingMode,
                 systemOperatingMode: systemOperatingMode,

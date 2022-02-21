@@ -2,7 +2,7 @@
 
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals } from '../../../services/settings/enums';
+import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
 
 import RoomWaterRefillComponent from '../room-water-refill/room-water-refill';
 
@@ -40,7 +40,6 @@ class WaterRefillComponent {
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
     this.primaryPump = primaryPump;
-    this.setup();
   }
 
   async setup(){
@@ -97,29 +96,29 @@ class WaterRefillComponent {
       resolve();
     });
   };
-
+  
   public async RUN({expectedTime, owner, operatingMode}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if(operatingMode >= systemOperatingMode) {
-        
+        // console.log(self.primaryPump);
         await self.primaryPump.forward();
-        await self.primaryPump.delay(2000);
-        await self.primaryPump.stop();
-        await self.delay(2000);
-        await self.forward();
-        await self.delay(2000);
-        await self.stop();
+        // await self.primaryPump.delay(2000);
+        // await self.primaryPump.stop();
+        // await self.delay(2000);
+        // await self.forward();
+        // await self.delay(2000);
+        // await self.stop();
 
         const job = {
           owner, 
-          action: 'RUN',
+          action: ServerCommands.RUN,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
           type: Peripherals.Worker,
-          expectedTime: new Date(expectedTime), 
+          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
           executedTime: new Date,
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,

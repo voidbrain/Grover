@@ -2,7 +2,7 @@ import moment from "moment";
 
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals } from '../../../services/settings/enums';
+import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
 
@@ -21,7 +21,7 @@ class LightSwitchComponent {
   settings;
   db;
   
-  mcp;
+  light;
 
   constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin: number, scheduleArr, db, api, settings) {
     this.id = id;
@@ -33,7 +33,6 @@ class LightSwitchComponent {
     this.api = api;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.setup();
   }
 
   async setup(){
@@ -41,12 +40,12 @@ class LightSwitchComponent {
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
-        this.mcp = new MCP23017({
+        this.light = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
           debug: false
         });
-        this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
+        this.light.pinMode(this.pin, this.light.OUTPUT);
       });
 
       this.setSchedule();
@@ -62,7 +61,7 @@ class LightSwitchComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
-          action: 'ON',
+          action: ServerCommands.ON,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
@@ -102,12 +101,12 @@ class LightSwitchComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
-          action: 'OFF',
+          action: ServerCommands.OFF,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
           type: Peripherals.Worker,
-          expectedTime: new Date(expectedTime), 
+          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
           executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,

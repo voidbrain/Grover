@@ -5,7 +5,7 @@ import url from 'url';
 import { LocalStorage } from 'node-localstorage';
 import moment from 'moment';
 
-import { Owner, OperatingModes, LogModes } from './app/services/settings/enums';
+import { Owner, OperatingModes, ServerCommands, ServerPages } from './app/services/settings/enums';
 
 import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
@@ -13,14 +13,16 @@ import ApiService from './app/services/api/api.service';
 
 import { RoomObject }  from './app/interfaces/room';
 import RoomComponent from './app/hw-components/environment/room/room';
-import { PotObject } from './app/interfaces/pot';
+import PotComponent from './app/hw-components/environment/pot/pot';
+import { PotInterface, PotObject } from './app/interfaces/pot';
 import { LocationInterface } from './app/interfaces/location';
+import { RoomInterface } from './app/interfaces/room';
 class Main {
   server: http.Server;
   webServerPort: number;
   serialNumber: string;
-  clock: number;
   
+  clock: number;
   settings = new SettingsService();
   api = new ApiService();
   db = new DbService(this.settings, this.api);
@@ -55,20 +57,47 @@ class Main {
   async main(){
     const self = this;
     self.room = new RoomComponent(self.serialNumber, self.db, self.api, self.settings) as unknown as RoomObject;
+    await self.room.setup();
     self.pots = self.room.pots;
     self.rooms.push(self.room);
+    
 
     console.log(`[main] => ready`);  
-  }
-
-  async updateLogMode(mode: boolean) {
-    const self = this;
-    if (Object.values(LogModes)?.includes(+mode)) {
-      self.settings.setLogMode(mode);
-      return true;
-    } else {
-      return false;
-    }
+    
+    
+    
+    
+    
+    
+    
+    // console.log("###");
+    // const queryid = "1";
+    // const id = queryid as string;
+    // const terminalType = "worker" as string;
+    // const action = "forward" as string;
+    
+    // if(action && id && terminalType) {
+    //   const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
+    //   const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
+    //   const parent = await self.db.findParent(parentLocation.id) as any;
+    //   const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
+    //   const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
+    //   const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
+    //   if(environment) {
+    //     const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
+    //     if(el){
+    //       const doJob = await el.component[action]();
+    //       console.log(el.component.id, el.component[action], doJob)
+    //     } else {
+    //       console.log(`[SERVER]: Error el.component not found`);
+    //     }
+    //   } else {
+    //     const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
+    //     console.log(err);
+    //   }
+    // } else {
+    //   console.log(`[SERVER]: Error ${action}, ${id}, ${terminalType}`);
+    // }
   }
 
   async updateOperatingMode(mode: number) {
@@ -83,7 +112,7 @@ class Main {
           pot.workers.map(async worker => { await worker.component?.setStatus(); })
         })
       })
-      return true;
+      return mode;
     } else {
       return false;
     }
@@ -104,65 +133,56 @@ class Main {
         res.end();
         return;
       }
-      const action = q.query.action as string;
-      const page = q.pathname;
-      const owner = Owner.user;
-      const operatingMode = self.settings.getOperatingMode();
+      const action: string = q.query.action as string;
+      const page: string = q.pathname;
+      const owner: string = Owner.user;
+      const operatingMode: number = self.settings.getOperatingMode();
       const now = moment();
       switch(page){
-        case '/actuators':
+        case `/${ServerPages.actuators}`:
           const id = q.query.id as string;
           const terminalType = q.query.type as string;
+         
           if(action && id && terminalType) {
-            const logTable = terminalType+'s_list';
-            const foundTable = await self.db.findTable(logTable) as any;
-            if (foundTable.found > 0) {
-              const terminal: any = await self.db.getItem(logTable, +id, 'id') as any;
-              const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
-              const parent = await self.db.findParent(parentLocation.id) as any;
-              const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
-              const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
-              const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
-              if(environment) {
-                const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
-                const doJob = await el.component[action]({now, owner, operatingMode})
-                  .catch(err => {
-                    // console.log(`[SERVER]: READ ${owner}, error: ${err}`);
-                    res.write(JSON.stringify(err));
-                  })
-                if(doJob) { res.write(JSON.stringify(doJob)) };
+            const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
+            const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
+            const parent = await self.db.findParent(parentLocation.id) as any;
+            const environments = (+parent.parent > 0 ? self.pots : self.rooms) as any;
+            const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
+            const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
+            if(environment) {
+              const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
+              if(el){
+                const doJob = await el.component[action]({now, owner, operatingMode});
+                res.write(JSON.stringify(doJob));
               } else {
-                const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
-                console.log(`[SERVER]: error: ${err}`);
-                res.write(err);
+                console.log(`[SERVER]: Error el.component not found`);
+                console.log(`[SERVER]: \n*******\n ${el} \n*******\n`);
               }
+             
             } else {
-              const err = `[SERVER]: DB table not found:`;
+              const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
               console.log(err);
               res.write(err);
             }
           } else {
-            console.log(`[SERVER]: Execution error: ${action} ${id} ${terminalType}`);
+            console.log(`[SERVER]: Error ${action}, ${id}, ${terminalType}`);
           }
         break;
-        case '/system':
-          const mode = +q.query.mode as number;
+        case `/${ServerPages.system}`:
           switch (action){
-            case 'set-mode':
-              const doSetMode = await self.updateOperatingMode(mode);
-              if(doSetMode) {  res.write(`Operating mode ${mode} set`);
-              } else { res.write(`Operating mode ${mode} NOT set`); }
-            break;
-            case 'set-log-mode':
-              const doSetLogMode = await self.updateLogMode(Boolean(mode));
-              if(doSetLogMode) {  res.write(`Operating mode ${mode} set`);
-              } else { res.write(`Operating mode ${mode} NOT set`); }
+            case `${ServerCommands.set_mode}`:
+              const mode = +q.query.mode as number;
+              const doJob = await self.updateOperatingMode(mode);
+              res.write(`System mode set to ${mode}`);
             break;
             default:
+              res.write(`Action "${action}" not found for page "${page}"`);
             break;
           }
         break;
         default:
+          res.write(`Page "${page}" not found`);
         break;
       }
       

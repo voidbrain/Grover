@@ -16,7 +16,7 @@ export interface RoomInterface {
   deleted: boolean;
   lastUpdate: number;
   
-  setup: (serialNumber) => {};
+  setup?: () => {};
 }
 
 export interface RoomObject extends LocationInterface, RoomInterface {}

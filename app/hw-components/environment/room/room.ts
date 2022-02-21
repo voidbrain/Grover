@@ -20,6 +20,7 @@ class RoomComponent {
   probes:any[] = [];
   workers:any[] = [];
   pots: PotObject[] = [];
+  primaryPump: RoomWaterRefillComponent;
 
   // id: number;
   // isBlooming: boolean;
@@ -38,13 +39,12 @@ class RoomComponent {
     this.api = api;
     this.settings = settings;
     this.serialNumber = serialNumber;
-    this.setup(serialNumber);
+    // this.setup(serialNumber);
   }
 
-  async setup(serialNumber) {
+  async setup() {
     const self = this;
-    self.serialNumber = serialNumber;
-    const room: RoomInterface = await self.db.getItem("rooms", serialNumber, 'serialNumber') as RoomInterface;
+    const room: RoomInterface = await self.db.getItem("rooms", self.serialNumber, 'serialNumber') as RoomInterface;
     const location: LocationInterface = await self.db.getItem("locations", room.locationId, 'id') as LocationInterface;
 
     const probesArr: any[] = await self.db.getItems('probes_list', room.locationId, 'locationId') as any[];
@@ -67,12 +67,15 @@ class RoomComponent {
         switch(probe.probeType) {
           case ProbesTypes.Air_temperature: 
             probe.component = new TemperatureComponent(room.id, room.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
+            await probe.component.setup();
           break;
           case ProbesTypes.Water_level: 
             probe.component = null;
+            // await probe.component.setup();
           break;
           case ProbesTypes.Water_temperature: 
             probe.component = new TemperatureComponent(room.id, room.name, probe.id, probe.address, schedule, self.db, self.api, self.settings)
+            await probe.component.setup();
           break;
         }
       })
@@ -87,12 +90,16 @@ class RoomComponent {
         switch(worker.workerType) {
           case WorkersTypes.Fan: 
             worker.component = new FanComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
+            await worker.component.setup();
           break;
           case WorkersTypes.Light: 
             worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
+            await worker.component.setup();
           break;
-          case WorkersTypes.Water_refill: 
+          case WorkersTypes.Room_Water_refill: 
             worker.component = new RoomWaterRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            await worker.component.setup();
+            self.primaryPump = worker.component;
           break;
         }
       })
@@ -101,14 +108,10 @@ class RoomComponent {
     self.probes = probesArr;
     self.workers = workersArr;
 
-    const primaryPump: RoomWaterRefillComponent = self.workers.find(el => {
-      return el.workerType === WorkersTypes.Room_Water_refill;
-    });
-
     const potsLocation: LocationInterface[] = await self.db.getItems('locations', self.room.locationId, 'parent') as LocationInterface[];
     await Promise.all(
       potsLocation.map(async (el) => {
-        const pot = new PotComponent(primaryPump, self.db, this.api, self.settings) as unknown as PotObject;
+        const pot = new PotComponent(self.primaryPump, self.db, this.api, self.settings) as unknown as PotObject;
         await pot.setup(el.id);
         self.pots.push(pot);
       })

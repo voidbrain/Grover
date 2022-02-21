@@ -2,7 +2,7 @@ import moment from "moment";
 
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals } from '../../../services/settings/enums';
+import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
 
@@ -33,7 +33,6 @@ class FanComponent {
     this.api = api;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.setup();
   }
 
   async setup(){
@@ -62,7 +61,7 @@ class FanComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
-          action: 'ON',
+          action: ServerCommands.ON,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
@@ -102,12 +101,12 @@ class FanComponent {
       if(operatingMode >= systemOperatingMode) {
         const job = {
           owner, 
-          action: 'OFF',
+          action: ServerCommands.OFF,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
           type: Peripherals.Worker,
-          expectedTime: new Date(expectedTime), 
+          expectedTime: (expectedTime ? new Date(expectedTime) : null),
           executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,

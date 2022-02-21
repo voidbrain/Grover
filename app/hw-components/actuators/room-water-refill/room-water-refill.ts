@@ -2,7 +2,7 @@
 
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals } from '../../../services/settings/enums';
+import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
 import moment from 'moment';
@@ -36,7 +36,6 @@ class RoomWaterRefillComponent {
     this.db = db;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.setup(); 
   }
 
   async setup(){
@@ -44,6 +43,7 @@ class RoomWaterRefillComponent {
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
+        console.log('--> '+self.i2cAddress)
         this.primaryPump = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
@@ -71,12 +71,12 @@ class RoomWaterRefillComponent {
   }
 
   public async forward () {
-    console.log("[ROOM]: forward")
-    return new Promise<void>(resolve => {
+    console.log("[ROOM-WATER-REFILL]: forward")
+    return new Promise((resolve, reject) => {
       this.primaryPump.digitalWrite(this.pin1, this.primaryPump.HIGH);
       this.primaryPump.digitalWrite(this.pin2, this.primaryPump.LOW);
-      resolve();
-    });
+      resolve(true);
+    })
   };
 
   public async backward () {
@@ -106,12 +106,12 @@ class RoomWaterRefillComponent {
 
         const job = {
           owner, 
-          action: 'RUN',
+          action: ServerCommands.RUN,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
           type: Peripherals.Worker,
-          expectedTime: new Date(expectedTime), 
+          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
           executedTime: new Date,
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,

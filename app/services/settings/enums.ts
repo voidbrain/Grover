@@ -51,3 +51,17 @@ export enum WorkersTypes {
   Light = 6,
   Room_Water_refill = 7,
 }
+
+export enum ServerPages {
+  actuators = 'actuators',
+  system = 'system',
+}
+
+export enum ServerCommands {
+  RUN = 'RUN',
+  READ = 'READ',
+  ON = 'ON',
+  OFF = 'OFF',
+
+  set_mode = 'set_mode',
+}
