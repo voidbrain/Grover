@@ -6,11 +6,10 @@ import TemperatureComponent from '../../probes/temperature/temperature';
 // import WaterLevel from '../../probes/water-level/water-level';
 
 import WaterLoopComponent from '../../actuators/water-loop/water-loop';
-import WaterRefillComponent from '../../actuators/water-refill/water-refill';
+import RefillComponent from '../../actuators/water-refill/water-refill';
 import RoomWaterRefillComponent from '../../actuators/room-water-refill/room-water-refill';
-// import LightSwitchComponent from '../../actuators/light-switch/light-switch';
-// import PhBalancer from '../../actuators/ph-balancer/ph-balancer';
-// import EcBalancer from '../../actuators/ec-balancer/ec-balancer';
+import RoomPhDownRefillComponent from '../../actuators/room-phdown-refill/room-phdown-refill';
+import RoomNutrientRefillComponent from '../../actuators/room-nutrient-refill/room-nutrient-refill';
 
 import { LocationInterface } from '../../../interfaces/location';
 import { PotInterface } from '../../../interfaces/pot';
@@ -18,7 +17,9 @@ import { RoomInterface } from '../../../interfaces/room';
 
 class PotComponent {
   room: RoomInterface;
-  primaryPump: RoomWaterRefillComponent;
+  primaryWaterPump: RoomWaterRefillComponent;
+  primaryPhDownPump: RoomPhDownRefillComponent;
+  primaryNutrientPump: RoomNutrientRefillComponent;
   db;
   api;
   pot: PotInterface = null;
@@ -26,49 +27,10 @@ class PotComponent {
   probes:any[] = [];
   workers :any[]= [];
   settings;
-  // params: PotInterface;
-  // // waterRefill: WaterRefillComponent;
-  // id: number;
-  // type: string;
-  // probes = [];
-  // actuators = [];
-
-  // name: string;
-  // isBlooming: boolean;
-  // enabled: boolean;
-  // deleted: boolean;
-  // lastUpdate: number;
-  // idRoom: number;
   locationId: number;
 
   constructor(
-    // id, 
-    // type,
-    // waterTemperatureProbeId, 
-    // waterTemperatureProbeSchedule,
-    // /* 
-    // waterLevelProbeTriggerPin, waterLevelProbeEchoPin, 
-    // phProbeID, 
-    // ecProbeID, 
-    // waterLevelProbeID,
-    // waterLoopID,
-    // */ 
-    // waterRefillDNum,
-    // waterRefillEnPin,
-    // waterRefillIn1Pin,
-    // waterRefillIn2Pin,
-
-    // name,
-    // isBlooming,
-    // enabled,
-    // deleted,
-    // lastUpdate,
-    // idRoom,
-    /*, 
-    phBalancerID, 
-    ecBalancerID 
-    */ 
-    primaryPump, db, api, settings
+    primaryWaterPump, primaryPhDownPump, primaryNutrientPump, db, api, settings
   ) {
     
     // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
@@ -81,7 +43,9 @@ class PotComponent {
     // this.phBalancer = new PhBalancer(phBalancerID);
     // this.ecBalancer = new EcBalancer(ecBalancerID);
     
-    this.primaryPump = primaryPump;
+    this.primaryWaterPump = primaryWaterPump;
+     this.primaryPhDownPump = primaryPhDownPump;
+     this.primaryNutrientPump = primaryNutrientPump;
     this.db = db;
     this.api = api;
     this.settings = settings;
@@ -132,20 +96,20 @@ class PotComponent {
 
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         switch(worker.workerType) {
-          case WorkersTypes.Nutrient_refill: 
-            worker.component = null;
-            // await worker.component.setup();
-          break;
-          case WorkersTypes.PHdown_refill: 
-            worker.component = null;
-            // await worker.component.setup();
-          break;
+          // case WorkersTypes.Nutrient_refill: 
+          //   worker.component = null;
+          //   // await worker.component.setup();
+          // break;
+          // case WorkersTypes.PHdown_refill: 
+          //   worker.component = null;
+          //   // await worker.component.setup();
+          // break;
           case WorkersTypes.Water_loop: 
             worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
             await worker.component.setup();
           break;
-          case WorkersTypes.Water_refill: 
-            worker.component = new WaterRefillComponent(self.primaryPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+          case WorkersTypes.Pot_refill: 
+            worker.component = new RefillComponent(self.primaryWaterPump, self.primaryPhDownPump, self.primaryNutrientPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
             await worker.component.setup();
           break;
         }

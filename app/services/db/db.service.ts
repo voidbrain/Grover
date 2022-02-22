@@ -317,7 +317,6 @@ export class DbService {
     
       self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {
-          console.log(action, item, response)
           if(response){
             const row = response;
             let length;
@@ -331,7 +330,6 @@ export class DbService {
               });
               const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
               self.db.run(query, values, (err) => {
-                console.log(["[DB]: query, values", query, values])
                 if(err) {
                   console.log('[DB]: err', err)
                   reject;

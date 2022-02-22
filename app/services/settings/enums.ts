@@ -45,11 +45,13 @@ export enum ProbesTypes {
 export enum WorkersTypes {
   Fan = 1,
   Water_loop = 2,
-  Water_refill = 3,
+  Pot_refill = 3,
   Nutrient_refill = 4,
   PHdown_refill = 5,
   Light = 6,
   Room_Water_refill = 7,
+  Room_PhDown_refill = 8,
+  Room_Nutrient_refill = 9
 }
 
 export enum ServerPages {
@@ -58,7 +60,9 @@ export enum ServerPages {
 }
 
 export enum ServerCommands {
-  RUN = 'RUN',
+  RUN_WATER = 'RUN_WATER',
+  RUN_PH = 'RUN_PH',
+  RUN_NUTRIENT = 'RUN_NUTRIENT',
   READ = 'READ',
   ON = 'ON',
   OFF = 'OFF',

@@ -4,24 +4,17 @@
 import { CronJobInterface } from '../../../interfaces/cron-job';
 import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
 
-import RoomWaterRefillComponent from '../room-water-refill/room-water-refill';
-import RoomPhDownRefillComponent from '../room-phdown-refill/room-phdown-refill';
-import RoomNutrientRefillComponent from '../room-nutrient-refill/room-nutrient-refill';
-
 import schedule from 'node-schedule';
 import moment from 'moment';
 
-class RefillComponent {
+class RoomPhDownRefillComponent {
   id: number;
   parentId: number;
   parentName: string;
   i2cAddress: string; 
   pin1: number; 
   pin2: number;
-  primaryWaterPump: RoomWaterRefillComponent;
-  primaryPhDownPump: RoomPhDownRefillComponent;
-  primaryNutrientPump: RoomNutrientRefillComponent;
-  secondaryPump;
+  primaryPhDownPump
 
   serialNumber: { sn: string, found: boolean };
   
@@ -32,8 +25,7 @@ class RefillComponent {
 
   status: string;
 
-  constructor(primaryWaterPump: RoomWaterRefillComponent, primaryPhDownPump: RoomPhDownRefillComponent, primaryNutrientPump: RoomNutrientRefillComponent, 
-    parentId: number, parentName: string, id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, db, api, settings) {
+  constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, db, api, settings) {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
@@ -44,9 +36,6 @@ class RefillComponent {
     this.db = db;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
-    this.primaryWaterPump = primaryWaterPump;
-    this.primaryPhDownPump = primaryPhDownPump;
-    this.primaryNutrientPump = primaryNutrientPump;
   }
 
   async setup(){
@@ -54,17 +43,17 @@ class RefillComponent {
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
-        this.secondaryPump = new MCP23017({
+        this.primaryPhDownPump = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
           debug: false
         });
-        this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
-        this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
+        this.primaryPhDownPump.pinMode(this.pin1, this.primaryPhDownPump.OUTPUT);
+        this.primaryPhDownPump.pinMode(this.pin2, this.primaryPhDownPump.OUTPUT);
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
-      console.log('[WATER-REFILL]: EXIT on --> Raspberry OR i2c Address not found');
+      console.log('[ROOM-PhDown-REFILL]: EXIT on --> Raspberry OR i2c Address not found');
     }
   }
 
@@ -72,54 +61,52 @@ class RefillComponent {
     this.status = null;
   }
 
-  async delay (seconds) {
-    return new Promise<void>(resolve => {
+  public async delay (seconds) {
+    return new Promise(resolve => {
       return setTimeout(() => {
-        resolve();
+        resolve(true);
       }, seconds*1000);
     });
   }
 
-  async forward () {
-    return new Promise<void>(resolve => {
-      this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.HIGH);
-      this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.LOW);
-      resolve();
+  public async forward () {
+    console.log("[ROOM-PhDown-REFILL]: forward")
+    return new Promise((resolve, reject) => {
+      this.primaryPhDownPump.digitalWrite(this.pin1, this.primaryPhDownPump.HIGH);
+      this.primaryPhDownPump.digitalWrite(this.pin2, this.primaryPhDownPump.LOW);
+      resolve(true);
+    })
+  };
+
+  public async backward () {
+    return new Promise(resolve => {
+      this.primaryPhDownPump.digitalWrite(this.pin1, this.primaryPhDownPump.LOW);
+      this.primaryPhDownPump.digitalWrite(this.pin2, this.primaryPhDownPump.HIGH);
+      resolve(true);
     });
   };
 
-  async backward () {
-    return new Promise<void>(resolve => {
-      this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.LOW);
-      this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.HIGH);
-      resolve();
+  public async stop () {
+    console.log("[ROOM-PhDown-REFILL]: stop")
+    return new Promise(resolve => {
+      this.primaryPhDownPump.digitalWrite(this.pin1, this.primaryPhDownPump.LOW);
+      this.primaryPhDownPump.digitalWrite(this.pin2, this.primaryPhDownPump.LOW);
+      resolve(true);
     });
   };
 
-  async stop () {
-    return new Promise<void>(resolve => {
-      this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.LOW);
-      this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.LOW);
-      resolve();
-    });
-  };
-  
-  public async RUN_WATER({expectedTime, owner, operatingMode}) {
+  public async RUN_PH({expectedTime, owner, operatingMode}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if(operatingMode >= systemOperatingMode) {
-        await self.primaryWaterPump.forward();
-        await self.primaryWaterPump.delay(2000);
-        await self.primaryWaterPump.stop();
-        await self.delay(2000);
-        await self.forward();
-        await self.delay(2000);
-        await self.stop();
+        // await this.forward();
+        // await this.delay(2000);
+        // await this.stop();
 
         const job = {
           owner, 
-          action: ServerCommands.RUN_WATER,
+          action: ServerCommands.RUN_PH,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
@@ -133,14 +120,14 @@ class RefillComponent {
             
         switch(owner){
           case Owner.user: // manual action
-            console.log("[WATER-REFILL]: RUN_WATER manual", job);
+            console.log("[ROOM-PhDown-REFILL]: RUN_PH manual", job);
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[WATER-REFILL]: RUN_WATER scheduled", job);
+            console.log("[ROOM-PhDown-REFILL]: RUN_PH scheduled", job);
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -148,7 +135,7 @@ class RefillComponent {
           break;
         };
       } else {
-        console.log(`[WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log(`[ROOM-PhDown-REFILL]: RUN_PH operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
     });
   }
@@ -181,4 +168,4 @@ class RefillComponent {
   }
 
 }
-export default RefillComponent
+export default RoomPhDownRefillComponent

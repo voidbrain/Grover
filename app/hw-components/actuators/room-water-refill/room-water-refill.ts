@@ -14,7 +14,7 @@ class RoomWaterRefillComponent {
   i2cAddress: string; 
   pin1: number; 
   pin2: number;
-  primaryPump
+  primaryWaterPump
 
   serialNumber: { sn: string, found: boolean };
   
@@ -43,17 +43,17 @@ class RoomWaterRefillComponent {
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
-        this.primaryPump = new MCP23017({
+        this.primaryWaterPump = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
           debug: false
         });
-        this.primaryPump.pinMode(this.pin1, this.primaryPump.OUTPUT);
-        this.primaryPump.pinMode(this.pin2, this.primaryPump.OUTPUT);
+        this.primaryWaterPump.pinMode(this.pin1, this.primaryWaterPump.OUTPUT);
+        this.primaryWaterPump.pinMode(this.pin2, this.primaryWaterPump.OUTPUT);
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
-      console.log('[WATER-REFILL]: EXIT on --> Raspberry OR i2c Address not found');
+      console.log('[ROOM-WATER-REFILL]: EXIT on --> Raspberry OR i2c Address not found');
     }
   }
 
@@ -72,16 +72,16 @@ class RoomWaterRefillComponent {
   public async forward () {
     console.log("[ROOM-WATER-REFILL]: forward")
     return new Promise((resolve, reject) => {
-      this.primaryPump.digitalWrite(this.pin1, this.primaryPump.HIGH);
-      this.primaryPump.digitalWrite(this.pin2, this.primaryPump.LOW);
+      this.primaryWaterPump.digitalWrite(this.pin1, this.primaryWaterPump.HIGH);
+      this.primaryWaterPump.digitalWrite(this.pin2, this.primaryWaterPump.LOW);
       resolve(true);
     })
   };
 
   public async backward () {
     return new Promise(resolve => {
-      this.primaryPump.digitalWrite(this.pin1, this.primaryPump.LOW);
-      this.primaryPump.digitalWrite(this.pin2, this.primaryPump.HIGH);
+      this.primaryWaterPump.digitalWrite(this.pin1, this.primaryWaterPump.LOW);
+      this.primaryWaterPump.digitalWrite(this.pin2, this.primaryWaterPump.HIGH);
       resolve(true);
     });
   };
@@ -89,13 +89,13 @@ class RoomWaterRefillComponent {
   public async stop () {
     console.log("[ROOM-WATER-REFILL]: stop")
     return new Promise(resolve => {
-      this.primaryPump.digitalWrite(this.pin1, this.primaryPump.LOW);
-      this.primaryPump.digitalWrite(this.pin2, this.primaryPump.LOW);
+      this.primaryWaterPump.digitalWrite(this.pin1, this.primaryWaterPump.LOW);
+      this.primaryWaterPump.digitalWrite(this.pin2, this.primaryWaterPump.LOW);
       resolve(true);
     });
   };
 
-  public async RUN({expectedTime, owner, operatingMode}) {
+  public async RUN_WATER({expectedTime, owner, operatingMode}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -106,7 +106,7 @@ class RoomWaterRefillComponent {
 
         const job = {
           owner, 
-          action: ServerCommands.RUN,
+          action: ServerCommands.RUN_WATER,
           idWorker: self.id, 
           parentId: self.parentId, 
           parentName: self.parentName, 
@@ -120,14 +120,14 @@ class RoomWaterRefillComponent {
             
         switch(owner){
           case Owner.user: // manual action
-            console.log("[WATER-REFILL]: RUN manual", job);
+            console.log("[ROOM-WATER-REFILL]: RUN_WATER manual", job);
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[WATER-REFILL]: RUN scheduled", job);
+            console.log("[ROOM-WATER-REFILL]: RUN_WATER scheduled", job);
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -135,7 +135,7 @@ class RoomWaterRefillComponent {
           break;
         };
       } else {
-        console.log(`[WATER-REFILL]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log(`[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
     });
   }
