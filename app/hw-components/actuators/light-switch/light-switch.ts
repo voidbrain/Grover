@@ -75,14 +75,14 @@ class LightSwitchComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[LIGHT-SWITCH]: ON manual", job);
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
             console.log("[LIGHT-SWITCH]: ON scheduled", job);
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve;
             }
@@ -115,14 +115,14 @@ class LightSwitchComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[LIGHT-SWITCH]: OFF manual");
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
             console.log("[LIGHT-SWITCH]: OFF scheduled");
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve;
             }

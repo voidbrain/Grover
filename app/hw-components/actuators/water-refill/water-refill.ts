@@ -50,7 +50,7 @@ class WaterRefillComponent {
         this.secondaryPump = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
-          debug: true
+          debug: false
         });
         this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
         this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
@@ -102,14 +102,13 @@ class WaterRefillComponent {
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if(operatingMode >= systemOperatingMode) {
-        // console.log(self.primaryPump);
         await self.primaryPump.forward();
-        // await self.primaryPump.delay(2000);
-        // await self.primaryPump.stop();
-        // await self.delay(2000);
-        // await self.forward();
-        // await self.delay(2000);
-        // await self.stop();
+        await self.primaryPump.delay(2000);
+        await self.primaryPump.stop();
+        await self.delay(2000);
+        await self.forward();
+        await self.delay(2000);
+        await self.stop();
 
         const job = {
           owner, 
@@ -128,14 +127,14 @@ class WaterRefillComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[WATER-REFILL]: RUN manual", job);
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
             console.log("[WATER-REFILL]: RUN scheduled", job);
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
             }

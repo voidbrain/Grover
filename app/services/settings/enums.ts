@@ -63,5 +63,6 @@ export enum ServerCommands {
   ON = 'ON',
   OFF = 'OFF',
 
-  set_mode = 'set_mode',
+  SYS_LOG = 'SYS_LOG',
+  SET_MODE = 'SET_MODE',
 }

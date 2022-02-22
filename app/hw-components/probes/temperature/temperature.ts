@@ -73,7 +73,7 @@ class TemperatureComponent {
               switch(owner){
                 case Owner.user: // manual action
                   console.log("[TEMP]: READ manual", job);
-                  if (self.settings.logMode === true) { 
+                  if (self.settings.getLogMode() === true) { 
                     await self.db.logItem('probes_log', job);
                     resolve(job);
                   } else {
@@ -82,7 +82,7 @@ class TemperatureComponent {
                 break;
                 case Owner.schedule: // scheduled action
                   console.log("[TEMP]: READ schedule", job);
-                  if (self.settings.logMode === true) { 
+                  if (self.settings.getLogMode() === true) { 
                     await self.db.logItem('probes_log', job);
                     resolve;
                   }

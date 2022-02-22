@@ -24,13 +24,18 @@ export class SettingsService {
     
     'probes_list',
     'workers_list',
+    
     'probes_type',
     'workers_type',
-    'probes_schedule',
 
+    'probes_schedule',
     'workers_schedule',
+    
     'workers_log',
     'probes_log',
+
+    'system_schedule',
+    'system_log',
   ];
   private mainClockInterval:number = 5 * 1000; // ms
 
@@ -56,6 +61,10 @@ export class SettingsService {
 
   public getPurpose() :number {
     return this.purpose;
+  }
+
+  public getLogMode(): boolean {
+    return this.logMode;
   }
 
 

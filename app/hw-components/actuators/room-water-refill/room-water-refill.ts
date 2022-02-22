@@ -43,11 +43,10 @@ class RoomWaterRefillComponent {
     self.serialNumber = await self.settings.getSerialNumber();
     if(self.serialNumber.found && +self.i2cAddress) {
       import('node-mcp23017').then(({default: MCP23017}) => {
-        console.log('--> '+self.i2cAddress)
         this.primaryPump = new MCP23017({
           address: +self.i2cAddress,
           device: 1,
-          debug: true
+          debug: false
         });
         this.primaryPump.pinMode(this.pin1, this.primaryPump.OUTPUT);
         this.primaryPump.pinMode(this.pin2, this.primaryPump.OUTPUT);
@@ -63,9 +62,9 @@ class RoomWaterRefillComponent {
   }
 
   public async delay (seconds) {
-    return new Promise<void>(resolve => {
+    return new Promise(resolve => {
       return setTimeout(() => {
-        resolve();
+        resolve(true);
       }, seconds*1000);
     });
   }
@@ -80,18 +79,19 @@ class RoomWaterRefillComponent {
   };
 
   public async backward () {
-    return new Promise<void>(resolve => {
+    return new Promise(resolve => {
       this.primaryPump.digitalWrite(this.pin1, this.primaryPump.LOW);
       this.primaryPump.digitalWrite(this.pin2, this.primaryPump.HIGH);
-      resolve();
+      resolve(true);
     });
   };
 
   public async stop () {
-    return new Promise<void>(resolve => {
+    console.log("[ROOM-WATER-REFILL]: stop")
+    return new Promise(resolve => {
       this.primaryPump.digitalWrite(this.pin1, this.primaryPump.LOW);
       this.primaryPump.digitalWrite(this.pin2, this.primaryPump.LOW);
-      resolve();
+      resolve(true);
     });
   };
 
@@ -121,14 +121,14 @@ class RoomWaterRefillComponent {
         switch(owner){
           case Owner.user: // manual action
             console.log("[WATER-REFILL]: RUN manual", job);
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
             console.log("[WATER-REFILL]: RUN scheduled", job);
-            if (self.settings.logMode === true) { 
+            if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
             }
