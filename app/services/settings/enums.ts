@@ -65,8 +65,8 @@ export enum ServerPages {
 
 export enum ServerCommands {
   RUN_WATER = 'RUN_WATER',
-  RUN_PH = 'RUN_PH',
-  RUN_NUTRIENT = 'RUN_NUTRIENT',
+  RUN_PHDOWN = 'RUN_PHDOWN',
+  RUN_DOSE = 'RUN_DOSE',
   READ = 'READ',
   ON = 'ON',
   OFF = 'OFF',

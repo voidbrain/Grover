@@ -6,7 +6,7 @@ import TemperatureComponent from '../../probes/temperature/temperature';
 // import WaterLevel from '../../probes/water-level/water-level';
 
 import WaterLoopComponent from '../../actuators/water-loop/water-loop';
-import RefillComponent from '../../actuators/water-refill/water-refill';
+import RefillComponent from '../../actuators/pot-refill/pot-refill';
 import RoomWaterRefillComponent from '../../actuators/room-water-refill/room-water-refill';
 import RoomPhDownRefillComponent from '../../actuators/room-phdown-refill/room-phdown-refill';
 import RoomNutrientRefillComponent from '../../actuators/room-nutrient-refill/room-nutrient-refill';
@@ -28,40 +28,68 @@ class PotComponent {
   workers :any[]= [];
   settings;
   locationId: number;
+  phase;
 
   constructor(
     primaryWaterPump, primaryPhDownPump, primaryNutrientPump, db, api, settings
   ) {
-    
-    // this.waterRefill = { waterRefillDNum, waterRefillEnPin, waterRefillIn1Pin, waterRefillIn2Pin };
-    //// this.waterTemperature = new Temperature(waterTemperatureProbeId);
     // this.phProbe = new PhProbe(phProbeID);
     // this.ecProbe = new EcProbe(ecProbeID);
     // this.waterLevel = new WaterLevel(waterLevelProbeID, waterLevelProbeTriggerPin, waterLevelProbeEchoPin);
     // this.waterLoop = new WaterLoop(waterLoopID);
-    //// this.waterRefill = new WaterRefill(waterRefillID);
-    // this.phBalancer = new PhBalancer(phBalancerID);
-    // this.ecBalancer = new EcBalancer(ecBalancerID);
-    
     this.primaryWaterPump = primaryWaterPump;
-     this.primaryPhDownPump = primaryPhDownPump;
-     this.primaryNutrientPump = primaryNutrientPump;
+    this.primaryPhDownPump = primaryPhDownPump;
+    this.primaryNutrientPump = primaryNutrientPump;
     this.db = db;
     this.api = api;
     this.settings = settings;
-    // this.setup(locationId);
   }
 
   async setup(locationId) {
     const self = this;
-    
-
     self.locationId = locationId;
     const pot: PotInterface = await self.db.getItem("pots", locationId, 'locationId') as PotInterface;
     const location: LocationInterface = await self.db.getItem("locations", pot.locationId, 'id') as LocationInterface;
-
     const probesArr: any[] = await self.db.getItems('probes_list', pot.locationId, 'locationId') as any[];
     const workersArr: any[] = await self.db.getItems('workers_list', pot.locationId, 'locationId') as any[];
+
+    const plant: any = await self.db.getItem('plants', pot.id, 'idPot') as any;
+    const phases = await self.db.getItems('calendar_phases', plant.idCalendar, 'idCalendar') as any;
+    await Promise.all(
+      phases.map(async (phase) => { 
+        const dose = await self.db.getItem('calendar_doses',  phase.idDose, 'id') as any;
+        phase.dose = dose;
+      })
+    );
+
+    const epochDiffGrow: number = new Date().getTime() - new Date(plant.dayStartGrow).getTime();
+    plant.daysFromGrow = Math.ceil(epochDiffGrow / (1000 * 60 * 60 * 24));
+    const epochDiffBloom: number = new Date().getTime() - new Date(plant.dayStartBloom).getTime();
+    plant.daysFromBloom = (plant.dayStartBloom ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24)) : null);
+    let countingDays = (plant.daysFromBloom ? +plant.daysFromBloom : +plant.daysFromGrow);
+    let foundPhase: any;
+    phases.map((phase: any) => {
+      if (+countingDays>0 && ((plant.daysFromBloom && phase.isBlooming) || (!plant.daysFromBloom && !phase.isBlooming))) {
+        countingDays -= phase.duration;
+        foundPhase = phase;
+      }
+    });
+    self.phase = foundPhase;
+
+    /*
+    plant.phase.minEC
+    plant.phase.maxEC
+    plant.phase.minPh
+    plant.phase.maxPh
+    
+    plant.phase.dose.grow
+    plant.phase.dose.micro
+    plant.phase.dose.bloom
+    plant.phase.dose.ripen
+    plant.phase.dose.ECdown
+    */
+    
+    
 
     await Promise.all(
       probesArr.map(async (probe) => {
@@ -96,25 +124,18 @@ class PotComponent {
 
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         switch(worker.workerType) {
-          // case WorkersTypes.Nutrient_refill: 
-          //   worker.component = null;
-          //   // await worker.component.setup();
-          // break;
-          // case WorkersTypes.PHdown_refill: 
-          //   worker.component = null;
-          //   // await worker.component.setup();
-          // break;
           case WorkersTypes.Water_loop: 
             worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
             await worker.component.setup();
           break;
           case WorkersTypes.Pot_refill: 
-            worker.component = new RefillComponent(self.primaryWaterPump, self.primaryPhDownPump, self.primaryNutrientPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            worker.component = new RefillComponent(self.phase, self.primaryWaterPump, self.primaryPhDownPump, self.primaryNutrientPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
             await worker.component.setup();
           break;
         }
       })
     );
+    
     self.pot = pot;
     self.location = location;
     self.probes = probesArr;

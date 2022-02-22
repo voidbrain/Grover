@@ -16,26 +16,28 @@ export class SettingsService {
   private logMode:boolean = true;
 
   private datatables:string[] = [
+    'calendar_doses',
+    'calendar_phases',
+    'calendars',
     'locations', 
-    'pots',
-    'rooms',
     'operating_modes',
-    'settings',
     
+    'rooms',
+    'plants',
+    'pots',
     'probes_list',
-    'workers_list',
-    
-    'probes_type',
-    'workers_type',
-
-    'probes_schedule',
-    'workers_schedule',
-    
-    'workers_log',
     'probes_log',
 
-    'system_schedule',
+    'probes_schedule',
+    'probes_type',
+    'settings',
     'system_log',
+    'system_schedule',
+    
+    'workers_list',
+    'workers_log',
+    'workers_schedule',
+    'workers_type',
   ];
   private mainClockInterval:number = 5 * 1000; // ms
 

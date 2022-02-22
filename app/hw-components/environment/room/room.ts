@@ -1,12 +1,14 @@
 import { ProbesTypes, WorkersTypes } from '../../../services/settings/enums';
 
-import { RoomInterface } from '../../../interfaces/room'; 
-import { PotObject } from '../../../interfaces/pot'; 
 import { LocationInterface } from '../../../interfaces/location';
+import { RoomInterface } from '../../../interfaces/room'; 
 
+import { PotObject } from '../../../interfaces/pot'; 
 import PotComponent from '../pot/pot'; 
 
 import TemperatureComponent from '../../probes/temperature/temperature';
+import LightSwitchComponent from '../../actuators/light-switch/light-switch';
+import FanComponent from '../../actuators/fan-motor/fan-motor';
 
 import RoomWaterRefillComponent from '../../actuators/room-water-refill/room-water-refill';
 import RoomPhDownRefillComponent from '../../actuators/room-phdown-refill/room-phdown-refill';
@@ -18,8 +20,6 @@ import RoomRipenRefillComponent from '../../actuators/room-ripen-refill/room-rip
 
 import RoomNutrientRefillComponent from '../../actuators/room-nutrient-refill/room-nutrient-refill';
 
-import LightSwitchComponent from '../../actuators/light-switch/light-switch';
-import FanComponent from '../../actuators/fan-motor/fan-motor';
 class RoomComponent {
   db;
   api;
@@ -36,17 +36,8 @@ class RoomComponent {
   primaryBloomPump: RoomBloomRefillComponent;
   primaryRipenPump: RoomRipenRefillComponent;
   primaryNutrientPump: RoomNutrientRefillComponent;
-
-  // id: number;
-  // isBlooming: boolean;
   serialNumber: string;
-  // enabled: boolean;
-  // deleted: boolean;
-  // lastUpdate: number;
   
-
-
-
   constructor(
     serialNumber, db, api, settings
   ) {
@@ -54,16 +45,15 @@ class RoomComponent {
     this.api = api;
     this.settings = settings;
     this.serialNumber = serialNumber;
-    // this.setup(serialNumber);
   }
 
   async setup() {
     const self = this;
     const room: RoomInterface = await self.db.getItem("rooms", self.serialNumber, 'serialNumber') as RoomInterface;
     const location: LocationInterface = await self.db.getItem("locations", room.locationId, 'id') as LocationInterface;
-
     const probesArr: any[] = await self.db.getItems('probes_list', room.locationId, 'locationId') as any[];
     const workersArr: any[] = await self.db.getItems('workers_list', room.locationId, 'locationId') as any[];
+
     probesArr.forEach(async (el) => {
       el.schedule = await self.db.getItem('probes_schedule', el.id, 'idProbe') as any;
     });
@@ -166,7 +156,6 @@ class RoomComponent {
         self.pots.push(pot);
       })
     );
-  
   }
 
 }

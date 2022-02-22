@@ -133,57 +133,6 @@ class RoomNutrientRefillComponent {
     await self[pump].stop();
   };
 
-  public async RUN_NUTRIENT({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if(operatingMode >= systemOperatingMode) {
-        const pumpGro = 'Gro';
-        const pumpMicro = 'Micro';
-        const pumpBloom = 'Bloom';
-        const pumpRipen = 'Ripen';
-
-        await this.forward(pumpGro);
-        await this.delay(2000);
-        await this.stop(pumpGro);
-        // ...
-
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_NUTRIENT,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[ROOM-Nutrient-REFILL]: RUN_NUTRIENT manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[ROOM-Nutrient-REFILL]: RUN_NUTRIENT scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[ROOM-Nutrient-REFILL]: RUN_NUTRIENT operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
   async setSchedule(id: number, scheduledCrons: any[]){
     const self = this;
     if(id && scheduledCrons) {

@@ -95,51 +95,6 @@ class RoomGroRefillComponent {
     });
   };
 
-  public async RUN_PH({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if(operatingMode >= systemOperatingMode) {
-        // await this.forward();
-        // await this.delay(2000);
-        // await this.stop();
-
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_PH,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[ROOM-Gro-REFILL]: RUN_PH manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[ROOM-Gro-REFILL]: RUN_PH scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[ROOM-Gro-REFILL]: RUN_PH operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
   async setSchedule(id: number, scheduledCrons: any[]){
     const self = this;
     if(id && scheduledCrons) {

@@ -160,9 +160,9 @@ export class DbService {
     });
   }
 
-  async getItem(table, value, column='id'): Promise<LocationInterface | RoomInterface | PotInterface> {
+  async getItem(table, value, column='id'): Promise<LocationInterface | RoomInterface | PotInterface | any> {
     const self = this;
-    const promise = new Promise<LocationInterface | RoomInterface | PotInterface>(resolve => {
+    const promise = new Promise<LocationInterface | RoomInterface | PotInterface | any>(resolve => {
         if(value){
           const query = `SELECT * from ${table} WHERE ${column}=(?)`;
           // console.log('[DB]: get', query, [value])
@@ -171,6 +171,7 @@ export class DbService {
               console.log('[DB]:', err)
               throw err;
             }
+            // console.log('[DB]: get', query, row)
             resolve(row);
           });
         } else {

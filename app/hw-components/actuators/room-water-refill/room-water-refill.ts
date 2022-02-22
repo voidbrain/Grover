@@ -95,50 +95,50 @@ class RoomWaterRefillComponent {
     });
   };
 
-  public async RUN_WATER({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if(operatingMode >= systemOperatingMode) {
-        // await this.forward();
-        // await this.delay(2000);
-        // await this.stop();
+  // public async RUN_WATER({expectedTime, owner, operatingMode}) {
+  //   const self = this;
+  //   return new Promise(async (resolve) => {
+  //     const systemOperatingMode = self.settings.getOperatingMode();
+  //     if(operatingMode >= systemOperatingMode) {
+  //       // await this.forward();
+  //       // await this.delay(2000);
+  //       // await this.stop();
 
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_WATER,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
+  //       const job = {
+  //         owner, 
+  //         action: ServerCommands.RUN_WATER,
+  //         idWorker: self.id, 
+  //         parentId: self.parentId, 
+  //         parentName: self.parentName, 
+  //         type: Peripherals.Worker,
+  //         expectedTime: (expectedTime ? new Date(expectedTime) : null), 
+  //         executedTime: new Date,
+  //         operatingMode: operatingMode,
+  //         systemOperatingMode: systemOperatingMode,
+  //         serialNumber: self.serialNumber.sn,
+  //       };
             
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[ROOM-WATER-REFILL]: RUN_WATER manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[ROOM-WATER-REFILL]: RUN_WATER scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
+  //       switch(owner){
+  //         case Owner.user: // manual action
+  //           console.log("[ROOM-WATER-REFILL]: RUN_WATER manual", job);
+  //           if (self.settings.getLogMode() === true) { 
+  //             await self.db.logItem('workers_log', job); 
+  //             resolve(job);
+  //           }
+  //         break;
+  //         case Owner.schedule: // scheduled action
+  //           console.log("[ROOM-WATER-REFILL]: RUN_WATER scheduled", job);
+  //           if (self.settings.getLogMode() === true) { 
+  //             await self.db.logItem('workers_log', job); 
+  //             resolve;
+  //           }
+  //         break;
+  //       };
+  //     } else {
+  //       console.log(`[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+  //     }
+  //   });
+  // }
 
   async setSchedule(id: number, scheduledCrons: any[]){
     const self = this;
