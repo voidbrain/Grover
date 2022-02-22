@@ -150,6 +150,9 @@ class Main {
     });
   }
 
+  hasMethod(subject, methodName) {
+    return subject != null && typeof subject[methodName] == "function";
+  }
   
   /**
    * Webserver
@@ -185,12 +188,18 @@ class Main {
             if(environment) {
               const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
               if(el){
-                console.log( action, el.component);
-                const doJob = await el.component[action]({now, owner, operatingMode});
-                res.write(JSON.stringify(doJob));
+                const hasMethod = self.hasMethod(el.component, action);
+                if(hasMethod) {
+                  const doJob = await el.component[action]({now, owner, operatingMode});
+                  console.log(JSON.stringify(doJob));
+                  res.write(JSON.stringify(doJob));
+                } else {
+                  console.log(`Action ${action} not found on ${JSON.stringify(el.component)}`);
+                  res.write(`Action ${action} not found on ${JSON.stringify(el.component)}`);
+                }
+                
               } else {
                 console.log(`[SERVER]: Error el.component not found`);
-                console.log(`[SERVER]: \n*******\n ${el} \n*******\n`);
               }
              
             } else {

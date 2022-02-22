@@ -10,6 +10,12 @@ import TemperatureComponent from '../../probes/temperature/temperature';
 
 import RoomWaterRefillComponent from '../../actuators/room-water-refill/room-water-refill';
 import RoomPhDownRefillComponent from '../../actuators/room-phdown-refill/room-phdown-refill';
+
+import RoomGroRefillComponent from '../../actuators/room-gro-refill/room-gro-refill';
+import RoomMicroRefillComponent from '../../actuators/room-micro-refill/room-micro-refill';
+import RoomBloomRefillComponent from '../../actuators/room-bloom-refill/room-bloom-refill';
+import RoomRipenRefillComponent from '../../actuators/room-ripen-refill/room-ripen-refill';
+
 import RoomNutrientRefillComponent from '../../actuators/room-nutrient-refill/room-nutrient-refill';
 
 import LightSwitchComponent from '../../actuators/light-switch/light-switch';
@@ -25,6 +31,10 @@ class RoomComponent {
   pots: PotObject[] = [];
   primaryWaterPump: RoomWaterRefillComponent;
   primaryPhDownPump: RoomPhDownRefillComponent;
+  primaryGroPump: RoomGroRefillComponent;
+  primaryMicroPump: RoomMicroRefillComponent;
+  primaryBloomPump: RoomBloomRefillComponent;
+  primaryRipenPump: RoomRipenRefillComponent;
   primaryNutrientPump: RoomNutrientRefillComponent;
 
   // id: number;
@@ -111,12 +121,32 @@ class RoomComponent {
             await worker.component.setup();
             self.primaryPhDownPump = worker.component;
           break;
+          case WorkersTypes.Room_Gro_refill: 
+            worker.component = new RoomGroRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            await worker.component.setup();
+            self.primaryGroPump = worker.component;
+          break;
+          case WorkersTypes.Room_Micro_refill: 
+            worker.component = new RoomMicroRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            await worker.component.setup();
+            self.primaryMicroPump = worker.component;
+          break;
+          case WorkersTypes.Room_Bloom_refill: 
+            worker.component = new RoomBloomRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            await worker.component.setup();
+            self.primaryBloomPump = worker.component;
+          break;
+          case WorkersTypes.Room_Ripen_refill: 
+            worker.component = new RoomRipenRefillComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
+            await worker.component.setup();
+            self.primaryRipenPump = worker.component;
+          break;
           case WorkersTypes.Room_Nutrient_refill: 
             worker.component = new RoomNutrientRefillComponent(room.id, room.name, worker.id, 
-              worker.i2cAddressGro, worker.pin1Gro, worker.pin2Gro, 
-              worker.i2cAddressMicro, worker.pin1Micro, worker.pin2Micro, 
-              worker.i2cAddressBloom, worker.pin1Bloom, worker.pin2Bloom, 
-              worker.i2cAddressRipen, worker.pin1Ripen, worker.pin2Ripen, 
+              self.primaryGroPump, 
+              self.primaryMicroPump,
+              self.primaryBloomPump,
+              self.primaryRipenPump,
               schedule, self.db, self.api, self.settings)
             await worker.component.setup();
             self.primaryNutrientPump = worker.component;

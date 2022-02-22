@@ -51,7 +51,11 @@ export enum WorkersTypes {
   Light = 6,
   Room_Water_refill = 7,
   Room_PhDown_refill = 8,
-  Room_Nutrient_refill = 9
+  Room_Nutrient_refill = 9,
+  Room_Gro_refill = 10,
+  Room_Micro_refill = 11,
+  Room_Bloom_refill = 12,
+  Room_Ripen_refill = 13,
 }
 
 export enum ServerPages {
