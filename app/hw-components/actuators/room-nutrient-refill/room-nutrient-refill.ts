@@ -101,11 +101,11 @@ class RoomNutrientRefillComponent {
     this.status = null;
   }
 
-  public async delay (seconds) {
+  public async delay (milliseconds) {
     return new Promise(resolve => {
       return setTimeout(() => {
         resolve(true);
-      }, seconds*1000);
+      }, milliseconds);
     });
   }
 

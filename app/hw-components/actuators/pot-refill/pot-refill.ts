@@ -67,6 +67,25 @@ class RefillComponent {
         });
         this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
         this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
+
+        this.secondaryPump.pinMode(this.primaryWaterPump.pin1, this.secondaryPump.OUTPUT);
+        this.secondaryPump.pinMode(this.primaryWaterPump.pin2, this.secondaryPump.OUTPUT);
+
+        // this.secondaryPump.pinMode(this.primaryPhDownPump.pin1, this.secondaryPump.OUTPUT);
+        // this.secondaryPump.pinMode(this.primaryPhDownPump.pin2, this.secondaryPump.OUTPUT);
+
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpGro.pin1, this.secondaryPump.OUTPUT);
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpGro.pin2, this.secondaryPump.OUTPUT);
+
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpMicro.pin1, this.secondaryPump.OUTPUT);
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpMicro.pin2, this.secondaryPump.OUTPUT);
+
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpBloom.pin1, this.secondaryPump.OUTPUT);
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpBloom.pin2, this.secondaryPump.OUTPUT);
+
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpRipen.pin1, this.secondaryPump.OUTPUT);
+        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpRipen.pin2, this.secondaryPump.OUTPUT);
+
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
@@ -78,35 +97,67 @@ class RefillComponent {
     this.status = null;
   }
 
-  async delay (seconds) {
-    return new Promise<void>(resolve => {
+  async delay (milliseconds) {
+    return new Promise(resolve => {
       return setTimeout(() => {
-        resolve();
-      }, seconds*1000);
+        resolve(true);
+      }, milliseconds);
     });
   }
 
   async forward () {
-    return new Promise<void>(resolve => {
+    return new Promise(resolve => {
       this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.HIGH);
       this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.LOW);
-      resolve();
+      resolve(true);
     });
   };
 
   async backward () {
-    return new Promise<void>(resolve => {
+    return new Promise(resolve => {
       this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.LOW);
       this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.HIGH);
-      resolve();
+      resolve(true);
     });
   };
 
   async stop () {
-    return new Promise<void>(resolve => {
+    return new Promise(resolve => {
       this.secondaryPump.digitalWrite(this.pin1, this.secondaryPump.LOW);
       this.secondaryPump.digitalWrite(this.pin2, this.secondaryPump.LOW);
-      resolve();
+      resolve(true);
+    });
+  };
+
+  async delayTest (milliseconds) {
+    return new Promise(resolve => {
+      return setTimeout(() => {
+        resolve(true);
+      }, milliseconds);
+    });
+  }
+
+  async forwardTest (pin1, pin2) {
+    return new Promise(resolve => {
+      this.secondaryPump.digitalWrite(pin1, this.secondaryPump.HIGH);
+      this.secondaryPump.digitalWrite(pin2, this.secondaryPump.LOW);
+      resolve(true);
+    });
+  };
+
+  async backwardTest (pin1, pin2) {
+    return new Promise(resolve => {
+      this.secondaryPump.digitalWrite(pin1, this.secondaryPump.LOW);
+      this.secondaryPump.digitalWrite(pin2, this.secondaryPump.HIGH);
+      resolve(true);
+    });
+  };
+
+  async stopTest (pin1, pin2) {
+    return new Promise(resolve => {
+      this.secondaryPump.digitalWrite(pin1, this.secondaryPump.LOW);
+      this.secondaryPump.digitalWrite(pin2, this.secondaryPump.LOW);
+      resolve(true);
     });
   };
   
@@ -158,6 +209,118 @@ class RefillComponent {
         };
       } else {
         console.log(`[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+      }
+    });
+  }
+
+  public async RUN_WATER_TEST({expectedTime, owner, operatingMode}) {
+    const self = this;
+    return new Promise(async (resolve) => {
+      const systemOperatingMode = self.settings.getOperatingMode();
+      const slave = true;
+      if(operatingMode >= systemOperatingMode) {
+        const delay = 2000;
+
+        console.log('start 1');
+
+        // console.log(self.primaryWaterPump)
+
+        await self.primaryWaterPump.forward();
+        await self.primaryWaterPump.delay(delay);
+        await self.primaryWaterPump.stop();
+        
+        console.log('start 2');
+        await self.delay(delay);
+        await self.forward();
+        await self.delay(delay);
+        await self.stop();
+        console.log('end 2');
+
+        const job = {
+          owner, 
+          action: ServerCommands.RUN_WATER_TEST,
+          idWorker: self.id, 
+          parentId: self.parentId, 
+          parentName: self.parentName, 
+          type: Peripherals.Worker,
+          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
+          executedTime: new Date,
+          operatingMode: operatingMode,
+          systemOperatingMode: systemOperatingMode,
+          serialNumber: self.serialNumber.sn,
+        };
+            
+        switch(owner){
+          case Owner.user: // manual action
+            console.log("[POT-REFILL]: RUN_WATER_TEST manual", job);
+            if (self.settings.getLogMode() === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve(job);
+            }
+          break;
+          case Owner.schedule: // scheduled action
+            console.log("[POT-REFILL]: RUN_WATER_TEST scheduled", job);
+            if (self.settings.getLogMode() === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve;
+            }
+          break;
+        };
+      } else {
+        console.log(`[POT-REFILL]: RUN_WATER_TEST operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+      }
+    });
+  }
+
+  public async RUN_SINGLE_TEST({expectedTime, owner, operatingMode}) {
+    const self = this;
+    return new Promise(async (resolve) => {
+      const systemOperatingMode = self.settings.getOperatingMode();
+      const slave = true;
+      if(operatingMode >= systemOperatingMode) {
+        const delay = 2000;
+
+        console.log('start 1');
+
+        // console.log(self.primaryWaterPump)
+
+        await self.delay(delay);
+        await self.forward();
+        await self.delay(delay);
+        await self.stop();
+        
+        const job = {
+          owner, 
+          action: ServerCommands.RUN_SINGLE_TEST,
+          idWorker: self.id, 
+          parentId: self.parentId, 
+          parentName: self.parentName, 
+          type: Peripherals.Worker,
+          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
+          executedTime: new Date,
+          operatingMode: operatingMode,
+          systemOperatingMode: systemOperatingMode,
+          serialNumber: self.serialNumber.sn,
+        };
+            
+        switch(owner){
+          case Owner.user: // manual action
+            console.log("[POT-REFILL]: RUN_SINGLE_TEST manual", job);
+            if (self.settings.getLogMode() === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve(job);
+            }
+          break;
+          case Owner.schedule: // scheduled action
+            console.log("[POT-REFILL]: RUN_SINGLE_TEST scheduled", job);
+            if (self.settings.getLogMode() === true) { 
+              await self.db.logItem('workers_log', job); 
+              resolve;
+            }
+          break;
+        };
+      } else {
+        console.log(`[POT-REFILL]: RUN_SINGLE_TEST operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
     });
   }

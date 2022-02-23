@@ -3,37 +3,53 @@ import MCP23017 from 'node-mcp23017';
 main ();
 
 async function main(){
+
+  const pin1 = 0;
+  const pin2 = 1;
+  const pin3 = 6;
+  const pin4 = 7;
+
   process.on("SIGINT", () => {
     console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
   });
 
-  const mcp = new MCP23017({
+  const mcp1 = new MCP23017({
     address: 0x23, 
     device: 1,
     debug: true
   });
 
-  mcp.pinMode(0, mcp.OUTPUT);
-  mcp.pinMode(1, mcp.OUTPUT);
+  const mcp2 = new MCP23017({
+    address: 0x23, 
+    device: 1,
+    debug: true
+  });
+
+  mcp1.pinMode(pin1, mcp1.OUTPUT);
+  mcp1.pinMode(pin2, mcp1.OUTPUT);
+
+  mcp2.pinMode(pin3, mcp2.OUTPUT);
+  mcp2.pinMode(pin4, mcp2.OUTPUT);
+
+  // mcp1.pinMode(pin3, mcp2.OUTPUT);
+  // mcp1.pinMode(pin4, mcp2.OUTPUT);
   
-  
-  mcp.digitalWrite(0, mcp.HIGH); 
-  mcp.digitalWrite(1, mcp.LOW); 
-  
+  mcp1.digitalWrite(pin1, mcp1.HIGH); 
+  mcp1.digitalWrite(pin2, mcp1.LOW); 
 
   setTimeout(() => {
-    mcp.digitalWrite(0, mcp.LOW); 
-    mcp.digitalWrite(1, mcp.LOW); 
-    
+    mcp1.digitalWrite(pin1, mcp1.LOW); 
+    mcp1.digitalWrite(pin2, mcp1.LOW); 
 
+
+    mcp2.digitalWrite(pin3, mcp2.HIGH); 
+    mcp2.digitalWrite(pin4, mcp2.LOW); 
+  
     setTimeout(() => {
-      mcp.digitalWrite(0, mcp.LOW); 
-      mcp.digitalWrite(1, mcp.HIGH); 
+      mcp2.digitalWrite(pin3, mcp2.LOW); 
+      mcp2.digitalWrite(pin4, mcp2.LOW); 
+    }, 2000);
 
-      setTimeout(()=>{
-        mcp.digitalWrite(0, mcp.LOW); 
-        mcp.digitalWrite(1, mcp.LOW); 
-      },2000)
-    }, 2000)
+
   }, 2000);
 }

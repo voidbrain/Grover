@@ -186,7 +186,7 @@ class Main {
             const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
             const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
             if(environment) {
-              const el = environment[terminalType+'s'].find(el => +el[`locationId`] === +terminal.locationId);
+              const el = environment[terminalType+'s'].find(el => +el[`id`] === +id);
               if(el){
                 const hasMethod = self.hasMethod(el.component, action);
                 if(hasMethod) {
@@ -194,8 +194,11 @@ class Main {
                   console.log(JSON.stringify(doJob));
                   res.write(JSON.stringify(doJob));
                 } else {
-                  console.log(`Action ${action} not found on ${JSON.stringify(el.component)}`);
-                  res.write(`Action ${action} not found on ${JSON.stringify(el.component)}`);
+                  console.log('##################')
+                  console.log(`[SERVER]: Action ${action} not found`);
+                  console.log(el.component);
+                  console.log('##################')
+                  res.write(`[SERVER]: Action ${action} not found`);
                 }
                 
               } else {
@@ -216,7 +219,7 @@ class Main {
             case `${ServerCommands.SET_MODE}`:
               const mode = +q.query.mode as number;
               const doJob = await self.updateOperatingMode(mode);
-              res.write(`System mode set to ${mode}`);
+              res.write(`System mode set to ${doJob}`);
             break;
             default:
               res.write(`Action "${action}" not found for page "${page}"`);

@@ -73,4 +73,7 @@ export enum ServerCommands {
 
   SYS_LOG = 'SYS_LOG',
   SET_MODE = 'SET_MODE',
+
+  RUN_WATER_TEST = 'RUN_WATER_TEST',
+  RUN_SINGLE_TEST = 'RUN_SINGLE_TEST',
 }
