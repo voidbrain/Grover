@@ -1,7 +1,7 @@
 export enum OperatingModes {
-  On = 1,
-  Off = 2,
-  Silent = 3
+  Off = 1,
+  Silent = 2,
+  On = 3,
 }
 
 export enum LogModes {

@@ -2,6 +2,8 @@
 
 import http from 'http';
 import url from 'url';
+import * as fs from 'fs';
+import * as util from 'util';
 import { LocalStorage } from 'node-localstorage';
 import moment from 'moment';
 import schedule from 'node-schedule';
@@ -37,6 +39,26 @@ class Main {
   constructor(){ this.appSetup(); }
 
   async appSetup(){
+
+    var log_file_err= fs.createWriteStream('./error.log',{flags:'a'}); 
+    const now = moment();
+
+    // process.on('uncaughtException', function(err) {
+    //   console.log('Caught exception: ' + err);
+    //   const now = moment();
+    //   log_file_err.write(now + ' – ' + util.format('Caught exception: '+err) + '\n');
+    // });
+    process
+      .on('unhandledRejection', (reason, p) => {
+        console.error(reason, 'Unhandled Rejection at Promise', p);
+        log_file_err.write(now + ' – ' + util.format('Unhandled Rejection at Promise: '+ p) + '\n');
+      })
+      .on('uncaughtException', err => {
+        console.error(err, 'Uncaught Exception thrown');
+        log_file_err.write(now + ' – ' + util.format('Caught exception: '+err) + '\n');
+        process.exit(1);
+      });
+
     const self = this;
     await self.db.load();
     self.clock = self.settings.getClockInterval();
@@ -161,6 +183,10 @@ class Main {
   start(){
     const self = this;
     self.server.on('request', async (req, res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+      res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
+
       res.writeHead(200, {'Content-Type': 'text/plain'});
       const q = url.parse(req.url, true);
       if (q.pathname === '/favicon.ico') {
