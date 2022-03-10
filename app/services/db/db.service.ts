@@ -7,6 +7,8 @@ import sqlite3 from 'sqlite3';
 import * as path from 'path';
 import moment from 'moment';
 
+import { ServerCommands } from '../../../app/services/settings/enums';
+
 export class DbService {
 
   settings;
@@ -263,7 +265,7 @@ export class DbService {
     const promise = new Promise<LocationInterface[] | RoomInterface[]>((resolve, reject) => {
       const lastUpdate = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
       const endpoint = 'endpoint';
-      const action = 'LOG';
+      const action = ServerCommands.LOG;
     
       self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {
@@ -314,7 +316,7 @@ export class DbService {
     const promise = new Promise<LocationInterface[] | RoomInterface[]>((resolve, reject) => {
       const lastUpdate = this.localStorage.getItem(this.settings.getAppName()+'_'+table);
       const endpoint = 'endpoint';
-      const action = 'LOG';
+      const action = ServerCommands.LOG;
     
       self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {

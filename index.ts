@@ -68,7 +68,7 @@ class Main {
     self.webServerSetup();
 
     const endpoint = 'endpoint';
-    const action = 'START';
+    const action = ServerCommands.START;
     const lastUpdate = self.localStorage.getItem(self.settings.getAppName());
 
     const device: any = await self.api.get(endpoint, lastUpdate, action, self.serialNumber.sn);

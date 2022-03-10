@@ -17,11 +17,6 @@ export enum Purposes {
 export enum Owner {
   schedule = 'schedule',
   user = 'user'
-};
-
-export enum Actions {
-  read = 'read',
-  execute = 'execute'
 }
 
 export enum Environments {
@@ -73,6 +68,8 @@ export enum ServerCommands {
 
   SYS_LOG = 'SYS_LOG',
   SET_MODE = 'SET_MODE',
+  START = 'START',
+  LOG = 'LOG',
 
   RUN_WATER_TEST = 'RUN_WATER_TEST',
   RUN_SINGLE_TEST = 'RUN_SINGLE_TEST',
