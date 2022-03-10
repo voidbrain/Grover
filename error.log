@@ -1,3 +1,11 @@
 Caught exception: Error: Could not read device content. Device '28-0119140ee870' not found
 1645955139428 – Caught exception: Error: Could not read device content. Device '28-0119140ee870' not found
 1646007314904 – Caught exception: Error: Could not read device content. Device '28-0119140ee870' not found
+1646945487310 – Caught exception: Error: SQLITE_ERROR: table calendar_phases has no column named minTemp
+1646945619052 – Caught exception: Error: SQLITE_ERROR: near ")": syntax error
+1646945762197 – Caught exception: Error: SQLITE_ERROR: near ")": syntax error
+1646946004363 – Caught exception: Error: SQLITE_ERROR: near ")": syntax error
+1646946163206 – Caught exception: Error: SQLITE_ERROR: near ")": syntax error
+1646947839413 – Unhandled Rejection at Promise: [object Promise]
+1646948374744 – Unhandled Rejection at Promise: [object Promise]
+1646948474757 – Unhandled Rejection at Promise: [object Promise]

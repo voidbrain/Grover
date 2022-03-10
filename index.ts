@@ -71,8 +71,9 @@ class Main {
     const action = ServerCommands.START;
     const lastUpdate = self.localStorage.getItem(self.settings.getAppName());
 
-    const device: any = await self.api.get(endpoint, lastUpdate, action, self.serialNumber.sn);
-    self.settings.setOperatingMode(device.operatingMode);
+    const device: any = await self.api.get(endpoint, lastUpdate, action, self.serialNumber.sn, self.webServerPort);
+    console.log(device);
+    self.settings.setOperatingMode(device.item.operatingMode);
 
     console.log('[main] => initdb done');
     self.main();

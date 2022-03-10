@@ -67,7 +67,7 @@ class FanComponent {
           parentName: self.parentName, 
           type: Peripherals.Worker,
           expectedTime, 
-          executedTime: moment(),
+          executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,

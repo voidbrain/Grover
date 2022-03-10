@@ -25,10 +25,10 @@ export class ApiService {
     //   });
     // }
     
-    async get(endpont: string, lastUpdate?: any, action?: any, serialNumber?: any) {
+    async get(endpont: string, lastUpdate?: any, action?: any, serialNumber?: any, port?: any) {
       return new Promise(async (resolve, reject) => {
         const path = `${this.settings.getRemoteServerEndpoint()}${endpont}` + 
-        `?lastUpdate=${lastUpdate}&action=${action}&serialNumber=${serialNumber}`;
+        `?lastUpdate=${lastUpdate}&action=${action}&serialNumber=${serialNumber}&port=${port}`;
         
         const res = await this.httpsGet({
           hostname: this.settings.getRemoteServerHostname(),

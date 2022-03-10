@@ -2,7 +2,7 @@ import moment from "moment";
 
 
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
+import { Owner, Peripherals, ServerCommands, DevicesStatus } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
 
@@ -15,7 +15,7 @@ class LightSwitchComponent {
   i2cAddress: string; 
   pin: number; 
   status: string;
-  defaultStatus: string = 'OFF';
+  defaultStatus: string = DevicesStatus.OFF;
   scheduledCrons: any[] = []; 
   api;
   settings;
@@ -67,7 +67,7 @@ class LightSwitchComponent {
           parentName: self.parentName, 
           type: Peripherals.Worker,
           expectedTime, 
-          executedTime: moment(),
+          executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,

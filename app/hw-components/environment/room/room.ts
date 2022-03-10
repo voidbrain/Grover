@@ -93,11 +93,11 @@ class RoomComponent {
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         
         switch(worker.workerType) {
-          case WorkersTypes.Fan: 
+          case WorkersTypes.Room_Fan: 
             worker.component = new FanComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
             await worker.component.setup();
           break;
-          case WorkersTypes.Light: 
+          case WorkersTypes.Room_Light: 
             worker.component = new LightSwitchComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
             await worker.component.setup();
           break;

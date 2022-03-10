@@ -146,7 +146,7 @@ export class DbService {
                   const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
                   self.db.run(query, values, (err) => {
                     if(err) {
-                      console.log('[DB]:', err)
+                      console.log('[DB]: syncData err ', err, query)
                       reject;
                       throw err;
                     }
@@ -170,7 +170,7 @@ export class DbService {
           // console.log('[DB]: get', query, [value])
           self.db.get(query, [value], (err, row) => {
             if(err) {
-              console.log('[DB]:', err)
+              console.log('[DB]: getItem err ', query, err)
               throw err;
             }
             // console.log('[DB]: get', query, row)
@@ -285,7 +285,7 @@ export class DbService {
               self.db.run(query, values, (err) => {
                 // console.log(["[DB]: query, values", query, values])
                 if(err) {
-                  console.log('[DB]: err', err)
+                  console.log('[DB]: INSERT or REPLACE err', err)
                   reject;
                   throw err;
                 }
@@ -298,16 +298,6 @@ export class DbService {
             console.log('[DB]: API POST response undefined', response);
           }
         });
-
-        // const tx = this.db.transaction(objectStore, 'readwrite');
-        // const store = tx.objectStore(objectStore);
-        // const promise = store.put(response.items[0]);
-        // promise.onsuccess = function(e){
-        //   resolve();
-        // };
-        // promise.onerror = function(e){
-        //   console.error('[DB]: Error adding: '+e);
-        // };
       }); 
   }
 
@@ -318,9 +308,10 @@ export class DbService {
       const endpoint = 'endpoint';
       const action = ServerCommands.LOG;
     
-      self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
+      self.api.post(endpoint, lastUpdate, action, {item: item}, self.serialNumber)
         .then((response: any) => {
           if(response){
+            console.log(endpoint, lastUpdate, action, {item: item}, self.serialNumber, response)
             const row = response;
             let length;
             const values:any[] = [];
@@ -334,7 +325,7 @@ export class DbService {
               const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
               self.db.run(query, values, (err) => {
                 if(err) {
-                  console.log('[DB]: err', err)
+                  console.log('[DB]: logItem err', query, err)
                   reject;
                   throw err;
                 }

@@ -124,11 +124,11 @@ class PotComponent {
 
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         switch(worker.workerType) {
-          case WorkersTypes.Water_loop: 
+          case WorkersTypes.Pot_Water_loop: 
             worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
             await worker.component.setup();
           break;
-          case WorkersTypes.Pot_refill: 
+          case WorkersTypes.Pot_Water_refill: 
             worker.component = new RefillComponent(self.phase, self.primaryWaterPump, self.primaryPhDownPump, self.primaryNutrientPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
             await worker.component.setup();
           break;
