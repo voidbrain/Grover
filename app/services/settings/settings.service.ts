@@ -26,16 +26,16 @@ export class SettingsService {
     'plants',
     'pots',
     'probes_list',
-    'probes_log',
+    // 'probes_log',
 
     'probes_schedule',
     'probes_type',
     'settings',
-    'system_log',
+    // 'system_log',
     'system_schedule',
     
     'workers_list',
-    'workers_log',
+    // 'workers_log',
     'workers_schedule',
     'workers_type',
   ];

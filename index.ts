@@ -72,7 +72,7 @@ class Main {
     const lastUpdate = self.localStorage.getItem(self.settings.getAppName());
 
     const device: any = await self.api.get(endpoint, lastUpdate, action, self.serialNumber.sn, self.webServerPort);
-    console.log(device);
+    console.log("device", device)
     self.settings.setOperatingMode(device.item.operatingMode);
 
     console.log('[main] => initdb done');
@@ -124,7 +124,7 @@ class Main {
           break;
         };
       } else {
-        console.log(`[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log(`[MAIN]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
     });
   }
@@ -203,9 +203,12 @@ class Main {
       switch(page){
         case `/${ServerPages.actuators}`:
           const id = q.query.id as string;
-          const terminalType = q.query.type as string;
+          const terminalType = q.query.type as string;       
+          
+          console.log(action && id && terminalType);
          
           if(action && id && terminalType) {
+
             const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
             const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
             const parent = await self.db.findParent(parentLocation.id) as any;
@@ -213,6 +216,7 @@ class Main {
             const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
             const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
             if(environment) {
+              
               const el = environment[terminalType+'s'].find(el => +el[`id`] === +id);
               if(el){
                 const hasMethod = self.hasMethod(el.component, action);
@@ -230,6 +234,7 @@ class Main {
                 
               } else {
                 console.log(`[SERVER]: Error el.component not found`);
+                res.write(`[SERVER]: Error el.component not found`);
               }
              
             } else {

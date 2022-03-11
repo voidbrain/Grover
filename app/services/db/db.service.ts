@@ -322,15 +322,16 @@ export class DbService {
                 cols.push(key);
                 values.push(row[key]);
               });
-              const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
-              self.db.run(query, values, (err) => {
-                if(err) {
-                  console.log('[DB]: logItem err', query, err)
-                  reject;
-                  throw err;
-                }
-                resolve(values);
-              });
+              resolve(values);
+              // const query = `INSERT or REPLACE into ${table}(${cols.map(el => el)}) values (${'?,'.repeat(length)}?)`;
+              // self.db.run(query, values, (err) => {
+              //   if(err) {
+              //     console.log('[DB]: logItem err', query, err)
+              //     reject;
+              //     throw err;
+              //   }
+              //   resolve(values);
+              // });
             } else {
               console.log('[DB]: logItem API POST response void', response);
             }

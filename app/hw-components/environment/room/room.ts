@@ -66,7 +66,7 @@ class RoomComponent {
     await Promise.all(
       probesArr.map(async (probe) => {
         probe.type =  await self.db.getItem('probes_type', probe.probeType, 'id') as any;
-        probe.logs = await self.db.getItems('probes_log', probe.id, 'idProbe') as unknown as any[];
+        // probe.logs = await self.db.getItems('probes_log', probe.id, 'idProbe') as unknown as any[];
         const schedule: any[] = await self.db.getItems('probes_schedule', probe.id, 'idProbe') as unknown as any[];
         
         switch(probe.probeType) {
@@ -89,7 +89,7 @@ class RoomComponent {
     await Promise.all(
       workersArr.map(async (worker) => {
         worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
-        worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
+        // worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
         
         switch(worker.workerType) {

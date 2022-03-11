@@ -9,3 +9,7 @@ Caught exception: Error: Could not read device content. Device '28-0119140ee870'
 1646947839413 – Unhandled Rejection at Promise: [object Promise]
 1646948374744 – Unhandled Rejection at Promise: [object Promise]
 1646948474757 – Unhandled Rejection at Promise: [object Promise]
+1646985094967 – Unhandled Rejection at Promise: [object Promise]
+1646986374561 – Caught exception: Error: SQLITE_ERROR: no such table: workers_log
+1646991669644 – Unhandled Rejection at Promise: [object Promise]
+1647016180757 – Unhandled Rejection at Promise: [object Promise]
