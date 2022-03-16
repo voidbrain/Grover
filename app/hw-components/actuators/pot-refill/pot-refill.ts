@@ -125,7 +125,7 @@ class RefillComponent {
         await self.primaryWaterPump.stop();
 
         await self.forward();
-        await self.delay(duration * self.waterToPotTime);
+        await self.delay(self.waterToPotTime);
         await self.stop();
 
         const job = {
@@ -196,7 +196,7 @@ class RefillComponent {
           await self.primaryWaterPump.stop();
         }
 
-        await self.delay(duration * self.waterToPotTime);
+        await self.delay(self.waterToPotTime);
         await self.forward();
         await self.stop();
 
@@ -250,7 +250,7 @@ class RefillComponent {
           await self.primaryWaterPump.stop();
         }
 
-        await self.delay(duration * self.waterToPotTime);
+        await self.delay(self.waterToPotTime);
         await self.forward();
         await self.stop();
 
