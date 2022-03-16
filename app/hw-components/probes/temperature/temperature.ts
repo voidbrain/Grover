@@ -46,6 +46,7 @@ class TemperatureComponent {
   }
 
   public async READ({expectedTime, owner, operatingMode}) {
+    // EXAMPLE: http://151.61.172.169:8084/actuators?action=READ&id=1&type=probe
     const self = this;
     return new Promise(async (resolve, reject) => {
       const systemOperatingMode = self.settings.getOperatingMode();

@@ -114,6 +114,7 @@ class RefillComponent {
   };
   
   public async RUN_WATER({expectedTime, owner, operatingMode, duration}) {
+    // EXAMPLE: http://151.61.172.169:8084/actuators?action=RUN_WATER&duration=1000&id=1&type=worker
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
