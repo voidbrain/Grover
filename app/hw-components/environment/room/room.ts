@@ -91,7 +91,6 @@ class RoomComponent {
         worker.type =  await self.db.getItem('workers_type', worker.workerType, 'id') as any;
         // worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
         const schedule: any[] = await self.db.getItems('workers_schedule', worker.id, 'idworker') as unknown as any[];
-        
         switch(worker.workerType) {
           case WorkersTypes.Room_Fan: 
             worker.component = new FanComponent(room.id, room.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
@@ -131,16 +130,16 @@ class RoomComponent {
             await worker.component.setup();
             self.primaryRipenPump = worker.component;
           break;
-          case WorkersTypes.Room_Nutrient_refill: 
-            worker.component = new RoomNutrientRefillComponent(room.id, room.name, worker.id, 
-              self.primaryGroPump, 
-              self.primaryMicroPump,
-              self.primaryBloomPump,
-              self.primaryRipenPump,
-              schedule, self.db, self.api, self.settings)
-            await worker.component.setup();
-            self.primaryNutrientPump = worker.component;
-          break;
+          // case WorkersTypes.Room_Nutrient_refill: 
+          //   worker.component = new RoomNutrientRefillComponent(room.id, room.name, worker.id, 
+          //     self.primaryGroPump, 
+          //     self.primaryMicroPump,
+          //     self.primaryBloomPump,
+          //     self.primaryRipenPump,
+          //     schedule, self.db, self.api, self.settings)
+          //   await worker.component.setup();
+          //   self.primaryNutrientPump = worker.component;
+          // break;
         }
       })
     );

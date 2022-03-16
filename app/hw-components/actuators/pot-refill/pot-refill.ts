@@ -34,8 +34,8 @@ class RefillComponent {
   status: string;
 
   delayAfterPumpRun = 1000; // millisec
-  delayTimeToMl = 1000; // millisec to move a ml, primary
-  waterToPotTime = 30; // sec to move to the pot, secondary
+  waterToPotTime = 1000;
+  debug = false;
 
   constructor(phase: any, primaryWaterPump: RoomWaterRefillComponent, primaryPhDownPump: RoomPhDownRefillComponent, primaryNutrientPump: RoomNutrientRefillComponent, 
     parentId: number, parentName: string, id: number, i2cAddress: number, pin1: number, pin2:number, scheduleArr, db, api, settings) {
@@ -70,26 +70,10 @@ class RefillComponent {
 
         this.secondaryPump.pinMode(this.primaryWaterPump.pin1, this.secondaryPump.OUTPUT);
         this.secondaryPump.pinMode(this.primaryWaterPump.pin2, this.secondaryPump.OUTPUT);
-
-        // this.secondaryPump.pinMode(this.primaryPhDownPump.pin1, this.secondaryPump.OUTPUT);
-        // this.secondaryPump.pinMode(this.primaryPhDownPump.pin2, this.secondaryPump.OUTPUT);
-
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpGro.pin1, this.secondaryPump.OUTPUT);
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpGro.pin2, this.secondaryPump.OUTPUT);
-
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpMicro.pin1, this.secondaryPump.OUTPUT);
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpMicro.pin2, this.secondaryPump.OUTPUT);
-
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpBloom.pin1, this.secondaryPump.OUTPUT);
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpBloom.pin2, this.secondaryPump.OUTPUT);
-
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpRipen.pin1, this.secondaryPump.OUTPUT);
-        // this.secondaryPump.pinMode(this.primaryNutrientPump.primaryNutrientPumpRipen.pin2, this.secondaryPump.OUTPUT);
-
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
-      console.log('[POT-REFILL]: EXIT on --> Raspberry OR i2c Address not found');
+      if(this.debug){ console.log('[POT-REFILL]: EXIT on --> Raspberry OR i2c Address not found');}
     }
   }
 
@@ -128,40 +112,8 @@ class RefillComponent {
       resolve(true);
     });
   };
-
-  async delayTest (milliseconds) {
-    return new Promise(resolve => {
-      return setTimeout(() => {
-        resolve(true);
-      }, milliseconds);
-    });
-  }
-
-  async forwardTest (pin1, pin2) {
-    return new Promise(resolve => {
-      this.secondaryPump.digitalWrite(pin1, this.secondaryPump.HIGH);
-      this.secondaryPump.digitalWrite(pin2, this.secondaryPump.LOW);
-      resolve(true);
-    });
-  };
-
-  async backwardTest (pin1, pin2) {
-    return new Promise(resolve => {
-      this.secondaryPump.digitalWrite(pin1, this.secondaryPump.LOW);
-      this.secondaryPump.digitalWrite(pin2, this.secondaryPump.HIGH);
-      resolve(true);
-    });
-  };
-
-  async stopTest (pin1, pin2) {
-    return new Promise(resolve => {
-      this.secondaryPump.digitalWrite(pin1, this.secondaryPump.LOW);
-      this.secondaryPump.digitalWrite(pin2, this.secondaryPump.LOW);
-      resolve(true);
-    });
-  };
   
-  public async RUN_WATER({expectedTime, owner, operatingMode}) {
+  public async RUN_WATER({expectedTime, owner, operatingMode, duration}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -169,12 +121,11 @@ class RefillComponent {
         const waterMl = self.phase.dose.water;
 
         await self.primaryWaterPump.forward();
-        await self.primaryWaterPump.delay(self.delayTimeToMl*waterMl);
+        await self.primaryWaterPump.delay(duration * waterMl);
         await self.primaryWaterPump.stop();
 
-        await self.delay(self.delayTimeToMl*self.waterToPotTime);
         await self.forward();
-        await self.delay(self.delayAfterPumpRun);
+        await self.delay(duration * self.waterToPotTime);
         await self.stop();
 
         const job = {
@@ -193,14 +144,14 @@ class RefillComponent {
             
         switch(owner){
           case Owner.user: // manual action
-            console.log("[POT-REFILL]: RUN_WATER manual", job);
+            if(this.debug){ console.log("[POT-REFILL]: RUN_WATER manual", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[POT-REFILL]: RUN_WATER scheduled", job);
+            if(this.debug){ console.log("[POT-REFILL]: RUN_WATER scheduled", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -208,124 +159,12 @@ class RefillComponent {
           break;
         };
       } else {
-        console.log(`[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
 
-  public async RUN_WATER_TEST({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      const slave = true;
-      if(operatingMode >= systemOperatingMode) {
-        const delay = 2000;
-
-        console.log('start 1');
-
-        // console.log(self.primaryWaterPump)
-
-        await self.primaryWaterPump.forward();
-        await self.primaryWaterPump.delay(delay);
-        await self.primaryWaterPump.stop();
-        
-        console.log('start 2');
-        await self.delay(delay);
-        await self.forward();
-        await self.delay(delay);
-        await self.stop();
-        console.log('end 2');
-
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_WATER_TEST,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[POT-REFILL]: RUN_WATER_TEST manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[POT-REFILL]: RUN_WATER_TEST scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[POT-REFILL]: RUN_WATER_TEST operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
-  public async RUN_SINGLE_TEST({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      const slave = true;
-      if(operatingMode >= systemOperatingMode) {
-        const delay = 2000;
-
-        console.log('start 1');
-
-        // console.log(self.primaryWaterPump)
-
-        await self.delay(delay);
-        await self.forward();
-        await self.delay(delay);
-        await self.stop();
-        
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_SINGLE_TEST,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[POT-REFILL]: RUN_SINGLE_TEST manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[POT-REFILL]: RUN_SINGLE_TEST scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[POT-REFILL]: RUN_SINGLE_TEST operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
-  public async RUN_DOSE({expectedTime, owner, operatingMode}) {
+  public async RUN_DOSE({expectedTime, owner, operatingMode, duration}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -338,32 +177,27 @@ class RefillComponent {
 
         if(groMl) {
           await self.primaryWaterPump.forward();
-          await self.primaryWaterPump.delay(self.delayTimeToMl*groMl);
+          await self.primaryWaterPump.delay(duration * groMl);
           await self.primaryWaterPump.stop();
-          await self.primaryWaterPump.delay(self.delayAfterPumpRun);
         }
         if(microMl) {
           await self.primaryWaterPump.forward();
-          await self.primaryWaterPump.delay(self.delayTimeToMl*microMl);
+          await self.primaryWaterPump.delay(duration * microMl);
           await self.primaryWaterPump.stop();
-          await self.primaryWaterPump.delay(self.delayAfterPumpRun);
         }
         if(bloomMl) {
           await self.primaryWaterPump.forward();
-          await self.primaryWaterPump.delay(self.delayTimeToMl*bloomMl);
+          await self.primaryWaterPump.delay(duration * bloomMl);
           await self.primaryWaterPump.stop();
-          await self.primaryWaterPump.delay(self.delayAfterPumpRun);
         }
         if(ripenMl) {
           await self.primaryWaterPump.forward();
-          await self.primaryWaterPump.delay(self.delayTimeToMl*ripenMl);
+          await self.primaryWaterPump.delay(duration * ripenMl);
           await self.primaryWaterPump.stop();
-          await self.primaryWaterPump.delay(self.delayAfterPumpRun);
         }
 
-        await self.delay(self.delayTimeToMl*self.waterToPotTime);
+        await self.delay(duration * self.waterToPotTime);
         await self.forward();
-        await self.delay(self.delayAfterPumpRun);
         await self.stop();
 
         const job = {
@@ -382,14 +216,14 @@ class RefillComponent {
             
         switch(owner){
           case Owner.user: // manual action
-            console.log("[POT-REFILL]: RUN_DOSE manual", job);
+            if(this.debug){ console.log("[POT-REFILL]: RUN_DOSE manual", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[POT-REFILL]: RUN_DOSE scheduled", job);
+            if(this.debug){ console.log("[POT-REFILL]: RUN_DOSE scheduled", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -397,14 +231,12 @@ class RefillComponent {
           break;
         };
       } else {
-        console.log(`[POT-REFILL]: RUN_DOSE operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[POT-REFILL]: RUN_DOSE operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
 
-  public async RUN_PHDOWN({ 
-    // groMl, microMl, bloomMl, ripenMl, 
-    expectedTime, owner, operatingMode}) {
+  public async RUN_PHDOWN({expectedTime, owner, operatingMode, duration}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -414,14 +246,12 @@ class RefillComponent {
 
         if(pHDown) {
           await self.primaryWaterPump.forward();
-          await self.primaryWaterPump.delay(self.delayTimeToMl*pHDown);
+          await self.primaryWaterPump.delay(duration * pHDown);
           await self.primaryWaterPump.stop();
-          await self.primaryWaterPump.delay(self.delayAfterPumpRun);
         }
 
-        await self.delay(self.delayTimeToMl*self.waterToPotTime);
+        await self.delay(duration * self.waterToPotTime);
         await self.forward();
-        await self.delay(self.delayAfterPumpRun);
         await self.stop();
 
         const job = {
@@ -440,14 +270,14 @@ class RefillComponent {
             
         switch(owner){
           case Owner.user: // manual action
-            console.log("[POT-REFILL]: RUN_PHDOWN manual", job);
+            if(this.debug){ console.log("[POT-REFILL]: RUN_PHDOWN manual", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[POT-REFILL]: RUN_PHDOWN scheduled", job);
+            if(this.debug){ console.log("[POT-REFILL]: RUN_PHDOWN scheduled", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -455,7 +285,7 @@ class RefillComponent {
           break;
         };
       } else {
-        console.log(`[POT-REFILL]: RUN_PHDOWN operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[POT-REFILL]: RUN_PHDOWN operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
@@ -469,6 +299,7 @@ class RefillComponent {
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
           operatingMode: probeScheduleRow.operatingMode,
+          duration: probeScheduleRow.duration
         };
         scheduleArr.push(scheduleRow);
       });
@@ -480,7 +311,8 @@ class RefillComponent {
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               owner: '${owner}', 
-              operatingMode: ${job.operatingMode}
+              operatingMode: ${job.operatingMode},
+              duration: ${job.duration}
             })`);
         })
       });

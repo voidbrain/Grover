@@ -108,16 +108,3 @@ async function setupPwmPca9685(optionsPca9685){
   });
 }
 
-// function forward () {
-//   mcp.digitalWrite(0, mcp.HIGH); 
-//   mcp.digitalWrite(1, mcp.LOW); 
-// };
-// function backward () {
-//   mcp.digitalWrite(0, mcp.LOW); 
-//   mcp.digitalWrite(1, mcp.HIGH); 
-// };
-// function stop () {
-//   mcp.digitalWrite(0, mcp.LOW); 
-//   mcp.digitalWrite(1, mcp.LOW); 
-// };
-

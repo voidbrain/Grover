@@ -22,6 +22,7 @@ class FanComponent {
   db;
   
   mcp;
+  debug = false;
 
   constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin: number, scheduleArr, db, api, settings) {
     this.id = id;
@@ -50,7 +51,7 @@ class FanComponent {
 
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
-      console.log('[FAN-MOTOR]: EXIT on --> Raspberry OR i2c Address not found');
+      if(this.debug) { console.log('[FAN-MOTOR]: EXIT on --> Raspberry OR i2c Address not found');}
     }
   }
 
@@ -74,14 +75,14 @@ class FanComponent {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[FAN-MOTOR]: ON manual", job);
+            if(this.debug) { console.log("[FAN-MOTOR]: ON manual", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[FAN-MOTOR]: ON scheduled", job);
+            if(this.debug) { console.log("[FAN-MOTOR]: ON scheduled", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -89,7 +90,7 @@ class FanComponent {
           break;
         };
       } else {
-        console.log(`[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug) { console.log(`[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
@@ -114,14 +115,14 @@ class FanComponent {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[FAN-MOTOR]: OFF manual");
+            if(this.debug) { console.log("[FAN-MOTOR]: OFF manual");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[FAN-MOTOR]: OFF scheduled");
+            if(this.debug) { console.log("[FAN-MOTOR]: OFF scheduled");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve;
@@ -129,7 +130,7 @@ class FanComponent {
           break;
         };
       } else {
-        console.log(`[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug) { console.log(`[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
@@ -151,7 +152,7 @@ class FanComponent {
       }
     });
     self.status = status;
-    console.log('[FAN-MOTOR]: status', self.status);
+    if(this.debug) { console.log('[FAN-MOTOR]: status', self.status);}
     if(self.status) {
       self[self.status]({ expectedTime: scheduledStart, owner: owner, operatingMode });
     }

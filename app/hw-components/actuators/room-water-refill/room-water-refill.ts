@@ -1,8 +1,5 @@
-// import i2cBus from 'i2c-bus';
-
-
 import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
+import { Owner } from '../../../services/settings/enums';
 
 import schedule from 'node-schedule';
 import moment from 'moment';
@@ -70,109 +67,9 @@ class RoomWaterRefillComponent {
     });
   }
 
-  public async RUN_WATER_TEST({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if(operatingMode >= systemOperatingMode) {
-        const delay = 2000;
-
-        await self.delay(delay);
-        await self.forward();
-        await self.delay(delay);
-        await self.stop();
-
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_WATER_TEST,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[ROOM-WATER-REFILL]: RUN_WATER_TEST manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[ROOM-WATER-REFILL]: RUN_WATER_TEST scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[ROOM-WATER-REFILL]: RUN_WATER_TEST operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
-  public async RUN_SINGLE_TEST({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      const slave = true;
-      if(operatingMode >= systemOperatingMode) {
-        const delay = 2000;
-
-        console.log('start 1');
-
-        // console.log(self.primaryWaterPump)
-
-        await self.delay(delay);
-        await self.forward();
-        await self.delay(delay);
-        await self.stop();
-        
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_SINGLE_TEST,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[ROOM_WATER_REFILL]: RUN_SINGLE_TEST manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[ROOM_WATER_REFILL]: RUN_SINGLE_TEST scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[ROOM_WATER_REFILL]: RUN_SINGLE_TEST operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
   public async forward () {
     return new Promise((resolve, reject) => {
+      console.log("[ROOM-WATER-REFILL]: forward")
       this.primaryWaterPump.digitalWrite(this.pin1, this.primaryWaterPump.HIGH);
       this.primaryWaterPump.digitalWrite(this.pin2, this.primaryWaterPump.LOW);
       resolve(true);
@@ -181,6 +78,7 @@ class RoomWaterRefillComponent {
 
   public async backward () {
     return new Promise(resolve => {
+      console.log("[ROOM-WATER-REFILL]: backward")
       this.primaryWaterPump.digitalWrite(this.pin1, this.primaryWaterPump.LOW);
       this.primaryWaterPump.digitalWrite(this.pin2, this.primaryWaterPump.HIGH);
       resolve(true);
@@ -196,56 +94,6 @@ class RoomWaterRefillComponent {
     });
   };
 
-  public async RUN_WATER({expectedTime, owner, operatingMode}) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if(operatingMode >= systemOperatingMode) {
-        const waterMl =1;
-
-        console.log('start');
-        await self.delay(2000);
-        await self.forward();
-        await self.delay(2000);
-        await self.stop();
-        console.log('end');
-
-        const job = {
-          owner, 
-          action: ServerCommands.RUN_WATER,
-          idWorker: self.id, 
-          parentId: self.parentId, 
-          parentName: self.parentName, 
-          type: Peripherals.Worker,
-          expectedTime: (expectedTime ? new Date(expectedTime) : null), 
-          executedTime: new Date,
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-            
-        switch(owner){
-          case Owner.user: // manual action
-            console.log("[ROOM-WATER-REFILL]: RUN_WATER manual", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve(job);
-            }
-          break;
-          case Owner.schedule: // scheduled action
-            console.log("[ROOM-WATER-REFILL]: RUN_WATER scheduled", job);
-            if (self.settings.getLogMode() === true) { 
-              await self.db.logItem('workers_log', job); 
-              resolve;
-            }
-          break;
-        };
-      } else {
-        console.log(`[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
-      }
-    });
-  }
-
   async setSchedule(id: number, scheduledCrons: any[]){
     const self = this;
     if(id && scheduledCrons) {
@@ -255,6 +103,7 @@ class RoomWaterRefillComponent {
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
           operatingMode: probeScheduleRow.operatingMode,
+          duration: probeScheduleRow.duration
         };
         scheduleArr.push(scheduleRow);
       });
@@ -266,7 +115,8 @@ class RoomWaterRefillComponent {
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               owner: '${owner}', 
-              operatingMode: ${job.operatingMode}
+              operatingMode: ${job.operatingMode},
+              duration: ${job.duration}
             })`);
         })
       });

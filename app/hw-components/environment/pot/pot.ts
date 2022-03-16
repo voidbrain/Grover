@@ -128,7 +128,7 @@ class PotComponent {
             worker.component = new WaterLoopComponent(pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, schedule, self.db, self.api, self.settings);
             await worker.component.setup();
           break;
-          case WorkersTypes.Pot_Water_refill: 
+          case WorkersTypes.Pot_refill: 
             worker.component = new RefillComponent(self.phase, self.primaryWaterPump, self.primaryPhDownPump, self.primaryNutrientPump, pot.id, pot.name, worker.id, worker.i2cAddress, worker.pin1, worker.pin2, schedule, self.db, self.api, self.settings)
             await worker.component.setup();
           break;

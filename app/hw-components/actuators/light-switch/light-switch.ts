@@ -22,6 +22,7 @@ class LightSwitchComponent {
   db;
   
   light;
+  debug = false;
 
   constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin: number, scheduleArr, db, api, settings) {
     this.id = id;
@@ -50,7 +51,7 @@ class LightSwitchComponent {
 
       this.setSchedule();
     } else {
-      console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found');
+      if(this.debug){ console.log('[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found');}
     }
   }
 
@@ -74,14 +75,14 @@ class LightSwitchComponent {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[LIGHT-SWITCH]: ON manual", job);
+            if(this.debug){ console.log("[LIGHT-SWITCH]: ON manual", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[LIGHT-SWITCH]: ON scheduled", job);
+            if(this.debug){ console.log("[LIGHT-SWITCH]: ON scheduled", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve;
@@ -89,7 +90,7 @@ class LightSwitchComponent {
           break;
         };
       } else {
-        console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
@@ -114,14 +115,14 @@ class LightSwitchComponent {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[LIGHT-SWITCH]: OFF manual");
+            if(this.debug){ console.log("[LIGHT-SWITCH]: OFF manual");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[LIGHT-SWITCH]: OFF scheduled");
+            if(this.debug){ console.log("[LIGHT-SWITCH]: OFF scheduled");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job);
               resolve;
@@ -129,7 +130,7 @@ class LightSwitchComponent {
           break;
         };
       } else {
-        console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }

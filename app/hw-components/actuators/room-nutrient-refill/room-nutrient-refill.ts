@@ -34,6 +34,7 @@ class RoomNutrientRefillComponent {
   api;
   settings;
   db;
+  debug = false;
 
   status: string;
 
@@ -93,7 +94,7 @@ class RoomNutrientRefillComponent {
     //   });
     //   this.setSchedule(this.id, this.scheduledCrons);
     // } else {
-    //   console.log('[ROOM-Nutrient-REFILL]: EXIT on --> Raspberry OR i2c Address not found');
+    //   if( this.debug) {  console.log('[ROOM-Nutrient-REFILL]: EXIT on --> Raspberry OR i2c Address not found');}
     // }
   }
 
@@ -111,7 +112,7 @@ class RoomNutrientRefillComponent {
 
   public async forward (pump) {
     const self = this;
-    console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
+    if( this.debug) { console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);}
     await self[pump].forward();
 
     // return new Promise((resolve, reject) => {
@@ -123,13 +124,13 @@ class RoomNutrientRefillComponent {
 
   public async backward (pump) {
     const self = this;
-    console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
+    if( this.debug) { console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);}
     await self[pump].backward();
   };
 
   public async stop (pump) {
     const self = this;
-    console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
+    if( this.debug) { console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);}
     await self[pump].stop();
   };
 
@@ -142,6 +143,7 @@ class RoomNutrientRefillComponent {
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
           operatingMode: probeScheduleRow.operatingMode,
+          duration: probeScheduleRow.duration
         };
         scheduleArr.push(scheduleRow);
       });
@@ -153,7 +155,8 @@ class RoomNutrientRefillComponent {
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               owner: '${owner}', 
-              operatingMode: ${job.operatingMode}
+              operatingMode: ${job.operatingMode},
+              duration: ${job.duration}
             })`);
         })
       });

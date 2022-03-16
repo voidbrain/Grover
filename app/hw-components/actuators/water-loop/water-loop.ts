@@ -23,6 +23,8 @@ class WaterLoopComponent {
   
   mcp;
 
+  debug = false;
+
   constructor(parentId: number, parentName: string, id: number, i2cAddress: number, pin: number, scheduleArr, db, api, settings) {
     this.id = id;
     this.parentId = parentId;
@@ -50,7 +52,7 @@ class WaterLoopComponent {
 
       this.setSchedule();
     } else {
-      console.log('[WATER-LOOP]: EXIT on --> Raspberry OR i2c Address not found');
+      if (this.debug) { console.log('[WATER-LOOP]: EXIT on --> Raspberry OR i2c Address not found');}
     }
   }
 
@@ -74,14 +76,14 @@ class WaterLoopComponent {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[WATER-LOOP]: ON manual", job);
+            if(this.debug) { console.log("[WATER-LOOP]: ON manual", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[WATER-LOOP]: ON scheduled", job);
+            if(this.debug) { console.log("[WATER-LOOP]: ON scheduled", job);}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -89,7 +91,7 @@ class WaterLoopComponent {
           break;
         };
       } else {
-        console.log(`[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
@@ -114,14 +116,14 @@ class WaterLoopComponent {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[WATER-LOOP]: OFF manual");
+            if(this.debug) { console.log("[WATER-LOOP]: OFF manual");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[WATER-LOOP]: OFF scheduled");
+            if(this.debug) { console.log("[WATER-LOOP]: OFF scheduled");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('workers_log', job); 
               resolve;
@@ -129,7 +131,7 @@ class WaterLoopComponent {
           break;
         };
       } else {
-        console.log(`[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if(this.debug){ console.log(`[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
       }
     });
   }
@@ -151,7 +153,7 @@ class WaterLoopComponent {
       }
     });
     self.status = status;
-    console.log('[WATER-LOOP]: status', self.status);
+    if (this.debug) { console.log('[WATER-LOOP]: status', self.status);}
     if(self.status) {
       self[self.status]({ expectedTime: scheduledStart, owner: owner, operatingMode });
     }
@@ -167,6 +169,7 @@ class WaterLoopComponent {
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
           operatingMode: probeScheduleRow.operatingMode,
+          duration: probeScheduleRow.duration
         };
         scheduleArr.push(scheduleRow);
       });
@@ -179,7 +182,8 @@ class WaterLoopComponent {
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               owner: '${owner}', 
-              operatingMode: ${job.operatingMode}
+              operatingMode: ${job.operatingMode},
+              duration: ${job.duration}
             })`);
         })
       });

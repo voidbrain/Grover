@@ -36,18 +36,14 @@ class Main {
   rooms: RoomObject[] = [];
   pots: PotObject[] = [];
 
+  debug = false;
+
   constructor(){ this.appSetup(); }
 
   async appSetup(){
 
     var log_file_err= fs.createWriteStream('./error.log',{flags:'a'}); 
     const now = moment();
-
-    // process.on('uncaughtException', function(err) {
-    //   console.log('Caught exception: ' + err);
-    //   const now = moment();
-    //   log_file_err.write(now + ' – ' + util.format('Caught exception: '+err) + '\n');
-    // });
     process
       .on('unhandledRejection', (reason, p) => {
         console.error(reason, 'Unhandled Rejection at Promise', p);
@@ -72,10 +68,9 @@ class Main {
     const lastUpdate = self.localStorage.getItem(self.settings.getAppName());
 
     const device: any = await self.api.get(endpoint, lastUpdate, action, self.serialNumber.sn, self.webServerPort);
-    console.log("device", device)
     self.settings.setOperatingMode(device.item.operatingMode);
 
-    console.log('[main] => initdb done');
+    console.log('[main] => init done');
     self.main();
   }
 
@@ -109,14 +104,14 @@ class Main {
         };
         switch(owner){
           case Owner.user: // manual action
-            console.log("[MAIN]: system log manual");
+            if (this.debug) { console.log("[MAIN]: system log manual");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('system_log', job);
               resolve(job);
             }
           break;
           case Owner.schedule: // scheduled action
-            console.log("[MAIN]: system log scheduled");
+            if (this.debug) { console.log("[MAIN]: system log scheduled");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('system_log', job);
               resolve;
@@ -124,7 +119,7 @@ class Main {
           break;
         };
       } else {
-        console.log(`[MAIN]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        if (this.debug) {console.log(`[MAIN]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`); }
       }
     });
   }
@@ -186,7 +181,7 @@ class Main {
     self.server.on('request', async (req, res) => {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-      res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
+      res.setHeader('Access-Control-Max-Age', 2592000);
 
       res.writeHead(200, {'Content-Type': 'text/plain'});
       const q = url.parse(req.url, true);
@@ -200,14 +195,14 @@ class Main {
       const owner: string = Owner.user;
       const operatingMode: number = self.settings.getOperatingMode();
       const now = moment();
+      
       switch(page){
         case `/${ServerPages.actuators}`:
+         
           const id = q.query.id as string;
           const terminalType = q.query.type as string;       
-          
-          console.log(action && id && terminalType);
-         
           if(action && id && terminalType) {
+            const duration = q.query.duration ? +q.query.duration : 0;
 
             const terminal: any = await self.db.getItem(terminalType+'s_list', +id, 'id') as any;
             const parentLocation: LocationInterface = await self.db.getItem('locations',  +terminal.locationId, 'id') as LocationInterface;
@@ -216,50 +211,59 @@ class Main {
             const environmentType = (+parent.parent > 0 ? 'pot' : 'room');
             const environment = environments.find(el => +el[environmentType].locationId === +parent[`${environmentType}LocationId`]);
             if(environment) {
-              
-              const el = environment[terminalType+'s'].find(el => +el[`id`] === +id);
-              if(el){
-                const hasMethod = self.hasMethod(el.component, action);
-                if(hasMethod) {
-                  const doJob = await el.component[action]({now, owner, operatingMode});
-                  console.log(JSON.stringify(doJob));
-                  res.write(JSON.stringify(doJob));
-                } else {
-                  console.log('##################')
-                  console.log(`[SERVER]: Action ${action} not found`);
-                  console.log(el.component);
-                  console.log('##################')
-                  res.write(`[SERVER]: Action ${action} not found`);
-                }
+              if(terminalType+'s' in environment) {
+                const el = environment[terminalType+'s'].find(el => +el[`id`] === +id);
+                if(el){
+                  console.log(id, environment[terminalType+'s'])
+                  const hasMethod = self.hasMethod(el.component, action);
+                  if(hasMethod) {
+                    const doJob = await el.component[action]({now, owner, operatingMode, duration});
+                    if (this.debug) { console.log("[SERVER]: ", JSON.stringify(doJob)); }
+                    res.write(JSON.stringify(doJob));
+                  } else {
+                    if (this.debug) { 
+                      console.log('[SERVER]: ##################')
+                      console.log(`[SERVER]: Action ${action} not found`);
+                      console.log("[SERVER]: ", el.component);
+                      console.log('[SERVER]: ##################')
+                    }
+                    res.write(JSON.stringify({error: `[SERVER]: Action ${action} not found`}));
+                  }
                 
+                } else {
+                  if (this.debug) { console.log(`[SERVER]: Error el.component not found`);}
+                  res.write(JSON.stringify({error: `[SERVER]: Error el.component not found`}));
+                }
               } else {
-                console.log(`[SERVER]: Error el.component not found`);
-                res.write(`[SERVER]: Error el.component not found`);
+                if (this.debug) { console.log(`[SERVER]: Error terminalType in env not found`);}
+                res.write(JSON.stringify({error: `[SERVER]: Error terminalType in env not found`}));
               }
-             
             } else {
               const err = `[SERVER]: environment not found LIST: [${environments.map(el => { return el[environmentType].id })}], ? = ${parent.id}`;
-              console.log(err);
-              res.write(err);
+              if (this.debug) { console.log("[SERVER]: ", err); }
+              res.write(JSON.stringify({error: err}));
             }
           } else {
-            console.log(`[SERVER]: Error ${action}, ${id}, ${terminalType}`);
+            if (this.debug) { console.log(`[SERVER]: Error ${action}, ${id}, ${terminalType}`); }
           }
+          
         break;
         case `/${ServerPages.system}`:
           switch (action){
-            case `${ServerCommands.SET_MODE}`:
-              const mode = +q.query.mode as number;
-              const doJob = await self.updateOperatingMode(mode);
-              res.write(`System mode set to ${doJob}`);
+            case ServerCommands.SET_MODE:
+              const mode = +q.query.type as number;
+              const updatedMode = await self.updateOperatingMode(mode);
+              if (this.debug) { console.log("[SERVER]: ", updatedMode);}
+              res.write(JSON.stringify({mode:updatedMode}));
+             
             break;
             default:
-              res.write(`Action "${action}" not found for page "${page}"`);
+              res.write(JSON.stringify({error: `Action "${action}" not found for page "${page}"`}));
             break;
           }
         break;
         default:
-          res.write(`Page "${page}" not found`);
+          res.write(JSON.stringify({error: `Page "${page}" not found`}));
         break;
       }
       

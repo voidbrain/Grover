@@ -104,6 +104,7 @@ class RoomRipenRefillComponent {
           action: probeScheduleRow.action, 
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
           operatingMode: probeScheduleRow.operatingMode,
+          duration: probeScheduleRow.duration
         };
         scheduleArr.push(scheduleRow);
       });
@@ -115,7 +116,8 @@ class RoomRipenRefillComponent {
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               owner: '${owner}', 
-              operatingMode: ${job.operatingMode}
+              operatingMode: ${job.operatingMode},
+              duration: ${job.duration}
             })`);
         })
       });

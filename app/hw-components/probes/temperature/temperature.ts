@@ -18,6 +18,7 @@ class TemperatureComponent {
   settings;
 
   status: string;
+  debug = false;
   
   constructor(parentId: number, parentName: string, id: number, address: string, scheduleArr, db, api, settings) {
     this.id = id;
@@ -51,7 +52,7 @@ class TemperatureComponent {
         if(operatingMode >= systemOperatingMode) {
           sensor.get(self.address, async function (err: any, value: any) {
             if(err) {
-              console.log(`[TEMP]: READ ${owner}, error: ${err}`);
+              if(self.debug){ console.log(`[TEMP]: READ ${owner}, error: ${err}`);}
               reject(err);
               // throw err; 
             } else {
@@ -72,7 +73,7 @@ class TemperatureComponent {
               }
               switch(owner){
                 case Owner.user: // manual action
-                  console.log("[TEMP]: READ manual", job);
+                  if(self.debug){ console.log("[TEMP]: READ manual", job);}
                   if (self.settings.getLogMode() === true) { 
                     await self.db.logItem('probes_log', job);
                     resolve(job);
@@ -81,7 +82,7 @@ class TemperatureComponent {
                   }
                 break;
                 case Owner.schedule: // scheduled action
-                  console.log("[TEMP]: READ schedule", job);
+                  if(self.debug){ console.log("[TEMP]: READ schedule", job);}
                   if (self.settings.getLogMode() === true) { 
                     await self.db.logItem('probes_log', job);
                     resolve;
@@ -91,7 +92,7 @@ class TemperatureComponent {
             }
           });
         } else {
-          console.log(`[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+          if(self.debug){ console.log(`[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
         }
     });
   }
