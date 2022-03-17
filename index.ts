@@ -71,7 +71,10 @@ class Main {
     self.settings.setOperatingMode(device.item.operatingMode);
 
     console.log('[main] => init done');
-    // self.main();
+    const  owner = Owner.start;
+    const operatingMode = self.settings.getOperatingMode();
+    self.SYS_LOG({owner, operatingMode});
+    self.main();
   }
 
   async main(){
@@ -86,9 +89,7 @@ class Main {
     console.log(`[main] => ready`);  
   }
 
-
-
-  async SYS_LOG({expectedTime, owner, operatingMode}) {
+  async SYS_LOG({owner, operatingMode, expectedTime = null}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -103,6 +104,13 @@ class Main {
           serialNumber: self.serialNumber.sn,
         };
         switch(owner){
+          case Owner.start: // system start
+            if (this.debug) { console.log("[MAIN]: system log on start");}
+            if (self.settings.getLogMode() === true) { 
+              await self.db.logItem('system_log', job);
+              resolve(job);
+            }
+          break;
           case Owner.user: // manual action
             if (this.debug) { console.log("[MAIN]: system log manual");}
             if (self.settings.getLogMode() === true) { 
@@ -214,7 +222,6 @@ class Main {
               if(terminalType+'s' in environment) {
                 const el = environment[terminalType+'s'].find(el => +el[`id`] === +id);
                 if(el){
-                  console.log(id, environment[terminalType+'s'])
                   const hasMethod = self.hasMethod(el.component, action);
                   if(hasMethod) {
                     const doJob = await el.component[action]({now, owner, operatingMode, duration});
@@ -255,7 +262,20 @@ class Main {
               const updatedMode = await self.updateOperatingMode(mode);
               if (this.debug) { console.log("[SERVER]: ", updatedMode);}
               res.write(JSON.stringify({mode:updatedMode}));
-             
+              const systemOperatingMode = self.settings.getOperatingMode();
+                const job = {
+                  owner, 
+                  action: ServerCommands.SET_MODE,
+                  expectedTime: null,
+                  executedTime: new Date(),
+                  operatingMode: operatingMode,
+                  systemOperatingMode: systemOperatingMode,
+                  serialNumber: self.serialNumber.sn,
+                };
+                if (this.debug) { console.log("[MAIN]: system log manual");}
+                if (self.settings.getLogMode() === true) { 
+                  await self.db.logItem('system_log', job); 
+                }
             break;
             default:
               res.write(JSON.stringify({error: `Action "${action}" not found for page "${page}"`}));

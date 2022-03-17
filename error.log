@@ -513,3 +513,13 @@ Caught exception: Error: Could not read device content. Device '28-0119140ee870'
 1647477442262 – Unhandled Rejection at Promise: [object Promise]
 1647477442262 – Unhandled Rejection at Promise: [object Promise]
 1647477442262 – Unhandled Rejection at Promise: [object Promise]
+1647539336749 – Caught exception: Error: listen EADDRINUSE: address already in use :::8084
+1647539977690 – Unhandled Rejection at Promise: [object Promise]
+1647541130680 – Unhandled Rejection at Promise: [object Promise]
+1647541409868 – Unhandled Rejection at Promise: [object Promise]
+1647542073629 – Unhandled Rejection at Promise: [object Promise]
+1647543064731 – Unhandled Rejection at Promise: [object Promise]
+1647543064731 – Unhandled Rejection at Promise: [object Promise]
+1647543064731 – Unhandled Rejection at Promise: [object Promise]
+1647543064731 – Unhandled Rejection at Promise: [object Promise]
+1647543064731 – Unhandled Rejection at Promise: [object Promise]

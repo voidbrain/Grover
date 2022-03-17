@@ -14,12 +14,13 @@ export enum OperatingModes {
 
 export enum Owner {
   schedule = 'schedule',
-  user = 'user'
+  user = 'user',
+  start = 'start'
 }
 
 export enum Peripherals {
-  Probe = 'PROBE',
-  Worker = 'WORKER',
+  Probe = 'probe',
+  Worker = 'worker',
 }
 
 export enum Purposes {
