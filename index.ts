@@ -71,7 +71,7 @@ class Main {
     self.settings.setOperatingMode(device.item.operatingMode);
 
     console.log('[main] => init done');
-    self.main();
+    // self.main();
   }
 
   async main(){

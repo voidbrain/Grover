@@ -308,10 +308,11 @@ export class DbService {
       const endpoint = 'endpoint';
       const action = ServerCommands.LOG;
     
-      self.api.post(endpoint, lastUpdate, action, {item: item}, self.serialNumber)
+      self.api.post(endpoint, lastUpdate, action, item, self.serialNumber)
         .then((response: any) => {
           if(response){
-            if(this.debug) { console.log(endpoint, lastUpdate, action, {item: item}, self.serialNumber, response)}
+            if(this.debug) { console.log(endpoint, lastUpdate, action, item, self.serialNumber, response)
+            }
             const row = response;
             let length;
             const values:any[] = [];

@@ -71,7 +71,12 @@ export class ApiService {
       const path = `${this.settings.getRemoteServerHostname()}/${this.settings.getRemoteServerEndpoint()}${endpont}` + 
         `?lastUpdate=${lastUpdate}&action=${action}`;
       const body = {item, serialNumber};
+      console.log("############")
+      console.log(path, body)
+      console.log("----------------")
       const res = await this.httpsPost(path, body);
+      console.log(res);
+      console.log("?????????????????")
       return res;
     }
     

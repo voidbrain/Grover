@@ -3,15 +3,13 @@ export enum DevicesStatus {
   OFF = 'OFF',
 }
 
-export enum LogModes {
-  true = 1,
-  false = 0
-}
-
 export enum OperatingModes {
-  Off = 1,
+  // Off = 1,
+  // Silent = 2,
+  // On = 3,
+  Normal = 1,
   Silent = 2,
-  On = 3,
+  Off = 3,
 }
 
 export enum Owner {
@@ -37,9 +35,9 @@ export enum ProbesTypes {
   EC = 5,
 }
 
-export enum ServerPages {
-  actuators = 'actuators',
-  system = 'system',
+export enum ScheduleTypes {
+  From_To = 1,
+  At = 2,
 }
 
 export enum ServerCommands {
@@ -59,6 +57,10 @@ export enum ServerCommands {
   SET_MODE = 'SET_MODE',
 }
 
+export enum ServerPages {
+  actuators = 'actuators',
+  system = 'system',
+}
 
 export enum WorkersTypes {
   Pot_Water_loop = 1,
