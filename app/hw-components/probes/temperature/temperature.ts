@@ -1,26 +1,40 @@
-import { CronJobInterface } from '../../../interfaces/cron-job';
-import { Owner, Peripherals, ServerCommands } from '../../../services/settings/enums';
+import { CronJobInterface } from "../../../interfaces/cron-job";
+import {
+  Owner,
+  Peripherals,
+  ServerCommands,
+  DevicesStatus,
+} from "../../../services/settings/enums";
 
-import sensor from 'ds18x20';
-import schedule from 'node-schedule';
-import moment from 'moment';
+import sensor from "ds18x20";
+import schedule from "node-schedule";
+import moment from "moment";
 class TemperatureComponent {
   id: number;
   parentId: number;
   parentName: string;
   address: string;
 
-  serialNumber: { sn: string, found: boolean };
-  
-  scheduledCrons: any[] = []; 
+  serialNumber: { sn: string; found: boolean };
+
+  scheduledCrons: any[] = [];
   api;
   db;
   settings;
 
   status: string;
   debug = false;
-  
-  constructor(parentId: number, parentName: string, id: number, address: string, scheduleArr, db, api, settings) {
+
+  constructor(
+    parentId: number,
+    parentName: string,
+    id: number,
+    address: string,
+    scheduleArr,
+    db,
+    api,
+    settings
+  ) {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
@@ -31,87 +45,148 @@ class TemperatureComponent {
     this.db = db;
   }
 
-  async setup(){
+  async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if(self.serialNumber.found) {
+    if (self.serialNumber.found) {
       this.setSchedule();
     } else {
-      console.log('[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found');
+      console.log(
+        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found"
+      );
     }
   }
 
-  async setStatus(){
-    this.status = null;
+  async setStatus(owner) {
+    const self = this;
+    let scheduledStart;
+    const now = moment();
+    let status: string;
+    let operatingMode: number;
+    self.scheduledCrons.map((cron) => {
+      const statusStart = moment({
+        year: now.year(),
+        month: now.month(),
+        day: now.date(),
+        hour: cron.atHour,
+        minute: cron.atMinute,
+      });
+      if (statusStart <= now) {
+        status = cron.action;
+        scheduledStart = statusStart;
+        operatingMode = cron.operatingMode;
+      }
+    });
+    self.status = status;
+    if (self.status) {
+      // status from cron
+      self[self.status]({
+        expectedTime: scheduledStart,
+        owner,
+        operatingMode,
+      });
+    } else {
+      // default off
+      self.status = DevicesStatus.OFF;
+      if (this.debug) {
+        console.log("[TEMPERATURE]: status", self.status);
+      }
+      const systemOperatingMode = self.settings.getOperatingMode();
+      const expectedTime = null;
+      const job = {
+        owner,
+        action: ServerCommands.SET_STATUS,
+        idProbe: self.id,
+        parentId: self.parentId,
+        parentName: self.parentName,
+        type: Peripherals.Probe,
+        expectedTime,
+        executedTime: new Date(),
+        operatingMode: operatingMode,
+        systemOperatingMode: systemOperatingMode,
+        serialNumber: self.serialNumber.sn,
+      };
+      await self.db.logItem("probes_log", job);
+    }
   }
 
-  public async READ({expectedTime, owner, operatingMode}) {
+  public async READ({ expectedTime, owner, operatingMode }) {
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=READ&id=1&type=probe
     const self = this;
     return new Promise(async (resolve, reject) => {
       const systemOperatingMode = self.settings.getOperatingMode();
-        if(operatingMode >= systemOperatingMode) {
-          sensor.get(self.address, async function (err: any, value: any) {
-            if(err) {
-              if(self.debug){ console.log(`[TEMP]: READ ${owner}, error: ${err}`);}
-              reject(err);
-              // throw err; 
-            } else {
-              const job = {
-                owner, 
-                action: ServerCommands.READ,
-                value, 
-                idProbe: self.id, 
-                parentId: self.parentId, 
-                parentName: self.parentName, 
-                type: Peripherals.Probe,
-                address: self.address,
-                expectedTime: (expectedTime ? new Date(expectedTime) : null),
-                executedTime: new Date(),
-                operatingMode: operatingMode,
-                systemOperatingMode: systemOperatingMode,
-                serialNumber: self.serialNumber.sn,
-              }
-              switch(owner){
-                case Owner.user: // manual action
-                  if(self.debug){ console.log("[TEMP]: READ manual", job);}
-                  if (self.settings.getLogMode() === true) { 
-                    await self.db.logItem('probes_log', job);
-                    resolve(job);
-                  } else {
-                    console.log("don't log ");
-                  }
-                break;
-                case Owner.schedule: // scheduled action
-                  if(self.debug){ console.log("[TEMP]: READ schedule", job);}
-                  if (self.settings.getLogMode() === true) { 
-                    await self.db.logItem('probes_log', job);
-                    resolve;
-                  }
-                break;
-              }
+      if (operatingMode >= systemOperatingMode) {
+        sensor.get(self.address, async function (err: any, value: any) {
+          if (err) {
+            if (self.debug) {
+              console.log(`[TEMP]: READ ${owner}, error: ${err}`);
             }
-          });
-        } else {
-          if(self.debug){ console.log(`[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);}
+            reject(err);
+            // throw err;
+          } else {
+            const job = {
+              owner,
+              action: ServerCommands.READ,
+              value,
+              idProbe: self.id,
+              parentId: self.parentId,
+              parentName: self.parentName,
+              type: Peripherals.Probe,
+              address: self.address,
+              expectedTime: expectedTime ? new Date(expectedTime) : null,
+              executedTime: new Date(),
+              operatingMode: operatingMode,
+              systemOperatingMode: systemOperatingMode,
+              serialNumber: self.serialNumber.sn,
+            };
+            switch (owner) {
+              case Owner.user: // manual action
+                if (self.debug) {
+                  console.log("[TEMP]: READ manual", job);
+                }
+                if (self.settings.getLogMode() === true) {
+                  await self.db.logItem("probes_log", job);
+                  resolve(job);
+                } else {
+                  console.log("don't log ");
+                }
+                break;
+              case Owner.schedule: // scheduled action
+                if (self.debug) {
+                  console.log("[TEMP]: READ schedule", job);
+                }
+                if (self.settings.getLogMode() === true) {
+                  await self.db.logItem("probes_log", job);
+                  resolve;
+                }
+                break;
+            }
+          }
+        });
+      } else {
+        if (self.debug) {
+          console.log(
+            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+          );
         }
+      }
     });
   }
 
-  async setSchedule(){
+  async setSchedule() {
     const self = this;
-    if(self.id && self.scheduledCrons) {
+    if (self.id && self.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      self.scheduledCrons.map(probeScheduleRow => {
-        const scheduleRow:CronJobInterface = { 
-          action: probeScheduleRow.action, 
+      self.scheduledCrons.map((probeScheduleRow) => {
+        const scheduleRow: CronJobInterface = {
+          action: probeScheduleRow.action,
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
           operatingMode: probeScheduleRow.operatingMode,
         };
         scheduleArr.push(scheduleRow);
       });
-      
-      scheduleArr.map(job => {
+
+      scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const owner = Owner.schedule;
           const doJob = await eval(
@@ -119,11 +194,12 @@ class TemperatureComponent {
               expectedTime: '${expectedTime}', 
               owner: '${owner}', 
               operatingMode: ${job.operatingMode}
-            })`);
-        })
+            })`
+          );
+        });
       });
     }
   }
-
 }
+
 export default TemperatureComponent;

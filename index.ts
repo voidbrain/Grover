@@ -8,7 +8,7 @@ import { LocalStorage } from 'node-localstorage';
 import moment from 'moment';
 import schedule from 'node-schedule';
 
-import { Owner, OperatingModes, ServerCommands, ServerPages } from './app/services/settings/enums';
+import { Owner, OperatingModes, ServerCommands, ServerPages, DevicesStatus } from './app/services/settings/enums';
 
 import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
@@ -137,11 +137,11 @@ class Main {
     if (Object.values(OperatingModes)?.includes(mode)) {
       self.settings.setOperatingMode(mode);
       self.rooms.map(async room => {
-        room.probes.map(async probe => { await probe.component?.setStatus(); });
-        room.workers.map(async worker => { await worker.component?.setStatus(); })
+        room.probes.map(async probe => { await probe.component?.setStatus(Owner.start); });
+        room.workers.map(async worker => { await worker.component?.setStatus(Owner.start); })
         room.pots.map(async pot => {
-          pot.probes.map(async probe => { await probe.component?.setStatus(); })
-          pot.workers.map(async worker => { await worker.component?.setStatus(); })
+          pot.probes.map(async probe => { await probe.component?.setStatus(Owner.start); })
+          pot.workers.map(async worker => { await worker.component?.setStatus(Owner.start); })
         })
       })
       return mode;

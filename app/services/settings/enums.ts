@@ -51,6 +51,7 @@ export enum ServerCommands {
   READ = 'READ',
   ON = 'ON',
   OFF = 'OFF',
+  SET_STATUS = 'SET_STATUS',
   LOG = 'LOG',
 
   START = 'START',
@@ -78,4 +79,5 @@ export enum WorkersTypes {
   Room_Ripen_refill = 8,
   Room_Fan = 9,
   Room_Light = 10,
+  Room_Nutrient_refill = 11,
 }
