@@ -8,7 +8,7 @@
     "ds18x20": "^0.2.0",
     "esm": "^3.2.25",
     "i2c-bus": "^5.2.2",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "node-localstorage": "^2.2.1",
     "node-mcp23017": "^0.0.7",
     "node-schedule": "^2.1.0",
