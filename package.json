@@ -16,7 +16,7 @@
     "pigpio": "^3.3.1",
     "pigpio-l298n": "^0.0.3",
     "query-string": "^7.1.0",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
