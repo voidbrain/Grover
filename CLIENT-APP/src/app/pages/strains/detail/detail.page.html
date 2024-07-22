@@ -1,0 +1,52 @@
+<ion-header>
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-button (click)="goBack()">
+                    <ion-icon name="arrow-back"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+            
+            <ion-title>Add/edit {{ page }}</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    
+    <ion-content padding>
+    
+        <form [formGroup]="form"  [hidden]=" !showForm ">
+            <ion-input type="hidden" formControlName="id"></ion-input>
+            <ion-input type="hidden" formControlName="deleted"></ion-input>
+            <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
+                
+            <ion-item>
+                <ion-label color="primary">{{ 'translate.global.name' | translate }}</ion-label>
+                <ion-input type="text" text-right placeholder="{{ 'translate.global.name' | translate }}" formControlName="name"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary">{{ 'translate.pages.strains.detail.form.lineage' | translate }}</ion-label>
+                <ion-select formControlName="lineage" multiple="true" cancelText="{{ 'translate.global.cancel' | translate }}" okText="{{ 'translate.global.confirm' | translate }}" placeholder="{{ 'translate.pages.strains.detail.form.lineage' | translate }}">
+                    <ion-select-option *ngFor="let strain of strains" [value]="strain.id">{{strain.name}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-item>
+                <ion-label color="primary">{{ 'translate.pages.strains.detail.form.percent_sativa' | translate }}</ion-label>
+                <ion-badge>{{ form.get('percent_sativa').value }}</ion-badge>
+                <ion-range min="0" max="100" formControlName="percent_sativa">
+                    <ion-icon size="small" slot="start" name="sunny"></ion-icon>
+                    <ion-icon slot="end" name="sunny"></ion-icon>
+                </ion-range>
+            </ion-item>
+    
+            <ion-item>
+                <ion-label color="primary">{{ 'translate.global.enabled' | translate }}</ion-label>
+                <ion-toggle formControlName="enabled"></ion-toggle>
+            </ion-item>
+    
+            <ion-button color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+                    {{ 'translate.global.submit' | translate }}
+            </ion-button>
+        </form>
+    
+    </ion-content>
+        

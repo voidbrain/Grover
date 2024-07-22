@@ -1,8 +1,0 @@
-{
-  "i18n-ally.localesPaths": [
-    "src/assets/i18n",
-    "www/assets/i18n",
-    "platforms/ios/www/assets/i18n",
-    "platforms/ios/SNUA.xcarchive/Products/Applications/SNUA.app/www/assets/i18n"
-  ]
-}

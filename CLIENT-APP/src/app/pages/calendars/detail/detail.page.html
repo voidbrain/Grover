@@ -1,0 +1,105 @@
+<ion-header>
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-button (click)="goBack()">
+                    <ion-icon name="arrow-back"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+            
+            <ion-title>Add/edit {{ page }}</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    
+    <ion-content padding>
+        <ion-refresher (ionRefresh)="doRefresh($event)">
+            <ion-refresher-content></ion-refresher-content>
+        </ion-refresher>
+    
+        <form [formGroup]="form"  [hidden]=" !showForm ">
+            <ion-input type="hidden" formControlName="id"></ion-input>
+            <ion-input type="hidden" formControlName="deleted"></ion-input>
+            <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
+            
+            <ion-grid>
+                <ion-row>
+                    <ion-col size='8'>
+                        <ion-item>
+                            <ion-label color="primary">{{ 'translate.global.name' | translate }}</ion-label>
+                            <ion-input type="text" text-right placeholder="{{ 'translate.global.name' | translate }}" formControlName="name"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col size='4'>
+                        <ion-item>
+                            <ion-label color="primary">{{ 'translate.global.enabled' | translate }}</ion-label>
+                            <ion-toggle formControlName="enabled"></ion-toggle>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+
+            <!-- <ion-card [hidden]=" !relatedPhases "> -->
+            <ion-card>
+                <ion-toolbar>
+                    <ion-buttons slot="end">
+                        <ion-buttons>
+                            <ion-button (click)=' showSubForm = true '><ion-icon name="add-circle"></ion-icon></ion-button>
+                        </ion-buttons>
+                    </ion-buttons>
+                </ion-toolbar>
+
+                <form padding [hidden]=" !showSubForm ">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size='5'>
+                                <ion-item>
+                                    <ion-label color="primary">{{ 'translate.pages.calendar.detail.form.phase' | translate }}</ion-label>
+                                    <ion-select [(ngModel)]="newPhase.phase" name='phase' [placeholder]='"translate.pages.calendar.detail.form.phase" | translate'>
+                                            <ion-select-option *ngFor="let phase of phases" [value]="phase.id">{{phase.name}}</ion-select-option>
+                                    </ion-select>
+                                </ion-item>
+                            </ion-col>
+                            <ion-col size='5'>
+                                <ion-item>
+                                    <ion-label color="primary">{{ 'translate.pages.calendar.detail.form.duration' | translate }}</ion-label>
+                                    <ion-input [(ngModel)]="newPhase.duration" name='duration' type="number" text-right placeholder="{{ 'translate.pages.calendar.detail.form.duration' | translate }}"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                            <ion-col size='2'>
+                                <ion-button color="primary" (click)="addPhase()">
+                                    {{ 'translate.global.add' | translate }}
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </form>
+                <ion-list>
+                    <ion-reorder-group (ionItemReorder)="reorder($event)" disabled="false">
+                        <ion-item-sliding *ngFor="let phase of relatedPhases">
+                            <ion-item>
+                                <ion-label>{{ phase.name }}</ion-label>
+                                <ion-reorder slot="start"></ion-reorder>
+
+                                <div slot="end" class="canvasContainer">
+                                    <chart [chartConfig]="phase.chartConfig"></chart>
+                                </div>
+
+                                <div slot="end"> 
+                                    {{ phase.duration }} {{ 'translate.pages.doses.detail.general.days' | translate }}
+                                </div>
+                            </ion-item>
+                            
+                            <ion-item-options side="end">
+                                <ion-item-option (click)="deleteItem(phase)" color="danger">Delete</ion-item-option>
+                            </ion-item-options>
+                        </ion-item-sliding>
+                    </ion-reorder-group>
+                </ion-list>
+            </ion-card>
+            
+            <ion-button color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+                    {{ 'translate.global.submit' | translate }}
+            </ion-button>
+        </form>
+    
+    </ion-content>
+        

@@ -1,13 +1,7 @@
 {
-  "name": "SNUA",
+  "name": "RedNeck",
   "integrations": {
     "cordova": {}
   },
-  "type": "ionic-angular",
-  "proxies": [
-    {
-      "path": "/api",
-      "proxyUrl": "http://localhost:8888/grover/ajax/moduli/api"
-    }
-  ]
+  "type": "angular"
 }

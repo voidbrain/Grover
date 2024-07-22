@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Home</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-card class="welcome-card">
+        <ion-card-content>
+            <p translate>{{'tab1.invite' | translate:{ lang: language } }}</p>
+            
+            <ion-title>
+                {{ 'tab1.tabName' | translate }}
+            </ion-title>
+            
+            <ion-item>
+                <ion-label translate>Language</ion-label>
+                <ion-select [(ngModel)]='language' (ionChange)='languageChange()' [placeholder]='"tab1.languageChangePlaceholder" | translate'>
+                    <ion-select-option value='ru'>Russian</ion-select-option>
+                    <ion-select-option value='en'>English</ion-select-option>
+                    <ion-select-option value='it'>Italian</ion-select-option>
+                    <ion-select-option value='jp'>Japan</ion-select-option>
+                    <ion-select-option value='de'>German</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </ion-card-content>
+    </ion-card>
+    
+</ion-content>

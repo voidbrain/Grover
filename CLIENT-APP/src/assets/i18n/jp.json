@@ -1,0 +1,12 @@
+{
+    "home": {
+        "title": "Hello Angular with ngx-translate!",
+        "select": "Change language"
+    },
+    "Language": "JpLanguage",
+    "tab1": {
+        "tabName": "skkkうな機能がありま One goes here",
+        "invite": "Konichiwa {{lang}}",
+        "languageChangePlaceholder": "Konichiwa"
+    }
+}
