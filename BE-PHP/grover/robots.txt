@@ -1,0 +1,18 @@
+User-agent: *
+Disallow: /*?
+Disallow: /*.json$
+Disallow: /*.css$
+Disallow: /*.js$
+Disallow: /wip/
+
+# Disable Chinese Baidu crawler
+# User-agent: Baiduspider
+# Disallow: /
+
+# Removing Documents From the Wayback Machine archive.org
+User-agent: ia_archiver
+Disallow: /
+
+# Disable *.domaintools.com crawler
+User-agent: SurveyBot
+Disallow: /

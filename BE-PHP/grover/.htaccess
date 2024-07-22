@@ -1,0 +1,146 @@
+#Options -Indexes +FollowSymLinks -MultiViews
+
+#ServerSignature Off
+## Uncomment php_flag's and php_value if you're not able use content/php.ini settings on your server
+#php_flag display_errors 0
+#php_flag log_errors 1
+#php_value error_log error_log.txt
+#php_flag session.use_trans_sid 0
+#php_flag allow_url_fopen 0
+#php_flag allow_url_include 0
+#php_flag short_open_tag 0
+#php_flag magic_quotes_gpc 0
+#php_flag safe_mode 0
+#php_flag register_globals 0
+#php_flag expose_php 0
+
+
+AddType text/javascript .js
+AddType text/cache-manifest appcache
+AddType application/json .json
+AddType image/x-icon .ico
+
+AddDefaultCharset utf-8
+AddCharset utf-8 .json .css .js .txt
+
+# 404
+ErrorDocument 404 ./404
+
+<IfModule filter_module.c>
+    <IfModule version.c>
+        <IfVersion >= 2.4>
+            FilterDeclare  COMPRESS
+            FilterProvider COMPRESS DEFLATE "%{CONTENT_TYPE} =~ m#^text/(html|css|plain|xml|x-component)#i"
+            FilterProvider COMPRESS DEFLATE "%{CONTENT_TYPE} =~ m#^application/(javascript|json|xml|xhtml+xml|rss+xml|atom+xml|vnd.ms-fontobject|x-font-ttf)#i"
+            FilterProvider COMPRESS DEFLATE "%{CONTENT_TYPE} =~ m#^image/(svg+xml|x-icon)#i"
+            FilterProvider COMPRESS DEFLATE "%{CONTENT_TYPE} = 'font/opentype'"
+            FilterChain    COMPRESS
+            FilterProtocol COMPRESS DEFLATE change=yes;byteranges=no
+        </IfVersion>
+        <IfVersion < 2.4>
+            FilterDeclare COMPRESS
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $text/html
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $text/css
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $text/plain
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $text/xml
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $text/x-component
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/javascript
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/json
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/xml
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/xhtml+xml
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/rss+xml
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/atom+xml
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/vnd.ms-fontobject
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $image/svg+xml
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $image/x-icon
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $application/x-font-ttf
+            FilterProvider COMPRESS DEFLATE resp=Content-Type $font/opentype
+            FilterChain COMPRESS
+            FilterProtocol COMPRESS DEFLATE change=yes;byteranges=no
+        </IfVersion>
+    </IfModule>
+    <IfModule !version.c>
+        FilterDeclare COMPRESS
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $text/html
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $text/css
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $text/plain
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $text/xml
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $text/x-component
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/javascript
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/json
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/xml
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/xhtml+xml
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/rss+xml
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/atom+xml
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/vnd.ms-fontobject
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $image/svg+xml
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $image/x-icon
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $application/x-font-ttf
+        FilterProvider COMPRESS DEFLATE resp=Content-Type $font/opentype
+        FilterChain COMPRESS
+        FilterProtocol COMPRESS DEFLATE change=yes;byteranges=no
+    </IfModule>
+</IfModule>
+
+
+
+
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType application/x-httpd-php "access plus 1 minute"
+    ExpiresByType application/json "access plus 1 minute"
+    ExpiresByType application/xml "access plus 1 minute"
+    ExpiresByType text/html "access plus 1 minute"
+    ExpiresByType text/plain "access plus 1 hour"
+    ExpiresByType text/cache-manifest "access plus 0 seconds"
+    ExpiresByType text/css "access plus 6 months"
+    ExpiresByType text/javascript "access plus 6 months"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 week"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+</IfModule>
+<IfModule mod_headers.c>
+    # <FilesMatch "\.php$">
+    #    Header set Cache-Control max-age=60
+    # </FilesMatch>
+    <FilesMatch "\.(css|js|json|xml|txt)$">
+        Header set Cache-Control max-age=31536000
+        Header set X-Robots-Tag none
+    </FilesMatch>
+    <FilesMatch "\.(png|jpg|gif|svg)$">
+        Header set Cache-Control max-age=2419200
+    </FilesMatch>
+    FileETag None
+    Header unset Pragma
+    Header unset X-Powered-By
+    Header unset Accept-Ranges
+    Header append Cache-Control public
+    Header append Vary Accept-Encoding
+</IfModule>
+<IfModule mod_rewrite.c>
+    #Options +FollowSymlinks
+	
+	RewriteEngine On
+    
+    #Escludo le seguenti cartelle
+    RewriteRule ^(style|fonts|img|plugins|files|template|font-awesome|moduli/filemanager|(.*).xml|js|(.*).js)($|/) - [L]
+
+    RewriteRule (.*) index.php?request=$1 [L,QSA]
+
+
+	
+    #RewriteRule ^([A-Za-z0-9-]+.php)?$ template/$1 [L,QSA]
+    
+
+</IfModule>
+
+
+# AuthType Basic
+# AuthName "San Camillo"
+# AuthUserFile /web/htdocs/www.k-servizi.com/home/sancamillo/.htpasswd
+# require valid-user
+
