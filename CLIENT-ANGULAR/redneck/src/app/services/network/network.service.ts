@@ -1,33 +1,23 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Network } from '@capacitor/network';
 
 export enum ConnectionStatus {
   Offline,
   Online
 }
 
-navigator: {
-  onLine: true;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class NetworkService {
-  
+
   public status: BehaviorSubject<any> ;
 
-  constructor() { 
+  constructor(
+  ) {
     this.status = new BehaviorSubject([]);
             this.initializeNetworkEvents();
-  }
-
-  watchOnline(): any {
-    // return this.network.onConnect();
-}
-
-  watchOffline(): any {
-    // return this.network.onDisconnect();
   }
 
   public initializeNetworkEvents() {

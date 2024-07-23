@@ -19,15 +19,15 @@ import { LoadingController } from '@ionic/angular';
 export class CompaniesMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
 	items: any;
-    table: string = 'companies';
+  table: string = 'companies';
 
-  	constructor(
-  		public db: DbService,
-    	public loadingController: LoadingController,
-    	public router: Router
-  	) {
-      this.init();
-    }
+  constructor(
+    public db: DbService,
+    public loadingController: LoadingController,
+    public router: Router
+  ) {
+    this.init();
+  }
 
     init() {
       console.info('[PAGE]: Start');

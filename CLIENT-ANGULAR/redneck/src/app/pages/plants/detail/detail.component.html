@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content padding>
-  <report [default]=" default " [subject]=" plant.id_pot "></report>
+  <app-report [default]=" default " [subject]=" plant.id_pot "></app-report>
 
   <form [formGroup]="form"  [hidden]=" !showForm ">
       <ion-input type="hidden" formControlName="id"></ion-input>

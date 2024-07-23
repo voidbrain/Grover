@@ -1,9 +1,11 @@
-import { Component, ViewChildren } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { ChartComponent } from '../../../components/chart/chart.component';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonBadge, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { NetworkService } from '../../../services/network/network.service';
+import { Strain } from '../../../interfaces/strain';
 
 
 @Component({
@@ -11,16 +13,27 @@ import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader,
   standalone: true,
   imports: [
     RouterLink, RouterOutlet, FormsModule, ReactiveFormsModule, ChartComponent,
-    IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar
+    IonBadge, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss'
 })
 export class StrainsDetailComponent {
 
+  page = 'strains';
+
+  isOnline = false;
+  isReadyToSave = false;
+  showForm = true;
+  form: FormGroup = new FormGroup({});
+  item: Strain|null = null;
+  strains:Strain[] = [];
+
   constructor(
     private db: DbService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private network: NetworkService,
   ){
     this.init();
   }
@@ -32,13 +45,13 @@ export class StrainsDetailComponent {
 
   init() {
     this.db.load().then(() => {
-        const id = this.route.snapshot.paramMap.get('id');
+        const id:any = this.route.snapshot.paramMap.get('id');
         this.getItem(parseInt(id));
     }).catch(err => console.error(err));
 }
 
 
-getItem(id) {
+getItem(id: Number) {
     if (id){
         this.db.getItem(this.page, id).then(item => {
             this.form.patchValue(item, {emitEvent: true});

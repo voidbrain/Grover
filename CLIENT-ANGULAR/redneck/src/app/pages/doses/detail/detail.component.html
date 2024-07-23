@@ -13,7 +13,7 @@
 <ion-content padding>
 
   <div class="canvasContainer">
-      <chart [chartConfig]="chart.chartConfig"></chart>
+      <app-chart [chartConfig]="chart.chartConfig"></app-chart>
   </div>
 
   <form [formGroup]="form"  [hidden]=" !showForm ">
@@ -34,7 +34,7 @@
                   <ion-col size="4">
                       <ion-item>
                           <ion-label i18n color="primary">color</ion-label>
-                          <ion-button slot="end" [color]="color.key" (click)="pickColor($event, color)">&#x22ee;</ion-button>
+                          <ion-button slot="end" [color]="color?.key" (click)="pickColor($event, color)">&#x22ee;</ion-button>
                           <ion-input type="hidden" formControlName="color"></ion-input>
                       </ion-item>
                   </ion-col>

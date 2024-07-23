@@ -1,0 +1,54 @@
+<ion-content padding>
+  <ion-card class="ion-margin-bottom">
+      <div class="filters">
+          <ion-grid>
+              <ion-row>
+                  <ion-col>
+                      <ion-item>
+                          <ion-label>From</ion-label>
+                          <ion-datetime (ionChange)=' filterReport($event) ' [(ngModel)]="form.dateFrom" picker-format="DD MMM YYYY" display-format="DD MMM YYYY"></ion-datetime>
+                      </ion-item>
+                  </ion-col>
+                  <ion-col>
+                      <ion-item>
+                          <ion-label>To</ion-label>
+                          <ion-datetime (ionChange)=' filterReport($event) ' [(ngModel)]="form.dateTo" picker-format="DD MMM YYYY" display-format="DD MMM YYYY"></ion-datetime>
+                      </ion-item>
+                  </ion-col>
+                  <ion-col [hidden]=' subject '>
+                      <ion-item>
+                          <ion-label>Containers</ion-label>
+                          <ion-select multiple="true" (ionChange)=' filterReport($event) ' [(ngModel)]="form.containers" placeholder="Select Container">
+                              @for (container of default.containers; track container.id) {
+                                  <ion-select-option value="{{ container.id }}">{{ container.name }}</ion-select-option>
+                              }
+                          </ion-select>
+                      </ion-item>
+                  </ion-col>
+                  <ion-col>
+                      <ion-item>
+                          <ion-label>Probes</ion-label>
+                          <ion-select multiple="true" (ionChange)=' filterReport($event) ' [(ngModel)]="form.probesType" placeholder="Select Probe">
+                              @for(type of default.probesType; track type.id) {
+                                  <ion-select-option value="{{ type.id }}">{{ type.type }}</ion-select-option>
+                              }
+                          </ion-select>
+                      </ion-item>
+                  </ion-col>
+              </ion-row>
+          </ion-grid>
+      </div>
+  </ion-card>
+
+  @for (container of containers; track container) {
+      <ion-card>
+          <ion-card-title padding>
+              {{ container.name }}
+          </ion-card-title>
+
+          <div class="canvasContainer">
+              <app-chart [chartConfig]="container.chartConfig"></app-chart>
+          </div>
+      </ion-card>
+  }
+</ion-content>

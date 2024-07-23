@@ -33,7 +33,7 @@
 
       <ion-item>
           <ion-label i18n color="primary">% Sativa</ion-label>
-          <ion-badge>{{ form.get('percent_sativa').value }}</ion-badge>
+          <ion-badge>{{ form.get('percent_sativa')?.value }}</ion-badge>
           <ion-range min="0" max="100" formControlName="percent_sativa">
               <ion-icon size="small" slot="start" name="sunny"></ion-icon>
               <ion-icon slot="end" name="sunny"></ion-icon>
