@@ -9,8 +9,8 @@ describe('ColorPickerPopoverComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ColorPickerPopoverComponent ],
-      imports: [IonicModule.forRoot()]
+      declarations: [ColorPickerPopoverComponent],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ColorPickerPopoverComponent);

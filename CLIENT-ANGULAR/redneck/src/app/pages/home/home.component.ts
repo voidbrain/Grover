@@ -3,7 +3,32 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../services/db/db.service';
 import { ChartComponent } from '../../components/chart/chart.component';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
+  IonLabel,
+  IonList,
+  IonMenu,
+  IonMenuToggle,
+  IonRefresher,
+  IonRefresherContent,
+  IonReorder,
+  IonReorderGroup,
+  IonRow,
+  IonSelectOption,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 
@@ -11,16 +36,43 @@ import * as ionIcons from 'ionicons/icons';
   selector: 'app-home',
   standalone: true,
   imports: [
-    RouterLink, RouterOutlet, FormsModule, ReactiveFormsModule, ChartComponent,
-    IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar
+    RouterLink,
+    RouterOutlet,
+    FormsModule,
+    ReactiveFormsModule,
+    ChartComponent,
+    IonButton,
+    IonButtons,
+    IonCard,
+    IonCol,
+    IonContent,
+    IonGrid,
+    IonHeader,
+    IonIcon,
+    IonItem,
+    IonItemOption,
+    IonItemOptions,
+    IonItemSliding,
+    IonLabel,
+    IonList,
+    IonMenu,
+    IonMenuToggle,
+    IonRefresher,
+    IonRefresherContent,
+    IonReorder,
+    IonReorderGroup,
+    IonRow,
+    IonSelectOption,
+    IonTitle,
+    IonToolbar,
   ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent {
-  constructor(){
-    this.init()
+  constructor() {
+    this.init();
     addIcons(ionIcons);
   }
-  init(){}
+  init() {}
 }

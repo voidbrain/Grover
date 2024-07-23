@@ -9,14 +9,14 @@
       <ion-content>
         <ion-list>
           @for (p of appPages; track p.url) {
-          <ion-menu-toggle auto-hide="false">
-            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
-              <ion-icon slot="start" [name]="p.icon"></ion-icon>
-              <ion-label>
-                {{ p.title }}
-              </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+            <ion-menu-toggle auto-hide="false">
+              <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
+                <ion-icon slot="start" [name]="p.icon"></ion-icon>
+                <ion-label>
+                  {{ p.title }}
+                </ion-label>
+              </ion-item>
+            </ion-menu-toggle>
           }
         </ion-list>
       </ion-content>

@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { IonApp, IonSplitPane,
+import {
+  IonApp,
+  IonSplitPane,
   IonMenu,
   IonMenuToggle,
   IonHeader,
@@ -12,7 +14,7 @@ import { IonApp, IonSplitPane,
   IonItem,
   IonIcon,
   IonLabel,
-  IonRouterOutlet
+  IonRouterOutlet,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
@@ -20,27 +22,31 @@ import * as ionIcons from 'ionicons/icons';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet,
-  IonApp, IonSplitPane,
-  IonMenu,
-  IonMenuToggle,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonIcon,
-  IonLabel,
-  IonRouterOutlet
-],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterOutlet,
+    IonApp,
+    IonSplitPane,
+    IonMenu,
+    IonMenuToggle,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
+    IonRouterOutlet,
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'redneck';
 
-  constructor(){
+  constructor() {
     addIcons(ionIcons);
   }
 
@@ -51,6 +57,6 @@ export class AppComponent {
     { title: 'companies', url: '/companies', icon: 'business' },
     { title: 'calendars', url: '/calendars', icon: 'calendar' },
     { title: 'doses', url: '/doses', icon: 'flask' },
-    { title: 'settings', url: '/settings', icon: 'settings' }
+    { title: 'settings', url: '/settings', icon: 'settings' },
   ];
 }

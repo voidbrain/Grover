@@ -18,9 +18,7 @@ navigator: {
 export class NetworkService {
   public status: BehaviorSubject<any>;
 
-  constructor(
-    private toastService: ToastService
-  ) {
+  constructor(private toastService: ToastService) {
     this.status = new BehaviorSubject([]);
     this.initializeNetworkEvents();
   }
@@ -36,7 +34,7 @@ export class NetworkService {
 
   public initializeNetworkEvents() {
     this.updateNetworkStatus(
-      navigator.onLine ? ConnectionStatus.Online : ConnectionStatus.Offline
+      navigator.onLine ? ConnectionStatus.Online : ConnectionStatus.Offline,
     );
     let el = this;
     window.addEventListener('online', function () {
@@ -48,7 +46,9 @@ export class NetworkService {
   }
 
   private async updateNetworkStatus(status: any) {
-    this.toastService.pushMessage('Network status: '+(status?'Online':'Offline'));
+    this.toastService.pushMessage(
+      'Network status: ' + (status ? 'Online' : 'Offline'),
+    );
     this.toastService.presentToast();
 
     this.status.next(status);

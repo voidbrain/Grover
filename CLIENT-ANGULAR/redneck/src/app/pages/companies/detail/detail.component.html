@@ -1,35 +1,46 @@
 <ion-header>
   <ion-toolbar>
-      <ion-buttons slot="start">
-          <ion-button (click)="goBack()">
-              <ion-icon name="arrow-back"></ion-icon>
-          </ion-button>
-      </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
 
-      <ion-title>Add/edit {{ page }}</ion-title>
+    <ion-title>Add/edit {{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
+  <form [formGroup]="form" [hidden]="!showForm">
+    <ion-input type="hidden" formControlName="id"></ion-input>
+    <ion-input type="hidden" formControlName="deleted"></ion-input>
+    <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
 
-  <form [formGroup]="form"  [hidden]=" !showForm ">
-      <ion-input type="hidden" formControlName="id"></ion-input>
-      <ion-input type="hidden" formControlName="deleted"></ion-input>
-      <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
+    <ion-item>
+      <ion-label i18n color="primary">Name</ion-label>
+      <ion-input
+        i18n
+        type="text"
+        text-right
+        placeholder="Name"
+        formControlName="name"
+      ></ion-input>
+    </ion-item>
 
-      <ion-item>
-          <ion-label i18n color="primary">Name</ion-label>
-          <ion-input i18n type="text" text-right placeholder="Name" formControlName="name"></ion-input>
-      </ion-item>
+    <ion-item>
+      <ion-label i18n color="primary">Enabled</ion-label>
+      <ion-toggle formControlName="enabled"></ion-toggle>
+    </ion-item>
 
-      <ion-item>
-          <ion-label i18n color="primary">Enabled</ion-label>
-          <ion-toggle formControlName="enabled"></ion-toggle>
-      </ion-item>
-
-      <ion-button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
-              Submit
-      </ion-button>
+    <ion-button
+      i18n
+      color="primary"
+      expand="block"
+      (click)="saveForm()"
+      [hidden]="!showForm"
+      [disabled]="!isReadyToSave"
+    >
+      Submit
+    </ion-button>
   </form>
-
 </ion-content>

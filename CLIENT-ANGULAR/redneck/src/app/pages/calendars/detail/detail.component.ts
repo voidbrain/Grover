@@ -87,7 +87,10 @@ export class CalendarsDetailComponent {
   relatedPhases: any;
   phases: any;
 
-  constructor(private db: DbService, private router: Router) {
+  constructor(
+    private db: DbService,
+    private router: Router,
+  ) {
     addIcons(ionIcons);
   }
 
@@ -114,7 +117,7 @@ export class CalendarsDetailComponent {
           Math,
           this.relatedPhases.map(function (o: any) {
             return o.pos + 1;
-          })
+          }),
         )
       : 1;
   }

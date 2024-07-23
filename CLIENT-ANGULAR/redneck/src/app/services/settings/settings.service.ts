@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SettingsService {
-
   appName: string = '';
   serverAddress: string = '';
   purposes: string[] = [];
@@ -23,8 +22,22 @@ export class SettingsService {
     this.purposes = ['client', 'worker'];
     this.purpose = 0;
     this.datatables = [
-      'calendars', 'doses', 'settings', 'mediums', 'scenarios', 'plants', 'companies', 'strains', 'containers',
-      'containers_type', 'probes_list', 'probes_type', 'workers_list', 'workers_type', 'probes_log', 'workers_log'
+      'calendars',
+      'doses',
+      'settings',
+      'mediums',
+      'scenarios',
+      'plants',
+      'companies',
+      'strains',
+      'containers',
+      'containers_type',
+      'probes_list',
+      'probes_type',
+      'workers_list',
+      'workers_type',
+      'probes_log',
+      'workers_log',
     ];
   }
 }

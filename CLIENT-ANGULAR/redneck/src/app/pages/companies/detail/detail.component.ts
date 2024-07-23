@@ -95,7 +95,7 @@ export class CompaniesDetailComponent {
     private loadingController: LoadingController,
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {
     this.init();
     addIcons(ionIcons);
@@ -110,7 +110,7 @@ export class CompaniesDetailComponent {
         deleted: [''],
         lastUpdate: [''],
       },
-      {}
+      {},
     );
 
     this.isOnline = navigator.onLine;

@@ -13,38 +13,36 @@ import { CalendarsMasterComponent } from './pages/calendars/master/master.compon
 import { CalendarsDetailComponent } from './pages/calendars/detail/detail.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'home', pathMatch: 'full' },
-    { path: 'home', component: HomeComponent },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
 
-    { path: 'doses', component: DosesMasterComponent },
-    { path: 'doses/create', component: DosesDetailComponent },
-    { path: 'doses/edit/:id', component: DosesDetailComponent },
+  { path: 'doses', component: DosesMasterComponent },
+  { path: 'doses/create', component: DosesDetailComponent },
+  { path: 'doses/edit/:id', component: DosesDetailComponent },
 
-    { path: 'calendars', component: CalendarsMasterComponent },
-    { path: 'calendars/create', component: CalendarsDetailComponent },
-    { path: 'calendars/edit/:id', component: CalendarsDetailComponent },
+  { path: 'calendars', component: CalendarsMasterComponent },
+  { path: 'calendars/create', component: CalendarsDetailComponent },
+  { path: 'calendars/edit/:id', component: CalendarsDetailComponent },
 
-    { path: 'strains', component: StrainsMasterComponent },
-    { path: 'strains/create', component: StrainsDetailComponent },
-    { path: 'strains/edit/:id', component: StrainsDetailComponent },
+  { path: 'strains', component: StrainsMasterComponent },
+  { path: 'strains/create', component: StrainsDetailComponent },
+  { path: 'strains/edit/:id', component: StrainsDetailComponent },
 
-    { path: 'plants', component: PlantsMasterComponent },
-    { path: 'plants/create', component: PlantsDetailComponent },
-    { path: 'plants/edit/:id', component: PlantsDetailComponent },
+  { path: 'plants', component: PlantsMasterComponent },
+  { path: 'plants/create', component: PlantsDetailComponent },
+  { path: 'plants/edit/:id', component: PlantsDetailComponent },
 
-    { path: 'companies', component: CompaniesMasterComponent },
-    { path: 'companies/create', component: CompaniesDetailComponent },
-    { path: 'companies/edit/:id', component: CompaniesDetailComponent },
+  { path: 'companies', component: CompaniesMasterComponent },
+  { path: 'companies/create', component: CompaniesDetailComponent },
+  { path: 'companies/edit/:id', component: CompaniesDetailComponent },
 
-
-
-    // { path: 'home', loadChildren: './pages/home/home.module#HomePageModule' },
-    // { path: 'login', loadChildren: './pages/user/public/login/login.module#LoginPageModule' },
-    // { path: 'register', loadChildren: './pages/user/public/register/register.module#RegisterPageModule' },
-    // {
-    //     path: 'members',
-    //     canActivate: [AuthGuardService],
-    //     loadChildren: './pages/user/member/member-routing.module#MemberRoutingModule'
-    // },
-    // { path: 'settings', loadChildren: './pages/settings/detail/detail.module#DetailPageModule' }
+  // { path: 'home', loadChildren: './pages/home/home.module#HomePageModule' },
+  // { path: 'login', loadChildren: './pages/user/public/login/login.module#LoginPageModule' },
+  // { path: 'register', loadChildren: './pages/user/public/register/register.module#RegisterPageModule' },
+  // {
+  //     path: 'members',
+  //     canActivate: [AuthGuardService],
+  //     loadChildren: './pages/user/member/member-routing.module#MemberRoutingModule'
+  // },
+  // { path: 'settings', loadChildren: './pages/settings/detail/detail.module#DetailPageModule' }
 ];

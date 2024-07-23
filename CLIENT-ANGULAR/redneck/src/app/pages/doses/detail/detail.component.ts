@@ -106,7 +106,7 @@ export class DosesDetailComponent {
     public router: Router,
     private formBuilder: FormBuilder,
     public popoverController: PopoverController,
-    public col: ColorService
+    public col: ColorService,
   ) {
     this.init();
     addIcons(ionIcons);
@@ -127,7 +127,7 @@ export class DosesDetailComponent {
         color: [''],
         lastUpdate: [''],
       },
-      {}
+      {},
     );
 
     this.chart = { chartConfig: {} };
@@ -250,7 +250,7 @@ export class DosesDetailComponent {
     });
   }
 
-  async pickColor(ev: Event, color:any) {
+  async pickColor(ev: Event, color: any) {
     const popover = await this.popoverController.create({
       component: ColorPickerPopoverComponent,
       event: ev,

@@ -23,41 +23,44 @@
 
   <ion-list>
     @for (item of items; track item.id) {
-    <ion-item-sliding #slidingItem>
-      <ion-item>
-        <ion-label>
-          <ion-item lines="none" (click)="showDetail(item)">
-            <div padding>
-              <ion-title no-padding>
-                <ion-icon name="flower" slot="start"></ion-icon>
-                {{ item.strain.name }}
-              </ion-title>
+      <ion-item-sliding #slidingItem>
+        <ion-item>
+          <ion-label>
+            <ion-item lines="none" (click)="showDetail(item)">
+              <div padding>
+                <ion-title no-padding>
+                  <ion-icon name="flower" slot="start"></ion-icon>
+                  {{ item.strain.name }}
+                </ion-title>
 
-              <div [hidden]="!item.day_harvest">
-                <span i18n>Day harvest</span> {{ item.day_harvest }}
+                <div [hidden]="!item.day_harvest">
+                  <span i18n>Day harvest</span> {{ item.day_harvest }}
+                </div>
+                <div [hidden]="!item.day_start_bloom">
+                  <span i18n>Start bloom</span> {{ item.day_start_bloom }}
+                </div>
+                <div [hidden]="!item.day_start_grow">
+                  <span i18n>Start grow</span> {{ item.day_start_grow }}
+                </div>
               </div>
-              <div [hidden]="!item.day_start_bloom">
-                <span i18n>Start bloom</span> {{ item.day_start_bloom }}
-              </div>
-              <div [hidden]="!item.day_start_grow">
-                <span i18n>Start grow</span> {{ item.day_start_grow }}
-              </div>
-            </div>
 
-            <div slot="end" class="canvasContainer">
-              <app-chart [id]="item.id" [chartConfig]="item.chartConfig"></app-chart>
-            </div>
-          </ion-item>
-        </ion-label>
-      </ion-item>
+              <div slot="end" class="canvasContainer">
+                <app-chart
+                  [id]="item.id"
+                  [chartConfig]="item.chartConfig"
+                ></app-chart>
+              </div>
+            </ion-item>
+          </ion-label>
+        </ion-item>
 
-      <ion-item-options side="end">
-        <ion-item-option (click)="showDetail(item)">Edit</ion-item-option>
-        <ion-item-option (click)="deleteItem(item)" color="danger"
-          >Delete</ion-item-option
-        >
-      </ion-item-options>
-    </ion-item-sliding>
+        <ion-item-options side="end">
+          <ion-item-option (click)="showDetail(item)">Edit</ion-item-option>
+          <ion-item-option (click)="deleteItem(item)" color="danger"
+            >Delete</ion-item-option
+          >
+        </ion-item-options>
+      </ion-item-sliding>
     }
   </ion-list>
 </ion-content>

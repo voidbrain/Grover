@@ -12,13 +12,13 @@ export class ApiService {
   constructor(
     private appSettings: SettingsService,
     public networkService: NetworkService,
-    private http: HttpClient
+    private http: HttpClient,
   ) {
     this.init();
   }
 
   init() {
-    if (this.appSettings.purpose!== null) {
+    if (this.appSettings.purpose !== null) {
       this.url =
         this.appSettings.serverAddress +
         '/' +

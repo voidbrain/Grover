@@ -1,4 +1,11 @@
-import { Component, ElementRef, Input, OnInit, SimpleChange, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  SimpleChange,
+  ViewChild,
+} from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -94,7 +101,10 @@ export class ReportComponent {
   }
 
   filterReport(id_pot: any = null) {
-    let containers: any[] = [], probesType: any[] = [], from, to;
+    let containers: any[] = [],
+      probesType: any[] = [],
+      from,
+      to;
 
     if (this.form.containers) {
       containers = this.form.containers.map(function (item: any) {
@@ -128,15 +138,15 @@ export class ReportComponent {
     }
 
     from = new Date(
-      new Date(new Date(this.form.dateFrom).toISOString()).setHours(0, 0, 0, 0)
+      new Date(new Date(this.form.dateFrom).toISOString()).setHours(0, 0, 0, 0),
     );
     to = new Date(
       new Date(new Date(this.form.dateTo).toISOString()).setHours(
         23,
         59,
         59,
-        999
-      )
+        999,
+      ),
     );
     // console.log(this.default, containers, this.containers, this.default.containers)
     this.getStat(containers, probesType, from, to);
@@ -150,16 +160,20 @@ export class ReportComponent {
       const yAxes: any[] = []; // axes matrix
 
       if (typeof pot.type !== 'object') {
-        pot.type = this.default.containersType.find((el: any) => el.id == pot.type);
+        pot.type = this.default.containersType.find(
+          (el: any) => el.id == pot.type,
+        );
       }
-      pot.probes = this.default.probesList.filter((el: any) => el.id_pot == pot.id);
+      pot.probes = this.default.probesList.filter(
+        (el: any) => el.id_pot == pot.id,
+      );
       pot.probes.forEach((probe: any) => {
         probe.maxValue = 0;
         probe.type = this.default.probesType.find(
-          (el: any) => el.id == probe.probe_type
+          (el: any) => el.id == probe.probe_type,
         );
         probe.log = this.default.probesLog.filter(
-          (el: any) => el.id_probe == probe.id
+          (el: any) => el.id_probe == probe.id,
         );
         probe.log.forEach((log: any) => {
           const datetime = new Date(log.datetime);
@@ -176,14 +190,14 @@ export class ReportComponent {
       });
 
       pot.workers = this.default.workersList.filter(
-        (el: any) => el.id_pot == pot.id
+        (el: any) => el.id_pot == pot.id,
       );
       pot.workers.forEach((worker: any) => {
         worker.type = this.default.workersType.find(
-          (el: any) => el.id == worker.worker_type
+          (el: any) => el.id == worker.worker_type,
         );
         worker.log = this.default.workersLog.filter(
-          (el: any) => el.id_worker == worker.id
+          (el: any) => el.id_worker == worker.id,
         );
         worker.log.forEach((log: any) => {
           const datetime = new Date(new Date(log.datetime));
@@ -241,7 +255,9 @@ export class ReportComponent {
         if (probesType.find((el: any) => el.id == probe.probe_type)) {
           const dataProbe: any[] = [];
           datetimeArray.forEach((timestamp) => {
-            const found = probe.log.find((el: any) => el.datetime === timestamp);
+            const found = probe.log.find(
+              (el: any) => el.datetime === timestamp,
+            );
             dataProbe.push(found ? found.value : null);
           });
 

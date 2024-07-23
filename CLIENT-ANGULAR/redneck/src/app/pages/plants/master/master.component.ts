@@ -75,7 +75,10 @@ export class PlantsMasterComponent {
   items: any;
   table: string = 'plants';
 
-  constructor(private db: DbService, private router: Router) {
+  constructor(
+    private db: DbService,
+    private router: Router,
+  ) {
     this.init();
     addIcons(ionIcons);
   }
@@ -105,10 +108,10 @@ export class PlantsMasterComponent {
             a.day_harvest != 0 && b.day_harvest != 0
               ? 'day_harvest'
               : a.day_start_bloom != 0 && b.day_start_bloom != 0
-              ? 'day_start_bloom'
-              : a.day_start_grow != 0 && b.day_start_grow != 0
-              ? 'day_start_grow'
-              : 'id';
+                ? 'day_start_bloom'
+                : a.day_start_grow != 0 && b.day_start_grow != 0
+                  ? 'day_start_grow'
+                  : 'id';
           a[compare] > b[compare] ? 1 : b[compare] > a[compare] ? -1 : 0;
         });
 
@@ -167,11 +170,11 @@ export class PlantsMasterComponent {
           const timeDiff = Math.abs(
             Date.now() -
               new Date(
-                item.day_start_grow ? item.day_start_grow : Date.now()
-              ).getTime()
+                item.day_start_grow ? item.day_start_grow : Date.now(),
+              ).getTime(),
           );
           item.weeks_n = Math.floor(
-            Math.abs(timeDiff) / (1000 * 7 * 24 * 60 * 60)
+            Math.abs(timeDiff) / (1000 * 7 * 24 * 60 * 60),
           );
           for (const phase of calendars) {
             if (item.weeks_n < phase.duration) {
@@ -192,7 +195,7 @@ export class PlantsMasterComponent {
         });
         this.items = items;
         console.info('[PAGE]: Ready');
-      }
+      },
     );
   }
 
