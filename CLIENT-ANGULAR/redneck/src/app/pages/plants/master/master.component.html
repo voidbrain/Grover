@@ -1,0 +1,54 @@
+<div class="header">
+    <div class="toolbar">
+        <button slot="start">
+           
+                <button><i slot="icon-only" name="menu"></i></button>
+           
+        </button>
+        <div class="title">{{ table }}</div>
+        <button slot="end">
+            <button routerLink="/{{ table }}/create"><i name="add-circle"></i></button>
+        </button>
+    </div>
+</div>
+
+<div class="content">
+    <div class="refresher" (ionRefresh)="doRefresh($event)">
+        <div class="content-refresher"></div>
+    </div>
+
+    <ul>
+        @for (item of items; track item.id) {
+       
+            <li  #slidingItem>
+                <div>
+                    <div>
+                        <div lines="none" (click)="showDetail(item)">
+                            <div padding>
+                                
+                                    <div class="title" no-padding>
+                                        <i name="flower" slot="start"></i>
+                                        {{ item.strain.name }}
+                                    </div>
+                                
+                                    <div [hidden]='! item.day_harvest '><span i18n>Day harvest</span> {{ item.day_harvest  }}</div>
+                                    <div [hidden]='! item.day_start_bloom '><span i18n>Start bloom</span> {{ item.day_start_bloom  }}</div>
+                                    <div [hidden]='! item.day_start_grow '><span i18n>Start grow</span> {{ item.day_start_grow  }}</div>
+                                
+                            </div>
+                            
+                            <div slot="end" class="canvasContainer"> 
+                                <app-chart [chartConfig]="item.chartConfig"></app-chart>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div side="end">
+                    <div (click)="showDetail(item)">Edit</div>
+                    <div (click)="deleteItem(item)" color="danger">Delete</div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>

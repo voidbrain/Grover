@@ -1,0 +1,8 @@
+
+<nav>
+  @for (el of appPages; track el.title) {
+    <a [routerLink]="el.url">{{el.title}}</a>
+  }
+</nav>
+
+<router-outlet />
