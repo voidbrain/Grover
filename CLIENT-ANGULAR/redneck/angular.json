@@ -5,11 +5,11 @@
   "projects": {
     "redneck": {
       "projectType": "application",
-      "i18n": { 
-        "sourceLocale": "en-US", 
-        "locales": { 
-          "it": { 
-            "translation": "src/assets/locale/it/messages.json" 
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "it": {
+            "translation": "src/assets/locale/it/messages.json"
           }
         }
       },
@@ -28,8 +28,8 @@
             "outputPath": "dist/redneck",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "localize": true, 
-            "i18nMissingTranslation": "error", 
+            "localize": true,
+            "i18nMissingTranslation": "error",
             "polyfills": [
               "zone.js",
               "@angular/localize/init"
@@ -43,7 +43,40 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              {
+                "input": "node_modules/@ionic/angular/css/core.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/normalize.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/structure.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/typography.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/display.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/padding.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/float-elements.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/text-alignment.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/text-transformation.css"
+              },
+              {
+                "input": "node_modules/@ionic/angular/css/flex-utils.css"
+              },
+              {
+                "input": "src/theme/variables.css"
+              }
             ],
             "scripts": []
           },
@@ -111,8 +144,45 @@
             ],
             "scripts": []
           }
+        },
+        "ionic-cordova-serve": {
+          "builder": "@ionic/angular-toolkit:cordova-serve",
+          "options": {
+            "cordovaBuildTarget": "redneck:ionic-cordova-build",
+            "devServerTarget": "redneck:serve"
+          },
+          "configurations": {
+            "production": {
+              "cordovaBuildTarget": "redneck:ionic-cordova-build:production",
+              "devServerTarget": "redneck:serve:production"
+            }
+          }
+        },
+        "ionic-cordova-build": {
+          "builder": "@ionic/angular-toolkit:cordova-build",
+          "options": {
+            "browserTarget": "redneck:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "redneck:build:production"
+            }
+          }
         }
       }
+    }
+  },
+  "cli": {
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ]
+  },
+  "schematics": {
+    "@ionic/angular-toolkit:component": {
+      "styleext": "scss"
+    },
+    "@ionic/angular-toolkit:page": {
+      "styleext": "scss"
     }
   }
 }

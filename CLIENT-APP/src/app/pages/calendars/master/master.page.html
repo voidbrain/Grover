@@ -18,26 +18,28 @@
     </ion-refresher>
 
     <ion-list>
-        <ion-item-sliding *ngFor="let item of items" #slidingItem>
-            <ion-item>
-                <ion-label>
-                    <ion-item lines="none" (click)="showDetail(item)">
-                        <ion-icon name="calendar" slot="start"></ion-icon>
-                        <div [innerHtml]=" item.name "></div>
-                    </ion-item>
-                </ion-label>
+        @for (item of items; track item.id) {
+            <ion-item-sliding #slidingItem>
+                <ion-item>
+                    <ion-label>
+                        <ion-item lines="none" (click)="showDetail(item)">
+                            <ion-icon name="calendar" slot="start"></ion-icon>
+                            <div [innerHtml]=" item.name "></div>
+                        </ion-item>
+                    </ion-label>
 
-                <div slot="end">Weeks
-                    <div class="canvasContainer"> 
-                        <chart [chartConfig]="item.chartConfig"></chart>
+                    <div slot="end">Weeks
+                        <div class="canvasContainer"> 
+                            <app-chart [chartConfig]="item.chartConfig"></app-chart>
+                        </div>
                     </div>
-                </div>
-            </ion-item>
+                </ion-item>
 
-            <ion-item-options side="end">
-                <ion-item-option (click)="showDetail(item)">Edit</ion-item-option>
-                <ion-item-option (click)="deleteItem(item)" color="danger">Delete</ion-item-option>
-            </ion-item-options>
-        </ion-item-sliding>
+                <ion-item-options side="end">
+                    <ion-item-option (click)="showDetail(item)">Edit</ion-item-option>
+                    <ion-item-option (click)="deleteItem(item)" color="danger">Delete</ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+        }
     </ion-list>
 </ion-content>

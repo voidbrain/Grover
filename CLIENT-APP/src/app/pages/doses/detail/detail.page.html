@@ -27,13 +27,13 @@
                 <ion-row>
                     <ion-col size="8">
                         <ion-item>
-                            <ion-label color="primary">{{ 'translate.global.name' | translate }}</ion-label>
-                            <ion-input type="text" text-right placeholder="{{ 'translate.global.name' | translate }}" formControlName="name"></ion-input>
+                            <ion-label i18n color="primary">Name</ion-label>
+                            <ion-input i18n type="text" text-right placeholder="Name" formControlName="name"></ion-input>
                         </ion-item>
                     </ion-col>
                     <ion-col size="4">
                         <ion-item>
-                            <ion-label color="primary">{{ 'translate.pages.doses.detail.form.color' | translate }}</ion-label>
+                            <ion-label i18n color="primary">color</ion-label>
                             <ion-button slot="end" [color]="color.key" (click)="pickColor($event, color)">&#x22ee;</ion-button>
                             <ion-input type="hidden" formControlName="color"></ion-input>
                         </ion-item>
@@ -42,48 +42,48 @@
                 <ion-row>
                         <ion-col>
                             <ion-item>
-                                <ion-label color="primary">{{ 'translate.pages.doses.detail.form.gro' | translate }}</ion-label>
-                                <ion-input type="text" text-right placeholder="{{ 'translate.pages.doses.detail.form.gro' | translate }}" formControlName="gro" id="gro"></ion-input>
+                                <ion-label i18n color="primary">gro</ion-label>
+                                <ion-input type="text" text-right i18n placeholder="gro" formControlName="gro" id="gro"></ion-input>
                             </ion-item>
                         </ion-col>
                         <ion-col>
                             <ion-item>
-                                <ion-label color="primary">{{ 'translate.pages.doses.detail.form.micro' | translate }}</ion-label>
-                                <ion-input type="text" text-right placeholder="{{ 'translate.pages.doses.detail.form.micro' | translate }}" formControlName="micro" id="micro"></ion-input>
+                                <ion-label i18n color="primary">micro</ion-label>
+                                <ion-input type="text" text-right i18n placeholder="micro" formControlName="micro" id="micro"></ion-input>
                             </ion-item>
                         </ion-col>
                         <ion-col>
                             <ion-item>
-                                <ion-label color="primary">{{ 'translate.pages.doses.detail.form.bloom' | translate }}</ion-label>
-                                <ion-input type="text" text-right placeholder="{{ 'translate.pages.doses.detail.form.bloom' | translate }}" formControlName="bloom" id="bloom"></ion-input>
+                                <ion-label i18n color="primary">bloom</ion-label>
+                                <ion-input type="text" text-right i18n placeholder="bloom" formControlName="bloom" id="bloom"></ion-input>
                             </ion-item>
                         </ion-col>
                     </ion-row>
                     <ion-row>
                 <ion-col>
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.doses.detail.form.ripen' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.doses.detail.form.ripen' | translate }}" formControlName="ripen" id="ripen"></ion-input>
+                        <ion-label i18n color="primary">ripen</ion-label>
+                        <ion-input type="text" text-right i18n placeholder="ripen" formControlName="ripen" id="ripen"></ion-input>
                     </ion-item>
                 </ion-col>
                 
                 <ion-col>
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.doses.detail.form.EC' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.doses.detail.form.EC' | translate }}" formControlName="EC" id="EC"></ion-input>
+                        <ion-label i18n color="primary">EC</ion-label>
+                        <ion-input type="text" text-right i18n placeholder="EC" formControlName="EC" id="EC"></ion-input>
                     </ion-item>
                 </ion-col>
                 <ion-col>
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.global.enabled' | translate }}</ion-label>
+                        <ion-label i18n color="primary">Enabled</ion-label>
                         <ion-toggle formControlName="enabled"></ion-toggle>
                     </ion-item>
                 </ion-col>
             </ion-row>
         </ion-grid>
 
-        <ion-button color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
-                {{ 'translate.global.submit' | translate }}
+        <ion-button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+            Submit
         </ion-button>
     </form>    
 

@@ -21,83 +21,83 @@
             <ion-row>
                 <ion-col size="6">
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.night_mode_off' | translate }}</ion-label>
-                        <ion-datetime display-format="h:mm A" picker-format="h:mm A" text-right placeholder="{{ 'translate.pages.settings.detail.form.night_mode_off' | translate }}" formControlName="night_mode_off"></ion-datetime>
+                        <ion-label i18n color="primary">night mode off</ion-label>
+                        <ion-datetime i18n display-format="h:mm A" picker-format="h:mm A" text-right placeholder="night mode off" formControlName="night_mode_off"></ion-datetime>
                     </ion-item>
                 </ion-col>
                 <ion-col size="6">
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.night_mode_on' | translate }}</ion-label>
-                        <ion-datetime display-format="h:mm A" picker-format="h:mm A" placeholder="{{ 'translate.pages.settings.detail.form.night_mode_on' | translate }}" formControlName="night_mode_on"></ion-datetime>
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col size="6">
-                    <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.pin_ec_gnd' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.pin_ec_gnd' | translate }}" formControlName="pin_ec_gnd"></ion-input>
-                    </ion-item>
-                </ion-col>
-                <ion-col size="6">
-                    <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.pin_ec_vcc' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.pin_ec_vcc' | translate }}" formControlName="pin_ec_vcc"></ion-input>
+                        <ion-label i18n color="primary">Night Mode On</ion-label>
+                        <ion-datetime i18n display-format="h:mm A" picker-format="h:mm A" placeholder="Night Mode On" formControlName="night_mode_on"></ion-datetime>
                     </ion-item>
                 </ion-col>
             </ion-row>
             <ion-row>
                 <ion-col size="6">
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.pin_ph_gnd' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.pin_ph_gnd' | translate }}" formControlName="pin_ph_gnd"></ion-input>
+                        <ion-label i18n color="primary">Pin EC gnd</ion-label>
+                        <ion-input i18n type="text" text-right placeholder="Pin EC gnd" formControlName="pin_ec_gnd"></ion-input>
                     </ion-item>
                 </ion-col>
                 <ion-col size="6">
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.pin_ph_vcc' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.pin_ph_vcc' | translate }}" formControlName="pin_ph_vcc"></ion-input>
+                        <ion-label i18n color="primary">Pin EC vcc</ion-label>
+                        <ion-input i18n type="text" text-right placeholder="Pin EC vcc" formControlName="pin_ec_vcc"></ion-input>
                     </ion-item>
                 </ion-col>
             </ion-row>
             <ion-row>
                 <ion-col size="6">
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.pin_t_gnd' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.pin_t_gnd' | translate }}" formControlName="pin_t_gnd"></ion-input>
+                        <ion-label i18n color="primary">Pin pH gnd</ion-label>
+                        <ion-input i18n type="text" text-right placeholder="Pin pH gnd" formControlName="pin_ph_gnd"></ion-input>
                     </ion-item>
                 </ion-col>
                 <ion-col size="6">
                     <ion-item>
-                        <ion-label color="primary">{{ 'translate.pages.settings.detail.form.pin_t_vcc' | translate }}</ion-label>
-                        <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.pin_t_vcc' | translate }}" formControlName="pin_t_vcc"></ion-input>
+                        <ion-label color="primary">Pin pH vcc</ion-label>
+                        <ion-input type="text" text-right placeholder="Pin pH vcc" formControlName="pin_ph_vcc"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">
+                    <ion-item>
+                        <ion-label i18n color="primary">Pin T° gnd</ion-label>
+                        <ion-input i18n type="text" text-right placeholder="Pin T° gnd" formControlName="pin_t_gnd"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-item>
+                        <ion-label i18n color="primary">Pin T° vcc</ion-label>
+                        <ion-input i18n type="text" text-right placeholder="Pin T° vcc" formControlName="pin_t_vcc"></ion-input>
                     </ion-item>
                 </ion-col>
             </ion-row>
         </ion-grid>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.settings.detail.form.date_time' | translate }}</ion-label>
-            <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.date_time' | translate }}" formControlName="date_time"></ion-input>
+            <ion-label i18n color="primary">Date/time</ion-label>
+            <ion-input i18n type="text" text-right placeholder="Date/time" formControlName="date_time"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.settings.detail.form.store_data' | translate }}</ion-label>
-            <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.store_data' | translate }}" formControlName="store_data"></ion-input>
+            <ion-label i18n color="primary">Store data</ion-label>
+            <ion-input i18n type="text" text-right placeholder="Store data" formControlName="store_data"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.settings.detail.form.work_mode' | translate }}</ion-label>
-            <ion-input type="text" text-right placeholder="{{ 'translate.pages.settings.detail.form.work_mode' | translate }}" formControlName="work_mode"></ion-input>
+            <ion-label i18n color="primary">Work mode</ion-label>
+            <ion-input i18n type="text" text-right placeholder="Work mode" formControlName="work_mode"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.global.enabled' | translate }}</ion-label>
+            <ion-label i18n color="primary">Enabled</ion-label>
             <ion-toggle formControlName="enabled"></ion-toggle>
         </ion-item>
 
-        <ion-button color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
-                {{ 'translate.global.submit' | translate }}
+        <ion-button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+            Submit
         </ion-button>
       </form>
 

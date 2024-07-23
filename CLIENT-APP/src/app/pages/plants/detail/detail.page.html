@@ -21,60 +21,68 @@
         <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.strain' | translate }}</ion-label>
-            <ion-select placeholder="{{ 'translate.pages.plants.detail.form.strain' | translate }}" formControlName="id_strain">
-                <ion-select-option *ngFor="let strain of strains" [value]="strain.id">{{strain.name}}</ion-select-option>
+            <ion-label i18n color="primary">Strain</ion-label>
+            <ion-select i18n placeholder="Strain" formControlName="id_strain">
+                @for (strain of strains; track strain.id) {
+                    <ion-select-option [value]="strain.id">{{strain.name}}</ion-select-option>
+                }
             </ion-select>
         </ion-item>
         
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.generation' | translate }}</ion-label>
-            <ion-input type="number" text-right placeholder="{{ 'translate.pages.plants.detail.form.generation' | translate }}" formControlName="generation"></ion-input>
+            <ion-label i18n color="primary">Generation</ion-label>
+            <ion-input i18n type="number" text-right placeholder="Generation" formControlName="generation"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.day_start_grow' | translate }}</ion-label>
-            <ion-datetime placeholder="{{ 'translate.pages.plants.detail.form.day_start_grow' | translate }}" formControlName="day_start_grow"></ion-datetime>
+            <ion-label i18n color="primary">Day start grow</ion-label>
+            <ion-datetime i18n placeholder="Day start grow" formControlName="day_start_grow"></ion-datetime>
         </ion-item>
         
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.revenue' | translate }}</ion-label>
-            <ion-input type="number" text-right placeholder="{{ 'translate.pages.plants.detail.form.revenue' | translate }}" formControlName="revenue"></ion-input>
+            <ion-label i18n color="primary">Revenue</ion-label>
+            <ion-input i18n type="number" text-right placeholder="Revenue" formControlName="revenue"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.alerts' | translate }}</ion-label>
-            <ion-input type="text" text-right placeholder="{{ 'translate.pages.plants.detail.form.alerts' | translate }}" formControlName="alerts"></ion-input>
+            <ion-label i18n color="primary">Alerts</ion-label>
+            <ion-input i18n type="text" text-right placeholder="Alerts" formControlName="alerts"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.id_company' | translate }}</ion-label>
-            <ion-select formControlName="id_company" placeholder="{{ 'translate.pages.plants.detail.form.id_company' | translate }}">
-                <ion-select-option *ngFor="let company of companies" [value]="company.id">{{company.name}}</ion-select-option>
+            <ion-label i18n color="primary">Id Company</ion-label>
+            <ion-select i18n formControlName="id_company" placeholder="Id Company">
+                @for (company of companies; track company.id) {
+                    <ion-select-option [value]="company.id">{{company.name}}</ion-select-option>
+                }
             </ion-select>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.id_growing_scenario' | translate }}</ion-label>
-            <ion-select formControlName="id_growing_scenario" placeholder="{{ 'translate.pages.plants.detail.form.id_growing_scenario' | translate }}">
-                <ion-select-option *ngFor="let g_scenario of g_scenarios" [value]="g_scenario.id">{{g_scenario.name}}</ion-select-option>
+            <ion-label i18n color="primary">Id growing scenario</ion-label>
+            <ion-select i18n formControlName="id_growing_scenario" placeholder="Id growing scenario">
+                @for (g_scenario of g_scenarios; track g_scenario.id) {
+                    <ion-select-option [value]="g_scenario.id">{{g_scenario.name}}</ion-select-option>
+                }
             </ion-select>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.pages.plants.detail.form.id_growing_medium' | translate }}</ion-label>
-            <ion-select formControlName="id_growing_medium" placeholder="{{ 'translate.pages.plants.detail.form.id_growing_medium' | translate }}">
-                <ion-select-option *ngFor="let g_medium of g_mediums" [value]="g_medium.id">{{g_medium.name}}</ion-select-option>
+            <ion-label i18n color="primary">Id growing medium</ion-label>
+            <ion-select i18n formControlName="id_growing_medium" placeholder="Id growing medium">
+                @for (g_medium of g_mediums; track g_medium.id) {
+                    <ion-select-option [value]="g_medium.id">{{g_medium.name}}</ion-select-option>
+                }
             </ion-select>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.global.enabled' | translate }}</ion-label>
+            <ion-label i18n color="primary">Enabled</ion-label>
             <ion-toggle formControlName="enabled"></ion-toggle>
         </ion-item>
 
-        <ion-button color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
-                {{ 'translate.global.submit' | translate }}
+        <ion-button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+            Submit
         </ion-button>
     </form>
 

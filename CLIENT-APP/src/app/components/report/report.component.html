@@ -19,8 +19,9 @@
                         <ion-item>
                             <ion-label>Containers</ion-label>
                             <ion-select multiple="true" (ionChange)=' filterReport($event) ' [(ngModel)]="form.containers" placeholder="Select Container">
-                                <!-- <ion-select-option (ionChange)="selectAll()" value="">Select All</ion-select-option> -->
-                                <ion-select-option *ngFor="let container of default.containers" value="{{ container.id }}">{{ container.name }}</ion-select-option>
+                                @for (container of default.containers; track container.id) {
+                                    <ion-select-option value="{{ container.id }}">{{ container.name }}</ion-select-option>
+                                }
                             </ion-select>
                         </ion-item>
                     </ion-col>
@@ -28,8 +29,9 @@
                         <ion-item>
                             <ion-label>Probes</ion-label>
                             <ion-select multiple="true" (ionChange)=' filterReport($event) ' [(ngModel)]="form.probesType" placeholder="Select Probe">
-                                <!-- <ion-select-option [(ngModel)]="probesType" (ionClick)="selectAll()" (ionChange)="selectAll()" value="">Select All</ion-select-option> -->
-                                <ion-select-option *ngFor="let type of default.probesType"  value="{{ type.id }}">{{ type.type }}</ion-select-option>
+                                @for(type of default.probesType; track type.id) {
+                                    <ion-select-option value="{{ type.id }}">{{ type.type }}</ion-select-option>
+                                }
                             </ion-select>
                         </ion-item>
                     </ion-col>
@@ -38,25 +40,15 @@
         </div>
     </ion-card>
 
-    <ion-card *ngFor="let container of containers">
-        <ion-card-title padding>
-            {{ container.name }}
-        </ion-card-title>
+    @for (container of containers; track container) {
+        <ion-card>
+            <ion-card-title padding>
+                {{ container.name }}
+            </ion-card-title>
 
-        <div class="canvasContainer"> 
-            <chart [chartConfig]="container.chartConfig"></chart>
-        </div>
-
-        <!-- <ion-card-content>
-            <div *ngFor="let probe of container.probes">
-                <ion-item>{{ probe.type.type }}</ion-item>
-                <ion-grid>
-                    <ion-row *ngFor="let log of probe.log">
-                        <ion-col size="6">{{ log.datetime | date : 'd/M HH:mm' }}</ion-col>
-                        <ion-col size="6">{{ log.value }}</ion-col>
-                    </ion-row>
-                </ion-grid>
+            <div class="canvasContainer"> 
+                <chart [chartConfig]="container.chartConfig"></chart>
             </div>
-        </ion-card-content> -->
-    </ion-card>
+        </ion-card>
+    }
 </ion-content>

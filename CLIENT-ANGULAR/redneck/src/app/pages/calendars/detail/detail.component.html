@@ -1,103 +1,107 @@
-<div class="header">
-    <div class="toolbar">
-        <button slot="start">
-           
-                <button><i slot="icon-only" name="menu"></i></button>
-           
-        </button>
-        <div class="title">{{ table }}</div>
-        <button slot="end">
-            <button routerLink="/{{ table }}/create"><i name="add-circle"></i></button>
-        </button>
-    </div>
-</div>
+<ion-header>
+  <ion-toolbar>
+      <ion-buttons slot="start">
+          <ion-button (click)="goBack()">
+              <ion-icon name="arrow-back"></ion-icon>
+          </ion-button>
+      </ion-buttons>
 
-<div class="content">
-    <div class="refresher" (ionRefresh)="doRefresh($event)">
-        <div class="content-refresher"></div>
-    </div>
+      <ion-title>Add/edit {{ page }}</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-    <form [formGroup]="form"  [hidden]=" !showForm ">
-        <input type="hidden" formControlName="id" />
-        <input type="hidden" formControlName="deleted" />
-        <input type="hidden" formControlName="lastUpdate" />
-        
-        <div class="grid">
-            <div class="row">
-                <div class="col" size='8'>
-                    <label i18n color="primary">Name</label>
-                    <input type="text" text-right i18n placeholder="Name" formControlName="name" />
-                </div>
-                <div class="col" size='4'>
-                    <label i18n color="primary">Enabled</label>
-                    <input type="radio" formControlName="enabled" />
-                </div>
-            </div>
-        </div>
+<ion-content padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-        <div class="card">
-            <div class="toolbar">
-                <div slot="end">
-                    <div>
-                        <button (click)=' showSubForm = true '><i name="add-circle"></i></button>
-                    </div>
-                </div>
-            </div>
+  <form [formGroup]="form"  [hidden]=" !showForm ">
+      <ion-input type="hidden" formControlName="id"></ion-input>
+      <ion-input type="hidden" formControlName="deleted"></ion-input>
+      <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
 
-            <form padding [hidden]=" !showSubForm ">
-                <div class="grid">
-                    <div class="row">
-                        <div class="col" size='5'>
-                            
-                            <label i18n color="primary">Phase</label>
-                            <select i18n [(ngModel)]="newPhase.phase" name='phase' placeholder="Phase">
-                                @for (phase of phases; track phase.id) {    
-                                    <option [value]="phase.id">{{phase.name}}</option>
+      <ion-grid>
+          <ion-row>
+              <ion-col size='8'>
+                  <ion-item>
+                      <ion-label i18n color="primary">Name</ion-label>
+                      <ion-input type="text" text-right i18n placeholder="Name" formControlName="name"></ion-input>
+                  </ion-item>
+              </ion-col>
+              <ion-col size='4'>
+                  <ion-item>
+                      <ion-label i18n color="primary">Enabled</ion-label>
+                      <ion-toggle formControlName="enabled"></ion-toggle>
+                  </ion-item>
+              </ion-col>
+          </ion-row>
+      </ion-grid>
+
+      <ion-card>
+          <ion-toolbar>
+              <ion-buttons slot="end">
+                  <ion-buttons>
+                      <ion-button (click)=' showSubForm = true '><ion-icon name="add-circle"></ion-icon></ion-button>
+                  </ion-buttons>
+              </ion-buttons>
+          </ion-toolbar>
+
+          <form padding [hidden]=" !showSubForm ">
+              <ion-grid>
+                  <ion-row>
+                      <ion-col size='5'>
+                          <ion-item>
+                              <ion-label i18n color="primary">Phase</ion-label>
+                              <ion-select [(ngModel)]="newPhase.phase" name='phase' i18n placeholder="Phase">
+                                @for (phase of phases; track phase.id) {
+                                  <ion-select-option [value]="phase.id">{{phase.name}}</ion-select-option>
                                 }
-                            </select>
-                            
-                        </div>
-                        <div class="col" size='5'>
-                            
-                            <label i18n color="primary">Duration</label>
-                            <input i18n [(ngModel)]="newPhase.duration" name='duration' type="number" text-right placeholder="Duration" />
-                            
-                        </div>
-                        <div class="col" size='2'>
-                            <button i18n color="primary" (click)="addPhase()">
-                                Add
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <ul>
-                
-                    @for (phase of relatedPhases; track phase.id) {
-                        <li>
-                            <label>{{ phase.name }}</label>
-                            
+                              </ion-select>
+                          </ion-item>
+                      </ion-col>
+                      <ion-col size='5'>
+                          <ion-item>
+                              <ion-label i18n color="primary">Duration</ion-label>
+                              <ion-input [(ngModel)]="newPhase.duration" name='duration' type="number" text-right  i18n placeholder="Duration"></ion-input>
+                          </ion-item>
+                      </ion-col>
+                      <ion-col size='2'>
+                          <ion-button color="primary" i18n (click)="addPhase()">
+                            Add
+                          </ion-button>
+                      </ion-col>
+                  </ion-row>
+              </ion-grid>
+          </form>
+          <ion-list>
+              <ion-reorder-group (ionItemReorder)="reorder($event)" disabled="false">
+                @for (phase of relatedPhases; track phase.id) {
+                  <ion-item-sliding>
+                      <ion-item>
+                          <ion-label>{{ phase.name }}</ion-label>
+                          <ion-reorder slot="start"></ion-reorder>
 
-                            <div slot="end" class="canvasContainer">
-                                <app-chart [chartConfig]="phase.chartConfig"></app-chart>
-                            </div>
+                          <div slot="end" class="canvasContainer">
+                              <app-chart [chartConfig]="phase.chartConfig"></app-chart>
+                          </div>
 
-                            <div slot="end"> 
-                                {{ phase.duration }} <span i18n>Days</span>
-                            </div>
-                        
-                        
-                        
-                            <button i18n (click)="deleteItem(phase)" color="danger">Delete</button>
-                        </li>
-                    }
-            </ul>
-        </div>
-        
-        <button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
-            Submit
-        </button>
-    </form>
+                          <div slot="end">
+                            Days
+                          </div>
+                      </ion-item>
 
-</div>
-    
+                      <ion-item-options side="end">
+                          <ion-item-option (click)="deleteItem(phase)" color="danger">Delete</ion-item-option>
+                      </ion-item-options>
+                  </ion-item-sliding>
+                }
+              </ion-reorder-group>
+          </ion-list>
+      </ion-card>
+
+      <ion-button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+        Submit
+      </ion-button>
+  </form>
+
+</ion-content>

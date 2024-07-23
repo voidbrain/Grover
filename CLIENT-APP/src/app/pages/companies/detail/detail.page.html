@@ -18,17 +18,17 @@
         <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
             
         <ion-item>
-            <ion-label color="primary">{{ 'translate.global.name' | translate }}</ion-label>
-            <ion-input type="text" text-right placeholder="{{ 'translate.global.name' | translate }}" formControlName="name"></ion-input>
+            <ion-label i18n color="primary">Name</ion-label>
+            <ion-input i18n type="text" text-right placeholder="Name" formControlName="name"></ion-input>
         </ion-item>
 
         <ion-item>
-            <ion-label color="primary">{{ 'translate.global.enabled' | translate }}</ion-label>
+            <ion-label i18n color="primary">Enabled</ion-label>
             <ion-toggle formControlName="enabled"></ion-toggle>
         </ion-item>
 
-        <ion-button color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
-                {{ 'translate.global.submit' | translate }}
+        <ion-button i18n color="primary" expand="block" (click)="saveForm()" [hidden]=" !showForm " [disabled]=" !isReadyToSave ">
+                Submit
         </ion-button>
     </form>
 
