@@ -3,6 +3,8 @@ import { ChartComponent } from '../../../components/chart/chart.component';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 
 @Component({
   selector: 'app-master',
@@ -26,6 +28,7 @@ export class StrainsMasterComponent {
 
   ){
     this.init();
+    addIcons(ionIcons);
   }
 
   private init(){

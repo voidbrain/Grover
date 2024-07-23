@@ -5,6 +5,8 @@ import { ChartComponent } from '../../../components/chart/chart.component';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { LoadingController } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 
 @Component({
   selector: 'app-master',
@@ -27,6 +29,7 @@ export class CompaniesMasterComponent {
     public router: Router
   ) {
     this.init();
+    addIcons(ionIcons);
   }
 
     init() {

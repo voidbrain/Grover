@@ -18,14 +18,12 @@ export class ApiService {
   }
 
   init() {
-    if (this.appSettings.purpose) {
+    if (this.appSettings.purpose!== null) {
       this.url =
         this.appSettings.serverAddress +
         '/' +
         this.appSettings.purposes[this.appSettings.purpose] +
         '/';
-
-        console.log(this.url)
     }
   }
 

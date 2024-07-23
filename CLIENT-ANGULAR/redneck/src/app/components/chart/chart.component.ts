@@ -10,6 +10,7 @@ import Chart from 'chart.js/auto';
 })
 
 export class ChartComponent {
+  @Input() id: Number|null = null;
   @Input() chartConfig: any = null;
 
   data = [

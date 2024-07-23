@@ -11,8 +11,8 @@
     </ion-header>
     
     <ion-content padding>
-        <ion-refresher (ionRefresh)="doRefresh($event)">
-            <ion-refresher-content></ion-refresher-content>
+         <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+             <ion-refresher-content></ion-refresher-content>
         </ion-refresher>
     
         <form [formGroup]="form"  [hidden]=" !showForm ">

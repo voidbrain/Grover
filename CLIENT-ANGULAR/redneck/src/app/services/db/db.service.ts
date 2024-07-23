@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { SettingsService } from '../settings/settings.service';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +13,11 @@ export class DbService {
   private resetDb: boolean = false;
   private forceLoading: boolean = true
 
-  toastService: any
-
   constructor(
     private api: ApiService,
     private appSettings: SettingsService,
-    
-  ) { 
+    private toastService: ToastService
+  ) {
     this.init()
   }
 
@@ -128,7 +127,7 @@ async initService(forceLoading= false): Promise<void> {
 async loadData(table: string, lastUpdate: number): Promise<any> {
     return new Promise((resolve, reject) => {
         const params = { lastUpdate : lastUpdate };
-        
+
         this.api.get(table, params)
         .then((res) => {
             resolve({[table] : res});
@@ -355,5 +354,5 @@ getConnectedItems(objectStore: any, column: any, id_rif: any): Promise<any> {
       return promise;
   }
 
-  
+
 }

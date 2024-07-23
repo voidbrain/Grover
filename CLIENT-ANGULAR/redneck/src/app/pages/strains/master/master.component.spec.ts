@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MasterComponent } from './master.component';
+import { StrainsMasterComponent } from './master.component';
 
-describe('MasterComponent', () => {
-  let component: MasterComponent;
-  let fixture: ComponentFixture<MasterComponent>;
+describe('StrainsMasterComponent', () => {
+  let component: StrainsMasterComponent;
+  let fixture: ComponentFixture<StrainsMasterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MasterComponent]
+      imports: [StrainsMasterComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MasterComponent);
+    fixture = TestBed.createComponent(StrainsMasterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

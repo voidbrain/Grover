@@ -1,8 +1,28 @@
-
-<nav>
-  @for (el of appPages; track el.title) {
-    <a [routerLink]="el.url">{{el.title}}</a>
-  }
-</nav>
-
-<router-outlet />
+<ion-app>
+  <ion-split-pane when="xs" contentId="main">
+    <ion-menu contentId="main">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Menu</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          @for (p of appPages; track p.url) {
+          <ion-menu-toggle auto-hide="false">
+            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
+              <ion-icon slot="start" [name]="p.icon"></ion-icon>
+              <ion-label>
+                {{ p.title }}
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          }
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+    <div class="ion-page" id="main">
+      <ion-router-outlet main></ion-router-outlet>
+    </div>
+  </ion-split-pane>
+</ion-app>

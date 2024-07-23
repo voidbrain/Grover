@@ -6,6 +6,8 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonBadge, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenu, IonMenuToggle, IonRefresher, IonRefresherContent, IonReorder, IonReorderGroup, IonRow, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { NetworkService } from '../../../services/network/network.service';
 import { Strain } from '../../../interfaces/strain';
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 
 
 @Component({
@@ -36,6 +38,7 @@ export class StrainsDetailComponent {
     private network: NetworkService,
   ){
     this.init();
+    addIcons(ionIcons);
   }
 
 

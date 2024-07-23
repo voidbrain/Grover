@@ -29,6 +29,8 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 
 @Component({
   selector: 'app-detail',
@@ -85,7 +87,9 @@ export class CalendarsDetailComponent {
   relatedPhases: any;
   phases: any;
 
-  constructor(private db: DbService, private router: Router) {}
+  constructor(private db: DbService, private router: Router) {
+    addIcons(ionIcons);
+  }
 
   goBack() {
     this.router.navigate([this.page]);

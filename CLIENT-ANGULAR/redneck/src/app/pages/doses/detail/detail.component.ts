@@ -48,6 +48,8 @@ import {
 import { ColorPickerPopoverComponent } from '../../../components/color-popover/color-picker-popover/color-picker-popover.component';
 import { NetworkService } from '../../../services/network/network.service';
 import { Dose } from '../../../interfaces/dose';
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 
 @Component({
   selector: 'app-detail',
@@ -107,6 +109,7 @@ export class DosesDetailComponent {
     public col: ColorService
   ) {
     this.init();
+    addIcons(ionIcons);
   }
 
   init() {

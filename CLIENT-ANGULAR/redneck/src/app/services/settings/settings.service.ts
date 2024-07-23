@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SettingsService {
-  
+
   appName: string = '';
   serverAddress: string = '';
   purposes: string[] = [];
@@ -13,7 +13,7 @@ export class SettingsService {
   resetDb: boolean = false;
   forceLoading: boolean = true;
 
-  constructor() { 
+  constructor() {
     this.init();
   }
 

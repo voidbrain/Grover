@@ -42,7 +42,8 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { LoadingController } from '@ionic/angular';
-
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 @Component({
   selector: 'app-detail',
   standalone: true,
@@ -97,6 +98,7 @@ export class CompaniesDetailComponent {
     private formBuilder: FormBuilder
   ) {
     this.init();
+    addIcons(ionIcons);
   }
 
   init() {

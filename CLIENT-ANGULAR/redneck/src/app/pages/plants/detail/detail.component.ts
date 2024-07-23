@@ -12,7 +12,8 @@ import { GrowingScenario } from '../../../interfaces/growing-scenario';
 import { GrowingMedium } from '../../../interfaces/growing-medium';
 import { Plant } from '../../../interfaces/plant';
 import { ReportComponent } from '../../../components/report/report/report.component';
-
+import { addIcons } from 'ionicons';
+import * as ionIcons from 'ionicons/icons';
 
 @Component({
   selector: 'app-detail',
@@ -60,6 +61,7 @@ export class PlantsDetailComponent {
     private formBuilder: FormBuilder
   ){
     this.init();
+    addIcons(ionIcons);
   }
 
   init(){
