@@ -7,7 +7,6 @@ import {
 } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { NetworkService } from '../../../services/network/network.service';
-import { ChartComponent } from '../../../components/chart/chart.component';
 import {
   FormBuilder,
   FormGroup,
@@ -46,7 +45,6 @@ import { Company } from '../../../interfaces/company';
 import { Strain } from '../../../interfaces/strain';
 import { GrowingScenario } from '../../../interfaces/growing-scenario';
 import { GrowingMedium } from '../../../interfaces/growing-medium';
-import { Plant } from '../../../interfaces/plant';
 import { ReportComponent } from '../../../components/report/report/report.component';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
@@ -59,7 +57,6 @@ import * as ionIcons from 'ionicons/icons';
     RouterOutlet,
     FormsModule,
     ReactiveFormsModule,
-    ChartComponent,
     ReportComponent,
     IonButton,
     IonButtons,
@@ -91,7 +88,7 @@ import * as ionIcons from 'ionicons/icons';
 })
 export class PlantsDetailComponent {
   page = 'plants';
-  elementId: Number | null = null;
+  elementId: number | null = null;
 
   isOnline = false;
   isReadyToSave = false;
@@ -147,7 +144,7 @@ export class PlantsDetailComponent {
     );
 
     this.isOnline = navigator.onLine;
-    this.form.valueChanges.subscribe((v) => {
+    this.form.valueChanges.subscribe(() => {
       this.isReadyToSave = this.isOnline && this.form.valid;
     });
   }
@@ -156,7 +153,7 @@ export class PlantsDetailComponent {
     this.db
       .load()
       .then(() => {
-        const id: any = this.route.snapshot.paramMap.get('id');
+        const id: any = this.route?.snapshot?.paramMap.get('id')?.toString();
         this.getItem(parseInt(id));
       })
       .catch((err) => console.error(err));
@@ -166,7 +163,7 @@ export class PlantsDetailComponent {
     this.router.navigate([this.page]);
   }
 
-  getItem(id: Number) {
+  getItem(id: number) {
     this.elementId = id;
     const companiesP = this.db.getItems('companies');
     const strainsP = this.db.getItems('strains');
@@ -272,9 +269,9 @@ export class PlantsDetailComponent {
   }
 
   saveForm() {
-    const saveItem = Array();
+    const saveItem = [];
     saveItem.push(this.form.value);
-    this.db.putItems(this.page, saveItem).then((result) => {
+    this.db.putItems(this.page, saveItem).then(() => {
       this.router.navigate([this.page]);
     });
   }

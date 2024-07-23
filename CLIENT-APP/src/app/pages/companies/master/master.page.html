@@ -27,7 +27,7 @@
       
                                     <ion-title no-padding>
                                         <ion-icon name="flower" slot="start"></ion-icon>
-                                        {{ item.strain.name }}
+                                        {{ item?.strain?.name }}
                                     </ion-title>
       
                                     <div [hidden]='! item.day_harvest '><span i18n>Day harvest</span> {{item.day_harvest  }}</div>

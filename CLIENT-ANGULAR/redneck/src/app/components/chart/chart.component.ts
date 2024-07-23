@@ -27,7 +27,8 @@ export class ChartComponent {
   }
 
   init() {
-    new Chart(document.getElementById('chart') as HTMLCanvasElement, {
+    new Chart(
+      <HTMLCanvasElement>document.getElementById('chart'+this.id), {
       type: 'bar',
       data: {
         labels: this.data.map((row) => row.year),
