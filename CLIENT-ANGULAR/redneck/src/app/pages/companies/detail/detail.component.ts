@@ -7,7 +7,7 @@ import {
   RouterLink,
   RouterOutlet,
 } from '@angular/router';
-import { ChartComponent } from '../../../components/chart/chart.component';
+import { ChartComponent } from '../../../components/shared/chart/chart.component';
 import {
   FormBuilder,
   FormGroup,

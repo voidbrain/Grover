@@ -82,10 +82,10 @@
                 <ion-col size="12">
                   @if(room?.probesComponents?.airtemp) {
                     <ion-item class="ion-no-padding" class="ion-no-padding" style="--inner-padding-end: 0 !important;">
-                      Air&nbsp;T°<fa-icon [fixedWidth]="true" icon="temperature-half"></fa-icon>
+                      Air&nbsp;T°<fa-icon [fixedWidth]="true" icon="faTemperatureHalf"></fa-icon>
                       <app-range [minValue]="room?.probesComponents?.airtemp?.type.minAcceptableValue" [maxValue]="room?.probesComponents?.airtemp?.type.maxAcceptableValue" [minWarningValue]="room?.probesComponents?.airtemp?.type.minWarningValue" [maxWarningValue]="room?.probesComponents?.airtemp?.type.maxWarningValue" [value]="room?.probesComponents?.airtemp?.value" [um]="room?.probesComponents?.airtemp?.type.um"></app-range>
                       <ion-button fill="clear" size="small" (click)="read(room?.probesComponents?.airtemp)">
-                        <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
+                        <fa-icon [fixedWidth]="true" icon="faEye"></fa-icon>
                       </ion-button>
                     </ion-item>
                   }

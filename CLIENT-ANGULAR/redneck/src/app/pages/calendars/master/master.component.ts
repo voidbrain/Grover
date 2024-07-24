@@ -1,7 +1,7 @@
 import { Component, ViewChildren } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
-import { ChartComponent } from '../../../components/chart/chart.component';
+import { ChartComponent } from '../../../components/shared/chart/chart.component';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   IonButton,

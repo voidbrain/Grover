@@ -1,4 +1,4 @@
-import { Component, ViewChildren } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   ActivatedRoute,
   Router,
@@ -6,7 +6,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
-import { ChartComponent } from '../../../components/chart/chart.component';
+import { ChartComponent } from '../../../components/shared/chart/chart.component';
 import {
   FormBuilder,
   FormGroup,

@@ -1,23 +1,27 @@
 /* eslint-disable max-len */
 import { Component, Input, OnChanges } from '@angular/core';
-
+import { NgStyle } from '@angular/common';
+import { IonCol, IonGrid, IonRow } from '@ionic/angular/standalone'
 import { Dose } from '../../../../interfaces/dose';
 
 @Component({
   selector: 'app-doses-bar',
   templateUrl: './doses-bar.component.html',
   standalone: true,
-  imports: [],
+  imports: [
+    IonCol,
+    IonGrid,
+    IonRow,
+    NgStyle
+  ],
   styleUrls: ['./doses-bar.component.scss'],
 })
 export class DosesBarComponent implements OnChanges {
-  @Input() dose: Dose;
-  tot: number;
+  @Input() dose: Dose|null = null;
+  tot: number|null = null;
   styleDoses = {};
   stylePhDown = {};
   styleWater = {};
-
-  constructor() {}
 
   ngOnChanges() {
     if(this.dose && this.dose !== undefined) {
@@ -26,7 +30,7 @@ export class DosesBarComponent implements OnChanges {
   }
 
   setup() {
-    const tot = this.dose.grow + this.dose.micro + this.dose.bloom + this.dose.ripen;
+    const tot = this.dose?.grow + this.dose.micro + this.dose.bloom + this.dose.ripen;
 
     const dosesArray = [
       { id: 'pHDown', data: +(this.dose.pHDown *100 / tot).toFixed(2), originalValue: +this.dose.pHDown, backgroundColor: '#ccc', label: 'PH↓',  top: 16 },

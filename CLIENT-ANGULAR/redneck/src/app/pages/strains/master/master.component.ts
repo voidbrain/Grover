@@ -1,5 +1,5 @@
 import { Component, ViewChildren } from '@angular/core';
-import { ChartComponent } from '../../../components/chart/chart.component';
+import { ChartComponent } from '../../../components/shared/chart/chart.component';
 import {
   IonButton,
   IonButtons,

@@ -1,6 +1,6 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import  Cron from 'cron-converter';
-import * as moment from 'moment';
+import { setMinutes, getDay } from 'date-fns';
 
 import { ScheduleTypes, Peripherals } from '../../../../../app/services/settings/enum';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
@@ -79,9 +79,9 @@ export class SchedulePanelComponent implements OnChanges {
 
   setup() {
     const self = this;
-    const today = moment().set('minute', 0).toDate();
+    const today = setMinutes(new Date(), 0);
     self.settings = new SettingsService();
-    self.todayOfTheWeek = moment().day();
+    self.todayOfTheWeek = getDay(new Date());
     self.actualDayIndex = self.todayOfTheWeek;
     for(let i = 0; i< 24; i++) { self.hoursOfDay.push(i.toString().padStart(2, '0'));}
 

@@ -5,13 +5,17 @@ import { Pot } from './pot';
 import { Location } from './location';
 import { Calendar, PhaseExtended } from './calendar';
 
+export interface VoidPlant {
+  idPot: null;
+}
 export interface Plant {
   alerts: string;
-  dayHarvest: number;
-  daySecondTrimming: number;
-  dayStartBloom: number;
-  dayStartGrow: number;
-  dayTrimming: number;
+  dayHarvest: number | null;
+  daySecondTrimming: number | null;
+  dayStartBloom: number | null;
+  dayStartGrow: number | null;
+  dayTrimming: number | null;
+  dayPruning: number | null;
   deleted: number;
   enabled: number;
   generation: number;

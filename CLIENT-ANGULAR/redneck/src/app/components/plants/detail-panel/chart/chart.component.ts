@@ -1,22 +1,32 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable arrow-body-style */
 import { Component, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
 import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
-import * as moment from 'moment';
-import { ChartComponent } from 'angular2-chartjs/dist/chart.component';
-import { filter } from 'rxjs/operators';
-import { ProbesTypes } from 'src/app/services/settings/enum';
+import { ChartComponent } from '../../../shared/chart/chart.component';
+import { ProbesTypes } from '../../../../services/settings/enum';
+import { format, setMinutes, startOfDay, startOfWeek, startOfMonth } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+
+import {
+  IonButton,
+  IonLabel,
+  IonSegment,
+} from '@ionic/angular/standalone';
+
 
 @Component({
   selector: 'app-detail-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
   standalone: true,
-  imports: [],
+  imports: [
+    ChartComponent,
+    IonButton,
+    IonLabel,
+    IonSegment,
+  ],
 })
 export class PanelChartComponent implements OnChanges {
   @Input() plant: PlantExtended;
@@ -103,7 +113,7 @@ export class PanelChartComponent implements OnChanges {
 
   drawChart(filteredData) {
     const xMin = new Date(this.plant?.dayStartGrow).getTime();
-    const xMax = moment().set('minute', 0).toDate();
+    const xMax = setMinutes(new Date(), 0);
 
     const operationsArray = filteredData.datasets?.filter(el => el.hidden === true);
     const annotationsArray = [];
@@ -168,7 +178,9 @@ export class PanelChartComponent implements OnChanges {
               return;
             },
             label: (tooltipItem, data) => {
-              const label = `${moment(tooltipItem.xlabel).format('MMM DD HH:mm')} => ${tooltipItem.value} °C`;
+              const date = parse(tooltipItem.xlabel, 'yyyy-MM-ddTHH:mm:ss.SSSxxx', new Date());
+              const formattedDate = format(date, 'MMM dd HH:mm');
+              const label = `${formattedDate} => ${tooltipItem.value} °C`;
               return label;
             }
           }
@@ -229,35 +241,8 @@ export class PanelChartComponent implements OnChanges {
                 xScaleID : 'x-axis-0',
                 yScaleID : 'y-axis-0'
               },
-
-
-
-              // {
-              //   type: 'box',
-              //   xMin: moment(filteredData.labels[1]),
-              //   xMax: moment(filteredData.labels[2]),
-              //   yMin: 40,
-              //   yMax: 50,
-              //   backgroundColor: 'rgba(255, 99, 132, 0.25)',
-              //   borderColor: 'rgba(255, 99, 132, 0.25)',
-              //   xScaleID : 'x-axis-0',
-              //   yScaleID : 'y-axis-0'
-              // },
               ...annotationsArray.map((data, index) => {
                 return {
-                  // type: 'line',
-                  // id: 'vline' + index,
-                  // scaleID : 'x-axis-0',
-                  // mode: 'vertical',
-                  // value: data.t,
-                  // endValue: data.t,
-                  // borderColor: data.borderColor,
-                  // borderWidth: 1,
-                  // label: {
-                  //   enabled: true,
-                  //   position: 'center',
-                  //   content: data.y
-                  // },
                   type: 'box',
                   borderColor: data.borderColor,
                   backgroundColor: data.borderColor,
@@ -288,22 +273,26 @@ export class PanelChartComponent implements OnChanges {
     filteredData['labels'] = [...filteredData['labels']].filter((label: any) => {
       return (new Date(label).getTime() >= new Date(fromDate).getTime() && new Date(label).getTime() <= new Date(toDate).getTime());
     });
-    filteredData['labels'].unshift(moment(fromDate).utc().format());
-    filteredData['labels'].push(moment(toDate).utc().format());
+    const zonedDateFrom = toZonedTime(fromDate, 'UTC');
+    const zonedDateTo = toZonedTime(toDate, 'UTC');
+    const formattedDateFrom = format(zonedDateFrom, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    const formattedDateTo = format(zonedDateTo, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    filteredData['labels'].unshift(formattedDateFrom);
+    filteredData['labels'].push(formattedDateTo);
     this.drawChart(filteredData);
   }
 
   filterData(period) {
-    const now = moment().set('minute', 0).toDate();
+    const now = setMinutes(new Date(), 0);
     switch(period){
       case 'day':
-        this.filterDates(moment().startOf('day').toDate(), now);
+        this.filterDates(startOfDay(new Date()), now);
       break;
       case 'week':
-        this.filterDates(moment().startOf('week').toDate(), now);
+        this.filterDates(startOfWeek(new Date()), now);
       break;
       case 'month':
-        this.filterDates(moment().startOf('month').toDate(), now);
+        this.filterDates(startOfMonth(new Date()), now);
       break;
       case 'beginning':
         this.filterDates(this.plant?.dayStartGrow, now);

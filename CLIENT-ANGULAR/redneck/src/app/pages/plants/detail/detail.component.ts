@@ -45,9 +45,9 @@ import { Company } from '../../../interfaces/company';
 import { Strain } from '../../../interfaces/strain';
 import { GrowingScenario } from '../../../interfaces/growing-scenario';
 import { GrowingMedium } from '../../../interfaces/growing-medium';
-import { ReportComponent } from '../../../components/report/report/report.component';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { Plant, VoidPlant } from '../../../interfaces/plant';
 
 @Component({
   selector: 'app-detail',
@@ -57,7 +57,6 @@ import * as ionIcons from 'ionicons/icons';
     RouterOutlet,
     FormsModule,
     ReactiveFormsModule,
-    ReportComponent,
     IonButton,
     IonButtons,
     IonCard,
@@ -95,21 +94,21 @@ export class PlantsDetailComponent {
   showForm = true;
   form: FormGroup = new FormGroup({});
 
-  plant = { id_pot: null };
+  plant: Plant | VoidPlant = { idPot: null };
   companies: Company[] = [];
   strains: Strain[] = [];
-  g_scenarios: GrowingScenario[] = [];
+  gScenarios: GrowingScenario[] = [];
   g_mediums: GrowingMedium[] = [];
 
   default = {
-    containers: [],
-    containersType: [],
-    probesList: [],
-    probesLog: [],
-    probesType: [],
-    workersList: [],
-    workersLog: [],
-    workersType: [],
+    containers: [] as any,
+    containersType: [] as any,
+    probesList: [] as any,
+    probesLog: [] as any,
+    probesType: [] as any,
+    workersList: [] as any,
+    workersLog: [] as any,
+    workersType: [] as any,
   };
 
   constructor(
@@ -167,7 +166,7 @@ export class PlantsDetailComponent {
     this.elementId = id;
     const companiesP = this.db.getItems('companies');
     const strainsP = this.db.getItems('strains');
-    const g_scenariosP = this.db.getItems('scenarios');
+    const gScenariosP = this.db.getItems('scenarios');
     const g_mediumP = this.db.getItems('mediums');
 
     const containersP = this.db.getItems('containers');
@@ -180,15 +179,15 @@ export class PlantsDetailComponent {
     const workersTypeP = this.db.getItems('workers_type');
 
     // Promise.all([
-    //     companiesP, strainsP, g_scenariosP, g_mediumP
+    //     companiesP, strainsP, gScenariosP, g_mediumP
     // ])
     // .then(([
-    //     companies, strains, g_scenarios, g_mediums
+    //     companies, strains, gScenarios, g_mediums
     // ]) => {
     Promise.all([
       companiesP,
       strainsP,
-      g_scenariosP,
+      gScenariosP,
       g_mediumP,
       containersP,
       containersTypeP,
@@ -202,7 +201,7 @@ export class PlantsDetailComponent {
       ([
         companies,
         strains,
-        g_scenarios,
+        gScenarios,
         g_mediums,
         containers,
         containersType,
@@ -221,30 +220,31 @@ export class PlantsDetailComponent {
         this.default.workersList = workersList;
         this.default.workersLog = workersLog;
         this.default.workersType = workersType;
-        this.companies = companies;
-        this.strains = strains;
-        this.g_scenarios = g_scenarios;
-        this.g_mediums = g_mediums;
+        this.companies = companies as Company[];
+        this.strains = strains as Strain[];
+        this.gScenarios = gScenarios as GrowingScenario[];
+        this.g_mediums = g_mediums as GrowingMedium[];
         if (id) {
-          this.db.getItem(this.page, id).then((plant) => {
+          this.db.getItem(this.page, id).then((plantFromDb: unknown) => {
+            const plant = plantFromDb as Plant;
             plant.dayHarvest = plant.dayHarvest
-              ? new Date(plant.dayHarvest).toISOString()
-              : false;
-            plant.day_pruning = plant.day_pruning
-              ? new Date(plant.day_pruning).toISOString()
-              : false;
-            plant.day_second_trimming = plant.day_second_trimming
-              ? new Date(plant.day_second_trimming).toISOString()
-              : false;
+              ? +new Date(plant.dayHarvest).toISOString()
+              : null;
+            plant.dayPruning = plant.dayPruning
+              ? +new Date(plant.dayPruning).toISOString()
+              : null;
+            plant.daySecondTrimming = plant.daySecondTrimming
+              ? +new Date(plant.daySecondTrimming).toISOString()
+              : null;
             plant.dayStartBloom = plant.dayStartBloom
-              ? new Date(plant.dayStartBloom).toISOString()
-              : false;
+              ? +new Date(plant.dayStartBloom).toISOString()
+              : null;
             plant.dayStartGrow = plant.dayStartGrow
-              ? new Date(plant.dayStartGrow).toISOString()
-              : false;
-            plant.day_trimming = plant.day_trimming
-              ? new Date(plant.day_trimming).toISOString()
-              : false;
+              ? +new Date(plant.dayStartGrow).toISOString()
+              : null;
+            plant.dayTrimming = plant.dayTrimming
+              ? +new Date(plant.dayTrimming).toISOString()
+              : null;
 
             this.plant = plant;
             this.form.patchValue(this.plant, { emitEvent: true });

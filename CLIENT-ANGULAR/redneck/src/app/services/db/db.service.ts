@@ -7,13 +7,13 @@ import { ToastService } from '../toast/toast.service';
   providedIn: 'root',
 })
 export class DbService {
-  private db: any;
+  private db: unknown;
   private tables: string[] = [];
-  private resetDb: boolean = false;
-  private forceLoading: boolean = true;
+  private resetDb = false;
+  private forceLoading = true;
 
   constructor(
-    private api: ApiService,
+    public api: ApiService,
     private appSettings: SettingsService,
     private toastService: ToastService,
   ) {
@@ -26,7 +26,7 @@ export class DbService {
     this.forceLoading = this.appSettings.forceLoading;
   }
 
-  async load(): Promise<any> {
+  async load(): Promise<unknown> {
     return new Promise((resolve) => {
       const resetDb = this.resetDb,
         forceLoading = this.forceLoading;
@@ -45,7 +45,7 @@ export class DbService {
     });
   }
 
-  async deleteDb(): Promise<any> {
+  async deleteDb(): Promise<unknown> {
     this.toastService.pushMessage('Database reset');
     this.toastService.presentToast();
     localStorage.clear();
@@ -71,7 +71,7 @@ export class DbService {
       openRequest.onupgradeneeded = (event) => {
         const target: any = event.target,
           db = target.result,
-          storeObjects: any[] = [];
+          storeObjects: unknown[] = [];
         this.tables.map((table) => {
           storeObjects[<any>`store${table}`] = db.createObjectStore(table, {
             keyPath: 'id',
@@ -110,7 +110,7 @@ export class DbService {
     });
   }
 
-  async initDb(resetDb = false): Promise<any> {
+  async initDb(resetDb = false): Promise<unknown> {
     return new Promise<void>((resolve) => {
       if (resetDb) {
         console.info('[DB]: Delete db');
@@ -170,7 +170,7 @@ export class DbService {
       });
   }
 
-  async loadData(table: string, lastUpdate: number): Promise<any> {
+  async loadData(table: string, lastUpdate: number): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const params = { lastUpdate: lastUpdate };
 
@@ -228,11 +228,11 @@ export class DbService {
     });
   }
 
-  getItem(objectStore: any, id: any, column = 'id'): Promise<any> {
+  getItem(objectStore: any, id: any, column = 'id'): Promise<unknown> {
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index(column);
-    const promise = new Promise<any>((resolve) => {
+    const promise = new Promise<unknown>((resolve) => {
       if (id) {
         dataIndex.get(id).onsuccess = (e: any) => resolve(e.target.result);
       }
@@ -240,12 +240,12 @@ export class DbService {
     return promise;
   }
 
-  getItems(objectStore: any, column = 'enabled, deleted'): Promise<any> {
+  getItems(objectStore: any, column = 'enabled, deleted'): Promise<unknown> {
     // console.info('[DB]: getItems. Table: ' + objectStore);
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index(column);
-    const promise = new Promise<any>((resolve) => {
+    const promise = new Promise<unknown>((resolve) => {
       dataIndex.getAll([1, 0]).onsuccess = (e: any) => {
         resolve(e.target.result);
       };
@@ -253,11 +253,11 @@ export class DbService {
     return promise;
   }
 
-  getConnectedItems(objectStore: any, column: any, id_rif: any): Promise<any> {
+  getConnectedItems(objectStore: any, column: any, id_rif: any): Promise<unknown> {
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index(column);
-    const promise = new Promise<any>((resolve) => {
+    const promise = new Promise<unknown>((resolve) => {
       dataIndex.getAll([1, 0, id_rif]).onsuccess = (e: any) => {
         resolve(e.target.result);
       };
@@ -339,8 +339,8 @@ export class DbService {
     });
   }
 
-  syncAndClean(networkStatus: any): Promise<any> {
-    const promise = new Promise<any>((resolve) => {
+  syncAndClean(networkStatus: any): Promise<unknown> {
+    const promise = new Promise<unknown>((resolve) => {
       if (networkStatus) {
         this.toastService.pushMessage('Database sync and cleaning');
         this.syncStoredItems().then(() => {
@@ -356,8 +356,8 @@ export class DbService {
     return promise;
   }
 
-  syncStoredItems(): Promise<any> {
-    const promise = new Promise<any>((resolve) => {
+  syncStoredItems(): Promise<unknown> {
+    const promise = new Promise<unknown>((resolve) => {
       console.info('[DB]: Sync stored items with remote');
       this.tables.map((table) => {
         this.getItemsToBeSynced(table).then((items) => {
@@ -382,11 +382,11 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeSynced(objectStore: any): Promise<any> {
+  getItemsToBeSynced(objectStore: any): Promise<unknown> {
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index('synced');
-    const promise = new Promise<any>((resolve) => {
+    const promise = new Promise<unknown>((resolve) => {
       dataIndex.getAll(0).onsuccess = (e: any) => {
         resolve(e.target.result);
       };
@@ -395,7 +395,7 @@ export class DbService {
   }
 
   removeDeletedItem(): Promise<void> {
-    const promise = new Promise<any>((resolve) => {
+    const promise = new Promise<unknown>((resolve) => {
       console.info('[DB]: Sync deleted items with remote then remove');
       this.tables.map((table) => {
         this.getItemsToBeRemoved(table).then((items) => {
@@ -418,12 +418,12 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeRemoved(objectStore: any): Promise<any> {
+  getItemsToBeRemoved(objectStore: any): Promise<unknown> {
     // console.info('[DB]: getItemsToBeRemoved. Table:' + objectStore);
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index('deleted');
-    const promise = new Promise<any>((resolve) => {
+    const promise = new Promise<unknown>((resolve) => {
       dataIndex.getAll(1).onsuccess = (e: any) => {
         resolve(e.target.result);
       };

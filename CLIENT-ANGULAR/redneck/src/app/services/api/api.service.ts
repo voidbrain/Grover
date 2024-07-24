@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { SettingsService } from '../settings/settings.service';
 import { NetworkService } from '../network/network.service';
 import { HttpClient } from '@angular/common/http';
+import { LoadingController } from '@ionic/angular';
+
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +17,7 @@ export class ApiService {
     private appSettings: SettingsService,
     public networkService: NetworkService,
     private http: HttpClient,
+    public loadingCtrl: LoadingController
   ) {
     this.init();
   }
@@ -81,15 +84,15 @@ export class ApiService {
   }
 
   remoteDeviceExecute(ip: string, port: string, page: string, action: string, id: number, type: string, duration: number) {
-    
-        return new Promise((resolve, reject) => {
+
+        return new Promise(async (resolve, reject) => {
             if (this.networkService.status) {
                 if (this.debug) {
                     console.info('[API]: network available');
                 }
                 if (this.loadingFlag === false) {
                     this.loadingFlag = true;
-                    const loading = this.loadingCtrl.create({
+                    const loading = await this.loadingCtrl.create({
                         message: 'Please wait&hellip;',
                         backdropDismiss: true,
                     });
@@ -117,7 +120,7 @@ export class ApiService {
                 reject(response);
             }
         })
-    
+
 }
 
 }

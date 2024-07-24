@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { PanelChartComponent } from '../chart/chart.component'
 
 @Component({
   selector: 'app-log-panel',
   standalone: true,
-  imports: [],
+  imports: [PanelChartComponent],
   templateUrl: './log-panel.component.html',
   styleUrl: './log-panel.component.scss'
 })
 export class LogPanelComponent {
-
+  @Input() plant: PlantExtended;
+  @Input() room: RoomExtended;
 }
