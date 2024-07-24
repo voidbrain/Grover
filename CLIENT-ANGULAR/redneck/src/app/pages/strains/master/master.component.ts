@@ -76,18 +76,18 @@ export class StrainsMasterComponent {
       ([items, calendars, doses, strains]) => {
         items.sort((a: any, b: any) => {
           const compare =
-            a.day_harvest != 0 && b.day_harvest != 0
-              ? 'day_harvest'
-              : a.day_start_bloom != 0 && b.day_start_bloom != 0
-                ? 'day_start_bloom'
-                : a.day_start_grow != 0 && b.day_start_grow != 0
-                  ? 'day_start_grow'
+            a.dayHarvest != 0 && b.dayHarvest != 0
+              ? 'dayHarvest'
+              : a.dayStartBloom != 0 && b.dayStartBloom != 0
+                ? 'dayStartBloom'
+                : a.dayStartGrow != 0 && b.dayStartGrow != 0
+                  ? 'dayStartGrow'
                   : 'id';
           a[compare] > b[compare] ? 1 : b[compare] > a[compare] ? -1 : 0;
         });
 
         items.map((item: any) => {
-          item.strain = strains.find((el: any) => el.id == item.id_strain);
+          item.strain = strains.find((el: any) => el.id == item.idStrain);
           item.chartConfig = {
             id: 'chart',
             type: 'doughnut',
@@ -97,8 +97,8 @@ export class StrainsMasterComponent {
               datasets: [
                 {
                   data: [
-                    item.strain.percent_sativa,
-                    100 - item.strain.percent_sativa,
+                    item.strain.percentSativa,
+                    100 - item.strain.percentSativa,
                   ],
                   backgroundColor: [
                     'rgba(17, 176, 50, 1)',
@@ -141,7 +141,7 @@ export class StrainsMasterComponent {
           const timeDiff = Math.abs(
             Date.now() -
               new Date(
-                item.day_start_grow ? item.day_start_grow : Date.now(),
+                item.dayStartGrow ? item.dayStartGrow : Date.now(),
               ).getTime(),
           );
           item.weeks_n = Math.floor(

@@ -1,8 +1,9 @@
 import { Component, ViewChildren } from '@angular/core';
+import { JsonPipe } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { ChartComponent } from '../../../components/chart/chart.component';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   IonButton,
   IonButtons,
@@ -40,6 +41,7 @@ import { Dose } from '../../../interfaces/dose';
   selector: 'app-master',
   standalone: true,
   imports: [
+    JsonPipe,
     RouterLink,
     RouterOutlet,
     FormsModule,
@@ -108,18 +110,22 @@ export class PlantsMasterComponent {
       ([items, calendars, doses, strains]) => {
         items.sort((a: any, b: any) => {
           const compare =
-            a.day_harvest != 0 && b.day_harvest != 0
-              ? 'day_harvest'
-              : a.day_start_bloom != 0 && b.day_start_bloom != 0
-                ? 'day_start_bloom'
-                : a.day_start_grow != 0 && b.day_start_grow != 0
-                  ? 'day_start_grow'
+            a.dayHarvest != 0 && b.dayHarvest != 0
+              ? 'dayHarvest'
+              : a.dayStartBloom != 0 && b.dayStartBloom != 0
+                ? 'dayStartBloom'
+                : a.dayStartGrow != 0 && b.dayStartGrow != 0
+                  ? 'dayStartGrow'
                   : 'id';
           a[compare] > b[compare] ? 1 : b[compare] > a[compare] ? -1 : 0;
         });
 
         items.map((item: any) => {
-          item.strain = strains.find((el: Strain) => el.id == item.id_strain);
+          item.strain = strains.find((el: Strain) => el.id == item.idStrain);
+
+
+          console.log(item.strain)
+
           item.chartConfig = {
             id: 'chart',
             type: 'doughnut',
@@ -129,8 +135,8 @@ export class PlantsMasterComponent {
               datasets: [
                 {
                   data: [
-                    item?.strain?.percent_sativa,
-                    100 - item?.strain?.percent_sativa,
+                    item.strain.percentSativa,
+                    100 - item.strain.percentSativa,
                   ],
                   backgroundColor: [
                     'rgba(17, 176, 50, 1)',
@@ -173,7 +179,7 @@ export class PlantsMasterComponent {
           const timeDiff = Math.abs(
             Date.now() -
               new Date(
-                item.day_start_grow ? item.day_start_grow : Date.now(),
+                item.dayStartGrow ? item.dayStartGrow : Date.now(),
               ).getTime(),
           );
           item.weeks_n = Math.floor(
@@ -195,6 +201,7 @@ export class PlantsMasterComponent {
         });
         this.items = items;
         console.info('[PAGE]: Ready');
+        console.log(this.items)
       },
     );
   }

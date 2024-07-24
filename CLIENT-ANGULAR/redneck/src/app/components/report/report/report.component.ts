@@ -2,8 +2,7 @@ import {
   Component,
   ElementRef,
   Input,
-  OnInit,
-  SimpleChange,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import {
@@ -93,7 +92,7 @@ export class ReportComponent {
 
   constructor() {}
 
-  ngOnChanges(changes: SimpleChange) {
+  ngOnChanges(changes: SimpleChanges) {
     console.log(changes);
     if (this.subject) {
       this.filterReport(this.subject);

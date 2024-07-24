@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Chart, registerables, ChartConfiguration, ChartOptions } from 'chart.js/auto';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -9,7 +9,7 @@ import { BaseChartDirective } from 'ng2-charts';
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
 })
-export class ChartComponent {
+export class ChartComponent implements OnChanges {
   public lineChartData: ChartConfiguration<'line'>['data'] | undefined = undefined;
   public lineChartOptions: ChartOptions<'line'> = {
     responsive: true
@@ -25,46 +25,46 @@ export class ChartComponent {
   }
 
   init() {
-    // new Chart(
-      // document.getElementById('chart'+this.id) as HTMLCanvasElement, {
-      // type: 'bar',
-      // data: {
-      //   labels: this.data.map((row) => row.year),
-      //   datasets: [
-      //     {
-      //       label: 'Acquisitions by year',
-      //       data: this.data.map((row) => row.count),
-      //     },
-      //   ],
-      // },
-    // });
-    this.lineChartData = {
+    // this.lineChartData = {
+    //   labels: [
+    //     'January',
+    //     'February',
+    //     'March',
+    //     'April',
+    //     'May',
+    //     'June',
+    //     'July'
+    //   ],
+    //   datasets: [
+    //     {
+    //       data: [ 65, 59, 80, 81, 56, 55, 40 ],
+    //       label: 'Series A',
+    //       fill: true,
+    //       tension: 0.5,
+    //       borderColor: 'black',
+    //       backgroundColor: 'rgba(255,0,0,0.3)'
+    //     }
+    //   ]
+    };
+  
+
+  ngOnChanges(changes: SimpleChanges) {
+    if ('currentValue' in changes["chartConfig"] && changes["chartConfig"]["currentValue"] !== undefined) {
+      this.lineChartData = {
       labels: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July'
       ],
       datasets: [
         {
-          data: [ 65, 59, 80, 81, 56, 55, 40 ],
-          label: 'Series A',
+          // @ts-expect-error: Object is possibly 'null'.
+          data: this.chartConfig.data.datasets[0].data, 
+          label: '',
           fill: true,
           tension: 0.5,
           borderColor: 'black',
           backgroundColor: 'rgba(255,0,0,0.3)'
         }
       ]
-    };
-    console.log(this.lineChartData)
-  }
 
-  // ngOnChanges(changes: any) {
-  // const parent = this;
-  // if ('currentValue' in changes.chartConfig && changes.chartConfig.currentValue !== undefined) {
   //     if ('data' in changes.chartConfig.currentValue && changes.chartConfig.currentValue.data !== 'undefined') {
   //         const chart = new Chart(this.chart.nativeElement.getContext('2d'), {
   //             type: parent.chartConfig.type,
@@ -128,5 +128,9 @@ export class ChartComponent {
   //         console.log(parent.chartConfig);
   //     }
   // }
-  // }
+  }
+    }
+  }
+
 }
+

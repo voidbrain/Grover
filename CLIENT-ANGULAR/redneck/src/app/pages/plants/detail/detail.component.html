@@ -23,7 +23,7 @@
 
     <ion-item>
       <ion-label i18n color="primary">Strain</ion-label>
-      <ion-select i18n placeholder="Strain" formControlName="id_strain">
+      <ion-select i18n placeholder="Strain" formControlName="idStrain">
         @for (strain of strains; track strain.id) {
           <ion-select-option [value]="strain.id">{{
             strain.name
@@ -48,7 +48,7 @@
       <ion-datetime
         i18n
         placeholder="Day start grow"
-        formControlName="day_start_grow"
+        formControlName="dayStartGrow"
       ></ion-datetime>
     </ion-item>
 
@@ -76,7 +76,7 @@
 
     <ion-item>
       <ion-label i18n color="primary">Id Company</ion-label>
-      <ion-select i18n formControlName="id_company" placeholder="Id Company">
+      <ion-select i18n formControlName="idCompany" placeholder="Id Company">
         @for (company of companies; track company.id) {
           <ion-select-option [value]="company.id">{{
             company.name
@@ -89,7 +89,7 @@
       <ion-label i18n color="primary">Id growing scenario</ion-label>
       <ion-select
         i18n
-        formControlName="id_growing_scenario"
+        formControlName="idGrowingScenario"
         placeholder="Id growing scenario"
       >
         @for (g_scenario of g_scenarios; track g_scenario.id) {
@@ -104,7 +104,7 @@
       <ion-label i18n color="primary">Id growing medium</ion-label>
       <ion-select
         i18n
-        formControlName="id_growing_medium"
+        formControlName="idGrowingMedium"
         placeholder="Id growing medium"
       >
         @for (g_medium of g_mediums; track g_medium.id) {

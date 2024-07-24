@@ -1,24 +1,24 @@
 export interface Plant {
   id: number;
-  id_strain: number;
+  idStrain: number;
   //man_tasks					: Calendarmantask[];
-  id_company: number;
-  id_growing_scenario: number;
-  id_growing_medium: number;
+  idCompany: number;
+  idGrowingScenario: number;
+  idGrowingMedium: number;
   generation: number;
-  day_start_grow: number;
-  day_harvest: number;
-  day_start_bloom: number;
+  dayStartGrow: number;
+  dayHarvest: number;
+  dayStartBloom: number;
   revenue: number;
   alerts: string;
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
 
-  calendar_macrotask_image: number;
-  calendar_macrotask_date: number;
-  tasks_class: string;
-  tasks_alert: string;
-  tasks_time: string;
+  calendarMacrotaskImage: number;
+  calendarMacrotaskDate: number;
+  tasksClass: string;
+  tasksAlert: string;
+  tasksTime: string;
   icon: string;
 }

@@ -33,14 +33,14 @@
                   {{ item?.strain?.name }}
                 </ion-title>
 
-                <div [hidden]="!item.day_harvest">
-                  <span i18n>Day harvest</span> {{ item?.day_harvest }}
+                <div [hidden]="!item.dayHarvest">
+                  <span i18n>Day harvest</span> {{ item?.dayHarvest }}
                 </div>
-                <div [hidden]="!item.day_start_bloom">
-                  <span i18n>Start bloom</span> {{ item?.day_start_bloom }}
+                <div [hidden]="!item.dayStartBloom">
+                  <span i18n>Start bloom</span> {{ item?.dayStartBloom }}
                 </div>
-                <div [hidden]="!item.day_start_grow">
-                  <span i18n>Start grow</span> {{ item?.day_start_grow }}
+                <div [hidden]="!item.dayStartGrow">
+                  <span i18n>Start grow</span> {{ item?.dayStartGrow }}
                 </div>
               </div>
 
@@ -52,8 +52,8 @@
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option (click)="showDetail(item)">Edit</ion-item-option>
-          <ion-item-option (click)="deleteItem(item)" color="danger"
+          <ion-item-option i18n (click)="showDetail(item)">Edit</ion-item-option>
+          <ion-item-option i18n (click)="deleteItem(item)" color="danger"
             >Delete</ion-item-option
           >
         </ion-item-options>

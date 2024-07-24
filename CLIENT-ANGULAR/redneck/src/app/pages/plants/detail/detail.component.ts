@@ -127,15 +127,15 @@ export class PlantsDetailComponent {
   init() {
     this.form = this.formBuilder.group(
       {
-        id_strain: ['', Validators.required],
+        idStrain: ['', Validators.required],
         generation: ['', Validators.required],
-        day_start_grow: ['', Validators.required],
+        dayStartGrow: ['', Validators.required],
         revenue: [''],
         alerts: [''],
         id: [''],
-        id_company: ['', Validators.required],
-        id_growing_scenario: ['', Validators.required],
-        id_growing_medium: ['', Validators.required],
+        idCompany: ['', Validators.required],
+        idGrowingScenario: ['', Validators.required],
+        idGrowingMedium: ['', Validators.required],
         enabled: [''],
         deleted: [''],
         lastUpdate: [''],
@@ -227,8 +227,8 @@ export class PlantsDetailComponent {
         this.g_mediums = g_mediums;
         if (id) {
           this.db.getItem(this.page, id).then((plant) => {
-            plant.day_harvest = plant.day_harvest
-              ? new Date(plant.day_harvest).toISOString()
+            plant.dayHarvest = plant.dayHarvest
+              ? new Date(plant.dayHarvest).toISOString()
               : false;
             plant.day_pruning = plant.day_pruning
               ? new Date(plant.day_pruning).toISOString()
@@ -236,11 +236,11 @@ export class PlantsDetailComponent {
             plant.day_second_trimming = plant.day_second_trimming
               ? new Date(plant.day_second_trimming).toISOString()
               : false;
-            plant.day_start_bloom = plant.day_start_bloom
-              ? new Date(plant.day_start_bloom).toISOString()
+            plant.dayStartBloom = plant.dayStartBloom
+              ? new Date(plant.dayStartBloom).toISOString()
               : false;
-            plant.day_start_grow = plant.day_start_grow
-              ? new Date(plant.day_start_grow).toISOString()
+            plant.dayStartGrow = plant.dayStartGrow
+              ? new Date(plant.dayStartGrow).toISOString()
               : false;
             plant.day_trimming = plant.day_trimming
               ? new Date(plant.day_trimming).toISOString()
