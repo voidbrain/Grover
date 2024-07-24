@@ -36,6 +36,7 @@ import * as ionIcons from 'ionicons/icons';
 import { Plant } from '../../../interfaces/plant';
 import { Strain } from '../../../interfaces/strain';
 import { Dose } from '../../../interfaces/dose';
+import { FilterBarComponent } from "../../../components/filter-bar/filter-bar.component";
 
 @Component({
   selector: 'app-master',
@@ -71,7 +72,8 @@ import { Dose } from '../../../interfaces/dose';
     IonSelectOption,
     IonTitle,
     IonToolbar,
-  ],
+    FilterBarComponent
+],
   templateUrl: './master.component.html',
   styleUrl: './master.component.scss',
 })
@@ -80,6 +82,17 @@ export class PlantsMasterComponent {
   items: any[] = [];
   table = 'plants';
 
+  formDefinition = { 
+    name: 'show', 
+    type: 'checkbox', 
+    label: 'Show', 
+    options: [
+          { id: 0, isChecked: true, name: 'Veg' },
+          { id: 1, isChecked: true, name: 'Bloom' },
+          { id: 2, isChecked: false, name: 'Harvested' },
+          { id: 3, isChecked: false, name: 'Nursery' },
+      ], multiple: true };
+
   constructor(
     private db: DbService,
     private router: Router,
@@ -87,6 +100,16 @@ export class PlantsMasterComponent {
     this.init();
     addIcons(ionIcons);
   }
+
+  filterList() {
+    this.rooms.map((room) => (0,tslib__WEBPACK_IMPORTED_MODULE_5__.__awaiter)(this, void 0, void 0, function* () {
+        room.visible =
+            ((this.formDefinition.options.find(el => el.id === 0).isChecked && room.isVegetative) ||
+                (this.formDefinition.options.find(el => el.id === 1).isChecked && room.isBlooming) ||
+                (this.formDefinition.options.find(el => el.id === 2).isChecked && room.isHarvested) ||
+                (this.formDefinition.options.find(el => el.id === 3).isChecked && room.isNursery));
+    }));
+}
 
   init() {
     console.info('[PAGE]: Start');

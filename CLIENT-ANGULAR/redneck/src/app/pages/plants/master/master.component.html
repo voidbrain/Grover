@@ -20,6 +20,10 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+    
+  <app-filter-bar 
+  [config]="formDefinition" (emitChange)="filterList()"
+  ></app-filter-bar>
 
   <ion-list>
     @for (item of items; track item.id) {
