@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { IonCard, IonCardTitle, IonCardContent, IonSegment, IonButton } from "@ionic/angular/standalone";
 import { SettingsService } from '../../services/settings/settings.service';
+import { Plant } from '../../interfaces/plant';
+import { Room } from '../../interfaces/room';
+import { DbService } from '../../services/db/db.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-actions-panel',
@@ -9,15 +13,40 @@ import { SettingsService } from '../../services/settings/settings.service';
   templateUrl: './actions-panel.component.html',
   styleUrl: './actions-panel.component.scss'
 })
-export class ActionsPanelComponent {
+export class ActionsPanelComponent implements OnChanges {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  plant: any = null;
+  @Input() plant: Plant|null = null;
+  @Input() room: Room|null = null;
 
   constructor(
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private db: DbService,
+    private toastController: ToastController,
   ){
-    this.init();
+    
   }
+
+
+  
+ngOnChanges() {
+    if (this.plant && this.plant !== undefined) {
+        this.init();
+    }
+}
+presentToast(header, message, color, duration) {
+    
+        const toast = this.toastController.create({
+            header,
+            message,
+            color,
+            duration,
+            icon: 'information-circle',
+            position: 'top',
+        });
+        toast.present();
+        
+    
+}
 
   init() {
     const probes = {
@@ -134,6 +163,9 @@ fillNutrient(id) {
 //     })
 //     .catch (() => {});
 // }
+
+toggleWaterRecycle(){}
+
 runRemoteCommand(page, action, id, type, duration) {
     return (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__awaiter)(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__awaiter)(this, void 0, void 0, function* () {
