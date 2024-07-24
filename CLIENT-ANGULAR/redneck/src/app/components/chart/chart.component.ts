@@ -1,5 +1,5 @@
-import { Component, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { Chart, registerables, ChartConfiguration, ChartOptions } from 'chart.js/auto';
+import { Component, Input, SimpleChanges, OnChanges, ViewChild } from '@angular/core';
+import { Chart, ChartType, registerables, ChartConfiguration, ChartOptions } from 'chart.js/auto';
 import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
@@ -7,130 +7,46 @@ import { BaseChartDirective } from 'ng2-charts';
   standalone: true,
   imports: [BaseChartDirective],
   templateUrl: './chart.component.html',
-  styleUrl: './chart.component.scss',
+  styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent implements OnChanges {
-  public lineChartData: ChartConfiguration<'line'>['data'] | undefined = undefined;
-  public lineChartOptions: ChartOptions<'line'> = {
-    responsive: true
-  };
-  public lineChartLegend = true;
+  @ViewChild(BaseChartDirective) chart!: BaseChartDirective;
 
+  chartTypes: Record<string, ChartType> = {
+    line: 'line',
+    bar: 'bar',
+    doughnut: 'doughnut'
+  };
+
+  public chartType: ChartType = this.chartTypes["doughnut"];
+  public chartData: ChartConfiguration['data'] | undefined = undefined;
+  public chartOptions: ChartOptions = {
+    responsive: true,
+  };
+  public chartLegend = true;
 
   @Input() chartConfig: ChartConfiguration | null = null;
 
   constructor() {
     Chart.register(...registerables);
-    this.init();
   }
-
-  init() {
-    // this.lineChartData = {
-    //   labels: [
-    //     'January',
-    //     'February',
-    //     'March',
-    //     'April',
-    //     'May',
-    //     'June',
-    //     'July'
-    //   ],
-    //   datasets: [
-    //     {
-    //       data: [ 65, 59, 80, 81, 56, 55, 40 ],
-    //       label: 'Series A',
-    //       fill: true,
-    //       tension: 0.5,
-    //       borderColor: 'black',
-    //       backgroundColor: 'rgba(255,0,0,0.3)'
-    //     }
-    //   ]
-    };
-  
 
   ngOnChanges(changes: SimpleChanges) {
-    if ('currentValue' in changes["chartConfig"] && changes["chartConfig"]["currentValue"] !== undefined) {
-      this.lineChartData = {
-      labels: [
-      ],
-      datasets: [
-        {
-          // @ts-expect-error: Object is possibly 'null'.
-          data: this.chartConfig.data.datasets[0].data, 
-          label: '',
-          fill: true,
-          tension: 0.5,
-          borderColor: 'black',
-          backgroundColor: 'rgba(255,0,0,0.3)'
-        }
-      ]
-
-  //     if ('data' in changes.chartConfig.currentValue && changes.chartConfig.currentValue.data !== 'undefined') {
-  //         const chart = new Chart(this.chart.nativeElement.getContext('2d'), {
-  //             type: parent.chartConfig.type,
-  //             data: parent.chartConfig.data,
-  //             options: {
-  //                 responsive: true,
-  //                 maintainAspectRatio: false,
-  //                 title: { display: true },
-  //                 legend: { display: parent.chartConfig.legend },
-  //                 tooltips: { enabled: true },
-  //                 scales: {
-  //                     yAxes: parent.chartConfig.yAxes,
-  //                     xAxes: parent.chartConfig.xAxes
-  //                 },
-  //                 layout: parent.chartConfig.layout,
-  //                 events: [],
-  //                 animation: {
-  //                     onComplete : function(el: any) {
-  //                         if (parent.chartConfig.showValue) {
-  //                             const ctx = this.chart.ctx;
-  //                             ctx.fontSize = parent.chartConfig.labelsFontSize + 'px';
-  //                             ctx.textAlign = 'center';
-  //                             ctx.textBaseline = 'center';
-  //                             Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
-  //                                 ctx.fillStyle = dataset.backgroundColor;
-  //                                 const meta = chart.getDatasetMeta(i);
-  //                                 Chart.helpers.each(meta.data.forEach(function (element, index) {
-  //                                     const data = dataset.data[index];
-  //                                     ctx.fillText(data, element._model.x - 2, element._model.y - 20);
-  //                                 }), this);
-  //                             }), this);
-  //                         }
-
-  //                         if (parent.chartConfig.showLineTitle) {
-  //                             const ctxLegend = this.chart.ctx;
-  //                             ctxLegend.fillStyle = function(context: any) {
-  //                                 return context.dataset.backgroundColor;
-  //                             };
-  //                             ctxLegend.fontSize = parent.chartConfig.labelsFontSize + 'px';
-  //                             ctxLegend.textAlign = 'right';
-  //                             ctxLegend.textBaseline = 'center';
-  //                             Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
-  //                                 ctxLegend.fillStyle = dataset.backgroundColor;
-  //                                 const line = chart.getDatasetMeta(i).data;
-  //                                 let firstPoint;
-  //                                 for (let i = 0; i < line.length; i++) {
-  //                                     if (!(line[i]._model.skip)){
-  //                                         firstPoint = line[i];
-  //                                         break;
-  //                                     }
-  //                                 }
-  //                                 if (firstPoint) {
-  //                                     ctxLegend.fillText(dataset.label, 140, firstPoint._model.y);
-  //                                 }
-  //                             }), this);
-  //                         }
-  //                     }
-  //                 }
-  //             }
-  //         });
-  //         console.log(parent.chartConfig);
-  //     }
-  // }
-  }
+    if (changes['chartConfig'] && changes['chartConfig'].currentValue) {
+      this.updateChartConfig(changes['chartConfig'].currentValue);
     }
   }
 
+  private updateChartConfig(config: ChartConfiguration) {
+    if (config.type) {
+      this.chartType = config.type;
+    }
+    if (config.data) {
+      this.chartData = config.data;
+    }
+    if (config.options) {
+      this.chartOptions = { ...this.chartOptions, ...config.options };
+    }
+    this.chart.update();
+  }
 }
-

@@ -123,9 +123,6 @@ export class PlantsMasterComponent {
         items.map((item: any) => {
           item.strain = strains.find((el: Strain) => el.id == item.idStrain);
 
-
-          console.log(item.strain)
-
           item.chartConfig = {
             id: 'chart',
             type: 'doughnut',
@@ -201,7 +198,6 @@ export class PlantsMasterComponent {
         });
         this.items = items;
         console.info('[PAGE]: Ready');
-        console.log(this.items)
       },
     );
   }
