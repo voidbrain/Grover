@@ -55,6 +55,8 @@ npm build
 
 ### Probes
 
+Probes types
+
 | Type              | um | minAcceptableValue | maxAcceptableValue |
 | :---------------- | :- | -----------------: | -----------------: |
 | Air_temperature   | °C | 0                  | 50                 |
@@ -63,25 +65,51 @@ npm build
 | pH                | pH | 5                  | 7                  |
 | EC                | EC | 0                  | 3                  |
 
+Probes list
+
+| Field         | Notes                                 |
+| :------------ | :------------------------------------ |
+| id            |                                       |
+| locationId    |                                       |
+| probeType     |                                       |
+| enabled       |                                       |
+| deleted       |                                       |
+| lastUpdate    |                                       |
+| address       | Used for probes types 1,2 (DS18B20)   |
+| pin1          | Used for probes types 3 (Water_level) |
+| pin2          | Used for probes types 3 (Water_level) |
+| i2cAddress    | Used for probes types 3 (Water_level) |
+
 ### Actuators
 
-| Type                  | Default duration |
-| :-------------------- | :--------------: |
-| Pot_Water_loop        |       NULL       |
-| Pot_refill            |       1000       |
-| Pot_Nutrient_refill   |       1000       |
-| Pot_PHdown_refill     |       1000       |
-| Room_Water_refill     |       1000       |
-| Room_Nutrient_refill  |       1000       |
-| Room_PhDown_refill    |       1000       |
-| Room_Gro_refill       |       1000       |
-| Room_Micro_refill     |       1000       |
-| Room_Bloom_refill     |       1000       |
-| Room_Ripen_refill     |       1000       |
-| Room_Fan              |       NULL       |
-| Room_Light            |       NULL       |
+| Type                  | Default duration (ms) |
+| :-------------------- | :-------------------: |
+| Pot_Water_loop        |                       |
+| Pot_refill            |       1000            |
+| Pot_Nutrient_refill   |       1000            |
+| Pot_PHdown_refill     |       1000            |
+| Room_Water_refill     |       1000            |
+| Room_Nutrient_refill  |       1000            |
+| Room_PhDown_refill    |       1000            |
+| Room_Gro_refill       |       1000            |
+| Room_Micro_refill     |       1000            |
+| Room_Bloom_refill     |       1000            |
+| Room_Ripen_refill     |       1000            |
+| Room_Fan              |                       |
+| Room_Light            |                       |
 
 ## BOM (Bill of Materials)
+
+| Item                  | Quantity | Description                                 | Notes                           |
+| :-------------------- | -------: | :------------------------------------------ | :------------------------------ |
+| Raspberry Pi          |     1    |                                             | On field device                 |
+| DS18B20               |     5    | Temperature sensor                          | 1 for each Pot, 1 for each Room |
+|                       |     4    | pH sensor                                   | 1 for each Pot                  |
+|                       |     4    | EC sensor                                   | 1 for each Pot                  |
+|                       |     5    | Water level sensor                          | 1 for each Pot, 1 for each Room |
+|                       |     5    | Peristaltic pump for  Water/Nutrient refill |                                 |
+
+
 
 ## APIs section
 
@@ -118,6 +146,12 @@ npm build
 ## Machine Learning
 
 ## Settings
+
+### Operating modes
+
+- Normal: fully operative;
+- Silent: Actuators Off (exepted for Lights), Probes On;
+- Off: Actuators Off, Probes Off;
 
 ## Conventions
 
