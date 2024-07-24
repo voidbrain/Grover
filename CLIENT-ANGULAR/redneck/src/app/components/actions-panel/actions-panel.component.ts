@@ -5,6 +5,7 @@ import { Plant } from '../../interfaces/plant';
 import { Room } from '../../interfaces/room';
 import { DbService } from '../../services/db/db.service';
 import { ToastController } from '@ionic/angular';
+import { WorkersType } from '../../services/settings/settings.service';
 
 @Component({
   selector: 'app-actions-panel',
@@ -80,8 +81,8 @@ presentToast(header, message, color, duration) {
         this.read(probes.ec.id);
     }
     const workers = {
-        waterLoop: this.plant.workers.find(el => el.type.id === _services_settings_enum__WEBPACK_IMPORTED_MODULE_3__.WorkersTypes.Pot_Water_loop),
-        refill: this.plant.workers.find(el => el.type.id === _services_settings_enum__WEBPACK_IMPORTED_MODULE_3__.WorkersTypes.Pot_refill),
+        waterLoop: this.plant.workers.find(el => el.type.id === this.WorkersTypes.Pot_Water_loop),
+        refill: this.plant.workers.find(el => el.type.id === this.WorkersTypes.Pot_refill),
     };
     this.probes = probes;
     this.workers = workers;
