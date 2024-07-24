@@ -14,11 +14,12 @@
         <div class="macrophase" [style.width]="plantdaysFromFlushPerc"> {{ +plant.daysFromFlush / 7  | number : '1.0-0' }}w</div>
       </div>
       <div class="bar" [ngStyle]="style">
-        <div [style.width]=" phase.percentDuration + '%' " *ngFor="let phase of plant.calendar.phases"
-          [class]="'phase ' + (this.plant.phase?.pos >= phase.pos ? '' : 'contrast')"
-          [style.backgroundColor]=" (this.plant.phase?.pos >= phase.pos ? phase.dose.color : this.addAlpha(phase.dose.color, 0.1)) " >
-            {{ phase.duration / 7  | number : '1.0-0' }}w</div>
+        @for (phase of plant.calendar.phases; track phase; let index = $index) {
+          <div [style.width]=" phase.percentDuration + '%' "
+            [class]="'phase ' + (this.plant.phase?.pos >= phase.pos ? '' : 'contrast')"
+            [style.backgroundColor]=" (this.plant.phase?.pos >= phase.pos ? phase.dose.color : this.addAlpha(phase.dose.color, 0.1)) " >
+              {{ phase.duration / 7  | number : '1.0-0' }}w</div>
+        }
       </div>
     </ion-card-content>
   </ion-card>
-  

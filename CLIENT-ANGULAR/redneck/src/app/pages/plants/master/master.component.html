@@ -20,73 +20,84 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-    
-  <app-filter-bar 
+
+  <app-filter-bar
   [config]="formDefinition" (emitChange)="filterList()"
   ></app-filter-bar>
 
 
 
+  @for (room of rooms; track room; let index = $index) {
+    <ion-card [hidden]="!room?.visible">
+            <ion-item>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="5">
+                  <ion-card-title class="ion-no-padding">{{room?.name}}</ion-card-title>
+              </ion-col>
+                <ion-col size="7">
+                  @if(!room?.isHarvested && !room?.isNursery) {
+                    <ion-segment>
+                      <ion-button [disabled]="!room?.serialNumber || !room?.workersComponents?.nutrientRefill" class="btn" fill="clear" size="small" (click)="shuffleNutrient(room?.workersComponents?.nutrientRefill)">
+                        Doses Shuffle
 
-  <ion-card [hidden]="!room?.visible" *ngFor="let room of rooms">
-          <ion-item>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="5">
-                <ion-card-title class="ion-no-padding">{{room?.name}}</ion-card-title>
-            </ion-col>
-              <ion-col size="7">
-                <ion-segment *ngIf="!room?.isHarvested && !room?.isNursery">
-                  <ion-button [disabled]="!room?.serialNumber || !room?.workersComponents?.nutrientRefill" class="btn" fill="clear" size="small" (click)="shuffleNutrient(room?.workersComponents?.nutrientRefill)">
-                    Doses Shuffle
-    
-                  </ion-button>
-    
-                  <ion-button [disabled]="!room?.serialNumber || !room?.workersComponents?.phDown" class="btn" fill="clear" size="small" (click)="shufflePhDown(room?.workersComponents?.phDown)">
-                    pH↓ Shuffle
-                  </ion-button>
-              </ion-segment>
-    
-            </ion-col>
-              <ion-col size="4">
-                <ion-item class="ion-no-padding" *ngIf="room?.workersComponents?.light">
-                  <ion-icon color="primary" name="bulb"></ion-icon>
-                  <ion-toggle class="toggle" [disabled]="!room?.serialNumber" (ngModelChange)=" toggleLight(room?.workersComponents?.light) " [(ngModel)]="room?.workersComponents?.light.status" color="primary"></ion-toggle>
-              </ion-item>
-            </ion-col>
-              <ion-col size="4">
-                <ion-item class="ion-no-padding" *ngIf="room?.workersComponents?.fan">
-                  <ion-icon color="primary" name="help-buoy"></ion-icon>
-                  <ion-toggle class="toggle" [disabled]="!room?.serialNumber" (ngModelChange)=" toggleFan(room?.workersComponents?.fan) " [(ngModel)]="room?.workersComponents?.fan.status" color="primary"></ion-toggle>
-              </ion-item>
-            </ion-col>
-              <ion-col size="4">
-    
-                <ion-item *ngIf="!room?.isHarvested && !room?.isNursery">
-    
-                  <ion-select [disabled]="!room?.serialNumber" [value]=" room?.operatingMode" (ionChange)=" setRoomStatus($event, room) "  okText="Okay" cancelText="Dismiss">
-                    <ion-select-option *ngFor="let mode of room?.operatingModes" [value]="mode.value">{{mode.name}}</ion-select-option>
-                </ion-select>
-              </ion-item>
-    
-            </ion-col>
-              <ion-col size="12">
-    
-                <ion-item class="ion-no-padding" *ngIf="room?.probesComponents?.airtemp" class="ion-no-padding" style="--inner-padding-end: 0 !important;">
-                  Air&nbsp;T°<fa-icon [fixedWidth]="true" icon="temperature-half"></fa-icon>
-                  <app-range [minValue]="room?.probesComponents?.airtemp?.type.minAcceptableValue" [maxValue]="room?.probesComponents?.airtemp?.type.maxAcceptableValue" [minWarningValue]="room?.probesComponents?.airtemp?.type.minWarningValue" [maxWarningValue]="room?.probesComponents?.airtemp?.type.maxWarningValue" [value]="room?.probesComponents?.airtemp?.value" [um]="room?.probesComponents?.airtemp?.type.um"></app-range>
-                  <ion-button fill="clear" size="small" (click)="read(room?.probesComponents?.airtemp)">
-                    <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
-                </ion-button>
-              </ion-item>
-    
-            </ion-col>
-          </ion-row>
-    
-        </ion-grid>
-        </ion-item>
-    
-          
+                      </ion-button>
+
+                      <ion-button [disabled]="!room?.serialNumber || !room?.workersComponents?.phDown" class="btn" fill="clear" size="small" (click)="shufflePhDown(room?.workersComponents?.phDown)">
+                        pH↓ Shuffle
+                      </ion-button>
+                    </ion-segment>
+                  }
+
+              </ion-col>
+                <ion-col size="4">
+                  @if(room?.workersComponents?.light) {
+                    <ion-item class="ion-no-padding">
+                      <ion-icon color="primary" name="bulb"></ion-icon>
+                      <ion-toggle class="toggle" [disabled]="!room?.serialNumber" (ngModelChange)=" toggleLight(room?.workersComponents?.light) " [(ngModel)]="room?.workersComponents?.light.status" color="primary"></ion-toggle>
+                    </ion-item>
+                  }
+              </ion-col>
+                <ion-col size="4">
+                  @if(room?.workersComponents?.fan) {
+                    <ion-item class="ion-no-padding">
+                      <ion-icon color="primary" name="help-buoy"></ion-icon>
+                      <ion-toggle class="toggle" [disabled]="!room?.serialNumber" (ngModelChange)=" toggleFan(room?.workersComponents?.fan) " [(ngModel)]="room?.workersComponents?.fan.status" color="primary"></ion-toggle>
+                    </ion-item>
+                  }
+              </ion-col>
+                <ion-col size="4">
+                  @if(!room?.isHarvested && !room?.isNursery) {
+                    <ion-item>
+
+                      <ion-select [disabled]="!room?.serialNumber" [value]=" room?.operatingMode" (ionChange)=" setRoomStatus($event, room) "  okText="Okay" cancelText="Dismiss">
+                        @for (mode of room?.operatingModes; track mode; let index = $index) {
+                          <ion-select-option [value]="mode.value">{{mode.name}}</ion-select-option>
+                        }
+                      </ion-select>
+                    </ion-item>
+                  }
+
+              </ion-col>
+                <ion-col size="12">
+                  @if(room?.probesComponents?.airtemp) {
+                    <ion-item class="ion-no-padding" class="ion-no-padding" style="--inner-padding-end: 0 !important;">
+                      Air&nbsp;T°<fa-icon [fixedWidth]="true" icon="temperature-half"></fa-icon>
+                      <app-range [minValue]="room?.probesComponents?.airtemp?.type.minAcceptableValue" [maxValue]="room?.probesComponents?.airtemp?.type.maxAcceptableValue" [minWarningValue]="room?.probesComponents?.airtemp?.type.minWarningValue" [maxWarningValue]="room?.probesComponents?.airtemp?.type.maxWarningValue" [value]="room?.probesComponents?.airtemp?.value" [um]="room?.probesComponents?.airtemp?.type.um"></app-range>
+                      <ion-button fill="clear" size="small" (click)="read(room?.probesComponents?.airtemp)">
+                        <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
+                      </ion-button>
+                    </ion-item>
+                  }
+
+              </ion-col>
+            </ion-row>
+
+          </ion-grid>
+          </ion-item>
+
+    </ion-card>
+  }
 
 
 

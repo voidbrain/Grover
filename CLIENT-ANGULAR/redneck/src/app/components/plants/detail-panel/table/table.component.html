@@ -3,8 +3,10 @@
     <tr>
       <th></th>
     </tr>
-    <tr *ngFor="let row of valuesArr">
-      <td>{{ row  }}</td>
-    </tr>
+    @for (row of valuesArr; track row; let index = $index) {
+      <tr>
+        <td>{{ row  }}</td>
+      </tr>
+    }
   </table>
 </div>
