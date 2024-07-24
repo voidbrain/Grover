@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ApiService {
   private url = '';
+  public debug = true;
+  public loadingFlag = true;
 
   constructor(
     private appSettings: SettingsService,
@@ -77,4 +79,45 @@ export class ApiService {
       }
     });
   }
+
+  remoteDeviceExecute(ip: string, port: string, page: string, action: string, id: number, type: string, duration: number) {
+    
+        return new Promise((resolve, reject) => {
+            if (this.networkService.status) {
+                if (this.debug) {
+                    console.info('[API]: network available');
+                }
+                if (this.loadingFlag === false) {
+                    this.loadingFlag = true;
+                    const loading = this.loadingCtrl.create({
+                        message: 'Please wait&hellip;',
+                        backdropDismiss: true,
+                    });
+                    loading.onDidDismiss().then(() => {
+                        this.loadingFlag = false;
+                    });
+                    loading.present();
+                    this.http.get(`http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}`)
+                        .subscribe((response) => {
+                        loading.dismiss();
+                        // this.loadingFlag = false;
+                        resolve(response);
+                    }, (error) => {
+                        loading.dismiss();
+                        // this.loadingFlag = false;
+                        reject(error);
+                    });
+                }
+            }
+            else {
+                const response = '[API]: network not available';
+                if (this.debug) {
+                    console.warn(response);
+                }
+                reject(response);
+            }
+        })
+    
+}
+
 }

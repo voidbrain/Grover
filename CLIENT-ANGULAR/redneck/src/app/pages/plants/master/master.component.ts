@@ -28,8 +28,7 @@ import {
   IonRow,
   IonSelectOption,
   IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+  IonToolbar, IonCardContent, IonCardTitle, IonSegment } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
@@ -41,7 +40,7 @@ import { FilterBarComponent } from "../../../components/filter-bar/filter-bar.co
 @Component({
   selector: 'app-master',
   standalone: true,
-  imports: [
+  imports: [IonSegment, IonCardTitle, IonCardContent, 
     JsonPipe,
     RouterLink,
     RouterOutlet,
@@ -253,5 +252,19 @@ export class PlantsMasterComponent {
         refresher.target.complete();
       })
       .catch((err) => console.error(err));
+  }
+
+  shuffleNutrient(worker) {
+  
+        if (worker) {
+            const room = this.rooms.find(el => el.locationId === worker.locationId);
+            const duration = 1000;
+            this.runRemoteCommand(room, _app_services_settings_enum__WEBPACK_IMPORTED_MODULE_2__.ServerPages.actuators, _app_services_settings_enum__WEBPACK_IMPORTED_MODULE_2__.ServerCommands.ON, worker.id, _app_services_settings_enum__WEBPACK_IMPORTED_MODULE_2__.Peripherals.Worker, duration)
+                .then((response) => {
+                const value = response;
+            })
+                .catch(() => { });
+        }
+    
   }
 }

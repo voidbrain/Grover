@@ -167,10 +167,8 @@ fillNutrient(id) {
 
 toggleWaterRecycle(){}
 
-runRemoteCommand(page, action, id, type, duration) {
-    return (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__awaiter)(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__awaiter)(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+runRemoteCommand(page: string, action: string, id: number, type: string, duration: number) {
+        return new Promise((resolve, reject) => {
             this.db.api.remoteDeviceExecute((_b = (_a = this.room) === null || _a === void 0 ? void 0 : _a.settings) === null || _b === void 0 ? void 0 : _b.address, (_d = (_c = this.room) === null || _c === void 0 ? void 0 : _c.settings) === null || _d === void 0 ? void 0 : _d.port, page, action, id, type, duration)
                 .then((run) => {
                 if (this.debug) {
@@ -194,8 +192,9 @@ runRemoteCommand(page, action, id, type, duration) {
                 this.presentToast(header, message, color, toastDuration);
                 reject(err);
             });
-        }));
-    });
-}
+        })
+    }
+   
+    }
 
 }
