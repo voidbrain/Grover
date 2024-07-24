@@ -1,13 +1,39 @@
+import { PlantExtended } from '../interfaces/plant';
+import { Location } from './location';
+
 export interface Room {
-    deleted: boolean,
-    enabled: boolean,
-    id: number,
-    isBlooming: boolean,
-    isHarvested: boolean,
-    isNursery: boolean,
-    isVegetative: boolean,
-    lastUpdate: number,
-    locationId: number,
-    name: string,
-    serialNumber: string
+  id: number;
+  name: string;
+  enabled: boolean;
+  deleted: boolean;
+  lastUpdate: number;
+  plants: PlantExtended[];
 }
+
+export interface RoomExtended extends Room {
+  location?: Location;
+  locationId?: number;
+  probes?: [];
+  workers?: [];
+  settings?: any;
+  operatingMode?: number;
+  operatingModes: [];
+  probesComponents: {
+    airtemp: any;
+  };
+  workersComponents: {
+    light: any;
+    fan: any;
+    nutrientRefill: any;
+    phDown: any;
+  };
+  visible?: boolean;
+  isBlooming?: boolean;
+  isVegetative?: boolean;
+  isNursery?: boolean;
+  isHarvested?: boolean;
+  serialNumber?: string;
+}
+
+
+// PH = 5.8 +/- 0.5
