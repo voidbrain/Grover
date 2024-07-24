@@ -51,6 +51,36 @@ npm build
 
 ## Phisical low level connections
 
+## Hardware peripherals
+
+### Probes
+
+| Type              | um | minAcceptableValue | maxAcceptableValue |
+| :---------------- | :- | -----------------: | -----------------: |
+| Air_temperature   | °C | 0                  | 50                 |
+| Water_temperature | °C | 0                  | 50                 |
+| Water_level       | cm | 0                  | 100                |
+| pH                | pH | 5                  | 7                  |
+| EC                | EC | 0                  | 3                  |
+
+### Actuators
+
+| Type                  | Default duration |
+| :-------------------- | :--------------: |
+| Pot_Water_loop        |       NULL       |
+| Pot_refill            |       1000       |
+| Pot_Nutrient_refill   |       1000       |
+| Pot_PHdown_refill     |       1000       |
+| Room_Water_refill     |       1000       |
+| Room_Nutrient_refill  |       1000       |
+| Room_PhDown_refill    |       1000       |
+| Room_Gro_refill       |       1000       |
+| Room_Micro_refill     |       1000       |
+| Room_Bloom_refill     |       1000       |
+| Room_Ripen_refill     |       1000       |
+| Room_Fan              |       NULL       |
+| Room_Light            |       NULL       |
+
 ## BOM (Bill of Materials)
 
 ## APIs section
