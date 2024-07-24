@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, SimpleChanges, } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonItem, IonLabel, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 
 @Component({
@@ -34,6 +34,9 @@ export class InputSelectComponent {
   percentMinWarningValue: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   percentMaxWarningValue: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  config: any
+  group: FormGroup = new FormGroup({})
 
   constructor() {
     

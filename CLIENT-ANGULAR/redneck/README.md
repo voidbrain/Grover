@@ -1,27 +1,94 @@
-# Redneck
+# Grover/Redneck
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.1.
+Grover/Redneck is a complete automation solution for smart growing at home, composed by:
 
-## Development server
+- A device operating on the field. Node.js App running on a Raspberry. Rpi + various sensors + various actuators;
+- A server online. PHP + MySQL for public endpoint and data storage;
+- A client on web/local for device remote management, data anagraphic management and graphs. Built in Angular 18;
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Software Build
 
-## Code scaffolding
+Execute the instructions in the root directories of project components:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Device
 
-## Build
+Node.js is required
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```shell
+# Install the dependencies from NPM:
+npm install
+# Build source code 
+npm build
+```
 
-## Running unit tests
+### Client
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Node.js is required
 
-## Running end-to-end tests
+```shell
+# Install the dependencies from NPM:
+npm install
+# Build source code 
+npm build
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Server
 
-## Further help
+PHP/MySQL is required
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```shell
+# Install the dependencies from NPM:
+npm install
+# Build source code 
+npm build
+```
+
+## Logical structure
+
+## Phisical high level structure
+
+## Phisical low level connections
+
+## BOM (Bill of Materials)
+
+## APIs section
+
+### Server APIs
+
+- Anagraph CRUD operations (Client as client);
+- Status updates (Device as client);
+- Run commands (Device as client);
+
+### Device APIs
+
+- Read probes (Server as relay from client)
+- Run actuators (Server as relay from client)
+- Get/Set status (Server as relay from client)
+
+## Client details
+
+### offline mode
+
+### GUI
+
+## Flows
+
+### Device start flow
+
+### Run command
+
+## Manual operations
+
+## Scheduled operations
+
+## Alerts
+
+## Machine Learning
+
+## Settings
+
+## conventions
+
+### Fall/Autumn cycles
+
+### Nutrients
