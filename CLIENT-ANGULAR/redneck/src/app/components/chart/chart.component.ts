@@ -1,45 +1,65 @@
 import { Component, Input } from '@angular/core';
-import { Chart, ChartConfiguration } from 'chart.js/auto';
+import { Chart, registerables, ChartConfiguration, ChartOptions } from 'chart.js/auto';
+import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
   selector: 'app-chart',
   standalone: true,
-  imports: [],
+  imports: [BaseChartDirective],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
 })
 export class ChartComponent {
-  @Input() id: number | null = null;
+  public lineChartData: ChartConfiguration<'line'>['data'] | undefined = undefined;
+  public lineChartOptions: ChartOptions<'line'> = {
+    responsive: true
+  };
+  public lineChartLegend = true;
+
+
   @Input() chartConfig: ChartConfiguration | null = null;
 
-  data = [
-    { year: 2010, count: 10 },
-    { year: 2011, count: 20 },
-    { year: 2012, count: 15 },
-    { year: 2013, count: 25 },
-    { year: 2014, count: 22 },
-    { year: 2015, count: 30 },
-    { year: 2016, count: 28 },
-  ];
-
   constructor() {
+    Chart.register(...registerables);
     this.init();
   }
 
   init() {
-    new Chart(
-      <HTMLCanvasElement>document.getElementById('chart'+this.id), {
-      type: 'bar',
-      data: {
-        labels: this.data.map((row) => row.year),
-        datasets: [
-          {
-            label: 'Acquisitions by year',
-            data: this.data.map((row) => row.count),
-          },
-        ],
-      },
-    });
+    // new Chart(
+      // document.getElementById('chart'+this.id) as HTMLCanvasElement, {
+      // type: 'bar',
+      // data: {
+      //   labels: this.data.map((row) => row.year),
+      //   datasets: [
+      //     {
+      //       label: 'Acquisitions by year',
+      //       data: this.data.map((row) => row.count),
+      //     },
+      //   ],
+      // },
+    // });
+    this.lineChartData = {
+      labels: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July'
+      ],
+      datasets: [
+        {
+          data: [ 65, 59, 80, 81, 56, 55, 40 ],
+          label: 'Series A',
+          fill: true,
+          tension: 0.5,
+          borderColor: 'black',
+          backgroundColor: 'rgba(255,0,0,0.3)'
+        }
+      ]
+    };
+    console.log(this.lineChartData)
   }
 
   // ngOnChanges(changes: any) {

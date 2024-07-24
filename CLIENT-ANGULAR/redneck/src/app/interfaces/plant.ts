@@ -7,6 +7,8 @@ export interface Plant {
   id_growing_medium: number;
   generation: number;
   day_start_grow: number;
+  day_harvest: number;
+  day_start_bloom: number;
   revenue: number;
   alerts: string;
   enabled: boolean;

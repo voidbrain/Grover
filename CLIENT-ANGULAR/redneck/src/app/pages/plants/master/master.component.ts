@@ -32,6 +32,9 @@ import {
 
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { Plant } from '../../../interfaces/plant';
+import { Strain } from '../../../interfaces/strain';
+import { Dose } from '../../../interfaces/dose';
 
 @Component({
   selector: 'app-master',
@@ -72,8 +75,8 @@ import * as ionIcons from 'ionicons/icons';
 })
 export class PlantsMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
-  items: any;
-  table: string = 'plants';
+  items: any[] = [];
+  table = 'plants';
 
   constructor(
     private db: DbService,
@@ -116,7 +119,7 @@ export class PlantsMasterComponent {
         });
 
         items.map((item: any) => {
-          item.strain = strains.find((el: any) => el.id == item.id_strain);
+          item.strain = strains.find((el: Strain) => el.id == item.id_strain);
           item.chartConfig = {
             id: 'chart',
             type: 'doughnut',
@@ -185,13 +188,10 @@ export class PlantsMasterComponent {
           const dose = item.phase
             ? item.phase
             : calendars[calendars.length - 1];
-          item.dose = doses.find((singleDose: any) => {
-            singleDose.id == dose.id_dose;
+          item.dose = doses.find((singleDose: Dose) => {
+            singleDose.id = dose.id_dose;
           });
-          // item.phase.days = timeDiff - (item.weeks_n / (1000 * 7 * 24 * 60 * 60));
-          // let phase_days = item.phase.week_n;
-          const item_days = Math.floor(Math.abs(timeDiff) / (7 * 24 * 60 * 60));
-          // console.log(phase_days,item_days)
+          
         });
         this.items = items;
         console.info('[PAGE]: Ready');
@@ -199,11 +199,11 @@ export class PlantsMasterComponent {
     );
   }
 
-  deleteItem(item: any) {
+  deleteItem(item: Plant) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then((result) => {
+    this.db.deleteItem(this.table, item).then(() => {
       this.getItems();
     });
   }

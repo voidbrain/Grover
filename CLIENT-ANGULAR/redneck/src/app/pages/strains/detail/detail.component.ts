@@ -112,7 +112,7 @@ export class StrainsDetailComponent {
       .catch((err) => console.error(err));
   }
 
-  getItem(id: Number) {
+  getItem(id: number) {
     if (id) {
       this.db.getItem(this.page, id).then((item) => {
         this.form.patchValue(item, { emitEvent: true });
@@ -135,9 +135,9 @@ export class StrainsDetailComponent {
   }
 
   saveForm() {
-    const saveItem = Array();
+    const saveItem = [];
     saveItem.push(this.form.value);
-    this.db.putItems(this.page, saveItem).then((result) => {
+    this.db.putItems(this.page, saveItem).then(() => {
       this.router.navigate([this.page]);
     });
   }

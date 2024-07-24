@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class ApiService {
-  private url: string = '';
+  private url = '';
 
   constructor(
     private appSettings: SettingsService,

@@ -4,13 +4,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class SettingsService {
-  appName: string = '';
-  serverAddress: string = '';
+  appName = '';
+  serverAddress = '';
   purposes: string[] = [];
   purpose: number | null = null;
   datatables: string[] = [];
-  resetDb: boolean = false;
-  forceLoading: boolean = true;
+  resetDb = false;
+  forceLoading = true;
 
   constructor() {
     this.init();

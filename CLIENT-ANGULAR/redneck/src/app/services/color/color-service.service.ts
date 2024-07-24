@@ -12,7 +12,7 @@ export interface IonColor {
   providedIn: 'root',
 })
 export class ColorService {
-  private ionPrefix: string = '.ion-color-';
+  private ionPrefix = '.ion-color-';
 
   public colorList: IonColor[] = [
     { key: 'flame', value: '#e45a33', friendlyName: 'Flame' },
@@ -42,31 +42,31 @@ export class ColorService {
   }
 
   public getColorValue(colorKey: string): string | undefined {
-    let idx = this.colorList.map((c) => c.key).indexOf(colorKey);
+    const idx = this.colorList.map((c) => c.key).indexOf(colorKey);
     return idx == -1 ? undefined : this.colorList[idx].value;
   }
 
   public addIonColor(name: string, baseColor: string) {
-    const namePattern = /^[a-zA-Z][\-_0-9A-Za-z]+$/;
+    const namePattern = /^[a-zA-Z][-_0-9A-Za-z]+$/;
 
     if (!namePattern.test(name)) {
       throw new Error(
-        `Invalid color name: ${name} should match /^[a-zA-Z][\-_0-9A-Za-z]$/`,
+        `Invalid color name: ${name} should match /^[a-zA-Z][-_0-9A-Za-z]$/`,
       );
       return;
     }
-    let color = new tinycolor(baseColor);
+    const color = new tinycolor(baseColor);
 
     if (!color.isValid()) {
       throw new Error(`Invalid color value: ${baseColor}`);
       return;
     }
-    let hex = color.toString('hex6');
-    let rgb = color.toRgb();
-    let contrast = tinycolor(color.getBrightness() > 150 ? '#222' : '#eee');
-    let contrastRgb = contrast.toRgb();
+    const hex = color.toString('hex6');
+    const rgb = color.toRgb();
+    const contrast = tinycolor(color.getBrightness() > 150 ? '#222' : '#eee');
+    const contrastRgb = contrast.toRgb();
 
-    let css = `${this.ionPrefix + name} {
+    const css = `${this.ionPrefix + name} {
         --ion-color-base: ${hex};
         --ion-color-base-rgb: ${rgb.r},${rgb.g},${rgb.b};
         --ion-color-contrast: ${contrast.toString('hex6')};
@@ -77,7 +77,7 @@ export class ColorService {
     `;
     //console.log(css);
 
-    var docStyle = this.document.createElement('style');
+    const docStyle = this.document.createElement('style');
     docStyle.type = 'text/css';
     docStyle.innerHTML = css;
     this.document.getElementsByTagName('head')[0].appendChild(docStyle);
