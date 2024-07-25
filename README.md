@@ -198,8 +198,11 @@ Logs of reads/executions are stored offline and will be synced when back online.
 
 ### Commands
 
+From Client to Device (using stored ${ip}:${port})
 remoteDeviceExecute(ip: string, port: string, page: string, action: string, id: number, type: string, duration: number)
 http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}
+
+http://151.51.241.133:8084/actuators?action=READ&duration=undefined&id=1&type=probe
 
 | Commands          |                                                                                          | Notes                           |
 | :---------------- | :-----------------------------------------------------------------------------------     | :------------------------------ |
@@ -219,8 +222,7 @@ http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type
 
 ### From Device
 
-http://${ip}:${port}/temp/grover/ajax/moduli/api/worker/workers_schedule?lastUpdate=null&action=read&serialNumber=undefined
-(endpoint, lastUpdate, action, self.serialNumber.sn, self.webServerPort)
+https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/workers_schedule?lastUpdate={lastUpdate}&action=read&serialNumber={serialNumber}
 
 (table, lastUpdate, 'read', this.serialNumber)
 
