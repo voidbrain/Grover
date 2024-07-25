@@ -1,16 +1,15 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { NgClass, NgStyle, DecimalPipe, CommonModule } from '@angular/common';
+import { NgStyle, DecimalPipe } from '@angular/common';
 
 import { PlantExtended } from '../../../interfaces/plant';
 import { IonCard, IonCardContent } from '@ionic/angular/standalone';
-import { SanitizeHtmlPipe } from '../../../pipes/sanitize-html/sanitize-html.pipe';
 
 @Component({
   selector: 'app-progress-bar',
   templateUrl: './progress-bar.component.html',
   styleUrls: ['./progress-bar.component.scss'],
   standalone: true,
-  imports: [IonCardContent, IonCard, CommonModule, NgClass, NgStyle, DecimalPipe, SanitizeHtmlPipe],
+  imports: [IonCardContent, IonCard, NgStyle, DecimalPipe],
 })
 export class ProgressBarComponent implements OnChanges {
   @Input() plant!: PlantExtended;

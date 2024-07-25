@@ -1,14 +1,14 @@
 <div class="range-container ">
   <span class="ion-float-left text-bottom text-danger">{{ minValue }}</span>
   <span class="ion-float-right text-bottom text-danger">{{ maxValue }}</span>
+
   <div class="range-warning-values "
-    [ngStyle]="{'margin-left':percentMinWarningValue + '%'} | sanitizeHtml:'style'"
-    [ngStyle]="{width: percentMaxWarningValue - percentMinWarningValue + '%'} | sanitizeHtml:'style'"
+    [ngStyle]="{'margin-left':percentMinWarningValue + '%', width: percentMaxWarningValue - percentMinWarningValue + '%'}"
   >
     <span class="ion-float-left text-bottom text-success">{{ (+minValue !== +minWarningValue ? minWarningValue : '') }}</span>
     <span class="ion-float-right text-bottom text-success">{{ (+maxValue !== +maxWarningValue ? maxWarningValue : '') }}</span>
   </div>
-  <div [ngStyle]="{left:(percentValue > minValue ? (percentValue < maxValue ? percentValue : maxValue) : minValue) + '%'} | sanitizeHtml:'style'"
+  <div [ngStyle]="{left:(percentValue > minValue ? (percentValue < maxValue ? percentValue : maxValue) : minValue) + '%'} "
     [ngClass]="'value ' + (+value >= +minWarningValue && +value <= +maxWarningValue ? '' : 'warning')">
     <div class="text-top">{{ value }} {{um}}</div>
   </div>

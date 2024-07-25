@@ -55,6 +55,7 @@ export class RangeComponent implements OnChanges {
     ) {
       this.setup();
     }
+
     if (this.value) {
       this.percentValue = this.normalizeBetweenTwoRanges(this.value);
     }
@@ -75,9 +76,10 @@ export class RangeComponent implements OnChanges {
     const maxVal = this.maxValue;
     const normalizedMax = 100;
     const normalizedMin = 0;
-    return (
-      normalizedMin +
-      ((val - minVal) * (normalizedMax - normalizedMin)) / (maxVal - minVal)
-    );
+
+    const normalizedRange = normalizedMin +
+    ((val - minVal) * (normalizedMax - normalizedMin)) / (maxVal - minVal)
+
+    return (normalizedRange);
   }
 }

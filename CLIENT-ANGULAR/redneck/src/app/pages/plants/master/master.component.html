@@ -43,7 +43,7 @@
                         !room?.workersComponents?.nutrientRefill
                       "
                       class="btn"
-                      fill="clear"
+
                       size="small"
                       (click)="
                         shuffleNutrient(room?.workersComponents?.nutrientRefill)
@@ -57,7 +57,6 @@
                         !room?.serialNumber || !room?.workersComponents?.phDown
                       "
                       class="btn"
-                      fill="clear"
                       size="small"
                       (click)="shufflePhDown(room?.workersComponents?.phDown)"
                     >
@@ -71,7 +70,9 @@
                   <ion-item class="ion-no-padding">
                     <ion-icon color="primary" name="bulb"></ion-icon>
                     <ion-toggle
-                      class="toggle"
+                      ngDefaultControl
+                      class="toggle ion-padding"
+                      name="light-status"
                       [disabled]="!room?.serialNumber"
                       (ngModelChange)="
                         toggleLight(room?.workersComponents?.light)
@@ -87,7 +88,9 @@
                   <ion-item class="ion-no-padding">
                     <ion-icon color="primary" name="help-buoy"></ion-icon>
                     <ion-toggle
-                      class="toggle"
+                      ngDefaultControl
+                      name="help-buoy"
+                      class="toggle ion-padding"
                       [disabled]="!room?.serialNumber"
                       (ngModelChange)="toggleFan(room?.workersComponents?.fan)"
                       [(ngModel)]="room?.workersComponents?.fan.status"
@@ -126,7 +129,8 @@
                       [fixedWidth]="true"
                       icon="temperature-half"
                     ></fa-icon>
-                    <app-range
+
+                    <app-range class="ion-padding"
                       [minValue]="
                         room?.probesComponents?.airtemp?.type.minAcceptableValue
                       "
@@ -143,7 +147,6 @@
                       [um]="room?.probesComponents?.airtemp?.type.um"
                     ></app-range>
                     <ion-button
-                      fill="clear"
                       size="small"
                       (click)="read(room?.probesComponents?.airtemp)"
                     >
@@ -184,7 +187,7 @@
                           <ion-col class="ion-no-padding" size="1">
                             <div>
                               @if (!room?.isHarvested && !room?.isNursery) {
-                                <button
+                                <ion-button
                                   class="ghost"
                                   fill="clear"
                                   (click)="expandItem(plant)"
@@ -199,7 +202,7 @@
                                       name="caret-up-outline"
                                     ></ion-icon
                                   ></span>
-                                </button>
+                                </ion-button>
                               }
                             </div>
                           </ion-col>

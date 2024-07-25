@@ -17,10 +17,11 @@
 }
 .text-top {
   position: relative;
-  top:-34px;
+  top:-40px;
   font-weight: bold;
   text-align: center;
-  min-width: 40px;
+  min-width: max-content;
+  clear:both;
   margin-left: -50%;
 }
 
