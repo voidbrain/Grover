@@ -51,7 +51,33 @@ npm build
 
 ## Phisical low level connections
 
-## Hardware peripherals
+## Hardware
+
+### Power lines
+
+Right after Power line input jack (12V), a l298n is used to split voltage between:
+
+- 12V
+- 5V
+- GND
+
+Peristaltic pumps are connected to the 12V.
+The 5V and Ground are used to connect the Raspberry Pi and other 5V peripherals ().
+Raspberry Pi 3V Pin is connected to a line to power 3V peripherals ().
+
+### I2C extender
+
+Due the limited number of pins on the Raspberry Pi, 4 I2C extenders are used to cover all needed connections.
+
+### Fluids flow
+
+Nutrients and ph levels vary based on the actual phase and probes reads, for this reason the mixing and feeding is executed JIT.
+This requires 4 pumps for the nutrients, 1 for water, 1 for pHdown + a temporary reservoir + 4 pumps for the pots.
+
+Flow steps are:
+
+- step 1) nutrients + pHdown + water to the temporary reservoir;
+- step 2) from the temporary reservoir to the designated pot;
 
 ### Probes
 
@@ -100,14 +126,18 @@ Probes list
 
 ## BOM (Bill of Materials)
 
-| Item                  | Quantity | Description                                 | Notes                           |
-| :-------------------- | -------: | :------------------------------------------ | :------------------------------ |
-| Raspberry Pi          |     1    |                                             | On field device                 |
-| DS18B20               |     5    | Temperature sensor                          | 1 for each Pot, 1 for each Room |
-|                       |     4    | pH sensor                                   | 1 for each Pot                  |
-|                       |     4    | EC sensor                                   | 1 for each Pot                  |
-|                       |     5    | Water level sensor                          | 1 for each Pot, 1 for each Room |
-|                       |     5    | Peristaltic pump for  Water/Nutrient refill |                                 |
+(1 room = 4 pots)
+
+| Item                  | Quantity | Description                                 | Notes                                 |
+| :-------------------- | -------: | :------------------------------------------ | :------------------------------------ |
+| Raspberry Pi          |     1    |                                             | On field device                       |
+| DS18B20               |     5    | Temperature sensor                          | 1 for each Pot + 1 for each Room      |
+|                       |     4    | pH sensor                                   | 1 for each Pot                        |
+|                       |     4    | EC sensor                                   | 1 for each Pot                        |
+|                       |     5    | Water level sensor                          | 1 for each Pot + 1 for each Room      |
+|                       |    10    | Peristaltic pump for  Water/Nutrient refill | N1, N2, N3, N4, W, pH, P1, P2, P3, P4 |
+| l298n                 |     5    | Motor driver for Peristaltic pump2          | 1 for every 2 pumps                   |
+| I2C extender          |     5    | I2C extender                                | Every one                             |
 
 ## APIs section
 
@@ -206,8 +236,6 @@ Device internal webserver port is. Internal network needs to forward port 8084:8
 
 ### Run command flow
 
-## Manual operations
-
 ## Scheduler
 
 There are two tipes of events:
@@ -220,6 +248,11 @@ Probes and actuators acts different:
 - Probes reads = "At": at dateTime
 - Actuators not connected to Probes (light, water loop, fan) = "From_To": from dateTime; to dateTime
 - Actuators connected to Probes (waterRefill, phDown, nutrimentRefill) = just in case, triggered by a Probe read. Duration is calculated (Machine Learning section).
+
+### Scheduled/Manual operations
+
+System normally works based on the scheduled tasks.
+User can manually set the working_mode, turn ON and OFF light and fan, execute probes reads, and run refill commands from the client app.
 
 ## Alerts
 
