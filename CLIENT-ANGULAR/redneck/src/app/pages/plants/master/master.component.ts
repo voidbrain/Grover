@@ -8,8 +8,11 @@ import { ExpandableComponent } from '../../../components/shared/expandable/expan
 import { DetailPanelComponent } from '../../../components/plants/detail-panel/detail-panel.component';
 import { OperatingModes, WorkersTypes, DevicesStatus, ServerCommands, ServerPages, Peripherals, ProbesTypes }
 from '../../../../app/services/settings/enum';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faTemperatureHalf, faEye } from '@fortawesome/free-solid-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+
 import { CheckboxComponent } from '../../../components/shared/form/components/checkbox/checkbox.component';
 import { Calendar, PhaseExtended } from '../../../interfaces/calendar';
 import { Dose } from '../../../interfaces/dose';
@@ -126,8 +129,10 @@ export class PlantsMasterComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private db: DbService,
     private router: Router,
-    public toastController: ToastController
+    public toastController: ToastController,
+    private library: FaIconLibrary
   ) {
+    library.addIconPacks(fas)
     addIcons(ionIcons);
     this.formDefinition =
       { name: 'show', type: 'checkbox', label: 'Show',  options: [

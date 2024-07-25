@@ -17,7 +17,7 @@ export class DbService {
 
 	private db: IDBDatabase | undefined;
 	private tables: any[] = [];
-  private debug = true;
+  private debug = false;
     constructor(
       public loadingController: LoadingController,
       private toastService: ToastService,
@@ -193,7 +193,6 @@ export class DbService {
     }
 
     getItems(objectStore: any, column='enabled, deleted', query=[1,0]): Promise<any> {
-
         const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
         const store = tx.objectStore(objectStore);
         const dataIndex: any = store.index(column);

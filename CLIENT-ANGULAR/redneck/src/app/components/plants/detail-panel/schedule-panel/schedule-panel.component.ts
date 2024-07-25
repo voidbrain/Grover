@@ -42,8 +42,8 @@ export class SchedulePanelComponent implements OnChanges {
 
   
 
-  daysOfWeek: weekRow[] = [
-    
+  daysOfWeek: any[] = [
+    { key: 'S', values: []},
     { key: 'M', values: []},
     { key: 'T', values: []},
     { key: 'W', values: []},
@@ -73,7 +73,7 @@ export class SchedulePanelComponent implements OnChanges {
       const daysWorkingCron = cronArray[4];
       const hoursWorkingCron = cronArray[1];
       const minutesWorkingCron = cronArray[0];
-
+      
       daysWorkingCron.map((day: any) => {
         const el = {
           title: item.type.title,
