@@ -260,6 +260,15 @@ User can manually set the working_mode, turn ON and OFF light and fan, execute p
 
 ## Machine Learning
 
+- pH is affected by nutrients (goes up) and change during time (goes up).
+If pH is higher than ideal range, add pHdown, If pH is lower than ideal range, do nothing.
+
+- EC is affected by nutrients (goes up) and change during time (goes down).
+If EC is lower than ideal range, add nutrients. If EC is higher than ideal range, do nothing.
+
+A simple ML model runs on the device to calculate every time the needed quantity of nutrients and pHdown.
+Every new read and execution is logged and ML is retrained on the data to optimize the algorithm.
+
 ## Settings
 
 ### Operating modes
