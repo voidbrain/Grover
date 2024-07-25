@@ -30,7 +30,7 @@ export class DbService {
   async load(): Promise<any> {
     const self = this;
     return new Promise<void>((resolve) => {
-      const resetDb = false;
+      const resetDb = false; // DB also forged on resetDb
       const forceLoading = true;
       this.initDb(resetDb).then(() => {
         this.initService(resetDb ? resetDb : forceLoading).then(() => {
@@ -41,10 +41,9 @@ export class DbService {
                   (networkStatus ? 'Online' : 'Offline'),
               );
             }
-            // this.syncAndClean(networkStatus).then(()=>{ TODO
-            this.syncAndClean('Online').then(() => {
-              resolve();
-            });
+              this.syncAndClean('Online').then(() => {
+                resolve();
+              });
           });
         });
       });
@@ -81,7 +80,12 @@ export class DbService {
         const target: any = event.target;
         const db = target.result;
         const storeObjects: any[] = [];
+        if(this.debug){
+          console.log("[DB]: ", this.tables)
+        }
         this.tables.map((table: any) => {
+          console.log("[DB]: createObjectStore", table)
+
           storeObjects[('store' + table) as any] = db.createObjectStore(table, {
             keyPath: 'id',
             autoIncrement: true,
@@ -105,6 +109,9 @@ export class DbService {
             storeObjects[('store' + table) as any].createIndex('device', [
               'device',
             ]);
+          }
+          if (this.debug) {
+            console.info('[DB]: Table created:' + table);
           }
         });
         if (this.debug) {
@@ -182,12 +189,12 @@ export class DbService {
             lastUpdate[table] = localStorage.getItem(
               this.appSettings.appName + '_' + table,
             );
-            return this.loadData(table, lastUpdate[table]);
+              return this.loadData(table, lastUpdate[table]);
           }),
         ),
       )
       .then((results) => {
-        this.syncData(results);
+        this.syncData(results)
         loading.dismiss();
         return;
       });
@@ -211,48 +218,54 @@ export class DbService {
         if (self.debug) {
           console.info('[DB]: Db Sync records ready ', table, res, res.length);
         }
-        const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
-        const store = tx.objectStore(table);
-        let lastUpdate: any;
-        if (res.items.length) {
-          res.items.map((row: any) => {
-            if (row.id) {
-              let promise;
-              if (row.deleted) {
-                promise = store.delete(row.id);
-              } else {
-                promise = store.put(row);
-              }
-              promise.onsuccess = function (e) {
-                if (self.debug) {
-                  console.info(
-                    '[DB]: Success syncing db table: "' + table + '", item:',
+        try{
+          const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
+          const store = tx.objectStore(table);
+
+
+          let lastUpdate: any;
+          if (res.items.length) {
+            res.items.map((row: any) => {
+              if (row.id) {
+                let promise;
+                if (row.deleted) {
+                  promise = store.delete(row.id);
+                } else {
+                  promise = store.put(row);
+                }
+                promise.onsuccess = function (e) {
+                  if (self.debug) {
+                    console.info(
+                      '[DB]: Success syncing db table: "' + table + '", item:',
+                      e,
+                    );
+                  }
+                };
+                promise.onerror = function (e) {
+                  console.error(
+                    '[DB]: Error syncing db table: "' + table + '", item:',
                     e,
+                  );
+                };
+              }
+              lastUpdate =
+                row.lastUpdate !== lastUpdate || !lastUpdate
+                  ? row.lastUpdate
+                  : lastUpdate;
+              tx.oncomplete = () => {
+                if (lastUpdate) {
+                  localStorage.setItem(
+                    this.appSettings.appName + '_' + table,
+                    lastUpdate,
                   );
                 }
               };
-              promise.onerror = function (e) {
-                console.error(
-                  '[DB]: Error syncing db table: "' + table + '", item:',
-                  e,
-                );
-              };
-            }
-            lastUpdate =
-              row.lastUpdate !== lastUpdate || !lastUpdate
-                ? row.lastUpdate
-                : lastUpdate;
-            tx.oncomplete = () => {
-              if (lastUpdate) {
-                localStorage.setItem(
-                  this.appSettings.appName + '_' + table,
-                  lastUpdate,
-                );
-              }
-            };
-          });
-        } else {
-          resolve();
+            });
+          } else {
+            resolve();
+          }
+        } catch(e){
+          console.log(table, e)
         }
       });
     });
@@ -440,19 +453,25 @@ export class DbService {
   }
 
   getItemsToBeSynced(objectStore: any): Promise<any> {
-    const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
-    const store = tx.objectStore(objectStore);
-    const dataIndex: any = store.index('synced');
-    const promise = new Promise<any>((resolve) => {
-      const request = dataIndex.getAll(0);
-      request.onsuccess = (e: any) => {
-        resolve(e.target.result);
-      };
-      request.onerror = (e: any) => {
-        console.error(e);
-      };
-    });
-    return promise;
+    try {
+      const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
+      const store = tx.objectStore(objectStore);
+      const dataIndex: any = store.index('synced');
+
+      const promise = new Promise<any>((resolve) => {
+        const request = dataIndex.getAll(0);
+        request.onsuccess = (e: any) => {
+          resolve(e.target.result);
+        };
+        request.onerror = (e: any) => {
+          console.error(e);
+        };
+      });
+      return promise;
+    } catch(e) {
+      console.log(objectStore, e)
+      return new Promise(resolve=>resolve(false));;
+    }
   }
 
   removeDeletedItem(): Promise<void> {
