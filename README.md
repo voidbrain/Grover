@@ -109,8 +109,6 @@ Probes list
 |                       |     5    | Water level sensor                          | 1 for each Pot, 1 for each Room |
 |                       |     5    | Peristaltic pump for  Water/Nutrient refill |                                 |
 
-
-
 ## APIs section
 
 ### Server APIs
@@ -129,11 +127,47 @@ Probes list
 
 ### offline mode
 
+- If Client goes offline it will show the last data that were synced.
+Anagraphic can still be updated offline and will be synced when back online.
+Action buttons are disabled,
+- If Device goes offline it will operate based on last synced status and schedule.
+Logs of reads/executions are stored offline and will be synced when back online.
+- If Server goes offline Client and Device cannot communicate, they will operate as offline.
+
 ### GUI
 
 ## API Commands
 
 ### From Client
+
+### Anagraph
+
+<https://www.voidbrain.net/temp/grover/ajax/moduli/api/client/{table}?lastUpdate={lastUpdate}>
+(
+'calendars',
+'doses',
+'pots',
+'growing_mediums',
+'growing_scenarios',
+'plants',
+'companies',
+'strains',
+'settings',
+'locations',
+'rooms',
+'operating_modes',
+'probes_list',
+'probes_log',
+'probes_schedule',
+'probes_type',
+'workers_list',
+'workers_log',
+'workers_schedule',
+'workers_type'
+)
+
+### Commands
+
 remoteDeviceExecute(ip: string, port: string, page: string, action: string, id: number, type: string, duration: number)
 http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}
 
@@ -186,8 +220,6 @@ Probes and actuators acts different:
 - Probes reads = "At": at dateTime
 - Actuators not connected to Probes (light, water loop, fan) = "From_To": from dateTime; to dateTime
 - Actuators connected to Probes (waterRefill, phDown, nutrimentRefill) = just in case, triggered by a Probe read. Duration is calculated (Machine Learning section).
-
-
 
 ## Alerts
 
