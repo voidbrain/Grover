@@ -14,14 +14,14 @@ import {
 } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
-import { IonButton, IonLabel, IonSegment } from '@ionic/angular/standalone';
+import { IonLabel, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-detail-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
   standalone: true,
-  imports: [ChartComponent, IonButton, IonLabel, IonSegment],
+  imports: [ChartComponent, IonLabel, IonSegment, IonSegmentButton],
 })
 export class PanelChartComponent implements OnChanges {
   @Input() plant: PlantExtended;

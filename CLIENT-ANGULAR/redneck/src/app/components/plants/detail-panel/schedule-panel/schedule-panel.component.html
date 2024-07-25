@@ -2,7 +2,7 @@
   <div>
     <ion-segment class="segment-wrap">
       @for (day of chartConfig; track day; let dayIndex = $index) {
-        <ion-button
+        <ion-segment-button
           class="ion-no-padding"
           size="small"
           fill="clear"
@@ -18,7 +18,7 @@
             "
             >{{ daysOfWeek[dayIndex].key }}</ion-label
           >
-        </ion-button>
+        </ion-segment-button>
       }
     </ion-segment>
     @for (day of chartConfig; track day; let dayIndex = $index) {

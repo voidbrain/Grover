@@ -70,6 +70,7 @@ import {
   IonCardContent,
   IonCardTitle,
   IonSegment,
+  IonSegmentButton
 } from '@ionic/angular/standalone';
 
 import { RangeComponent } from '../../../components/shared/range/range.component';
@@ -85,6 +86,7 @@ import { GrowingResultsComponent } from '../../../components/plants/growing-resu
   imports: [
     RangeComponent,
     IonSegment,
+    IonSegmentButton,
     IonCardTitle,
     IonCardContent,
     RouterLink,

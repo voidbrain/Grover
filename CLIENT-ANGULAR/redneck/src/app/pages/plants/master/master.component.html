@@ -37,7 +37,7 @@
               <ion-col size="7">
                 @if (!room?.isHarvested && !room?.isNursery) {
                   <ion-segment>
-                    <ion-button
+                    <ion-segment-button
                       [disabled]="
                         !room?.serialNumber ||
                         !room?.workersComponents?.nutrientRefill
@@ -50,9 +50,9 @@
                       "
                     >
                       Doses Shuffle
-                    </ion-button>
+                    </ion-segment-button>
 
-                    <ion-button
+                    <ion-segment-button
                       [disabled]="
                         !room?.serialNumber || !room?.workersComponents?.phDown
                       "
@@ -62,7 +62,7 @@
                       (click)="shufflePhDown(room?.workersComponents?.phDown)"
                     >
                       pH↓ Shuffle
-                    </ion-button>
+                    </ion-segment-button>
                   </ion-segment>
                 }
               </ion-col>

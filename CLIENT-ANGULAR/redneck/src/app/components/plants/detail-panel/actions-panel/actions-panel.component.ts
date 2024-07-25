@@ -12,23 +12,32 @@ import {
   DevicesStatus,
 } from '../../../../services/settings/enum';
 import {
+  IonButton,
   IonCard,
   IonCardTitle,
   IonCardContent,
   IonSegment,
-  IonButton,
+  IonSegmentButton,
 } from '@ionic/angular/standalone';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faArrowsRotate,
+  faFill,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-actions-panel',
   standalone: true,
-  imports: [IonButton, IonSegment, IonCardContent, IonCardTitle, IonCard],
+  imports: [IonCard, IonCardContent, IonCardTitle, IonButton, IonSegment, IonSegmentButton, FontAwesomeModule],
   templateUrl: './actions-panel.component.html',
   styleUrl: './actions-panel.component.scss',
 })
 export class ActionsPanelComponent implements OnChanges {
   @Input() plant: PlantExtended | undefined;
   @Input() room: RoomExtended | undefined;
+
+  faArrowsRotate = faArrowsRotate;
+  faFill = faFill;
 
   probes: any;
   workers: any;
@@ -37,7 +46,8 @@ export class ActionsPanelComponent implements OnChanges {
   constructor(
     private db: DbService,
     private toastController: ToastController,
-  ) {}
+  ) {
+  }
 
   ngOnChanges() {
     if (this.plant && this.plant !== undefined) {

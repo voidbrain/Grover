@@ -12,10 +12,10 @@ import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
 import {
   IonSegment,
+  IonSegmentButton,
   IonGrid,
   IonRow,
   IonCol,
-  IonButton,
   IonLabel,
 } from '@ionic/angular/standalone';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -40,11 +40,11 @@ export interface weekRow {
   standalone: true,
   imports: [
     IonLabel,
-    IonButton,
     IonCol,
     IonRow,
     IonGrid,
     IonSegment,
+    IonSegmentButton,
     FontAwesomeModule,
   ],
   templateUrl: './schedule-panel.component.html',
