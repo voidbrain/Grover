@@ -42,7 +42,7 @@ import { Company } from '../../../interfaces/company';
 import { Pot } from '../../../interfaces/pot';
 import { DatePipe } from '@angular/common';
 @Component({
-  selector: 'app-detail',
+  selector: 'app-companies-detail',
   standalone: true,
   imports: [
     RouterLink,

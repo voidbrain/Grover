@@ -42,7 +42,7 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 
 @Component({
-  selector: 'app-detail',
+  selector: 'app-doses-detail',
   standalone: true,
   imports: [
     RouterLink,

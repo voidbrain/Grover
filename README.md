@@ -137,7 +137,7 @@ Probes list
 |                       |     5    | Water level sensor                          | 1 for each Pot + 1 for each Room      |
 |                       |    10    | Peristaltic pump for  Water/Nutrient refill | N1, N2, N3, N4, W, pH, P1, P2, P3, P4 |
 | l298n                 |     5    | Motor driver for Peristaltic pump2          | 1 for every 2 pumps                   |
-| I2C extender          |     5    | I2C extender                                | Every one                             |
+| MCP23017              |     3    | I2C extender                                | Every one                             |
 
 ## APIs section
 
@@ -204,21 +204,21 @@ http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type
 
 http://151.51.241.133:8084/actuators?action=READ&duration=undefined&id=1&type=probe
 
-| Commands          |                                                                                          | Notes                           |
-| :---------------- | :-----------------------------------------------------------------------------------     | :------------------------------ |
-| RUN_WATER         | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=RUN_WATER&duration=1000&id=${id}&type=worker       |                                 |
-| RUN_PHDOWN        | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=RUN_PHDOWN&duration=1000&id=${id}&type=worker      |                                 |
-| RUN_DOSE          | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=RUN_DOSE&duration=1000&id=${id}&type=worker        |                                 |
-| SHUFFLE_PHDOWN    |                                                                                          |                                 |
-| SHUFFLE_DOSE      |                                                                                          |                                 |
-| READ              | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=READ&id=${id}&type=probe                           |                                 |
-| ON                | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=ON&id=${id}&type=worker                            |                                 |
-| OFF               | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=OFF&id=${id}&type=worker                           |                                 |
-| SET_STATUS        |                                                                                          |                                 |
-| LOG               |                                                                                          |                                 |
-| START             |                                                                                          |                                 |
-| SYS_LOG           |                                                                                          |                                 |
-| SET_MODE          | http://${ip}:${port}/temp/grover/ajax/moduli/api/system?action=SET_MODE&id=${idRoom}&type=1                          | Normal = 1, Silent = 2, Off = 3 |
+| Commands          |                                                                                      | Notes                           |
+| :---------------- | :----------------------------------------------------------------------------------- | :------------------------------ |
+| RUN_WATER         | http://${ip}:${port}/actuators?action=RUN_WATER&duration=1000&id=${id}&type=worker   |                                 |
+| RUN_PHDOWN        | http://${ip}:${port}/actuators?action=RUN_PHDOWN&duration=1000&id=${id}&type=worker  |                                 |
+| RUN_DOSE          | http://${ip}:${port}/actuators?action=RUN_DOSE&duration=1000&id=${id}&type=worker    |                                 |
+| SHUFFLE_PHDOWN    |                                                                                      |                                 |
+| SHUFFLE_DOSE      |                                                                                      |                                 |
+| READ              | http://${ip}:${port}/actuators?action=READ&id=${id}&type=probe                       |                                 |
+| ON                | http://${ip}:${port}/actuators?action=ON&id=${id}&type=worker                        |                                 |
+| OFF               | http://${ip}:${port}/actuators?action=OFF&id=${id}&type=worker                       |                                 |
+| SET_STATUS        |                                                                                      |                                 |
+| LOG               |                                                                                      |                                 |
+| START             |                                                                                      |                                 |
+| SYS_LOG           |                                                                                      |                                 |
+| SET_MODE          | http://${ip}:${port}/system?action=SET_MODE&mode=2                                   | Normal = 1, Silent = 2, Off = 3 |
 
 ### From Device
 

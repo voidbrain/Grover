@@ -43,7 +43,7 @@ import * as ionIcons from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-detail',
+  selector: 'app-calendar-detail',
   standalone: true,
   imports: [
     RouterLink,

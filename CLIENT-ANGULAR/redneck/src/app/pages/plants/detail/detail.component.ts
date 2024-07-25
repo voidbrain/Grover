@@ -49,7 +49,7 @@ import { DynamicFormComponent } from '../../../components/shared/form/containers
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-detail',
+  selector: 'app-plants-detail',
   standalone: true,
   imports: [
     RouterLink,

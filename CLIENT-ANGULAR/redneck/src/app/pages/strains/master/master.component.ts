@@ -25,7 +25,7 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 
 @Component({
-  selector: 'app-master',
+  selector: 'app-strains-master',
   standalone: true,
   imports: [
     RouterLink,

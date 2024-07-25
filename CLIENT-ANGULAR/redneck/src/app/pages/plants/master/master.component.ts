@@ -80,7 +80,7 @@ import { FilterBarComponent } from '../../../components/plants/filter-bar/filter
 import { GrowingResultsComponent } from '../../../components/plants/growing-results/growing-results.component';
 
 @Component({
-  selector: 'app-master',
+  selector: 'app-plants-master',
   standalone: true,
   imports: [
     RangeComponent,
