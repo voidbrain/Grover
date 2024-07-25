@@ -45,7 +45,7 @@ npm build
 
 ## Logical structure
 
-<img alt="Logical Map" src="./public/documentation/images/logical_map.jpg" />
+![logical map](./documentation/img/logical_map.jpg)
 
 ## Phisical high level structure
 
@@ -131,7 +131,42 @@ Probes list
 
 ### GUI
 
+## API Commands
+
+### From Client
+remoteDeviceExecute(ip: string, port: string, page: string, action: string, id: number, type: string, duration: number)
+http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}
+
+| Commands          |                                                                                          | Notes                           |
+| :---------------- | :-----------------------------------------------------------------------------------     | :------------------------------ |
+| RUN_WATER         | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=RUN_WATER&duration=1000&id=${id}&type=worker       |                                 |
+| RUN_PHDOWN        | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=RUN_PHDOWN&duration=1000&id=${id}&type=worker      |                                 |
+| RUN_DOSE          | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=RUN_DOSE&duration=1000&id=${id}&type=worker        |                                 |
+| SHUFFLE_PHDOWN    |                                                                                          |                                 |
+| SHUFFLE_DOSE      |                                                                                          |                                 |
+| READ              | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=READ&id=${id}&type=probe                           |                                 |
+| ON                | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=ON&id=${id}&type=worker                            |                                 |
+| OFF               | http://${ip}:${port}/temp/grover/ajax/moduli/api/actuators?action=OFF&id=${id}&type=worker                           |                                 |
+| SET_STATUS        |                                                                                          |                                 |
+| LOG               |                                                                                          |                                 |
+| START             |                                                                                          |                                 |
+| SYS_LOG           |                                                                                          |                                 |
+| SET_MODE          | http://${ip}:${port}/temp/grover/ajax/moduli/api/system?action=SET_MODE&id=${idRoom}&type=1                          | Normal = 1, Silent = 2, Off = 3 |
+
+### From Device
+
+http://${ip}:${port}/temp/grover/ajax/moduli/api/worker/workers_schedule?lastUpdate=null&action=read&serialNumber=undefined
+(endpoint, lastUpdate, action, self.serialNumber.sn, self.webServerPort)
+
+(table, lastUpdate, 'read', this.serialNumber)
+
 ## Flows
+
+The connection between Device and Server is granted by the Device SN, connected to a Room.
+Every time that the Device calls a Server API, it passes the SN and the IP is stored/updated.
+Every time that the Servers needs to call the Device, it uses the last IP to call the Device API.
+A START command is executed everytime the device starts to ensure to update the IP address.
+Device internal webserver port is. Internal network needs to forward port 8084:8084.
 
 ### Device start flow
 
@@ -139,7 +174,20 @@ Probes list
 
 ## Manual operations
 
-## Scheduled operations
+## Scheduler
+
+There are two tipes of events:
+
+- From_To = 1;
+- At = 2;
+
+Probes and actuators acts different:
+
+- Probes reads = "At": at dateTime
+- Actuators not connected to Probes (light, water loop, fan) = "From_To": from dateTime; to dateTime
+- Actuators connected to Probes (waterRefill, phDown, nutrimentRefill) = just in case, triggered by a Probe read. Duration is calculated (Machine Learning section).
+
+
 
 ## Alerts
 
@@ -149,9 +197,9 @@ Probes list
 
 ### Operating modes
 
-- Normal: fully operative;
-- Silent: Actuators Off (exepted for Lights), Probes On;
-- Off: Actuators Off, Probes Off;
+- Normal = 1: fully operative;
+- Silent = 2: Actuators Off (exepted for Lights), Probes On;
+- Off = 3: Actuators Off, Probes Off;
 
 ## Conventions
 
@@ -167,7 +215,7 @@ Probes list
 Nutrients, water and pH ideal levels based on the phase.
 
 | Dose              | Water (L) | Grow (mL) | Micro (mL) | Bloom (mL) | Ripen (mL) | phDown (mL) |
-| :---------------- | ----:     | --------: | ---------: | ---------: | ---------: | ----------: |
+| :---------------- | --------: | --------: | ---------: | ---------: | ---------: | ----------: |
 | Seedling          |   10      | 5         | 5          | 5          | 0          | 1           |
 | Veg Growth        |   10      | 18        | 12         | 6          | 0          | 1           |
 | Early Bloom       |   10      | 20        | 20         | 15         | 0          | 1           |
