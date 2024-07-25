@@ -385,15 +385,8 @@ export class PlantsMasterComponent implements OnInit {
         });
 
         self.rooms = rooms;
-        self.rooms.map(async (room: RoomExtended) => {
-          // room.visible =
-          //   (
 
-          //     (this.formDefinition.options.find(el => el.id === 0).isChecked && room.isVegetative) ||
-          //     (this.formDefinition.options.find(el => el.id === 1).isChecked && room.isBlooming) ||
-          //     (this.formDefinition.options.find(el => el.id === 2).isChecked && room.isHarvested) ||
-          //     (this.formDefinition.options.find(el => el.id === 3).isChecked && room.isNursery)
-          //   );
+        self.rooms.map(async (room: RoomExtended) => {
           room.settings = settings.find(
             (el) => el.device === room.serialNumber,
           );
@@ -475,6 +468,8 @@ export class PlantsMasterComponent implements OnInit {
             ).value;
           }
         });
+        console.log("[PAGE/PLANTS/MASTER]: ", rooms)
+
         this.filterList();
         if (this.debug) {
           console.info('[PAGE]: Ready');

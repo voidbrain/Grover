@@ -5,7 +5,7 @@
     <div *ngIf =" plant.expanded ">
       <ion-segment class="segment-wrap">
         <ion-button class="ion-no-padding" size="small" fill="clear" *ngFor="let day of chartConfig; let dayIndex = index" (click)=" setDayVisualization(dayIndex) ">
-          <ion-label [class]=" (dayIndex >= 5 ? 'weekend' : '') + ' daySchedule ' + ((actualDayIndex > 0 ? actualDayIndex-1 : 6) === dayIndex ? 'selected' : '')">{{daysOfWeek[dayIndex].key}}</ion-label>
+          <ion-label [NgClass]=" (dayIndex >= 5 ? 'weekend' : '') + ' daySchedule ' + ((actualDayIndex > 0 ? actualDayIndex-1 : 6) === dayIndex ? 'selected' : '')">{{daysOfWeek[dayIndex].key}}</ion-label>
         </ion-button>
       </ion-segment>
       <div class="schedule" [hidden]="(actualDayIndex === dayIndex ? false : true)"
@@ -15,7 +15,7 @@
             <ion-col size="3" class="ion-no-padding"></ion-col>
             <ion-col size="9" class="ion-no-padding">
               <div class="container">
-                <div [class]="'hour title ' + (index === 0 ? 'first' : '') "
+                <div [NgClass]="'hour title ' + (index === 0 ? 'first' : '') "
                 *ngFor="let hour of hoursOfDay; let index = index">
                   {{ hour }}
                 </div>
@@ -42,7 +42,7 @@
                       (+peripheral.data[0].hourValues[0] <= +hour && +hour < +peripheral.data[0].hourValues[1] ? hour + ':' + peripheral.data[0].atMinute : '')
                     )"
 
-                    [class]="
+                    [NgClass]="
                     (peripheral.data[0].operatingMode >= room.operatingMode ? '' : ' disabled ') +
                     'hour '+ 'c_'+peripheral.data[0].color +' type_' + peripheral.data[0].scheduleType + ' ' +
                     (peripheral.data[0].scheduleType === 2 ?

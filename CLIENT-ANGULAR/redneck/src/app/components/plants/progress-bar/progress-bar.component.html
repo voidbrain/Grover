@@ -17,28 +17,32 @@
         }}w
       </div>
     </div>
-    <div class="bar" [ngStyle]="style">
-      <div class="macrophase" [style.width]="plantdaysFromGrowPerc">
+    <div class="bar" [ngStyle]="style | sanitizeHtml:'style'">
+      <div class="macrophase" [ngStyle]="{width: plantdaysFromGrowPerc} | sanitizeHtml:'style'">
         {{ +plant.daysFromGrow / 7 | number: "1.0-0" }}w
       </div>
-      <div class="macrophase" [style.width]="plantdaysFromBloomPerc">
+      <div class="macrophase" [ngStyle]="{width: plantdaysFromBloomPerc} | sanitizeHtml:'style'">
         {{ +plant.daysFromBloom / 7 | number: "1.0-0" }}w
       </div>
-      <div class="macrophase" [style.width]="plantdaysFromFlushPerc">
+      <div class="macrophase" [ngStyle]="{width: plantdaysFromFlushPerc} | sanitizeHtml:'style'">
         {{ +plant.daysFromFlush / 7 | number: "1.0-0" }}w
       </div>
     </div>
-    <div class="bar" [ngStyle]="style">
+    <div class="bar" [ngStyle]="style | sanitizeHtml:'style'">
       @for (phase of plant.calendar.phases; track phase) {
         <div
-          [style.width]="phase.percentDuration + '%'"
-          [class]="
+          [ngStyle]="{width: phase.percentDuration + '%'} | sanitizeHtml:'style'"
+          [ngClass]="
             'phase ' + (this.plant.phase?.pos >= phase.pos ? '' : 'contrast')
           "
-          [style.backgroundColor]="
-            this.plant.phase?.pos >= phase.pos
-              ? phase.dose.color
-              : this.addAlpha(phase.dose.color, 0.1)
+          [ngStyle]="
+          {
+            'background-color':
+            (this.plant.phase?.pos >= phase.pos ?
+              phase.dose.color :
+              this.addAlpha(phase.dose.color, 0.1)
+            )
+          } | sanitizeHtml:'style'
           "
         >
           {{ phase.duration / 7 | number: "1.0-0" }}w

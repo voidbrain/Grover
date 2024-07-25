@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import { NgClass, NgStyle, CommonModule } from '@angular/common';
 import {
   IonItem,
   IonLabel,
@@ -7,6 +8,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SanitizeHtmlPipe } from '../../../pipes/sanitize-html/sanitize-html.pipe'
 
 @Component({
   selector: 'app-range',
@@ -20,6 +22,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     IonLabel,
     IonItem,
     ReactiveFormsModule,
+    NgStyle,
+    NgClass,
+    CommonModule,
+    SanitizeHtmlPipe
   ],
 })
 export class RangeComponent implements OnChanges {

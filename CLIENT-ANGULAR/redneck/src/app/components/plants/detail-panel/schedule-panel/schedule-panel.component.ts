@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Component, Input, OnChanges } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { stringToArray } from 'cron-converter';
 import { getDay } from 'date-fns';
 
@@ -46,6 +47,7 @@ export interface weekRow {
     IonSegment,
     IonSegmentButton,
     FontAwesomeModule,
+    NgClass
   ],
   templateUrl: './schedule-panel.component.html',
   styleUrl: './schedule-panel.component.scss',

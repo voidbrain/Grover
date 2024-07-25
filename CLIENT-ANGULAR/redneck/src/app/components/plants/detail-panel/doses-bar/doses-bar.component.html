@@ -9,9 +9,9 @@
       <div class="Water_{{ dose?.id }}"></div>
     </ion-col>
     <ion-col class="ion-no-padding" size="1">
-      <div class="doses" [ngStyle]="styleDoses"></div>
-      <div class="" [ngStyle]="stylePhDown"></div>
-      <div class="" [ngStyle]="styleWater"></div>
+      <div class="doses" [ngStyle]="styleDoses | sanitizeHtml:'style'"></div>
+      <div class="" [ngStyle]="stylePhDown | sanitizeHtml:'style'"></div>
+      <div class="" [ngStyle]="styleWater | sanitizeHtml:'style'"></div>
     </ion-col>
   </ion-row>
 </ion-grid>

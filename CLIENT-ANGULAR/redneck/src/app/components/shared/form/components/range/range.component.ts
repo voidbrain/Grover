@@ -12,7 +12,7 @@ import {
 } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-range',
+  selector: 'app-range-old',
   styleUrls: ['range.component.scss'],
   standalone: true,
   imports: [

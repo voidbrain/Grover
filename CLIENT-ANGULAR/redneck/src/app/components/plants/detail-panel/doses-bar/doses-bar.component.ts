@@ -2,12 +2,13 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IonCol, IonGrid, IonRow } from '@ionic/angular/standalone';
 import { Dose } from '../../../../interfaces/dose';
+import { SanitizeHtmlPipe } from '../../../../pipes/sanitize-html/sanitize-html.pipe';
 
 @Component({
   selector: 'app-doses-bar',
   templateUrl: './doses-bar.component.html',
   standalone: true,
-  imports: [IonCol, IonGrid, IonRow, NgStyle],
+  imports: [IonCol, IonGrid, IonRow, NgStyle, SanitizeHtmlPipe],
   styleUrls: ['./doses-bar.component.scss'],
 })
 export class DosesBarComponent implements OnChanges {

@@ -9,7 +9,7 @@
           (click)="setDayVisualization(dayIndex)"
         >
           <ion-label
-            [class]="
+            [ngClass]="
               (dayIndex >= 5 ? 'weekend' : '') +
               ' daySchedule ' +
               ((actualDayIndex > 0 ? actualDayIndex - 1 : 6) === dayIndex
@@ -32,7 +32,7 @@
             <ion-col size="9" class="ion-no-padding">
               <div class="container">
                 @for (hour of hoursOfDay; track hour; let index = $index) {
-                  <div [class]="'hour title ' + (index === 0 ? 'first' : '')">
+                  <div [ngClass]="'hour title ' + (index === 0 ? 'first' : '')">
                     {{ hour }}
                   </div>
                 }
@@ -77,7 +77,7 @@
                               ? hour + ':' + peripheral.data[0].atMinute
                               : ''
                         "
-                        [class]="
+                        [ngClass]="
                           (peripheral.data[0].operatingMode >=
                           room.operatingMode
                             ? ''
