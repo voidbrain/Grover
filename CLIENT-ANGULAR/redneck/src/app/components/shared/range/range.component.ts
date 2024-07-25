@@ -1,25 +1,25 @@
-/* eslint-disable @typescript-eslint/no-inferrable-types */
-
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
+import { IonItem, IonLabel, IonBadge, IonRange, IonIcon } from "@ionic/angular/standalone";
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-range',
   templateUrl: './range.component.html',
   styleUrls: ['./range.component.scss'],
   standalone: true,
-  imports: []
+  imports: [IonIcon, IonRange, IonBadge, IonLabel, IonItem, ReactiveFormsModule]
 })
 export class RangeComponent implements OnChanges {
-  @Input() minValue: number;
-  @Input() maxValue: number;
-  @Input() minWarningValue: number;
-  @Input() maxWarningValue: number;
-  @Input() value: number;
-  @Input() um: string;
+  @Input() minValue!: number;
+  @Input() maxValue!: number;
+  @Input() minWarningValue!: number;
+  @Input() maxWarningValue!: number;
+  @Input() value!: number;
+  @Input() um!: string;
 
-  percentValue: number;
-  percentMinWarningValue: number;
-  percentMaxWarningValue: number;
+  percentValue!: number;
+  percentMinWarningValue!: number;
+  percentMaxWarningValue!: number;
 
   chartConfig = {
     data: {},
@@ -27,17 +27,14 @@ export class RangeComponent implements OnChanges {
     type: '',
   };
 
-  constructor() {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     if(
-      changes.minValue &&
-      changes.maxValue &&
-      changes.minWarningValue &&
-      changes.maxWarningValue
+      this.minValue &&
+      this.maxValue &&
+      this.minWarningValue &&
+      this.maxWarningValue
     ) { this.setup(); }
-    if(changes.value) {
+    if(this.value) {
       this.percentValue = this.normalizeBetweenTwoRanges(this.value);
     }
   }
@@ -48,7 +45,7 @@ export class RangeComponent implements OnChanges {
     this.percentMaxWarningValue = this.normalizeBetweenTwoRanges(this.maxWarningValue);
   }
 
-  normalizeBetweenTwoRanges(val) {
+  normalizeBetweenTwoRanges(val: any) {
     const minVal = this.minValue;
     const maxVal = this.maxValue;
     const normalizedMax = 100;

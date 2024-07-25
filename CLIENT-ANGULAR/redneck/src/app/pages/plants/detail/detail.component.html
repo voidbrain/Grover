@@ -1,132 +1,27 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
+      <ion-menu-button></ion-menu-button>
+
+      <ion-button slot="start" (click)="goBack()">
         <ion-icon name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-
-    <ion-title>
-      <span [hidden]="elementId">Add</span>
-      <span [hidden]="!elementId">Edit</span> {{ page }}</ion-title
-    >
+    <ion-title>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-  <form [formGroup]="form" [hidden]="!showForm">
-    <ion-input type="hidden" formControlName="id"></ion-input>
-    <ion-input type="hidden" formControlName="deleted"></ion-input>
-    <ion-input type="hidden" formControlName="lastUpdate"></ion-input>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ page }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-item>
-      <ion-label i18n color="primary">Strain</ion-label>
-      <ion-select i18n placeholder="Strain" formControlName="idStrain">
-        @for (strain of strains; track strain.id) {
-          <ion-select-option [value]="strain.id">{{
-            strain.name
-          }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Generation</ion-label>
-      <ion-input
-        i18n
-        type="number"
-        text-right
-        placeholder="Generation"
-        formControlName="generation"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Day start grow</ion-label>
-      <ion-datetime
-        i18n
-        placeholder="Day start grow"
-        formControlName="dayStartGrow"
-      ></ion-datetime>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Revenue</ion-label>
-      <ion-input
-        i18n
-        type="number"
-        text-right
-        placeholder="Revenue"
-        formControlName="revenue"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Alerts</ion-label>
-      <ion-input
-        i18n
-        type="text"
-        text-right
-        placeholder="Alerts"
-        formControlName="alerts"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Id Company</ion-label>
-      <ion-select i18n formControlName="idCompany" placeholder="Id Company">
-        @for (company of companies; track company.id) {
-          <ion-select-option [value]="company.id">{{
-            company.name
-          }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Id growing scenario</ion-label>
-      <ion-select
-        i18n
-        formControlName="idGrowingScenario"
-        placeholder="Id growing scenario"
-      >
-        @for (g_scenario of g_scenarios; track g_scenario.id) {
-          <ion-select-option [value]="g_scenario.id">{{
-            g_scenario.name
-          }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Id growing medium</ion-label>
-      <ion-select
-        i18n
-        formControlName="idGrowingMedium"
-        placeholder="Id growing medium"
-      >
-        @for (g_medium of g_mediums; track g_medium.id) {
-          <ion-select-option [value]="g_medium.id">{{
-            g_medium.name
-          }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label i18n color="primary">Enabled</ion-label>
-      <ion-toggle formControlName="enabled"></ion-toggle>
-    </ion-item>
-
-    <ion-button
-      i18n
-      color="primary"
-      expand="block"
-      (click)="saveForm()"
-      [hidden]="!showForm"
-      [disabled]="!isReadyToSave"
-    >
-      Submit
-    </ion-button>
-  </form>
+  <div id="container">
+    <app-dynamic-form
+        [config]="formDefinition"
+        (submitForm)="formSubmitted($event)">
+    </app-dynamic-form>
+  </div>
 </ion-content>

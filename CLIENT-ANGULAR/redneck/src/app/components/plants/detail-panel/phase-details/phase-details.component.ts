@@ -1,22 +1,31 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { Component, Input, OnChanges } from '@angular/core';
 import { DbService } from '../../../../services/db/db.service';
 import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
 import { ToastController } from '@ionic/angular';
 import { ProbesTypes, WorkersTypes, ServerCommands, ServerPages, Peripherals, DevicesStatus } from '../../../../services/settings/enum';
+import { IonCard, IonGrid, IonRow, IonCol, IonCardContent, IonItem, IonButton, IonLabel, IonToggle, IonIcon } from "@ionic/angular/standalone";
+import { RangeComponent } from '../../../shared/range/range.component';
+import { DosesBarComponent } from '../doses-bar/doses-bar.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faRuler, faEye } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-phase-details',
   templateUrl: './phase-details.component.html',
   styleUrls: ['./phase-details.component.scss'],
+  imports: [IonIcon, IonToggle, IonLabel, IonButton, IonItem, IonCard, IonGrid, IonRow, IonCol, IonCardContent, RangeComponent, DosesBarComponent, FontAwesomeModule],
+  standalone: true,
 })
 export class PhaseDetailComponent implements OnChanges {
-  @Input() plant: PlantExtended;
-  @Input() room: RoomExtended;
+  faEye = faEye;
+  faRuler = faRuler;
 
-  probes;
-  workers;
+  @Input() plant!: PlantExtended;
+  @Input() room!: RoomExtended;
+
+  probes: any;
+  workers: any;
   debug = false;
 
   constructor(
@@ -30,7 +39,7 @@ export class PhaseDetailComponent implements OnChanges {
     }
   }
 
-  async presentToast(header, message, color, duration) {
+  async presentToast(header: any, message: any, color: any, duration: any) {
     const toast = await this.toastController.create({
       header,
       message,
@@ -86,7 +95,7 @@ export class PhaseDetailComponent implements OnChanges {
     this.workers = workers;
   }
 
-  async read(id){
+  async read(id: any){
     if(id) {
       this.runRemoteCommand(ServerPages.actuators, ServerCommands.READ, id, Peripherals.Probe)
         .then ((response: any) => {
@@ -105,7 +114,7 @@ export class PhaseDetailComponent implements OnChanges {
             this.presentToast(header, message, color, duration);
           }
         })
-        .catch (() => {});
+      
       } else {
         const header = `Error`;
         const message = `Probe ID not defined`;
@@ -115,31 +124,21 @@ export class PhaseDetailComponent implements OnChanges {
       }
   }
 
-  async toggleWaterRecycle(worker) {
+  async toggleWaterRecycle(worker: any) {
     const action = (worker.status === DevicesStatus.ON ? ServerCommands.OFF : ServerCommands.ON);
     this.runRemoteCommand(ServerPages.actuators, action, worker.id, Peripherals.Worker)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
+    
   }
 
-  async fillWaterLevel(id) {
+  async fillWaterLevel(id: any) {
     const duration = 1000;
     this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_WATER, id, Peripherals.Worker, duration)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
+   
   }
 
-  async fillPhDown(id) {
+  async fillPhDown(id: any) {
     const duration = 1000;
     this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_PHDOWN, id, Peripherals.Worker, duration)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
   }
 
   // async shufflePhDown(id) {
@@ -150,13 +149,10 @@ export class PhaseDetailComponent implements OnChanges {
   //     .catch (() => {});
   // }
 
-  async fillNutrient(id) {
+  async fillNutrient(id: any) {
     const duration = 1000;
     this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_DOSE, id, Peripherals.Worker, duration)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
+     
   }
 
   // async shuffleNutrient(id) {
@@ -167,7 +163,8 @@ export class PhaseDetailComponent implements OnChanges {
   //     .catch (() => {});
   // }
 
-  async runRemoteCommand(page: string, action: string, id: number, type: string, duration?: number) {
+  async runRemoteCommand(page: string, action: string, id: number, type: string, duration?: any) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise (async (resolve, reject) => {
       this.db.api.remoteDeviceExecute(this.room?.settings?.address, this.room?.settings?.port, page, action, id, type, duration)
         .then((run) => {

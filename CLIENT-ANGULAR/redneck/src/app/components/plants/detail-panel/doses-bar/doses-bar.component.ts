@@ -17,8 +17,8 @@ import { Dose } from '../../../../interfaces/dose';
   styleUrls: ['./doses-bar.component.scss'],
 })
 export class DosesBarComponent implements OnChanges {
-  @Input() dose: Dose|null = null;
-  tot: number|null = null;
+  @Input() dose!: Dose ;
+  tot!: number ;
   styleDoses = {};
   stylePhDown = {};
   styleWater = {};

@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { PanelChartComponent } from '../chart/chart.component'
+import { PlantExtended } from '../../../../interfaces/plant';
+import { RoomExtended } from '../../../../interfaces/room';
 
 @Component({
   selector: 'app-log-panel',
@@ -9,6 +11,6 @@ import { PanelChartComponent } from '../chart/chart.component'
   styleUrl: './log-panel.component.scss'
 })
 export class LogPanelComponent {
-  @Input() plant: PlantExtended;
-  @Input() room: RoomExtended;
+  @Input() plant!: PlantExtended;
+  @Input() room!: RoomExtended;
 }

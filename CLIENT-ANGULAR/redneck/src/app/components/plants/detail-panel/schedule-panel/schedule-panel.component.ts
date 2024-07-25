@@ -1,32 +1,49 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Component, Input, OnChanges } from '@angular/core';
-import  Cron from 'cron-converter';
-import { setMinutes, getDay } from 'date-fns';
+import  { stringToArray } from 'cron-converter';
+import { getDay } from 'date-fns';
 
 import { ScheduleTypes, Peripherals } from '../../../../../app/services/settings/enum';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
 import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
+import { IonSegment, IonGrid, IonRow, IonCol, IonButton, IonLabel } from "@ionic/angular/standalone";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faTemperatureHalf, faRuler, faPlug, faSwatchbook, faArrowsRotate, faWhiskeyGlass, faFan, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 
+export interface weekRow  {
+  key: string, values: any[]
+}
 
 @Component({
   selector: 'app-schedule-panel',
   standalone: true,
-  imports: [],
+  imports: [IonLabel, IonButton, IonCol, IonRow, IonGrid, IonSegment, FontAwesomeModule],
   templateUrl: './schedule-panel.component.html',
   styleUrl: './schedule-panel.component.scss'
 })
 export class SchedulePanelComponent implements OnChanges {
+  faTemperatureHalf = faTemperatureHalf; 
+  faRuler = faRuler;
+  faPlug = faPlug;
+  faSwatchbook = faSwatchbook;
+  faArrowsRotate = faArrowsRotate;
+  faWhiskeyGlass = faWhiskeyGlass;
+  faFan = faFan;
+  faLightbulb = faLightbulb;
+  
+  @Input() plant!: PlantExtended;
+  @Input() room!: RoomExtended;
 
-  @Input() plant: PlantExtended;
-  @Input() room: RoomExtended;
+  items: any;
 
-  items;
+  todayOfTheWeek!: number;
+  settings!: any;
 
-  todayOfTheWeek: number;
-  settings;
+  
 
-  daysOfWeek = [
-    { key: 'S', values: []},
+  daysOfWeek: weekRow[] = [
+    
     { key: 'M', values: []},
     { key: 'T', values: []},
     { key: 'W', values: []},
@@ -34,10 +51,11 @@ export class SchedulePanelComponent implements OnChanges {
     { key: 'F', values: []},
     { key: 'S', values: []},
   ];
-  actualDayIndex: number;
+  actualDayIndex!: number;
 
-  chartConfig = [];
-  hoursOfDay = [];
+  chartConfig : any[] = [];
+  hoursOfDay : any[] = [];
+  
 
   ngOnChanges() {
     if(this.room && this.plant) {
@@ -45,19 +63,18 @@ export class SchedulePanelComponent implements OnChanges {
     }
   }
 
-  popuplateDaysArray(item, scheduleRow) {
+  popuplateDaysArray(item: any, scheduleRow: any) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     if(scheduleRow) {
       const stringCron = `${scheduleRow.atMinute} ${scheduleRow.atHour} * * ${scheduleRow.atDay}`;
-      const cronInstance = new Cron();
-      cronInstance.fromString(stringCron);
-      const cronArray = cronInstance.toArray();
-      // console.log(cronArray);
+      
+      const cronArray = stringToArray(stringCron);
       const daysWorkingCron = cronArray[4];
       const hoursWorkingCron = cronArray[1];
       const minutesWorkingCron = cronArray[0];
 
-      daysWorkingCron.map((day, index) => {
+      daysWorkingCron.map((day: any) => {
         const el = {
           title: item.type.title,
           key: item.type.type,
@@ -68,7 +85,7 @@ export class SchedulePanelComponent implements OnChanges {
           cron: (
             item.workerType ?
             { atDay: day, from: hoursWorkingCron[0], to: hoursWorkingCron[hoursWorkingCron.length-1], atMinute: minutesWorkingCron[0] } :
-            { atDay: day, atHour: hoursWorkingCron.map(hour => hour) , atMinute: minutesWorkingCron[0]}
+            { atDay: day, atHour: hoursWorkingCron.map((hour:any) => hour) , atMinute: minutesWorkingCron[0]}
           ),
           operatingMode: scheduleRow.operatingMode
         };
@@ -79,7 +96,7 @@ export class SchedulePanelComponent implements OnChanges {
 
   setup() {
     const self = this;
-    const today = setMinutes(new Date(), 0);
+    
     self.settings = new SettingsService();
     self.todayOfTheWeek = getDay(new Date());
     self.actualDayIndex = self.todayOfTheWeek;
@@ -87,7 +104,7 @@ export class SchedulePanelComponent implements OnChanges {
 
     self.room.workers?.map(item => {
       if(item.schedule && item.schedule.length) {
-        item.schedule.map(el => {
+        item.schedule.map((el: any) => {
           self.popuplateDaysArray(item, el);
         });
       }
@@ -95,34 +112,33 @@ export class SchedulePanelComponent implements OnChanges {
     self.room.probes?.map(item => {
       if(item.schedule && item.schedule.length) {
 
-        item.schedule.map(el => {
+        item.schedule.map((el: any) => {
           self.popuplateDaysArray(item, el);
         });
       }
     });
     self.plant.workers?.map(item => {
       if(item.schedule && item.schedule.length) {
-        item.schedule.map(el => {
+        item.schedule.map((el: any) => {
           self.popuplateDaysArray(item, el);
         });
       }
     });
     self.plant.probes?.map(item => {
       if(item.schedule && item.schedule.length) {
-        item.schedule.map(el => {
+        item.schedule.map((el: any) => {
           self.popuplateDaysArray(item, el);
         });
       }
     });
 
     self.daysOfWeek.map(day => {
-      const data = {
+      const data: {labels: any[], datasets: any[]} = {
         labels: [...day.values.map(el => el.key)],
         datasets: [],
       };
-      const labels: string[] = [];
 
-      day.values.map((peripheral, index) => {
+      day.values.map((peripheral) => {
         const peripheralArr = [];
         peripheralArr.push(peripheral.scheduleType === ScheduleTypes.From_To ?
           { element: peripheral.title,
@@ -157,10 +173,10 @@ export class SchedulePanelComponent implements OnChanges {
       self.chartConfig.push(chartConfig);
     });
 
-    this.daysOfWeek.push(this.daysOfWeek.shift());
+    this.daysOfWeek.push((this.daysOfWeek.shift()) as weekRow);
   }
 
-  setDayVisualization(index){
+  setDayVisualization(index: any){
     this.actualDayIndex = (index < 6 ? index+1 : 0);
   }
 

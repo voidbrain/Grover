@@ -1,6 +1,5 @@
-import { Component, ViewChildren } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { DbService } from '../../services/db/db.service';
+import { Component } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { ChartComponent } from '../../components/shared/chart/chart.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -71,8 +70,6 @@ import * as ionIcons from 'ionicons/icons';
 })
 export class HomeComponent {
   constructor() {
-    this.init();
     addIcons(ionIcons);
   }
-  init() {}
 }

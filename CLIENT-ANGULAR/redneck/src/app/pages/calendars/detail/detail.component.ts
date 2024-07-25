@@ -1,8 +1,11 @@
-import { Component, ViewChildren } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { ChartComponent } from '../../../components/shared/chart/chart.component';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
+
+import { Calendar } from '../../../interfaces/calendar';
 import {
   IonButton,
   IonButtons,
@@ -19,6 +22,7 @@ import {
   IonLabel,
   IonList,
   IonMenu,
+  IonMenuButton,
   IonMenuToggle,
   IonRefresher,
   IonRefresherContent,
@@ -31,6 +35,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-detail',
@@ -56,6 +61,7 @@ import * as ionIcons from 'ionicons/icons';
     IonLabel,
     IonList,
     IonMenu,
+    IonMenuButton,
     IonMenuToggle,
     IonRefresher,
     IonRefresherContent,
@@ -65,238 +71,83 @@ import * as ionIcons from 'ionicons/icons';
     IonSelectOption,
     IonTitle,
     IonToolbar,
+    DynamicFormComponent
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
 })
-export class CalendarsDetailComponent {
-  @ViewChildren('slidingItem') private slidingItem: any;
-  page = 'calendars';
-  table = 'calendars';
-  showForm = true;
-  showSubForm = false;
-  isOnline = false;
-  isReadyToSave = false;
-  form: FormGroup = new FormGroup({});
-  item: any = null;
-
-  newPhase = {
-    phase: null,
-    duration: null,
-  };
-  relatedPhases: any;
-  phases: any;
+export class CalendarsDetailComponent implements OnInit {
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent|undefined;
+  public id: any;
+  public page = 'calendars';
+	formDefinition: any;
+	previousValid = false;
 
   constructor(
-    private db: DbService,
-    private router: Router,
+    public db: DbService,
+    private route: ActivatedRoute,
+	  public router: Router,
+    private datePipe: DatePipe
   ) {
-    addIcons(ionIcons);
-  }
-
-  goBack() {
-    this.router.navigate([this.page]);
-  }
-
-  doRefresh(refresher: any) {
-    this.slidingItem._results.map((el: any) => {
-      el.closeOpened();
-    });
-    const forceLoading = true;
-    this.db
-      .initService(forceLoading)
-      .then(() => {
-        refresher.target.complete();
-      })
-      .catch((err: any) => console.error(err));
-  }
-
-  getNextPos() {
-    return this.relatedPhases.length
-      ? Math.max.apply(
-          Math,
-          this.relatedPhases.map(function (o: any) {
-            return o.pos + 1;
-          }),
-        )
-      : 1;
-  }
-
-  deleteItem(item: any) {
-    const filtered = this.relatedPhases.filter((el: any) => {
-      return el.id !== item.id;
-    });
-    this.updateList(filtered);
-  }
-
-  updateList(items: any): Promise<void> {
-    return new Promise((resolve) => {
-      this.item.phases = [];
-      items.forEach((phase: any, index: any) => {
-        this.item.phases[index] = (({ id, pos, duration }) => ({
-          id,
-          pos,
-          duration,
-        }))(phase);
-      });
-
-      this.db.putItems(this.table, [this.item]).then(() => {
-        this.buildGraph();
-        resolve();
-      });
-    });
-  }
-
-  saveForm() {
-    const saveItem = Array();
-    saveItem.push(this.form.value);
-    saveItem[<any>'phases'] = this.relatedPhases;
-    saveItem[<any>'phases'].forEach((phase: any, index: any) => {
-      saveItem[<any>'phases'][index] = (({ id, pos, duration }) => ({
-        id,
-        pos,
-        duration,
-      }))(phase);
-    });
-    this.db.putItems(this.page, saveItem).then((result) => {
-      this.router.navigate([this.page]);
-    });
-  }
-
-  addPhase() {
-    const pos = this.getNextPos();
-    console.log(pos);
-    const newPhase = {
-      id: this.newPhase.phase,
-      pos: pos,
-      duration: this.newPhase.duration,
-    };
-
-    this.newPhase.phase = this.newPhase.duration = null;
-    this.showSubForm = false;
-
-    if (this.relatedPhases === null) {
-      this.relatedPhases = [];
-    }
-
-    this.relatedPhases.push(newPhase);
-    this.item.phases = this.relatedPhases;
-    this.item.phases.forEach((phase: any, index: number) => {
-      this.item.phases[index] = (({ id, pos, duration }) => ({
-        id,
-        pos,
-        duration,
-      }))(phase);
-    });
-    this.db.putItems(this.page, [this.item]).then((result) => {
-      this.buildGraph();
-    });
-  }
-
-  buildGraph() {
-    const item = this.item;
-    const doses = this.phases;
-    if (item.phases) {
-      item.phases.forEach((phase: any) => {
-        phase.chartConfig = {};
-        const dose = doses.find((el: any) => el.id == phase.id);
-        if (dose) {
-          phase.name = dose.name;
-          phase.chartConfig = {
-            id: 'chart',
-            type: 'bar',
-            legend: false,
-            data: {
-              labels: ['Gro', 'Micro', 'Bloom', 'Ripen', 'EC'],
-              datasets: [
-                {
-                  data: [dose.gro, dose.micro, dose.bloom, dose.ripen, dose.EC],
-                  backgroundColor: [
-                    'rgba(17, 176, 50, 1)',
-                    'rgba(125, 17, 176, 1)',
-                    'rgba(176, 17, 17, 1)',
-                    'rgba(240, 215, 7, 1)',
-                    'rgba(7, 18, 240, 1)',
-                  ],
-                  borderWidth: 1,
-                },
-              ],
-            },
-            // x: {
-            //     stacked: false,
-            //     show: false,
-            //     gridLines : {
-            //         display : false
-            //     }
-            // },
-            xAxes: [
-              {
-                id: 'xAxis2',
-                gridLines: {
-                  display: false,
-                },
-                display: false,
-              },
-            ],
-            // y: {
-            //     stacked: false,
-            //     show: false,
-            // },
-            yAxes: [
-              {
-                display: false,
-                stacked: false,
-                ticks: { beginAtZero: true },
-                gridLines: {
-                  display: false,
-                },
-              },
-            ],
-            labelsFontSize: 9,
-            showValue: true,
-            layout: {
-              padding: {
-                left: 100,
-                right: 0,
-                top: 20,
-                bottom: 0,
-              },
-            },
-          };
-        }
-      });
-    } else {
-      item.phases = [];
-    }
-    this.relatedPhases = item.phases;
-  }
-
-  reorder(event: any) {
-    const originalPhases = this.relatedPhases;
-    const draggedItem = this.relatedPhases.splice(event.detail.from, 1)[0];
-    this.relatedPhases.splice(event.detail.to, 0, draggedItem);
-    const update = [
-      this.relatedPhases[event.detail.to],
-      this.relatedPhases[event.detail.from],
+    this.formDefinition = [
+      { name: 'week_n', type: 'text', label: 'Week n', validation: [Validators.required],},
+      { name: 'id',  type: 'hidden', label: '', },
+      { name: 'id_dose', type: 'inputSelect', label: 'Dose',  options: [], multiple: false, validation: [Validators.required], },
+      { name: 'enabled', type: 'toggle', label: 'Enabled', },
+      { name: 'deleted', type: 'hidden', label: '', },
+      { name: 'lastUpdate', type: 'hidden', label: '', },
+      { name: 'submit', type: 'button', label: 'Submit', }
     ];
-
-    const und = update.some(function (el) {
-      return typeof el == 'undefined';
-    });
-    if (und) {
-      this.relatedPhases = originalPhases;
-    } else {
-      update.forEach((el, index) => {
-        if (el) {
-          el.pos = index;
-          el.lastUpdate = Date.now();
-        } else {
-          update.splice(index, 1);
-        }
-        this.relatedPhases[index].pos = el.pos;
-      });
-      this.updateList(this.relatedPhases).then(() => {});
-    }
-    event.detail.complete();
+    addIcons(ionIcons)
   }
+
+  ngOnInit() {
+    this.id = this.route.snapshot.paramMap.get('id');
+
+    this.db.load().then(() => {
+      this.previousValid = (this.form as DynamicFormComponent).valid;
+      (this.form as DynamicFormComponent).changes.subscribe(() => {
+        if ((this.form as DynamicFormComponent).valid !== this.previousValid) {
+          this.previousValid = (this.form as DynamicFormComponent).valid;
+          (this.form as DynamicFormComponent).setDisabled('submit', !this.previousValid);
+          }
+      });
+      this.getItem((this.route.snapshot.paramMap.get('id') as string));
+      }).catch(err => console.error(err));
+  }
+
+  goBack(){
+    this.router.navigate(['/pages/'+this.page]);
+  }
+
+  getItem(id: any) {
+    if(id){
+      const itemP: Promise<Calendar> = this.db.getItem(this.page, id);
+      itemP.then((item: Calendar) => {
+        if(item){
+          (this.form as DynamicFormComponent).setFormValues(item);
+          (this.form as DynamicFormComponent).setDisabled('submit', false);
+        }
+      });
+    }else{
+      (this.form as DynamicFormComponent).setValue('enabled', 1);
+      (this.form as DynamicFormComponent).setValue('deleted', 0);
+      (this.form as DynamicFormComponent).setDisabled('submit', true);
+    }
+	}
+
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  formSubmitted(value: {[name: string]: any}) {
+    this.save(value as Calendar);
+  }
+
+	save(value: any){
+    (this.form as DynamicFormComponent).config.filter(el => el.type === 'date').map((el:any) => {
+      value[el.name] = new Date(value[el.name]).getTime();
+    });
+		this.db.putItem(this.page, value).then(()=>{
+		  this.router.navigate(['/pages/'+this.page]);
+		});
+	}
+
 }

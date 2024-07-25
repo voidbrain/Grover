@@ -13,11 +13,11 @@ export interface Room {
 export interface RoomExtended extends Room {
   location?: Location;
   locationId?: number;
-  probes?: [];
-  workers?: [];
+  probes?: any[];
+  workers?: any[];
   settings?: any;
   operatingMode?: number;
-  operatingModes: [];
+  operatingModes: any[];
   probesComponents: {
     airtemp: any;
   };

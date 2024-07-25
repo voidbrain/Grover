@@ -55,17 +55,14 @@ import * as ionIcons from 'ionicons/icons';
 export class StrainsMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table: string = 'plants';
+  table = 'plants';
 
   constructor(
     private db: DbService,
     private router: Router,
   ) {
-    this.init();
     addIcons(ionIcons);
   }
-
-  private init() {}
 
   private getItems() {
     const itemsP = this.db.getItems(this.table);
@@ -74,20 +71,22 @@ export class StrainsMasterComponent {
     const strainsP = this.db.getItems('strains');
     Promise.all([itemsP, calendarsP, dosesP, strainsP]).then(
       ([items, calendars, doses, strains]) => {
-        items.sort((a: any, b: any) => {
+        
+        (items as any).sort((a: any, b: any) => {
           const compare =
-            a.dayHarvest != 0 && b.dayHarvest != 0
+            a.dayHarvest !== 0 && b.dayHarvest !== 0
               ? 'dayHarvest'
-              : a.dayStartBloom != 0 && b.dayStartBloom != 0
+              : a.dayStartBloom !== 0 && b.dayStartBloom !== 0
                 ? 'dayStartBloom'
-                : a.dayStartGrow != 0 && b.dayStartGrow != 0
+                : a.dayStartGrow !== 0 && b.dayStartGrow !== 0
                   ? 'dayStartGrow'
                   : 'id';
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           a[compare] > b[compare] ? 1 : b[compare] > a[compare] ? -1 : 0;
         });
 
-        items.map((item: any) => {
-          item.strain = strains.find((el: any) => el.id == item.idStrain);
+        (items as any).map((item: any) => {
+          item.strain = (strains as any).find((el: any) => el.id == item.idStrain);
           item.chartConfig = {
             id: 'chart',
             type: 'doughnut',
@@ -147,7 +146,7 @@ export class StrainsMasterComponent {
           item.weeks_n = Math.floor(
             Math.abs(timeDiff) / (1000 * 7 * 24 * 60 * 60),
           );
-          for (const phase of calendars) {
+          for (const phase of calendars as any) {
             if (item.weeks_n < phase.duration) {
               item.phase = phase;
               break;
@@ -155,14 +154,10 @@ export class StrainsMasterComponent {
           }
           const dose = item.phase
             ? item.phase
-            : calendars[calendars.length - 1];
-          item.dose = doses.find((singleDose: any) => {
-            singleDose.id == dose.id_dose;
+            : (calendars as any)[(calendars as any).length - 1];
+          item.dose = (doses as any).find((singleDose: any) => {
+            singleDose.id = dose.id_dose;
           });
-          // item.phase.days = timeDiff - (item.weeks_n / (1000 * 7 * 24 * 60 * 60));
-          // let phase_days = item.phase.week_n;
-          const item_days = Math.floor(Math.abs(timeDiff) / (7 * 24 * 60 * 60));
-          // console.log(phase_days,item_days)
         });
         this.items = items;
         console.info('[PAGE]: Ready');
@@ -174,7 +169,7 @@ export class StrainsMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then((result) => {
+    this.db.deleteItem(this.table, item).then(() => {
       this.getItems();
     });
   }

@@ -2,7 +2,7 @@ import { Component, ViewChildren } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { ChartComponent } from '../../../components/shared/chart/chart.component';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   IonButton,
   IonButtons,
@@ -99,7 +99,7 @@ export class CalendarsMasterComponent {
     const itemsP = this.db.getItems(this.table);
     const dosesP = this.db.getItems('doses');
     Promise.all([itemsP, dosesP]).then(([items, doses]) => {
-      items.map((item: any, i: any) => {
+      (items as any).map((item: any) => {
         if (typeof item.phases == 'string') {
           if (item.phases != '') {
             item.phases = JSON.parse(item.phases);
@@ -111,7 +111,7 @@ export class CalendarsMasterComponent {
         const valuesArr: any[] = [];
         if (item.doses && item.doses != null) {
           item.doses.forEach((dose: any) => {
-            const phase = doses.find((el: any) => el.id == dose.id);
+            const phase = (doses as any).find((el: any) => el.id == dose.id);
             valuesArr.push({
               data: [Math.floor(dose.duration / 7)], // weeks
               backgroundColor: [phase.color],
@@ -179,7 +179,7 @@ export class CalendarsMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then((result) => {
+    this.db.deleteItem(this.table, item).then(() => {
       this.getItems();
     });
   }

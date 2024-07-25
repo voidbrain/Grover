@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+/* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   ActivatedRoute,
   Router,
@@ -6,10 +8,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
-import { NetworkService } from '../../../services/network/network.service';
 import {
-  FormBuilder,
-  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -30,6 +29,7 @@ import {
   IonLabel,
   IonList,
   IonMenu,
+  IonMenuButton,
   IonMenuToggle,
   IonRefresher,
   IonRefresherContent,
@@ -40,14 +40,17 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { LoadingController } from '@ionic/angular';
+
 import { Company } from '../../../interfaces/company';
 import { Strain } from '../../../interfaces/strain';
 import { GrowingScenario } from '../../../interfaces/growing-scenario';
 import { GrowingMedium } from '../../../interfaces/growing-medium';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { Plant, VoidPlant } from '../../../interfaces/plant';
+import { Plant } from '../../../interfaces/plant';
+import { Pot } from '../../../interfaces/pot';
+import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-detail',
@@ -72,6 +75,7 @@ import { Plant, VoidPlant } from '../../../interfaces/plant';
     IonLabel,
     IonList,
     IonMenu,
+    IonMenuButton,
     IonMenuToggle,
     IonRefresher,
     IonRefresherContent,
@@ -81,198 +85,115 @@ import { Plant, VoidPlant } from '../../../interfaces/plant';
     IonSelectOption,
     IonTitle,
     IonToolbar,
+    DynamicFormComponent
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
 })
-export class PlantsDetailComponent {
-  page = 'plants';
-  elementId: number | null = null;
-
-  isOnline = false;
-  isReadyToSave = false;
-  showForm = true;
-  form: FormGroup = new FormGroup({});
-
-  plant: Plant | VoidPlant = { idPot: null };
-  companies: Company[] = [];
-  strains: Strain[] = [];
-  gScenarios: GrowingScenario[] = [];
-  g_mediums: GrowingMedium[] = [];
-
-  default = {
-    containers: [] as any,
-    containersType: [] as any,
-    probesList: [] as any,
-    probesLog: [] as any,
-    probesType: [] as any,
-    workersList: [] as any,
-    workersLog: [] as any,
-    workersType: [] as any,
-  };
+export class PlantsDetailComponent implements OnInit {
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
+  public id: string;
+  public page = 'plants';
+	formDefinition: any;
+	previousValid = false;
 
   constructor(
-    private db: DbService,
-    private network: NetworkService,
-    private loadingController: LoadingController,
+    public db: DbService,
     private route: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
+	  public router: Router,
+    private datePipe: DatePipe
   ) {
-    this.init();
+    this.formDefinition = [
+			{ name: 'idStrain', type: 'inputSelect', label: 'Strain', options: [], multiple: false, validation: [Validators.required], },
+			{ name: 'generation', type: 'number', label: 'Generation', validation: [Validators.required], },
+			{ name: 'dayStartGrow', type: 'date', label: 'Day Start Grow', validation: [Validators.required], },
+			{ name: 'alerts', type: 'text', label: 'Alerts', },
+			{ name: 'id', type: 'hidden', label: '', },
+			{ name: 'idCompany', type: 'inputSelect', label: 'Company', options: [], multiple: false, validation: [Validators.required], },
+			{ name: 'idGrowingMedium', type: 'inputSelect', label: 'Medium', options: [], multiple: false, validation: [Validators.required], },
+      { name: 'idGrowingScenario', type: 'inputSelect', label: 'Scenario', options: [], multiple: false, validation: [Validators.required], },
+			{ name: 'enabled', type: 'toggle', label: 'Enabled', },
+			{ name: 'deleted', type: 'hidden', label: '', },
+			{ name: 'lastUpdate', type: 'hidden', label: '', },
+      { name: 'idPot', type: 'inputSelect', label: 'Pot', options: [], multiple: false, validation: [Validators.required], },
+
+      { name: 'dayStartBloom', type: 'date', label: 'Day Start Bloom', },
+      { name: 'dayHarvest', type: 'date', label: 'Day Harvest', },
+      { name: 'dayTrimming', type: 'date', label: 'Day Trimming', },
+      { name: 'daySecondTrimming', type: 'date', label: 'Day Second Trimming', },
+      { name: 'yeld', type: 'number', label: 'Revenue', },
+
+      { name: 'submit', type: 'button', label: 'Submit', },
+		];
     addIcons(ionIcons);
   }
 
-  init() {
-    this.form = this.formBuilder.group(
-      {
-        idStrain: ['', Validators.required],
-        generation: ['', Validators.required],
-        dayStartGrow: ['', Validators.required],
-        revenue: [''],
-        alerts: [''],
-        id: [''],
-        idCompany: ['', Validators.required],
-        idGrowingScenario: ['', Validators.required],
-        idGrowingMedium: ['', Validators.required],
-        enabled: [''],
-        deleted: [''],
-        lastUpdate: [''],
-      },
-      {},
-    );
+  ngOnInit() {
+    this.id = this.route.snapshot.paramMap.get('id');
 
-    this.isOnline = navigator.onLine;
-    this.form.valueChanges.subscribe(() => {
-      this.isReadyToSave = this.isOnline && this.form.valid;
+    this.db.load().then(() => {
+      this.previousValid = this.form.valid;
+      this.form.changes.subscribe(() => {
+        console.log(this.form)
+        if (this.form.valid !== this.previousValid) {
+
+          this.previousValid = this.form.valid;
+          this.form.setDisabled('submit', !this.previousValid);
+          }
+      });
+      this.getItem(+(this.route.snapshot.paramMap.get('id')));
+      }).catch(err => console.error(err));
+  }
+
+  goBack(){
+    this.router.navigate(['/pages/'+this.page]);
+  }
+
+  getItem(id) {
+    const companiesP: Promise<Array<Company>> = this.db.getItems('companies');
+    const potsP: Promise<Array<Pot>> = this.db.getItems('pots');
+    const strainsP: Promise<Array<Strain>> = this.db.getItems('strains');
+    const gMediumP: Promise<Array<GrowingMedium>> = this.db.getItems('growing_mediums');
+    const gMScenarioP: Promise<Array<GrowingScenario>> = this.db.getItems('growing_scenarios');
+    Promise.all([ companiesP, strainsP, gMediumP, gMScenarioP, potsP]).then(([ companies, strains, gMedium, gScenario, pots]) => {
+      this.formDefinition.find(el => el.name === 'idCompany').options = companies.sort((a, b) => a.name > b.name ? 1 : -1);
+      this.formDefinition.find(el => el.name === 'idStrain').options = strains.sort((a, b) => a.name > b.name ? 1 : -1);
+      this.formDefinition.find(el => el.name === 'idPot').options = pots.sort((a, b) => a.name > b.name ? 1 : -1);
+      this.formDefinition.find(el => el.name === 'idGrowingMedium').options = gMedium;
+      this.formDefinition.find(el => el.name === 'idGrowingScenario').options = gScenario;
+      if(id){
+        const itemP: Promise<Plant> = this.db.getItem(this.page, id);
+        itemP.then((item: Plant) => {
+          if(item){
+            this.form.config.filter(el => el.type === 'date').map(el => {
+              item[el.name] = this.datePipe.transform(item[el.name], 'yyyy-MM-dd');
+            });
+            this.form.setFormValues(item);
+            this.form.setDisabled('submit', false);
+          }
+        });
+      }else{
+        this.form.config.filter(el => (el.type === 'date' || el.type === 'number' ) && !el.validation).map(el => {
+          this.form.setDisabled(el.name, true);
+        });
+        this.form.setValue('enabled', 1);
+        this.form.setValue('deleted', 0);
+        this.form.setDisabled('submit', true);
+      }
     });
+	}
+
+  formSubmitted(value: {[name: string]: any}) {
+    this.save(value as Plant);
   }
 
-  ionViewWillEnter() {
-    this.db
-      .load()
-      .then(() => {
-        const id: any = this.route?.snapshot?.paramMap.get('id')?.toString();
-        this.getItem(parseInt(id));
-      })
-      .catch((err) => console.error(err));
-  }
-
-  goBack() {
-    this.router.navigate([this.page]);
-  }
-
-  getItem(id: number) {
-    this.elementId = id;
-    const companiesP = this.db.getItems('companies');
-    const strainsP = this.db.getItems('strains');
-    const gScenariosP = this.db.getItems('scenarios');
-    const g_mediumP = this.db.getItems('mediums');
-
-    const containersP = this.db.getItems('containers');
-    const containersTypeP = this.db.getItems('containers_type');
-    const probesListP = this.db.getItems('probes_list');
-    const probesLogP = this.db.getItems('probes_log');
-    const probesTypeP = this.db.getItems('probes_type');
-    const workersListP = this.db.getItems('workers_list');
-    const workersLogP = this.db.getItems('workers_log');
-    const workersTypeP = this.db.getItems('workers_type');
-
-    // Promise.all([
-    //     companiesP, strainsP, gScenariosP, g_mediumP
-    // ])
-    // .then(([
-    //     companies, strains, gScenarios, g_mediums
-    // ]) => {
-    Promise.all([
-      companiesP,
-      strainsP,
-      gScenariosP,
-      g_mediumP,
-      containersP,
-      containersTypeP,
-      probesListP,
-      probesLogP,
-      probesTypeP,
-      workersListP,
-      workersLogP,
-      workersTypeP,
-    ]).then(
-      ([
-        companies,
-        strains,
-        gScenarios,
-        g_mediums,
-        containers,
-        containersType,
-        probesList,
-        probesLog,
-        probesType,
-        workersList,
-        workersLog,
-        workersType,
-      ]) => {
-        this.default.containers = containers;
-        this.default.containersType = containersType;
-        this.default.probesList = probesList;
-        this.default.probesLog = probesLog;
-        this.default.probesType = probesType;
-        this.default.workersList = workersList;
-        this.default.workersLog = workersLog;
-        this.default.workersType = workersType;
-        this.companies = companies as Company[];
-        this.strains = strains as Strain[];
-        this.gScenarios = gScenarios as GrowingScenario[];
-        this.g_mediums = g_mediums as GrowingMedium[];
-        if (id) {
-          this.db.getItem(this.page, id).then((plantFromDb: unknown) => {
-            const plant = plantFromDb as Plant;
-            plant.dayHarvest = plant.dayHarvest
-              ? +new Date(plant.dayHarvest).toISOString()
-              : null;
-            plant.dayPruning = plant.dayPruning
-              ? +new Date(plant.dayPruning).toISOString()
-              : null;
-            plant.daySecondTrimming = plant.daySecondTrimming
-              ? +new Date(plant.daySecondTrimming).toISOString()
-              : null;
-            plant.dayStartBloom = plant.dayStartBloom
-              ? +new Date(plant.dayStartBloom).toISOString()
-              : null;
-            plant.dayStartGrow = plant.dayStartGrow
-              ? +new Date(plant.dayStartGrow).toISOString()
-              : null;
-            plant.dayTrimming = plant.dayTrimming
-              ? +new Date(plant.dayTrimming).toISOString()
-              : null;
-
-            this.plant = plant;
-            this.form.patchValue(this.plant, { emitEvent: true });
-          });
-        }
-      },
-    );
-  }
-
-  addConnectivityListeners(): void {
-    this.network.watchOnline().subscribe(() => {
-      console.log('online');
-      this.isOnline = true;
-      this.isReadyToSave = this.form.valid;
+	save(value: Plant){
+    this.form.config.filter(el => el.type === 'date').map(el => {
+      value[el.name] = new Date(value[el.name]).getTime();
     });
 
-    this.network.watchOffline().subscribe(() => {
-      console.log('offline');
-      this.isOnline = false;
-      this.isReadyToSave = false;
-    });
-  }
-
-  saveForm() {
-    const saveItem = [];
-    saveItem.push(this.form.value);
-    this.db.putItems(this.page, saveItem).then(() => {
-      this.router.navigate([this.page]);
-    });
-  }
+		this.db.putItem(this.page, value).then(()=>{
+		  this.router.navigate(['/pages/'+this.page]);
+		});
+	}
 }

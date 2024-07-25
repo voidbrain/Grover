@@ -73,7 +73,7 @@ import * as ionIcons from 'ionicons/icons';
 export class CompaniesMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table: string = 'companies';
+  table = 'companies';
 
   constructor(
     public db: DbService,
@@ -90,7 +90,7 @@ export class CompaniesMasterComponent {
     this.db
       .load()
       .then(() => {
-        let forceLoading = true;
+        const forceLoading = true;
         this.db.initService(forceLoading).then(() => {
           this.getItems();
         });
@@ -109,7 +109,7 @@ export class CompaniesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then((result) => {
+    this.db.deleteItem(this.table, item).then(() => {
       this.getItems();
     });
   }
@@ -126,7 +126,7 @@ export class CompaniesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    let forceLoading = true;
+    const forceLoading = true;
     this.db
       .initService(forceLoading)
       .then(() => {

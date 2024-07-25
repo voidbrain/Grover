@@ -8,4 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './growing-results.component.scss'
 })
 export class GrowingResultsComponent {
+  
 }

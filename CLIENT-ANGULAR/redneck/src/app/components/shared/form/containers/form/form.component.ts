@@ -1,33 +1,37 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { FieldConfig } from '../../models/field-config.interface';
 
 @Component({
   exportAs: 'dynamicForm',
+  standalone: true,
   selector: 'app-dynamic-form',
   styleUrls: ['form.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `<form
     class="dynamic-form"
     [formGroup]="form"
     (submit)="handleSubmit($event)"
   >
-    <ng-container
-      *ngFor="let field of config"
-      dynamicField
-      [config]="field"
-      [group]="form"
-    >
-    </ng-container>
+    @for(field of config; track field){
+      <ng-container
+        
+        dynamicField
+        config="field"
+        group="form"
+      >
+      </ng-container>
+    }
   </form>`,
 })
 export class DynamicFormComponent implements OnChanges, OnInit {
   @Input() config: FieldConfig[] = [];
   @Output() submitForm: EventEmitter<any> = new EventEmitter<any>();
 
-  form: FormGroup;
+  form: FormGroup = new FormGroup({});
 
   get controls() {
     return this.config.filter(({ type }) => type !== 'button');
@@ -48,8 +52,6 @@ export class DynamicFormComponent implements OnChanges, OnInit {
     this.form = this.createGroup();
   }
 
-  emitChange(){}
-
   ngOnChanges() {
     if (this.form) {
       const controls = Object.keys(this.form.controls);
@@ -62,7 +64,7 @@ export class DynamicFormComponent implements OnChanges, OnInit {
       configControls
         .filter((control) => !controls.includes(control))
         .forEach((name) => {
-          const config = this.config.find((control) => control.name === name);
+          const config: any = this.config.find((control) => control.name === name);
           this.form.addControl(name, this.createControl(config));
         });
     }

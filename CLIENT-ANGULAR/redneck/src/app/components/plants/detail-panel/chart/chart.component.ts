@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { Component, Input, OnChanges } from '@angular/core';
@@ -6,7 +7,7 @@ import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
 import { ChartComponent } from '../../../shared/chart/chart.component';
 import { ProbesTypes } from '../../../../services/settings/enum';
-import { format, setMinutes, startOfDay, startOfWeek, startOfMonth } from 'date-fns';
+import { format, setMinutes, startOfDay, startOfWeek, startOfMonth, parse } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
 import {
@@ -174,10 +175,10 @@ export class PanelChartComponent implements OnChanges {
         },
         tooltips: {
           callbacks: {
-            title: (tooltipItem, data) => {
+            title: () => {
               return;
             },
-            label: (tooltipItem, data) => {
+            label: (tooltipItem) => {
               const date = parse(tooltipItem.xlabel, 'yyyy-MM-ddTHH:mm:ss.SSSxxx', new Date());
               const formattedDate = format(date, 'MMM dd HH:mm');
               const label = `${formattedDate} => ${tooltipItem.value} °C`;
@@ -241,7 +242,7 @@ export class PanelChartComponent implements OnChanges {
                 xScaleID : 'x-axis-0',
                 yScaleID : 'y-axis-0'
               },
-              ...annotationsArray.map((data, index) => {
+              ...annotationsArray.map((data) => {
                 return {
                   type: 'box',
                   borderColor: data.borderColor,
@@ -263,6 +264,7 @@ export class PanelChartComponent implements OnChanges {
   }
 
   filterDates(fromDate, toDate) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const filteredData = JSON.parse(JSON.stringify(self.data));
     filteredData['datasets'].map(dataset => {

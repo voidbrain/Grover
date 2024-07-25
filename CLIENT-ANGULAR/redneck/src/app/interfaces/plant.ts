@@ -42,8 +42,8 @@ export interface PlantExtended extends Plant {
   phase?: PhaseExtended;
   calendar?: Calendar;
   location?: Location; // Location;
-  probes?: [];
-  workers?: [];
+  probes?: any[];
+  workers?: any[];
   workersComponents: {
     waterLoop: any;
   };

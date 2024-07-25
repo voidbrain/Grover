@@ -11,6 +11,9 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class ChartComponent implements OnChanges {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;
+  @Input() data
+  @Input() options
+  @Input() type
 
   chartTypes: Record<string, ChartType> = {
     line: 'line',

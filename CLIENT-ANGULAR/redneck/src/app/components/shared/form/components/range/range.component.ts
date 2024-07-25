@@ -1,12 +1,15 @@
-import { Component, ViewContainerRef } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { Field } from '../../models/field.interface';
 import { FieldConfig } from '../../models/field-config.interface';
+import { IonBadge, IonIcon, IonItem, IonLabel, IonRange } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-range',
   styleUrls: ['range.component.scss'],
+  standalone: true,
+  imports: [IonBadge, IonIcon, IonItem, IonLabel, IonRange, ReactiveFormsModule ],
   template: `
     <ion-item lines="full" class="dynamic-field range" [formGroup]="group">
       <ion-label color="primary">{{ config.label }}</ion-label>

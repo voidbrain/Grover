@@ -17,8 +17,8 @@ export class ActionsPanelComponent implements OnChanges {
   @Input() plant: PlantExtended | undefined;
   @Input() room: RoomExtended | undefined;
 
-  probes: [] = [];
-  workers: [] = [];;
+  probes: any;
+  workers: any;
   debug = false;
 
   constructor(
@@ -82,15 +82,15 @@ export class ActionsPanelComponent implements OnChanges {
     }
 
     const workers = {
-      waterLoop: this.plant.workers.find(el => el.type.id === WorkersTypes.Pot_Water_loop),
-      refill: this.plant.workers.find(el => el.type.id === WorkersTypes.Pot_refill),
+      waterLoop: (this.plant as any).workers.find((el: any) => el.type.id === WorkersTypes.Pot_Water_loop),
+      refill: (this.plant as any).workers.find((el: any) => el.type.id === WorkersTypes.Pot_refill),
     };
 
-    this.probes = probes;
-    this.workers = workers;
+    this.probes = probes as any;
+    this.workers = workers as any;
   }
 
-  async read(id){
+  async read(id: any){
     if(id) {
       this.runRemoteCommand(ServerPages.actuators, ServerCommands.READ, id, Peripherals.Probe)
         .then ((response: any) => {
@@ -109,7 +109,7 @@ export class ActionsPanelComponent implements OnChanges {
             this.presentToast(header, message, color, duration);
           }
         })
-        .catch (() => {});
+        
       } else {
         const header = `Error`;
         const message = `Probe ID not defined`;
@@ -119,34 +119,22 @@ export class ActionsPanelComponent implements OnChanges {
       }
   }
 
-  async toggleWaterRecycle(worker) {
+  async toggleWaterRecycle(worker: any) {
     const action = (worker.status === DevicesStatus.ON ? ServerCommands.OFF : ServerCommands.ON);
     this.runRemoteCommand(ServerPages.actuators, action, worker.id, Peripherals.Worker)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
   }
 
-  async fillWaterLevel(id) {
+  async fillWaterLevel(id: any) {
     const duration = 1000;
     this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_WATER, id, Peripherals.Worker, duration)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
   }
 
-  async fillPhDown(id) {
+  async fillPhDown(id: any) {
     const duration = 1000;
     this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_PHDOWN, id, Peripherals.Worker, duration)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
   }
 
-  // async shufflePhDown(id) {
+  // async shufflePhDown(id: any) {
   //   this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_PHDOWN, id, Peripherals.Worker)
   //     .then ((response) => {
   //       const value = response;
@@ -154,16 +142,12 @@ export class ActionsPanelComponent implements OnChanges {
   //     .catch (() => {});
   // }
 
-  async fillNutrient(id) {
+  async fillNutrient(id: any) {
     const duration = 1000;
     this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_DOSE, id, Peripherals.Worker, duration)
-      .then ((response) => {
-        const value = response;
-      })
-      .catch (() => {});
   }
 
-  // async shuffleNutrient(id) {
+  // async shuffleNutrient(id: any) {
   //   this.runRemoteCommand(ServerPages.actuators, ServerCommands.ON, id, Peripherals.Worker)
   //     .then ((response) => {
   //       const value = response;
@@ -171,7 +155,8 @@ export class ActionsPanelComponent implements OnChanges {
   //     .catch (() => {});
   // }
 
-  async runRemoteCommand(page: string, action: string, id: number, type: string, duration?: number) {
+  async runRemoteCommand(page: string, action: string, id: number, type: string, duration?: any) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise (async (resolve, reject) => {
       this.db.api.remoteDeviceExecute(this.room?.settings?.address, this.room?.settings?.port, page, action, id, type, duration)
         .then((run) => {

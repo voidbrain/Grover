@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { DbService } from '../../../services/db/db.service';
-import { NetworkService } from '../../../services/network/network.service';
+import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
 import {
   ActivatedRoute,
   Router,
@@ -9,8 +9,6 @@ import {
 } from '@angular/router';
 import { ChartComponent } from '../../../components/shared/chart/chart.component';
 import {
-  FormBuilder,
-  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -40,10 +38,13 @@ import {
   IonSelectOption,
   IonTitle,
   IonToolbar,
+  IonMenuButton,
 } from '@ionic/angular/standalone';
-import { LoadingController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { Company } from '../../../interfaces/company';
+import { Pot } from '../../../interfaces/pot';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-detail',
   standalone: true,
@@ -68,6 +69,7 @@ import * as ionIcons from 'ionicons/icons';
     IonLabel,
     IonList,
     IonMenu,
+    IonMenuButton,
     IonMenuToggle,
     IonRefresher,
     IonRefresherContent,
@@ -77,87 +79,85 @@ import * as ionIcons from 'ionicons/icons';
     IonSelectOption,
     IonTitle,
     IonToolbar,
+    DynamicFormComponent
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
 })
-export class CompaniesDetailComponent {
-  page = 'companies';
-
-  isOnline = false;
-  isReadyToSave = false;
-  showForm = true;
-  form: FormGroup = new FormGroup({});
+// eslint-disable-next-line @angular-eslint/component-class-suffix
+export class CompaniesDetailComponent implements OnInit {
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent|undefined;
+  public id: any;
+  public page = 'companies';
+	formDefinition: any;
+	previousValid = false;
+  pots: Pot[] = [];
 
   constructor(
-    private db: DbService,
-    private network: NetworkService,
-    private loadingController: LoadingController,
+    public db: DbService,
     private route: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
+	  public router: Router,
+    private datePipe: DatePipe
   ) {
-    this.init();
-    addIcons(ionIcons);
+    this.formDefinition = [
+			{ type: 'text', label: 'Name', name: 'name', validation: [Validators.required], },
+      { type: 'hidden', label: '', name: 'id', },
+      { type: 'toggle', label: 'Enabled', name: 'enabled', },
+      { type: 'hidden', label: '', name: 'deleted', },
+      { type: 'hidden', label: '', name: 'lastUpdate', },
+      { type: 'button', label: 'Submit', name: 'submit', }
+    ];
+    addIcons(ionIcons)
   }
 
-  init() {
-    this.form = this.formBuilder.group(
-      {
-        name: ['', Validators.required],
-        id: [''],
-        enabled: [''],
-        deleted: [''],
-        lastUpdate: [''],
-      },
-      {},
-    );
+  ngOnInit() {
+    this.id = this.route.snapshot.paramMap.get('id');
 
-    this.isOnline = navigator.onLine;
-    this.form.valueChanges.subscribe((v) => {
-      this.isReadyToSave = this.isOnline && this.form.valid;
-    });
-
-    this.db
-      .load()
-      .then(() => {
-        const id: any = this.route.snapshot.paramMap.get('id');
-        this.getItem(parseInt(id));
-      })
-      .catch((err) => console.error(err));
+    this.db.load().then(() => {
+      this.previousValid = (this.form as DynamicFormComponent).valid;
+      (this.form as DynamicFormComponent).changes.subscribe(() => {
+        if ((this.form as DynamicFormComponent).valid !== this.previousValid) {
+          this.previousValid = (this.form as DynamicFormComponent).valid;
+          (this.form as DynamicFormComponent).setDisabled('submit', !this.previousValid);
+          }
+      });
+      this.getItem((this.route.snapshot.paramMap.get('id') as string));
+      }).catch(err => console.error(err));
   }
 
-  goBack() {
-    this.router.navigate([this.page]);
+  goBack(){
+    this.router.navigate(['/pages/'+this.page]);
   }
 
   getItem(id: any) {
-    if (id) {
-      this.db.getItem(this.page, id).then((item) => {
-        this.form.patchValue(item, { emitEvent: true });
+    if(id){
+      const itemP: Promise<Company> = this.db.getItem(this.page, id);
+      itemP.then((item: Company) => {
+        if(item){
+          (this.form as DynamicFormComponent).setFormValues(item);
+          (this.form as DynamicFormComponent).setDisabled('submit', false);
+        }
       });
+    }else{
+      (this.form as DynamicFormComponent).setValue('enabled', 1);
+      (this.form as DynamicFormComponent).setValue('deleted', 0);
+      (this.form as DynamicFormComponent).setDisabled('submit', true);
     }
+	}
+
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  formSubmitted(value: {[name: string]: any}) {
+    this.save(value as Company);
   }
 
-  addConnectivityListeners(): void {
-    this.network.watchOnline().subscribe(() => {
-      console.log('online');
-      this.isOnline = true;
-      this.isReadyToSave = this.form.valid;
+	save(value: any){
+    (this.form as DynamicFormComponent).config.filter((el: any) => el.type === 'date').map((el: any) => {
+      value[el.name] = new Date(value[el.name]).getTime();
     });
 
-    this.network.watchOffline().subscribe(() => {
-      console.log('offline');
-      this.isOnline = false;
-      this.isReadyToSave = false;
-    });
-  }
+		this.db.putItem(this.page, value).then(()=>{
+		  this.router.navigate(['/pages/'+this.page]);
+		});
+	}
 
-  saveForm() {
-    const saveItem = Array();
-    saveItem.push(this.form.value);
-    this.db.putItems(this.page, saveItem).then((result) => {
-      this.router.navigate([this.page]);
-    });
-  }
 }
