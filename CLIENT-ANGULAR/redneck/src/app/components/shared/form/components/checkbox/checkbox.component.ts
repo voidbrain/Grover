@@ -20,7 +20,8 @@ import {
     IonGrid,
     IonLabel,
     IonRow,
-    FormsModule, ReactiveFormsModule
+    FormsModule,
+    ReactiveFormsModule,
   ],
   standalone: true,
   template: `
@@ -30,10 +31,13 @@ import {
           <ion-col>
             <ion-label color="primary">{{ config.label }}</ion-label>
           </ion-col>
-          
+
           @for (option of config.options; track option) {
             <ion-col>
-              <ion-checkbox [checked]="option.isChecked" [value]="option.id"></ion-checkbox>
+              <ion-checkbox
+                [checked]="option.isChecked"
+                [value]="option.id"
+              ></ion-checkbox>
               <ion-label color="primary">{{ option.name }}</ion-label>
             </ion-col>
           }

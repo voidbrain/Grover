@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, } from '@angular/core';
-import { NgStyle, DecimalPipe } from '@angular/common'
+import { Component, Input, OnChanges } from '@angular/core';
+import { NgStyle, DecimalPipe } from '@angular/common';
 
 import { PlantExtended } from '../../../interfaces/plant';
-import { IonCard, IonCardContent } from "@ionic/angular/standalone";
+import { IonCard, IonCardContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-progress-bar',
@@ -27,7 +27,7 @@ export class ProgressBarComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    if(this.plant && this.plant !== undefined) {
+    if (this.plant && this.plant !== undefined) {
       this.draw();
     }
   }
@@ -38,30 +38,51 @@ export class ProgressBarComponent implements OnChanges {
   }
 
   draw() {
-    if(this.plant) {
+    if (this.plant) {
       let totFromGrow = 0;
       let totFromBloom = 0;
       let totFromFlush = 0;
-      this.plant.calendar?.phases.map(phase => {this.tot += phase.duration;});
+      this.plant.calendar?.phases.map((phase) => {
+        this.tot += phase.duration;
+      });
       this.plant.calendar?.phases.map((phase, index) => {
-        phase.startingDay = phase.isFlushing ? totFromFlush : phase.isBlooming ? totFromBloom : totFromGrow;
-        totFromBloom += (phase.isBlooming ? +phase.duration : 0);
-        totFromFlush += (phase.isFlushing ? +phase.duration : 0);
-        totFromGrow += (!phase.isFlushing  && !phase.isBlooming ? +phase.duration : 0);
+        phase.startingDay = phase.isFlushing
+          ? totFromFlush
+          : phase.isBlooming
+            ? totFromBloom
+            : totFromGrow;
+        totFromBloom += phase.isBlooming ? +phase.duration : 0;
+        totFromFlush += phase.isFlushing ? +phase.duration : 0;
+        totFromGrow +=
+          !phase.isFlushing && !phase.isBlooming ? +phase.duration : 0;
         phase.daysFromGrow = totFromGrow;
         phase.daysFromBloom = totFromBloom;
         phase.daysFromFlush = totFromFlush;
-        phase.percentDuration = +(phase.duration *100 / this.tot);
-        phase.percentStart = (index === 0 ? 0 : this.plant.calendar?.phases[index-1].percentEnd) as number;
+        phase.percentDuration = +((phase.duration * 100) / this.tot);
+        phase.percentStart = (
+          index === 0 ? 0 : this.plant.calendar?.phases[index - 1].percentEnd
+        ) as number;
         phase.percentEnd = phase.percentStart + phase.percentDuration;
-        if(phase.isBlooming && !phase.isFlushing) { this.plantdaysFromBloomPerc += phase.percentDuration ; }
-        if(!phase.isBlooming && !phase.isFlushing) { this.plantdaysFromGrowPerc += phase.percentDuration ; }
-        if(phase.isFlushing) { this.plantdaysFromFlushPerc += (phase.percentDuration *  this.tot / 100); }
+        if (phase.isBlooming && !phase.isFlushing) {
+          this.plantdaysFromBloomPerc += phase.percentDuration;
+        }
+        if (!phase.isBlooming && !phase.isFlushing) {
+          this.plantdaysFromGrowPerc += phase.percentDuration;
+        }
+        if (phase.isFlushing) {
+          this.plantdaysFromFlushPerc +=
+            (phase.percentDuration * this.tot) / 100;
+        }
       });
 
-      const total = this.plantdaysFromBloomPerc + this.plantdaysFromFlushPerc + this.plantdaysFromGrowPerc;
+      const total =
+        this.plantdaysFromBloomPerc +
+        this.plantdaysFromFlushPerc +
+        this.plantdaysFromGrowPerc;
       const diff = total - 100;
-      if(diff !== 0) { this.plantdaysFromGrowPerc -= diff; }
+      if (diff !== 0) {
+        this.plantdaysFromGrowPerc -= diff;
+      }
 
       (this.plantdaysFromBloomPerc as any) += '%';
       (this.plantdaysFromFlushPerc as any) += '%';

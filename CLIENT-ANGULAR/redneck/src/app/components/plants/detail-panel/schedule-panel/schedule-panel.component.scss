@@ -1,10 +1,17 @@
-.container { display: flex; justify-content:stretch }
-.weekend { color: var(--ion-color-danger); }
-.daySchedule { padding: 10px 14px; }
+.container {
+  display: flex;
+  justify-content: stretch;
+}
+.weekend {
+  color: var(--ion-color-danger);
+}
+.daySchedule {
+  padding: 10px 14px;
+}
 .daySchedule.selected::before {
   content: "";
-  display:block;
-  position:relative;
+  display: block;
+  position: relative;
   background: var(--ion-color-danger) content-box;
   border-radius: 50%;
   width: 4px;
@@ -14,22 +21,42 @@
   top: -6;
 }
 
-.hide { visibility: hidden; }
-
-.hour { min-height: 17px; color: var( --ion-color-dark); border-right:1px solid var(--ion-color-light-tint); border-bottom:1px solid var(--ion-color-light-tint);
-  display: inline-block; padding:3.5px; text-align: center; line-height: 6px; flex-shrink:0; font-size:8px; height:17px;
-  &.title { color: var( --ion-color-dark); font-weight: bold; border-top:1px solid var(--ion-color-light-tint); }
-  &.first { border-left:1px solid var(--ion-color-light-tint); }
+.hide {
+  visibility: hidden;
 }
 
-.text { font-size: 12px; }
+.hour {
+  min-height: 17px;
+  color: var(--ion-color-dark);
+  border-right: 1px solid var(--ion-color-light-tint);
+  border-bottom: 1px solid var(--ion-color-light-tint);
+  display: inline-block;
+  padding: 3.5px;
+  text-align: center;
+  line-height: 6px;
+  flex-shrink: 0;
+  font-size: 8px;
+  height: 17px;
+  &.title {
+    color: var(--ion-color-dark);
+    font-weight: bold;
+    border-top: 1px solid var(--ion-color-light-tint);
+  }
+  &.first {
+    border-left: 1px solid var(--ion-color-light-tint);
+  }
+}
+
+.text {
+  font-size: 12px;
+}
 // .on {
 //   color: var( --ion-color-dark); background-color: var(--ion-color-danger);
 // }
 .onBefore::before {
   content: "";
-  display:block;
-  position:relative;
+  display: block;
+  position: relative;
   // background: var(--ion-color-danger) content-box;
   border-radius: 50%;
   width: 4px;
@@ -47,52 +74,114 @@
 }
 
 .c_3A65ED {
-  &.type_1.on { background: rgba(59, 100, 237, 1) content-box;
-    &.disabled { background: rgba(59, 100, 237, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(59, 100, 237, 1) content-box;
+    &.disabled {
+      background: rgba(59, 100, 237, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #3A65ED content-box; }
-  &.onBefore.disabled { &::before { background: rgba(59, 100, 237, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #3a65ed content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(59, 100, 237, 0.3) content-box;
+    }
+  }
 }
 .c_583AED {
-  &.type_1.on { background: rgba(88, 59, 237, 1) content-box;
-    &.disabled { background: rgba(88, 59, 237, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(88, 59, 237, 1) content-box;
+    &.disabled {
+      background: rgba(88, 59, 237, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #583AED content-box; }
-  &.onBefore.disabled { &::before { background: rgba(88, 59, 237, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #583aed content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(88, 59, 237, 0.3) content-box;
+    }
+  }
 }
 .c_ED3A3A {
-  &.type_1.on { background: rgba(237, 59, 59, 1) content-box;
-    &.disabled { background: rgba(237, 59, 59, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(237, 59, 59, 1) content-box;
+    &.disabled {
+      background: rgba(237, 59, 59, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #ED3A3A content-box; }
-  &.onBefore.disabled { &::before { background: rgba(237, 59, 59, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #ed3a3a content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(237, 59, 59, 0.3) content-box;
+    }
+  }
 }
 .c_EA3AED {
-  &.type_1.on { background: rgba(234, 58, 237, 1) content-box;
-    &.disabled { background: rgba(234, 58, 237, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(234, 58, 237, 1) content-box;
+    &.disabled {
+      background: rgba(234, 58, 237, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #EA3AED content-box; }
-  &.onBefore.disabled { &::before { background: rgba(234, 58, 237, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #ea3aed content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(234, 58, 237, 0.3) content-box;
+    }
+  }
 }
 .c_3AE5ED {
-  &.type_1.on { background: rgba(58, 229, 237, 1) content-box;
-    &.disabled { background: rgba(58, 229, 237, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(58, 229, 237, 1) content-box;
+    &.disabled {
+      background: rgba(58, 229, 237, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #3AE5ED content-box; }
-  &.onBefore.disabled { &::before { background: rgba(58, 229, 237, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #3ae5ed content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(58, 229, 237, 0.3) content-box;
+    }
+  }
 }
 .c_FFD000 {
-  &.type_1.on { background: rgba(255, 208, 0, 1) content-box;
-    &.disabled { background: rgba(255, 208, 0, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(255, 208, 0, 1) content-box;
+    &.disabled {
+      background: rgba(255, 208, 0, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #FFD000 content-box; }
-  &.onBefore.disabled { &::before { background: rgba(255, 208, 0, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #ffd000 content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(255, 208, 0, 0.3) content-box;
+    }
+  }
 }
 .c_8FBC0F {
-  &.type_1.on { background: rgba(143, 188, 15, 1) content-box;
-    &.disabled { background: rgba(143, 188, 15, 0.3) content-box; }
+  &.type_1.on {
+    background: rgba(143, 188, 15, 1) content-box;
+    &.disabled {
+      background: rgba(143, 188, 15, 0.3) content-box;
+    }
   }
-  &.onBefore::before { background: #8FBC0F content-box; }
-  &.onBefore.disabled { &::before { background: rgba(143, 188, 15, 0.3) content-box; } }
+  &.onBefore::before {
+    background: #8fbc0f content-box;
+  }
+  &.onBefore.disabled {
+    &::before {
+      background: rgba(143, 188, 15, 0.3) content-box;
+    }
+  }
 }
-

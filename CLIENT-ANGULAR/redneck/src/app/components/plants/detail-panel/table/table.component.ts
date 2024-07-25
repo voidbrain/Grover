@@ -18,7 +18,7 @@ export class PanelTableComponent implements OnChanges {
     // if(this.plant && this.plant !== undefined) {
     //   this.setup();
     // }
-    if(this.tableValues && this.tableValues !== undefined) {
+    if (this.tableValues && this.tableValues !== undefined) {
       this.setup();
     }
   }
@@ -32,8 +32,6 @@ export class PanelTableComponent implements OnChanges {
     //   console.log(worker);
     //   if(worker.log) { this.logsArr.push(worker.log); }
     // });
-
     // console.log(this.logsArr);
   }
-
 }

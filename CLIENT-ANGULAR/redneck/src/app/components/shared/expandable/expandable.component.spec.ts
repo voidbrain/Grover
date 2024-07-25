@@ -8,9 +8,8 @@ describe('ExpandableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExpandableComponent]
-    })
-    .compileComponents();
+      imports: [ExpandableComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ExpandableComponent);
     component = fixture.componentInstance;

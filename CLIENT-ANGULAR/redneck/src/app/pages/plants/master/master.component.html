@@ -5,119 +5,200 @@
     </ion-buttons>
     <ion-title>{{ page }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/pages/{{ page }}/create"><ion-icon name="add-circle"></ion-icon></ion-button>
+      <ion-button routerLink="/pages/{{ page }}/create"
+        ><ion-icon name="add-circle"></ion-icon
+      ></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
   <div id="container">
-
-    <app-filter-bar slot="fixed"
-        [config]="formDefinition"
-        (emitChange)="filterList()">
+    <app-filter-bar
+      slot="fixed"
+      [config]="formDefinition"
+      (emitChange)="filterList()"
+    >
     </app-filter-bar>
-    @for(room of rooms; track room) {
+    @for (room of rooms; track room) {
       <ion-card [hidden]="!room?.visible">
         <ion-item>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="5">
-              <ion-card-title class="ion-no-padding">{{room?.name}}</ion-card-title>
-            </ion-col>
-            <ion-col size="7">
-              @if (!room?.isHarvested && !room?.isNursery;) {
-                <ion-segment>
-                  <ion-button [disabled]="!room?.serialNumber || !room?.workersComponents?.nutrientRefill" class="btn" fill="clear" size="small" (click)="shuffleNutrient(room?.workersComponents?.nutrientRefill)">
-                    Doses Shuffle
+          <ion-grid>
+            <ion-row>
+              <ion-col size="5">
+                <ion-card-title class="ion-no-padding">{{
+                  room?.name
+                }}</ion-card-title>
+              </ion-col>
+              <ion-col size="7">
+                @if (!room?.isHarvested && !room?.isNursery) {
+                  <ion-segment>
+                    <ion-button
+                      [disabled]="
+                        !room?.serialNumber ||
+                        !room?.workersComponents?.nutrientRefill
+                      "
+                      class="btn"
+                      fill="clear"
+                      size="small"
+                      (click)="
+                        shuffleNutrient(room?.workersComponents?.nutrientRefill)
+                      "
+                    >
+                      Doses Shuffle
+                    </ion-button>
 
-                  </ion-button>
-
-                  <ion-button [disabled]="!room?.serialNumber || !room?.workersComponents?.phDown" class="btn" fill="clear" size="small" (click)="shufflePhDown(room?.workersComponents?.phDown)">
-                    pH↓ Shuffle
-                  </ion-button>
-                </ion-segment>
-              }
-
-            </ion-col>
-            <ion-col size="4">
-              @if (room?.workersComponents?.light) {
-                <ion-item class="ion-no-padding">
-                  <ion-icon color="primary" name="bulb"></ion-icon>
-                  <ion-toggle class="toggle" [disabled]="!room?.serialNumber" (ngModelChange)=" toggleLight(room?.workersComponents?.light) " [(ngModel)]="room?.workersComponents?.light.status" color="primary"></ion-toggle>
-                </ion-item>
-              }
+                    <ion-button
+                      [disabled]="
+                        !room?.serialNumber || !room?.workersComponents?.phDown
+                      "
+                      class="btn"
+                      fill="clear"
+                      size="small"
+                      (click)="shufflePhDown(room?.workersComponents?.phDown)"
+                    >
+                      pH↓ Shuffle
+                    </ion-button>
+                  </ion-segment>
+                }
               </ion-col>
               <ion-col size="4">
-            
-              @if (room?.workersComponents?.fan) {
-                <ion-item class="ion-no-padding">
-                  <ion-icon color="primary" name="help-buoy"></ion-icon>
-                  <ion-toggle class="toggle" [disabled]="!room?.serialNumber" (ngModelChange)=" toggleFan(room?.workersComponents?.fan) " [(ngModel)]="room?.workersComponents?.fan.status" color="primary"></ion-toggle>
-                </ion-item>
-              }
+                @if (room?.workersComponents?.light) {
+                  <ion-item class="ion-no-padding">
+                    <ion-icon color="primary" name="bulb"></ion-icon>
+                    <ion-toggle
+                      class="toggle"
+                      [disabled]="!room?.serialNumber"
+                      (ngModelChange)="
+                        toggleLight(room?.workersComponents?.light)
+                      "
+                      [(ngModel)]="room?.workersComponents?.light.status"
+                      color="primary"
+                    ></ion-toggle>
+                  </ion-item>
+                }
               </ion-col>
-            <ion-col size="4">
-
-              @if (!room?.isHarvested && !room?.isNursery) {
-                <ion-item>
-
-                  <ion-select [disabled]="!room?.serialNumber" [value]=" room?.operatingMode" (ionChange)=" setRoomStatus($event, room) "  okText="Okay" cancelText="Dismiss">
-                    @for(mode of room?.operatingModes; track mode) {
-                      <ion-select-option [value]="mode.value">{{mode.name}}</ion-select-option>
-                    }
-                  </ion-select>
-                </ion-item>
-              }
-
-            </ion-col>
-            <ion-col size="12">
-            @if (room?.probesComponents?.airtemp) {
-              <ion-item class="ion-no-padding" class="ion-no-padding" style="--inner-padding-end: 0 !important;">
-                Air&nbsp;T°<fa-icon [fixedWidth]="true" icon="temperature-half"></fa-icon>
-                <app-range [minValue]="room?.probesComponents?.airtemp?.type.minAcceptableValue" [maxValue]="room?.probesComponents?.airtemp?.type.maxAcceptableValue" [minWarningValue]="room?.probesComponents?.airtemp?.type.minWarningValue" [maxWarningValue]="room?.probesComponents?.airtemp?.type.maxWarningValue" [value]="room?.probesComponents?.airtemp?.value" [um]="room?.probesComponents?.airtemp?.type.um"></app-range>
-                <ion-button fill="clear" size="small" (click)="read(room?.probesComponents?.airtemp)">
-                  <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
-                </ion-button>
-              </ion-item>
-            }
-
-            </ion-col>
-          </ion-row>
-
-        </ion-grid>
+              <ion-col size="4">
+                @if (room?.workersComponents?.fan) {
+                  <ion-item class="ion-no-padding">
+                    <ion-icon color="primary" name="help-buoy"></ion-icon>
+                    <ion-toggle
+                      class="toggle"
+                      [disabled]="!room?.serialNumber"
+                      (ngModelChange)="toggleFan(room?.workersComponents?.fan)"
+                      [(ngModel)]="room?.workersComponents?.fan.status"
+                      color="primary"
+                    ></ion-toggle>
+                  </ion-item>
+                }
+              </ion-col>
+              <ion-col size="4">
+                @if (!room?.isHarvested && !room?.isNursery) {
+                  <ion-item>
+                    <ion-select
+                      [disabled]="!room?.serialNumber"
+                      [value]="room?.operatingMode"
+                      (ionChange)="setRoomStatus($event, room)"
+                      okText="Okay"
+                      cancelText="Dismiss"
+                    >
+                      @for (mode of room?.operatingModes; track mode) {
+                        <ion-select-option [value]="mode.value">{{
+                          mode.name
+                        }}</ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                }
+              </ion-col>
+              <ion-col size="12">
+                @if (room?.probesComponents?.airtemp) {
+                  <ion-item
+                    class="ion-no-padding"
+                    class="ion-no-padding"
+                    style="--inner-padding-end: 0 !important"
+                  >
+                    Air&nbsp;T°<fa-icon
+                      [fixedWidth]="true"
+                      icon="temperature-half"
+                    ></fa-icon>
+                    <app-range
+                      [minValue]="
+                        room?.probesComponents?.airtemp?.type.minAcceptableValue
+                      "
+                      [maxValue]="
+                        room?.probesComponents?.airtemp?.type.maxAcceptableValue
+                      "
+                      [minWarningValue]="
+                        room?.probesComponents?.airtemp?.type.minWarningValue
+                      "
+                      [maxWarningValue]="
+                        room?.probesComponents?.airtemp?.type.maxWarningValue
+                      "
+                      [value]="room?.probesComponents?.airtemp?.value"
+                      [um]="room?.probesComponents?.airtemp?.type.um"
+                    ></app-range>
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      (click)="read(room?.probesComponents?.airtemp)"
+                    >
+                      <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
+                    </ion-button>
+                  </ion-item>
+                }
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-item>
 
         <ion-card-content class="ion-no-padding">
           <ion-list lines="inset">
-          @for(plant of room?.plants; track plant) {
-          <ion-item-sliding lines="inset" #slidingItem>
-              <ion-item >
+            @for (plant of room?.plants; track plant) {
+              <ion-item-sliding lines="inset" #slidingItem>
+                <ion-item>
                   <ion-label>
-                      <ion-item class="ion-no-padding" lines="none">
-
-                        <ion-grid>
+                    <ion-item class="ion-no-padding" lines="none">
+                      <ion-grid>
                         <ion-row>
                           <ion-col class="ion-no-padding" size="2">
-                            <div>{{plant?.pot?.name}}</div>
+                            <div>{{ plant?.pot?.name }}</div>
                           </ion-col>
                           <ion-col class="ion-no-padding" size="2">
-                            <ion-icon [style.color]="plant?.phase?.dose?.color" [name]=" (plant?.dayStartBloom ? 'flower-outline' : 'leaf-outline') "></ion-icon>
+                            <ion-icon
+                              [style.color]="plant?.phase?.dose?.color"
+                              [name]="
+                                plant?.dayStartBloom
+                                  ? 'flower-outline'
+                                  : 'leaf-outline'
+                              "
+                            ></ion-icon>
                           </ion-col>
                           <ion-col class="ion-no-padding" size="7">
-                            <div>{{plant?.strain?.name}}</div>
+                            <div>{{ plant?.strain?.name }}</div>
                           </ion-col>
                           <ion-col class="ion-no-padding" size="1">
                             <div>
                               @if (!room?.isHarvested && !room?.isNursery) {
-                                <button class="ghost" fill="clear" (click)="expandItem(plant)">
-                                  <span [hidden]="plant.expanded===true"><ion-icon name="caret-down-outline"></ion-icon></span>
-                                  <span [hidden]="plant.expanded!==true"><ion-icon name="caret-up-outline"></ion-icon></span>
+                                <button
+                                  class="ghost"
+                                  fill="clear"
+                                  (click)="expandItem(plant)"
+                                >
+                                  <span [hidden]="plant.expanded === true"
+                                    ><ion-icon
+                                      name="caret-down-outline"
+                                    ></ion-icon
+                                  ></span>
+                                  <span [hidden]="plant.expanded !== true"
+                                    ><ion-icon
+                                      name="caret-up-outline"
+                                    ></ion-icon
+                                  ></span>
                                 </button>
                               }
                             </div>
@@ -125,35 +206,39 @@
                         </ion-row>
                         <ion-row>
                           <ion-col class="ion-no-padding" size="12">
-                            @if (!room.isHarvested && !room.isNursery) {   
-                              <app-progress-bar [plant]="plant"></app-progress-bar>
+                            @if (!room.isHarvested && !room.isNursery) {
+                              <app-progress-bar
+                                [plant]="plant"
+                              ></app-progress-bar>
                             }
                             @if (room.isHarvested || room.isNursery) {
                               <app-growing-results></app-growing-results>
                             }
-
                           </ion-col>
                         </ion-row>
                       </ion-grid>
-                      </ion-item>
-
+                    </ion-item>
                   </ion-label>
-              </ion-item>
+                </ion-item>
 
-              <ion-item-options side="end">
-                  <ion-item-option (click)="showDetail(plant)">Edit</ion-item-option>
-                  <ion-item-option (click)="deleteItem(plant)" color="danger">Delete</ion-item-option>
-              </ion-item-options>
+                <ion-item-options side="end">
+                  <ion-item-option (click)="showDetail(plant)"
+                    >Edit</ion-item-option
+                  >
+                  <ion-item-option (click)="deleteItem(plant)" color="danger"
+                    >Delete</ion-item-option
+                  >
+                </ion-item-options>
 
-
-                <app-expandable [expanded]="plant.expanded===true">
-                  <app-detail-panel slot="end" [plant]="plant" [room]="room"></app-detail-panel>
+                <app-expandable [expanded]="plant.expanded === true">
+                  <app-detail-panel
+                    slot="end"
+                    [plant]="plant"
+                    [room]="room"
+                  ></app-detail-panel>
                 </app-expandable>
-
-
-            </ion-item-sliding>
-          }
-
+              </ion-item-sliding>
+            }
           </ion-list>
         </ion-card-content>
       </ion-card>

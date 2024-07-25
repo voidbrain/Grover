@@ -8,9 +8,8 @@ describe('LogPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LogPanelComponent]
-    })
-    .compileComponents();
+      imports: [LogPanelComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LogPanelComponent);
     component = fixture.componentInstance;

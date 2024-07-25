@@ -10,9 +10,9 @@ import { FieldConfig } from '../../models/field-config.interface';
   styleUrls: ['date.component.scss'],
   template: `
     <ion-item class="dynamic-field date" [formGroup]="group">
-
-    <ion-label color="primary">{{ config.label }}</ion-label>
-     <ion-input slot="end"
+      <ion-label color="primary">{{ config.label }}</ion-label>
+      <ion-input
+        slot="end"
         type="date"
         [formControlName]="config.name"
       ></ion-input>

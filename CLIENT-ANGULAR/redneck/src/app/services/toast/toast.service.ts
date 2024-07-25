@@ -2,17 +2,15 @@ import { Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 
 export interface ToastMessage {
-  message: string,
-  duration: number,
-  position: string
-  cssClass: string
+  message: string;
+  duration: number;
+  position: string;
+  cssClass: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
-
-
 export class ToastService {
   private toastMsgs: string[] = [];
 

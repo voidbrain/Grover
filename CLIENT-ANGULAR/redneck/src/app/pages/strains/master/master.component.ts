@@ -71,7 +71,6 @@ export class StrainsMasterComponent {
     const strainsP = this.db.getItems('strains');
     Promise.all([itemsP, calendarsP, dosesP, strainsP]).then(
       ([items, calendars, doses, strains]) => {
-        
         (items as any).sort((a: any, b: any) => {
           const compare =
             a.dayHarvest !== 0 && b.dayHarvest !== 0
@@ -86,7 +85,9 @@ export class StrainsMasterComponent {
         });
 
         (items as any).map((item: any) => {
-          item.strain = (strains as any).find((el: any) => el.id == item.idStrain);
+          item.strain = (strains as any).find(
+            (el: any) => el.id == item.idStrain,
+          );
           item.chartConfig = {
             id: 'chart',
             type: 'doughnut',

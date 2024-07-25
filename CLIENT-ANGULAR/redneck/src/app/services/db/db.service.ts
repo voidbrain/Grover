@@ -14,256 +14,375 @@ import { LoadingController } from '@ionic/angular';
   providedIn: 'root',
 })
 export class DbService {
-
-	private db: IDBDatabase | undefined;
-	private tables: any[] = [];
+  private db: IDBDatabase | undefined;
+  private tables: any[] = [];
   private debug = false;
-    constructor(
-      public loadingController: LoadingController,
-      private toastService: ToastService,
-      private appSettings: SettingsService,
-        public api: ApiService,
-    ) {
-        this.tables = this.appSettings.datatables;
-        this.api.init();
-    }
+  constructor(
+    public loadingController: LoadingController,
+    private toastService: ToastService,
+    private appSettings: SettingsService,
+    public api: ApiService,
+  ) {
+    this.tables = this.appSettings.datatables;
+    this.api.init();
+  }
 
-    async load(): Promise<any> {
-      const self = this;
-      return new Promise<void>(resolve=> {
-          const resetDb = false; const forceLoading = true;
-          this.initDb(resetDb).then(()=>{
-              this.initService((resetDb?resetDb:forceLoading)).then(()=>{
-                  this.api.networkService.status.subscribe((networkStatus) => {
-                      if(self.debug) { console.info('[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'));}
-                      // this.syncAndClean(networkStatus).then(()=>{ TODO
-                      this.syncAndClean('Online').then(()=>{
-                        resolve();
-                      });
-                  });
-              });
+  async load(): Promise<any> {
+    const self = this;
+    return new Promise<void>((resolve) => {
+      const resetDb = false;
+      const forceLoading = true;
+      this.initDb(resetDb).then(() => {
+        this.initService(resetDb ? resetDb : forceLoading).then(() => {
+          this.api.networkService.status.subscribe((networkStatus) => {
+            if (self.debug) {
+              console.info(
+                '[DB]: Network status: ' +
+                  (networkStatus ? 'Online' : 'Offline'),
+              );
+            }
+            // this.syncAndClean(networkStatus).then(()=>{ TODO
+            this.syncAndClean('Online').then(() => {
+              resolve();
+            });
           });
-      });
-    }
-
-    async deleteDb(): Promise<any> {
-      const self = this;
-      this.toastService.pushMessage('Database reset');
-      this.toastService.presentToast();
-      localStorage.clear();
-      const request = indexedDB.deleteDatabase(this.appSettings.appName);
-      return new Promise(function(resolve, reject) {
-        request.onsuccess = function() { if(self.debug) { console.info('[DB]: Delete db Ok');} resolve(request.result); };
-        request.onerror = function() { console.error('[DB]: Delete db Error'); reject(request.error); };
-      });
-    }
-
-    private createDb(): Promise<void> {
-        if (this.db) { (this.db as IDBDatabase).close(); }
-        return new Promise(resolve => {
-            const openRequest = indexedDB.open(this.appSettings.appName);
-            openRequest.onupgradeneeded = event => {
-                const target: any = event.target; const db = target.result; const storeObjects:any[] = [];
-                this.tables.map((table:any) => {
-                    storeObjects[('store' + table) as any] = db.createObjectStore(table, {keyPath: 'id', autoIncrement:true});
-                    storeObjects[('store' + table) as any].createIndex('id', ['id']);
-                    storeObjects[('store' + table) as any].createIndex('enabled, deleted', ['enabled','deleted']);
-                    storeObjects[('store' + table) as any].createIndex('synced', ['synced'], { unique: false });
-                    storeObjects[('store' + table) as any].createIndex('deleted', ['deleted'], { unique: false });
-                    if(table==='settings'){
-                      storeObjects[('store' + table) as any].createIndex('device', ['device']);
-                    }
-                });
-                if(this.debug) { console.info('[DB]: Db forged');}
-            };
-            openRequest.onsuccess = (event) => {
-                this.db = (event.target as any).result;
-                (this.db as IDBDatabase).onerror = error => { console.error('[DB]: error createDb: '+error); };
-                if(this.debug) { console.info('[DB]: Db Ready');}
-                resolve();
-            };
         });
-    }
-
-    async initDb(resetDb=false): Promise<any> {
-      const self = this;
-      return new Promise<void>(resolve => {
-        if(resetDb){
-          if(self.debug) { console.info('[DB]: Delete db');}
-          this.deleteDb().then(()=>{ resolve(); });
-        }else{
-          if(self.debug) { console.info('[DB]: Delete db not required');}
-          resolve();
-        }
       });
+    });
+  }
+
+  async deleteDb(): Promise<any> {
+    const self = this;
+    this.toastService.pushMessage('Database reset');
+    this.toastService.presentToast();
+    localStorage.clear();
+    const request = indexedDB.deleteDatabase(this.appSettings.appName);
+    return new Promise(function (resolve, reject) {
+      request.onsuccess = function () {
+        if (self.debug) {
+          console.info('[DB]: Delete db Ok');
+        }
+        resolve(request.result);
+      };
+      request.onerror = function () {
+        console.error('[DB]: Delete db Error');
+        reject(request.error);
+      };
+    });
+  }
+
+  private createDb(): Promise<void> {
+    if (this.db) {
+      (this.db as IDBDatabase).close();
+    }
+    return new Promise((resolve) => {
+      const openRequest = indexedDB.open(this.appSettings.appName);
+      openRequest.onupgradeneeded = (event) => {
+        const target: any = event.target;
+        const db = target.result;
+        const storeObjects: any[] = [];
+        this.tables.map((table: any) => {
+          storeObjects[('store' + table) as any] = db.createObjectStore(table, {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+          storeObjects[('store' + table) as any].createIndex('id', ['id']);
+          storeObjects[('store' + table) as any].createIndex(
+            'enabled, deleted',
+            ['enabled', 'deleted'],
+          );
+          storeObjects[('store' + table) as any].createIndex(
+            'synced',
+            ['synced'],
+            { unique: false },
+          );
+          storeObjects[('store' + table) as any].createIndex(
+            'deleted',
+            ['deleted'],
+            { unique: false },
+          );
+          if (table === 'settings') {
+            storeObjects[('store' + table) as any].createIndex('device', [
+              'device',
+            ]);
+          }
+        });
+        if (this.debug) {
+          console.info('[DB]: Db forged');
+        }
+      };
+      openRequest.onsuccess = (event) => {
+        this.db = (event.target as any).result;
+        (this.db as IDBDatabase).onerror = (error) => {
+          console.error('[DB]: error createDb: ' + error);
+        };
+        if (this.debug) {
+          console.info('[DB]: Db Ready');
+        }
+        resolve();
+      };
+    });
+  }
+
+  async initDb(resetDb = false): Promise<any> {
+    const self = this;
+    return new Promise<void>((resolve) => {
+      if (resetDb) {
+        if (self.debug) {
+          console.info('[DB]: Delete db');
+        }
+        this.deleteDb().then(() => {
+          resolve();
+        });
+      } else {
+        if (self.debug) {
+          console.info('[DB]: Delete db not required');
+        }
+        resolve();
+      }
+    });
+  }
+
+  async initService(forceLoading = false): Promise<void> {
+    const self = this;
+    const networkStatus = this.api.networkService.status.getValue();
+    const date = new Date();
+    const now = Date.now();
+    const lastUpdate: any[] = [];
+
+    const promise = this.createDb();
+
+    const lastGlobalUpdate =
+      localStorage.getItem(this.appSettings.appName + '_lastglobalupdate') ||
+      date.getDate() - 1;
+    const hoursWithoutUpdates =
+      (Number(now) - Number(lastGlobalUpdate)) / (1000 * 60 * 60);
+
+    if (!networkStatus || (hoursWithoutUpdates < 1 && forceLoading === false)) {
+      if (self.debug) {
+        console.info('[DB]: Cached data');
+      }
+      return promise;
     }
 
-    async initService(forceLoading=false): Promise<void> {
-      const self = this;
-      const networkStatus = this.api.networkService.status.getValue();
-      const date = new Date();
-      const now = Date.now();
-      const lastUpdate: any[] = [];
+    if (self.debug) {
+      console.info('[DB]: Force data sync');
+    }
+    localStorage.setItem(
+      this.appSettings.appName + '_lastglobalupdate',
+      String(now),
+    );
+    const loading = await this.loadingController.create({ message: 'Loading' });
+    loading.present();
 
-      const promise = this.createDb();
-
-      const lastGlobalUpdate = ( localStorage.getItem(this.appSettings.appName+'_lastglobalupdate') || date.getDate()-1 );
-      const hoursWithoutUpdates = (Number(now) - Number(lastGlobalUpdate)) / (1000*60*60);
-
-      if (!networkStatus || (hoursWithoutUpdates<1 && forceLoading===false)) {
-          if(self.debug) { console.info('[DB]: Cached data');}
-          return promise;
-      }
-
-      if(self.debug) { console.info('[DB]: Force data sync');}
-      localStorage.setItem(this.appSettings.appName+'_lastglobalupdate', String(now));
-      const loading = await this.loadingController.create({ message: 'Loading' });
-      loading.present();
-
-      return promise.then(() => Promise.all(this.tables.map( (table) => {
-          lastUpdate[table] = localStorage.getItem(this.appSettings.appName+'_'+table);
-          return this.loadData(table, lastUpdate[table]);
-        }))).then((results) => {
+    return promise
+      .then(() =>
+        Promise.all(
+          this.tables.map((table) => {
+            lastUpdate[table] = localStorage.getItem(
+              this.appSettings.appName + '_' + table,
+            );
+            return this.loadData(table, lastUpdate[table]);
+          }),
+        ),
+      )
+      .then((results) => {
         this.syncData(results);
         loading.dismiss();
         return;
       });
-    }
+  }
 
-    async loadData(table: any, lastUpdate: any): Promise<any> {
-      return new Promise((resolve) => {
-        const params = { lastUpdate };
-        this.api.get(table, params)
-        .then((res) => {
-          resolve({[table] : res});
-        });
+  async loadData(table: any, lastUpdate: any): Promise<any> {
+    return new Promise((resolve) => {
+      const params = { lastUpdate };
+      this.api.get(table, params).then((res) => {
+        resolve({ [table]: res });
       });
-    }
+    });
+  }
 
-    async syncData(dataValues: any){
-      const self = this;
-      return new Promise<void>((resolve) => {
-        dataValues.map((data: any)=>{
-          const table = Object.keys(data)[0];
-          const res = data[table];
-          if(self.debug) { console.info('[DB]: Db Sync records ready ',table, res, res.length);}
-          const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
-          const store = tx.objectStore(table);
-          let lastUpdate: any;
-          if(res.items.length){
-            res.items.map((row: any) => {
-              if (row.id) {
-                let promise;
-                if(row.deleted){
-                  promise = store.delete(row.id);
-                }else{
-                  promise = store.put(row);
-                }
-                promise.onsuccess = function(e){
-                  if(self.debug) { console.info('[DB]: Success syncing db table: "'+table+'", item:',e);}
-                };
-                promise.onerror = function(e){
-                  console.error('[DB]: Error syncing db table: "'+table+'", item:',e);
-                };
+  async syncData(dataValues: any) {
+    const self = this;
+    return new Promise<void>((resolve) => {
+      dataValues.map((data: any) => {
+        const table = Object.keys(data)[0];
+        const res = data[table];
+        if (self.debug) {
+          console.info('[DB]: Db Sync records ready ', table, res, res.length);
+        }
+        const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
+        const store = tx.objectStore(table);
+        let lastUpdate: any;
+        if (res.items.length) {
+          res.items.map((row: any) => {
+            if (row.id) {
+              let promise;
+              if (row.deleted) {
+                promise = store.delete(row.id);
+              } else {
+                promise = store.put(row);
               }
-              lastUpdate = ( (row.lastUpdate !== lastUpdate)||!lastUpdate ? row.lastUpdate : lastUpdate);
-              tx.oncomplete = (() => {
-                if(lastUpdate){
-                    localStorage.setItem(this.appSettings.appName+'_'+table, lastUpdate);
+              promise.onsuccess = function (e) {
+                if (self.debug) {
+                  console.info(
+                    '[DB]: Success syncing db table: "' + table + '", item:',
+                    e,
+                  );
                 }
-              });
-            });
-          }else{ resolve(); }
-        });
-      });
-    }
-
-    getItem(objectStore: any, id: any, column='id'): Promise<any> {
-        const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
-        const store = tx.objectStore(objectStore);
-        const dataIndex: any = store.index(column);
-        const promise = new Promise<Plant | Strain | Company | Dose | Calendar | null>(resolve => {
-            if(id){
-                dataIndex.get(id).onsuccess = (e: any) => resolve(e.target.result);
-            } else {
-              resolve(null);
+              };
+              promise.onerror = function (e) {
+                console.error(
+                  '[DB]: Error syncing db table: "' + table + '", item:',
+                  e,
+                );
+              };
             }
-        });
-        return promise;
-    }
+            lastUpdate =
+              row.lastUpdate !== lastUpdate || !lastUpdate
+                ? row.lastUpdate
+                : lastUpdate;
+            tx.oncomplete = () => {
+              if (lastUpdate) {
+                localStorage.setItem(
+                  this.appSettings.appName + '_' + table,
+                  lastUpdate,
+                );
+              }
+            };
+          });
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 
-    getItems(objectStore: any, column='enabled, deleted', query=[1,0]): Promise<any> {
-        const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
+  getItem(objectStore: any, id: any, column = 'id'): Promise<any> {
+    const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
+    const store = tx.objectStore(objectStore);
+    const dataIndex: any = store.index(column);
+    const promise = new Promise<
+      Plant | Strain | Company | Dose | Calendar | null
+    >((resolve) => {
+      if (id) {
+        dataIndex.get(id).onsuccess = (e: any) => resolve(e.target.result);
+      } else {
+        resolve(null);
+      }
+    });
+    return promise;
+  }
+
+  getItems(
+    objectStore: any,
+    column = 'enabled, deleted',
+    query = [1, 0],
+  ): Promise<any> {
+    const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
+    const store = tx.objectStore(objectStore);
+    const dataIndex: any = store.index(column);
+    const promise = new Promise<
+      Plant | Strain | Company | Dose | Calendar | any
+    >((resolve) => {
+      if (query.length > 0) {
+        const queryExecute = dataIndex.getAll(query);
+        queryExecute.onsuccess = (e: any) => {
+          resolve(e.target.result);
+        };
+        queryExecute.onerror = (e: any) => {
+          console.log(e);
+        };
+      } else {
+        const queryExecute = dataIndex.getAll();
+        queryExecute.onsuccess = (e: any) => {
+          resolve(e.target.result);
+        };
+        queryExecute.onerror = (e: any) => {
+          console.log(e);
+        };
+      }
+    });
+    return promise;
+  }
+
+  putItem(
+    objectStore: any,
+    item: Partial<Plant> | Strain | Company | Dose | Calendar,
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      if (!item.id) {
+        delete item.id;
+      }
+      const lastUpdate = localStorage.getItem(
+        this.appSettings.appName + '_' + objectStore,
+      );
+      const params = { lastUpdate };
+      this.api.post(objectStore, item, params).then((response) => {
+        const tx = (this.db as IDBDatabase).transaction(
+          objectStore,
+          'readwrite',
+        );
         const store = tx.objectStore(objectStore);
-        const dataIndex: any = store.index(column);
-        const promise = new Promise<Plant | Strain | Company | Dose | Calendar | any>(resolve => {
-          if(query.length > 0) {
-            const queryExecute = dataIndex.getAll(query);
-            queryExecute.onsuccess = (e: any) => {
-              resolve(e.target.result);};
-            queryExecute.onerror = (e: any) => { console.log(e); };
-          } else {
-            const queryExecute = dataIndex.getAll();
-            queryExecute.onsuccess = (e: any) => {
-              resolve(e.target.result);};
-            queryExecute.onerror = (e: any) => { console.log(e); };
+        const promise = store.put(response.items[0]);
+        promise.onsuccess = function () {
+          resolve();
+        };
+        promise.onerror = function (e) {
+          console.error('[DB]: Error adding: ' + e);
+        };
+      });
+    });
+  }
+
+  deleteItem(objectStore: any, itemToDelete: any): Promise<void> {
+    const self = this;
+    return new Promise((resolve) => {
+      this.api.delete(objectStore, itemToDelete).then((item) => {
+        const tx = (this.db as IDBDatabase).transaction(
+          objectStore,
+          'readwrite',
+        );
+        const store = tx.objectStore(objectStore);
+        if (item.synced !== 0) {
+          const objectStoreRequest = store.delete(item.id);
+          objectStoreRequest.onsuccess = function () {
+            if (self.debug) {
+              console.info(
+                '[DB]: item deleted. Table: "' +
+                  objectStore +
+                  '" id:' +
+                  item.id,
+              );
+            }
+            resolve();
+          };
+        } else {
+          if (self.debug) {
+            console.info(
+              '[DB]: item still not synced, don\'t remove from db but set to deleted:1. Table: "' +
+                objectStore +
+                '" id:' +
+                item.id,
+            );
           }
-        });
-        return promise;
-    }
-
-    putItem(objectStore: any, item: Partial<Plant> | Strain | Company | Dose | Calendar): Promise<void>{
-      return new Promise(resolve => {
-        if(!item.id){ delete item.id; }
-        const lastUpdate = localStorage.getItem(this.appSettings.appName+'_'+objectStore);
-        const params = { lastUpdate };
-        this.api.post(objectStore, item, params)
-          .then((response) => {
-            const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
-            const store = tx.objectStore(objectStore);
-            const promise = store.put(response.items[0]);
-            promise.onsuccess = function(){
-              resolve();
-            };
-            promise.onerror = function(e){
-              console.error('[DB]: Error adding: '+e);
-            };
-          });
+          item.deleted = 1;
+          const tx1 = (this.db as IDBDatabase).transaction(
+            objectStore,
+            'readwrite',
+          );
+          const store1 = tx1.objectStore(objectStore);
+          const promise = store1.put(item);
+          promise.onsuccess = function () {
+            resolve();
+          };
+          promise.onerror = function (e) {
+            console.error('[DB]: Error adding: ' + e);
+          };
+        }
       });
-    }
-
-    deleteItem(objectStore: any, itemToDelete: any): Promise<void>{
-      const self = this;
-      return new Promise(resolve => {
-        this.api.delete(objectStore, itemToDelete)
-          .then((item) => {
-            const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
-            const store = tx.objectStore(objectStore);
-            if(item.synced!==0){
-              const objectStoreRequest = store.delete(item.id);
-              objectStoreRequest.onsuccess = function() {
-                if(self.debug) { console.info('[DB]: item deleted. Table: "'+objectStore+'" id:'+item.id);}
-                resolve();
-              };
-            }else{
-              if(self.debug) {
-                console.info('[DB]: item still not synced, don\'t remove from db but set to deleted:1. Table: "'
-                +objectStore+'" id:'+item.id);
-              }
-              item.deleted = 1;
-              const tx1 = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
-              const store1 = tx1.objectStore(objectStore);
-              const promise = store1.put(item);
-              promise.onsuccess = function(){
-                  resolve();
-              };
-              promise.onerror = function(e){
-                  console.error('[DB]: Error adding: '+e);
-              };
-              }
-          });
-      });
-    }
+    });
+  }
 
   ////////////////////////////////////////////////
   //                                            //
@@ -271,47 +390,60 @@ export class DbService {
   //                                            //
   ////////////////////////////////////////////////
 
-  syncAndClean(networkStatus: any): Promise<any>{
+  syncAndClean(networkStatus: any): Promise<any> {
     const self = this;
-    const promise = new Promise<void>(resolve => {
-      if(networkStatus){
+    const promise = new Promise<void>((resolve) => {
+      if (networkStatus) {
         this.toastService.pushMessage('Database sync and cleaning');
-        this.syncStoredItems().then(()=>{
-          this.removeDeletedItem().then(()=>{
-            if(self.debug) { console.info('[DB]: Db cleaned');}
+        this.syncStoredItems().then(() => {
+          this.removeDeletedItem().then(() => {
+            if (self.debug) {
+              console.info('[DB]: Db cleaned');
+            }
             resolve();
           });
         });
-      }else{
+      } else {
         resolve();
       }
     });
     return promise;
   }
 
-  syncStoredItems(): Promise<any>{
+  syncStoredItems(): Promise<any> {
     const self = this;
-    const promise = new Promise<void>(resolve => {
-      if(self.debug) { console.info('[DB]: Sync stored items with remote');}
+    const promise = new Promise<void>((resolve) => {
+      if (self.debug) {
+        console.info('[DB]: Sync stored items with remote');
+      }
       this.tables.map((table) => {
-        this.getItemsToBeSynced(table).then((items)=>{
-          if(items.length){
-            if(self.debug) { console.info('[DB]: Items to sync. Table:"'+table+'" items:',items);}
-            items.map((item: any)=>{
-                this.putItem(table, item).then(()=>{ resolve(); });
+        this.getItemsToBeSynced(table).then((items) => {
+          if (items.length) {
+            if (self.debug) {
+              console.info(
+                '[DB]: Items to sync. Table:"' + table + '" items:',
+                items,
+              );
+            }
+            items.map((item: any) => {
+              this.putItem(table, item).then(() => {
+                resolve();
+              });
             });
-          }else{ resolve(); }
+          } else {
+            resolve();
+          }
         });
       });
     });
     return promise;
   }
 
-  getItemsToBeSynced(objectStore: any): Promise<any>{
+  getItemsToBeSynced(objectStore: any): Promise<any> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index('synced');
-    const promise = new Promise<any>(resolve => {
+    const promise = new Promise<any>((resolve) => {
       const request = dataIndex.getAll(0);
       request.onsuccess = (e: any) => {
         resolve(e.target.result);
@@ -323,28 +455,39 @@ export class DbService {
     return promise;
   }
 
-  removeDeletedItem(): Promise<void>{
-    const promise = new Promise<void>(resolve => {
-      if(this.debug) { console.info('[DB]: Sync deleted items with remote then remove');}
+  removeDeletedItem(): Promise<void> {
+    const promise = new Promise<void>((resolve) => {
+      if (this.debug) {
+        console.info('[DB]: Sync deleted items with remote then remove');
+      }
       this.tables.map((table) => {
-        this.getItemsToBeRemoved(table).then((items)=>{
-          if(items.length){
-            if(this.debug) { console.info('[DB]: items to remove. Table:"'+table+'" items:',items);}
-            items.map((item: any)=>{
-              this.deleteItem(table, item).then(()=>{ resolve(); });
+        this.getItemsToBeRemoved(table).then((items) => {
+          if (items.length) {
+            if (this.debug) {
+              console.info(
+                '[DB]: items to remove. Table:"' + table + '" items:',
+                items,
+              );
+            }
+            items.map((item: any) => {
+              this.deleteItem(table, item).then(() => {
+                resolve();
+              });
             });
-          }else{ resolve(); }
+          } else {
+            resolve();
+          }
         });
       });
     });
     return promise;
   }
 
-  getItemsToBeRemoved(objectStore: any): Promise<any>{
+  getItemsToBeRemoved(objectStore: any): Promise<any> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index('deleted');
-    const promise = new Promise<any>(resolve => {
+    const promise = new Promise<any>((resolve) => {
       dataIndex.getAll(1).onsuccess = (e: any) => {
         resolve(e.target.result);
       };

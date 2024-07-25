@@ -1,5 +1,11 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { IonItem, IonLabel, IonBadge, IonRange, IonIcon } from "@ionic/angular/standalone";
+import {
+  IonItem,
+  IonLabel,
+  IonBadge,
+  IonRange,
+  IonIcon,
+} from '@ionic/angular/standalone';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -7,7 +13,14 @@ import { ReactiveFormsModule } from '@angular/forms';
   templateUrl: './range.component.html',
   styleUrls: ['./range.component.scss'],
   standalone: true,
-  imports: [IonIcon, IonRange, IonBadge, IonLabel, IonItem, ReactiveFormsModule]
+  imports: [
+    IonIcon,
+    IonRange,
+    IonBadge,
+    IonLabel,
+    IonItem,
+    ReactiveFormsModule,
+  ],
 })
 export class RangeComponent implements OnChanges {
   @Input() minValue!: number;
@@ -28,21 +41,27 @@ export class RangeComponent implements OnChanges {
   };
 
   ngOnChanges() {
-    if(
+    if (
       this.minValue &&
       this.maxValue &&
       this.minWarningValue &&
       this.maxWarningValue
-    ) { this.setup(); }
-    if(this.value) {
+    ) {
+      this.setup();
+    }
+    if (this.value) {
       this.percentValue = this.normalizeBetweenTwoRanges(this.value);
     }
   }
 
   setup() {
     this.percentValue = this.normalizeBetweenTwoRanges(this.value);
-    this.percentMinWarningValue = this.normalizeBetweenTwoRanges(this.minWarningValue);
-    this.percentMaxWarningValue = this.normalizeBetweenTwoRanges(this.maxWarningValue);
+    this.percentMinWarningValue = this.normalizeBetweenTwoRanges(
+      this.minWarningValue,
+    );
+    this.percentMaxWarningValue = this.normalizeBetweenTwoRanges(
+      this.maxWarningValue,
+    );
   }
 
   normalizeBetweenTwoRanges(val: any) {
@@ -50,6 +69,9 @@ export class RangeComponent implements OnChanges {
     const maxVal = this.maxValue;
     const normalizedMax = 100;
     const normalizedMin = 0;
-    return normalizedMin + (val - minVal) * (normalizedMax - normalizedMin) / (maxVal - minVal);
-  };
+    return (
+      normalizedMin +
+      ((val - minVal) * (normalizedMax - normalizedMin)) / (maxVal - minVal)
+    );
+  }
 }

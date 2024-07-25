@@ -1,69 +1,114 @@
-
-
-  @if (plant.expanded) {
-    <div>
-      <ion-segment class="segment-wrap">
-        @for (day of chartConfig; track day; let dayIndex = $index) {
-          <ion-button class="ion-no-padding" size="small" fill="clear" (click)=" setDayVisualization(dayIndex) ">
-            <ion-label [class]=" (dayIndex >= 5 ? 'weekend' : '') + ' daySchedule ' + ((actualDayIndex > 0 ? actualDayIndex-1 : 6) === dayIndex ? 'selected' : '')">{{daysOfWeek[dayIndex].key}}</ion-label>
-          </ion-button>
-        }
-      </ion-segment>
+@if (plant.expanded) {
+  <div>
+    <ion-segment class="segment-wrap">
       @for (day of chartConfig; track day; let dayIndex = $index) {
-        <div class="schedule" [hidden]="(actualDayIndex === dayIndex ? false : true)">
-          <ion-grid class="ion-no-padding">
-            <ion-row class="ion-no-padding">
-              <ion-col size="3" class="ion-no-padding"></ion-col>
-              <ion-col size="9" class="ion-no-padding">
-                <div class="container">
-                  @for (hour of hoursOfDay; track hour; let index = $index) {
-                    <div [class]="'hour title ' + (index === 0 ? 'first' : '') ">
-                      {{ hour }}
-                    </div>
-                  }
-                </div>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-          @for (peripheral of day.data.datasets; track peripheral; let index = $index) {
-            <div>
-
-              <ion-grid class="ion-no-padding">
-                <ion-row class="ion-no-padding">
-                  <ion-col size="3" class="ion-no-padding ion-no-wrap">
-                    @if (peripheral.data[0].icon) {
-                      <span [style.color]="'#' + peripheral.data[0].color ">
-                        <fa-icon [fixedWidth]="true" class="ion-no-padding" [icon]="peripheral.data[0].icon"></fa-icon>
-                      </span>
-                    }
-                    <span class="text" [innerHTML]="peripheral.data[0].element"></span>
-                  </ion-col>
-                  <ion-col size="9" class="ion-no-padding">
-                    <div class="container">
-                      @for (hour of hoursOfDay; track hour; let index = $index) {
-                        <div
-                          [title]="(peripheral.data[0].scheduleType === 2 ?
-                            (peripheral.data[0].hourValues.includes(+hour) ? hour + ':' + peripheral.data[0].atMinute : '') :
-                            (+peripheral.data[0].hourValues[0] <= +hour && +hour < +peripheral.data[0].hourValues[1] ? hour + ':' + peripheral.data[0].atMinute : '')
-                          )"
-
-                          [class]="
-                          (peripheral.data[0].operatingMode >= room.operatingMode ? '' : ' disabled ') +
-                          'hour '+ 'c_'+peripheral.data[0].color +' type_' + peripheral.data[0].scheduleType + ' ' +
-                          (peripheral.data[0].scheduleType === 2 ?
-                            (peripheral.data[0].hourValues.includes(+hour) ? 'onBefore' : '') :
-                            (+peripheral.data[0].hourValues[0] <= +hour && +hour < +peripheral.data[0].hourValues[1] ? 'on' : '')
-                          ) + (index === 0 ?' first ' : '')"
-                          ><span class="hide">{{ hour }}</span>
-                        </div>
-                      }
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </div>
-          }
-        </div>
+        <ion-button
+          class="ion-no-padding"
+          size="small"
+          fill="clear"
+          (click)="setDayVisualization(dayIndex)"
+        >
+          <ion-label
+            [class]="
+              (dayIndex >= 5 ? 'weekend' : '') +
+              ' daySchedule ' +
+              ((actualDayIndex > 0 ? actualDayIndex - 1 : 6) === dayIndex
+                ? 'selected'
+                : '')
+            "
+            >{{ daysOfWeek[dayIndex].key }}</ion-label
+          >
+        </ion-button>
       }
-    </div>
-  }
+    </ion-segment>
+    @for (day of chartConfig; track day; let dayIndex = $index) {
+      <div
+        class="schedule"
+        [hidden]="actualDayIndex === dayIndex ? false : true"
+      >
+        <ion-grid class="ion-no-padding">
+          <ion-row class="ion-no-padding">
+            <ion-col size="3" class="ion-no-padding"></ion-col>
+            <ion-col size="9" class="ion-no-padding">
+              <div class="container">
+                @for (hour of hoursOfDay; track hour; let index = $index) {
+                  <div [class]="'hour title ' + (index === 0 ? 'first' : '')">
+                    {{ hour }}
+                  </div>
+                }
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        @for (
+          peripheral of day.data.datasets;
+          track peripheral;
+          let index = $index
+        ) {
+          <div>
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-no-padding">
+                <ion-col size="3" class="ion-no-padding ion-no-wrap">
+                  @if (peripheral.data[0].icon) {
+                    <span [style.color]="'#' + peripheral.data[0].color">
+                      <fa-icon
+                        [fixedWidth]="true"
+                        class="ion-no-padding"
+                        [icon]="peripheral.data[0].icon"
+                      ></fa-icon>
+                    </span>
+                  }
+                  <span
+                    class="text"
+                    [innerHTML]="peripheral.data[0].element"
+                  ></span>
+                </ion-col>
+                <ion-col size="9" class="ion-no-padding">
+                  <div class="container">
+                    @for (hour of hoursOfDay; track hour; let index = $index) {
+                      <div
+                        [title]="
+                          peripheral.data[0].scheduleType === 2
+                            ? peripheral.data[0].hourValues.includes(+hour)
+                              ? hour + ':' + peripheral.data[0].atMinute
+                              : ''
+                            : +peripheral.data[0].hourValues[0] <= +hour &&
+                                +hour < +peripheral.data[0].hourValues[1]
+                              ? hour + ':' + peripheral.data[0].atMinute
+                              : ''
+                        "
+                        [class]="
+                          (peripheral.data[0].operatingMode >=
+                          room.operatingMode
+                            ? ''
+                            : ' disabled ') +
+                          'hour ' +
+                          'c_' +
+                          peripheral.data[0].color +
+                          ' type_' +
+                          peripheral.data[0].scheduleType +
+                          ' ' +
+                          (peripheral.data[0].scheduleType === 2
+                            ? peripheral.data[0].hourValues.includes(+hour)
+                              ? 'onBefore'
+                              : ''
+                            : +peripheral.data[0].hourValues[0] <= +hour &&
+                                +hour < +peripheral.data[0].hourValues[1]
+                              ? 'on'
+                              : '') +
+                          (index === 0 ? ' first ' : '')
+                        "
+                      >
+                        <span class="hide">{{ hour }}</span>
+                      </div>
+                    }
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

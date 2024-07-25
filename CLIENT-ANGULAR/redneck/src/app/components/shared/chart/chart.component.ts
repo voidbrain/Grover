@@ -1,5 +1,17 @@
-import { Component, Input, SimpleChanges, OnChanges, ViewChild } from '@angular/core';
-import { Chart, ChartType, registerables, ChartConfiguration, ChartOptions } from 'chart.js/auto';
+import {
+  Component,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  ViewChild,
+} from '@angular/core';
+import {
+  Chart,
+  ChartType,
+  registerables,
+  ChartConfiguration,
+  ChartOptions,
+} from 'chart.js/auto';
 import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
@@ -11,17 +23,17 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class ChartComponent implements OnChanges {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;
-  @Input() data
-  @Input() options
-  @Input() type
+  @Input() data;
+  @Input() options;
+  @Input() type;
 
   chartTypes: Record<string, ChartType> = {
     line: 'line',
     bar: 'bar',
-    doughnut: 'doughnut'
+    doughnut: 'doughnut',
   };
 
-  public chartType: ChartType = this.chartTypes["doughnut"];
+  public chartType: ChartType = this.chartTypes['doughnut'];
   public chartData: ChartConfiguration['data'] | undefined = undefined;
   public chartOptions: ChartOptions = {
     responsive: true,

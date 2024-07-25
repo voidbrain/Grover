@@ -1,23 +1,39 @@
 .label {
-    font-size: 14px;
-    width:100%
+  font-size: 14px;
+  width: 100%;
+}
+
+.bar {
+  min-width: 240px;
+}
+
+.macrophase {
+  font-size: 14px;
+  display: inline-block;
+  text-align: center;
+  border-right: 1px solid var(--ion-color-light);
+  &:first-child {
+    border-left: 1px solid var(--ion-color-light);
   }
-  
-  .bar { min-width:240px}
-  
-  .macrophase { font-size: 14px; display:inline-block; text-align: center; border-right:1px solid var(--ion-color-light);
-    &:first-child { border-left:1px solid var(--ion-color-light);  }
+}
+.phase {
+  font-size: 11px;
+  display: inline-block;
+  text-align: center;
+  color: var(--ion-color-light);
+  border-right: 1px solid var(--ion-color-light);
+  &:first-child {
+    border-left: 1px solid var(--ion-color-light);
   }
-  .phase { font-size: 11px; display:inline-block; text-align: center; color: var( --ion-color-light); border-right:1px solid var( --ion-color-light);
-    &:first-child { border-left:1px solid var(--ion-color-light);  }
-    &.contrast {
-      color: var( --ion-color-dark);
-    }
+  &.contrast {
+    color: var(--ion-color-dark);
   }
-  
-  .pull-right {
-    display: inline-block;
-    float: right;
-    &:after { clear: both; }
+}
+
+.pull-right {
+  display: inline-block;
+  float: right;
+  &:after {
+    clear: both;
   }
-  
+}

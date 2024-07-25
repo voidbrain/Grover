@@ -8,9 +8,8 @@ describe('ActionsPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ActionsPanelComponent]
-    })
-    .compileComponents();
+      imports: [ActionsPanelComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ActionsPanelComponent);
     component = fixture.componentInstance;

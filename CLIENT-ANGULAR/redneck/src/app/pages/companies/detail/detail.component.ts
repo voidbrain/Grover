@@ -8,11 +8,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { ChartComponent } from '../../../components/shared/chart/chart.component';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonButton,
   IonButtons,
@@ -79,85 +75,99 @@ import { DatePipe } from '@angular/common';
     IonSelectOption,
     IonTitle,
     IonToolbar,
-    DynamicFormComponent
+    DynamicFormComponent,
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
 })
 // eslint-disable-next-line @angular-eslint/component-class-suffix
 export class CompaniesDetailComponent implements OnInit {
-  @ViewChild(DynamicFormComponent) form: DynamicFormComponent|undefined;
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: any;
   public page = 'companies';
-	formDefinition: any;
-	previousValid = false;
+  formDefinition: any;
+  previousValid = false;
   pots: Pot[] = [];
 
   constructor(
     public db: DbService,
     private route: ActivatedRoute,
-	  public router: Router,
-    private datePipe: DatePipe
+    public router: Router,
+    private datePipe: DatePipe,
   ) {
     this.formDefinition = [
-			{ type: 'text', label: 'Name', name: 'name', validation: [Validators.required], },
-      { type: 'hidden', label: '', name: 'id', },
-      { type: 'toggle', label: 'Enabled', name: 'enabled', },
-      { type: 'hidden', label: '', name: 'deleted', },
-      { type: 'hidden', label: '', name: 'lastUpdate', },
-      { type: 'button', label: 'Submit', name: 'submit', }
+      {
+        type: 'text',
+        label: 'Name',
+        name: 'name',
+        validation: [Validators.required],
+      },
+      { type: 'hidden', label: '', name: 'id' },
+      { type: 'toggle', label: 'Enabled', name: 'enabled' },
+      { type: 'hidden', label: '', name: 'deleted' },
+      { type: 'hidden', label: '', name: 'lastUpdate' },
+      { type: 'button', label: 'Submit', name: 'submit' },
     ];
-    addIcons(ionIcons)
+    addIcons(ionIcons);
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    this.db.load().then(() => {
-      this.previousValid = (this.form as DynamicFormComponent).valid;
-      (this.form as DynamicFormComponent).changes.subscribe(() => {
-        if ((this.form as DynamicFormComponent).valid !== this.previousValid) {
-          this.previousValid = (this.form as DynamicFormComponent).valid;
-          (this.form as DynamicFormComponent).setDisabled('submit', !this.previousValid);
+    this.db
+      .load()
+      .then(() => {
+        this.previousValid = (this.form as DynamicFormComponent).valid;
+        (this.form as DynamicFormComponent).changes.subscribe(() => {
+          if (
+            (this.form as DynamicFormComponent).valid !== this.previousValid
+          ) {
+            this.previousValid = (this.form as DynamicFormComponent).valid;
+            (this.form as DynamicFormComponent).setDisabled(
+              'submit',
+              !this.previousValid,
+            );
           }
-      });
-      this.getItem((this.route.snapshot.paramMap.get('id') as string));
-      }).catch(err => console.error(err));
+        });
+        this.getItem(this.route.snapshot.paramMap.get('id') as string);
+      })
+      .catch((err) => console.error(err));
   }
 
-  goBack(){
-    this.router.navigate(['/pages/'+this.page]);
+  goBack() {
+    this.router.navigate(['/pages/' + this.page]);
   }
 
   getItem(id: any) {
-    if(id){
+    if (id) {
       const itemP: Promise<Company> = this.db.getItem(this.page, id);
       itemP.then((item: Company) => {
-        if(item){
+        if (item) {
           (this.form as DynamicFormComponent).setFormValues(item);
           (this.form as DynamicFormComponent).setDisabled('submit', false);
         }
       });
-    }else{
+    } else {
       (this.form as DynamicFormComponent).setValue('enabled', 1);
       (this.form as DynamicFormComponent).setValue('deleted', 0);
       (this.form as DynamicFormComponent).setDisabled('submit', true);
     }
-	}
+  }
 
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  formSubmitted(value: {[name: string]: any}) {
+  formSubmitted(value: { [name: string]: any }) {
     this.save(value as Company);
   }
 
-	save(value: any){
-    (this.form as DynamicFormComponent).config.filter((el: any) => el.type === 'date').map((el: any) => {
-      value[el.name] = new Date(value[el.name]).getTime();
+  save(value: any) {
+    (this.form as DynamicFormComponent).config
+      .filter((el: any) => el.type === 'date')
+      .map((el: any) => {
+        value[el.name] = new Date(value[el.name]).getTime();
+      });
+
+    this.db.putItem(this.page, value).then(() => {
+      this.router.navigate(['/pages/' + this.page]);
     });
-
-		this.db.putItem(this.page, value).then(()=>{
-		  this.router.navigate(['/pages/'+this.page]);
-		});
-	}
-
+  }
 }

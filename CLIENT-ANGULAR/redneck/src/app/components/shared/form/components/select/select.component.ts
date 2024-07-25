@@ -3,7 +3,12 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { Field } from '../../models/field.interface';
 import { FieldConfig } from '../../models/field-config.interface';
-import { IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone'
+import {
+  IonItem,
+  IonLabel,
+  IonSelect,
+  IonSelectOption,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-input-select',
@@ -17,10 +22,8 @@ import { IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/st
         multiple="{{ config.multiple }}"
         [formControlName]="config.name"
       >
-        @for(option of config.options; track option){
-          <ion-select-option
-            [value]="option.id"
-          >
+        @for (option of config.options; track option) {
+          <ion-select-option [value]="option.id">
             {{ option.name }}
           </ion-select-option>
         }

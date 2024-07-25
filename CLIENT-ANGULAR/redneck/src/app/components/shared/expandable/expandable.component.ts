@@ -1,14 +1,20 @@
-import { AfterViewInit, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 
 @Component({
   selector: 'app-expandable',
   standalone: true,
   imports: [],
   templateUrl: './expandable.component.html',
-  styleUrl: './expandable.component.scss'
+  styleUrl: './expandable.component.scss',
 })
 export class ExpandableComponent implements AfterViewInit {
-
   @ViewChild('expandWrapper', { read: ElementRef }) expandWrapper;
   @Input() expanded;
 
@@ -20,8 +26,7 @@ export class ExpandableComponent implements AfterViewInit {
     this.renderer.setStyle(
       this.expandWrapper.nativeElement,
       'height',
-      this.expandHeight + 'px'
+      this.expandHeight + 'px',
     );
   }
-
 }

@@ -14,7 +14,7 @@ export enum OperatingModes {
 export enum Owner {
   schedule = 'schedule',
   user = 'user',
-  start = 'start'
+  start = 'start',
 }
 
 export enum Peripherals {
@@ -24,7 +24,7 @@ export enum Peripherals {
 
 export enum Purposes {
   client = 1,
-  worker = 2
+  worker = 2,
 }
 
 export enum ProbesTypes {

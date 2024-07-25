@@ -1,7 +1,16 @@
 /* eslint-disable @angular-eslint/directive-selector */
 /* eslint-disable id-blacklist */
 import {
-  ComponentFactoryResolver, ComponentRef, Directive, Input, OnChanges, OnInit, Type, ViewContainerRef, Output, EventEmitter
+  ComponentFactoryResolver,
+  ComponentRef,
+  Directive,
+  Input,
+  OnChanges,
+  OnInit,
+  Type,
+  ViewContainerRef,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
@@ -47,7 +56,7 @@ export class DynamicFieldDirective implements Field, OnChanges, OnInit {
 
   constructor(
     private resolver: ComponentFactoryResolver,
-    private container: ViewContainerRef
+    private container: ViewContainerRef,
   ) {}
 
   ngOnChanges() {
@@ -60,10 +69,12 @@ export class DynamicFieldDirective implements Field, OnChanges, OnInit {
   ngOnInit() {
     if (!components[this.config.type]) {
       const supportedTypes = Object.keys(components).join(', ');
-      throw new Error( `Trying to use an unsupported type (${this.config.type}). Supported types: ${supportedTypes}` );
+      throw new Error(
+        `Trying to use an unsupported type (${this.config.type}). Supported types: ${supportedTypes}`,
+      );
     }
     const component = this.resolver.resolveComponentFactory<Field>(
-      components[this.config.type]
+      components[this.config.type],
     );
     this.component = this.container.createComponent(component);
     this.component.instance.config = this.config;

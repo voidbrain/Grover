@@ -4,70 +4,169 @@
     <ion-row>
       <ion-col size="9">
         <ion-card-content class="ion-no-padding">
-
-          <ion-item class="ion-no-padding" style="--inner-padding-end: 0 !important;">
+          <ion-item
+            class="ion-no-padding"
+            style="--inner-padding-end: 0 !important"
+          >
             <ion-grid>
               <ion-row>
                 <ion-col size="1">
-                  <fa-icon class="ion-padding-top" [fixedWidth]="true" icon="ruler"></fa-icon>
+                  <fa-icon
+                    class="ion-padding-top"
+                    [fixedWidth]="true"
+                    icon="ruler"
+                  ></fa-icon>
                 </ion-col>
                 <ion-col size="6">
-                  <app-range [attr.disabled]=" probes?.waterLevel ? false : true " [minValue]="probes?.waterLevel?.type?.minAcceptableValue" [maxValue]="probes?.waterLevel?.type?.maxAcceptableValue" [minWarningValue]="probes?.waterLevel?.type?.minWarningValue" [maxWarningValue]="probes?.waterLevel?.type?.maxWarningValue" [value]="probes?.waterLevel?.value" [um]="probes?.waterLevel?.type?.um"></app-range>
+                  <app-range
+                    [attr.disabled]="probes?.waterLevel ? false : true"
+                    [minValue]="probes?.waterLevel?.type?.minAcceptableValue"
+                    [maxValue]="probes?.waterLevel?.type?.maxAcceptableValue"
+                    [minWarningValue]="
+                      probes?.waterLevel?.type?.minWarningValue
+                    "
+                    [maxWarningValue]="
+                      probes?.waterLevel?.type?.maxWarningValue
+                    "
+                    [value]="probes?.waterLevel?.value"
+                    [um]="probes?.waterLevel?.type?.um"
+                  ></app-range>
                 </ion-col>
                 <ion-col size="1">
-                  <ion-button fill="clear" [disabled]=" !probes?.waterLevel " size="small" (click)="read(probes?.waterLevel?.id)">
+                  <ion-button
+                    fill="clear"
+                    [disabled]="!probes?.waterLevel"
+                    size="small"
+                    (click)="read(probes?.waterLevel?.id)"
+                  >
                     <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
                   </ion-button>
                 </ion-col>
                 <ion-col size="4">
-                  <ion-button expand="block" class="btn" fill="clear" [disabled]=" !workers?.refill " size="small" (click)="fillWaterLevel(workers?.refill?.id)">
-                    H<sub>2</sub>O <fa-icon slot="end" [fixedWidth]="true" icon="fill"></fa-icon>
+                  <ion-button
+                    expand="block"
+                    class="btn"
+                    fill="clear"
+                    [disabled]="!workers?.refill"
+                    size="small"
+                    (click)="fillWaterLevel(workers?.refill?.id)"
+                  >
+                    H<sub>2</sub>O
+                    <fa-icon
+                      slot="end"
+                      [fixedWidth]="true"
+                      icon="fill"
+                    ></fa-icon>
                   </ion-button>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-item>
 
-          <ion-item class="ion-no-padding" style="--inner-padding-end: 0 !important;">
+          <ion-item
+            class="ion-no-padding"
+            style="--inner-padding-end: 0 !important"
+          >
             <ion-grid>
               <ion-row>
                 <ion-col size="1">
-                  <fa-icon class="ion-padding-top" [fixedWidth]="true" icon="swatchbook"></fa-icon>
+                  <fa-icon
+                    class="ion-padding-top"
+                    [fixedWidth]="true"
+                    icon="swatchbook"
+                  ></fa-icon>
                 </ion-col>
                 <ion-col size="6">
-                  <app-range [attr.disabled]=" probes?.ph ? false : true " [minValue]="probes?.ph?.type?.minAcceptableValue" [maxValue]="probes?.ph?.type?.maxAcceptableValue" [minWarningValue]="probes?.ph?.type?.minWarningValue" [maxWarningValue]="probes?.ph?.type?.maxWarningValue" [value]="probes?.ph?.value" [um]="probes?.ph?.type?.um"></app-range>
+                  <app-range
+                    [attr.disabled]="probes?.ph ? false : true"
+                    [minValue]="probes?.ph?.type?.minAcceptableValue"
+                    [maxValue]="probes?.ph?.type?.maxAcceptableValue"
+                    [minWarningValue]="probes?.ph?.type?.minWarningValue"
+                    [maxWarningValue]="probes?.ph?.type?.maxWarningValue"
+                    [value]="probes?.ph?.value"
+                    [um]="probes?.ph?.type?.um"
+                  ></app-range>
                 </ion-col>
                 <ion-col size="1">
-                  <ion-button fill="clear" size="small" [disabled]=" !probes?.ph " (click)="read(probes?.ph?.id)">
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    [disabled]="!probes?.ph"
+                    (click)="read(probes?.ph?.id)"
+                  >
                     <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
                   </ion-button>
                 </ion-col>
                 <ion-col size="4">
-                  <ion-button expand="block" class="btn" fill="clear" size="small" [disabled]=" !workers?.refill " (click)="fillPhDown(workers?.refill?.id)">
-                    pH↓ <fa-icon [fixedWidth]="true" slot="end" icon="fill"></fa-icon>
+                  <ion-button
+                    expand="block"
+                    class="btn"
+                    fill="clear"
+                    size="small"
+                    [disabled]="!workers?.refill"
+                    (click)="fillPhDown(workers?.refill?.id)"
+                  >
+                    pH↓
+                    <fa-icon
+                      [fixedWidth]="true"
+                      slot="end"
+                      icon="fill"
+                    ></fa-icon>
                   </ion-button>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-item>
 
-          <ion-item class="ion-no-padding" style="--inner-padding-end: 0 !important;">
+          <ion-item
+            class="ion-no-padding"
+            style="--inner-padding-end: 0 !important"
+          >
             <ion-grid>
               <ion-row>
                 <ion-col size="1">
-                  <fa-icon class="ion-padding-top" [fixedWidth]="true" icon="plug"></fa-icon>
+                  <fa-icon
+                    class="ion-padding-top"
+                    [fixedWidth]="true"
+                    icon="plug"
+                  ></fa-icon>
                 </ion-col>
                 <ion-col size="6">
-                  <app-range [attr.disabled]=" probes?.ec ? false : true " [minValue]="probes?.ec?.type?.minAcceptableValue" [maxValue]="probes?.ec?.type?.maxAcceptableValue" [minWarningValue]="probes?.ec?.type?.minWarningValue" [maxWarningValue]="probes?.ec?.type?.maxWarningValue" [value]="probes?.ec?.value" [um]="probes?.ec?.type?.um"></app-range>
+                  <app-range
+                    [attr.disabled]="probes?.ec ? false : true"
+                    [minValue]="probes?.ec?.type?.minAcceptableValue"
+                    [maxValue]="probes?.ec?.type?.maxAcceptableValue"
+                    [minWarningValue]="probes?.ec?.type?.minWarningValue"
+                    [maxWarningValue]="probes?.ec?.type?.maxWarningValue"
+                    [value]="probes?.ec?.value"
+                    [um]="probes?.ec?.type?.um"
+                  ></app-range>
                 </ion-col>
                 <ion-col size="1">
-                  <ion-button fill="clear" size="small" [disabled]=" !probes?.ec " (click)="read(probes?.ec?.id)">
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    [disabled]="!probes?.ec"
+                    (click)="read(probes?.ec?.id)"
+                  >
                     <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
                   </ion-button>
                 </ion-col>
                 <ion-col size="4">
-                  <ion-button expand="block" class="btn" fill="clear" size="small" [disabled]=" !workers?.refill " (click)="fillNutrient(workers?.refill?.id)">
-                    Dose <fa-icon [fixedWidth]="true" slot="end" icon="fill"></fa-icon>
+                  <ion-button
+                    expand="block"
+                    class="btn"
+                    fill="clear"
+                    size="small"
+                    [disabled]="!workers?.refill"
+                    (click)="fillNutrient(workers?.refill?.id)"
+                  >
+                    Dose
+                    <fa-icon
+                      [fixedWidth]="true"
+                      slot="end"
+                      icon="fill"
+                    ></fa-icon>
                   </ion-button>
                 </ion-col>
               </ion-row>
@@ -77,39 +176,76 @@
       </ion-col>
 
       <ion-col size="3">
-        <app-doses-bar app-doses-bar [dose]="plant?.phase?.dose"></app-doses-bar>
+        <app-doses-bar
+          app-doses-bar
+          [dose]="plant?.phase?.dose"
+        ></app-doses-bar>
       </ion-col>
-
     </ion-row>
 
     <ion-row>
-      <ion-col  size="12">
-      <ion-card-content class="ion-no-padding">
-        <ion-item class="ion-no-padding" style="--inner-padding-end: 0 !important;">
-          <ion-grid>
-            <ion-row>
-              <ion-col size="1">
-                <fa-icon class="ion-padding-top" [fixedWidth]="true" icon="temperature-half"></fa-icon>
-              </ion-col>
-              <ion-col size="6">
-                <app-range [attr.disabled]=" probes?.temp ? false : true " [minValue]="probes?.temp?.type?.minAcceptableValue" [maxValue]="probes?.temp?.type?.maxAcceptableValue" [minWarningValue]="probes?.temp?.type?.minWarningValue" [maxWarningValue]="probes?.temp?.type?.maxWarningValue" [value]="probes?.temp?.value" [um]="probes?.temp?.type?.um"></app-range>
-              </ion-col>
-              <ion-col size="1">
-                <ion-button fill="clear" size="small" [disabled]=" !probes?.temp " (click)="read(probes?.temp?.id)">
-                  <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
-                </ion-button>
-              </ion-col>
-              <ion-col size="4">
-                <ion-item class="ion-no-padding" lines="none" style="--inner-padding-start:-2px!important; --inner-padding-end: 0 !important;">
-                  <ion-label class="label-toggle">
-                    H<sub>2</sub>O <ion-icon name="reload-outline"></ion-icon>
-                  </ion-label>
-                  <ion-toggle slot="end" (ionChange)=" toggleWaterRecycle(workers?.waterLoop) " [disabled]=" !workers?.waterLoop " [checked]=" workers?.waterLoop?.status === 'ON' ? true : false " color="primary"></ion-toggle>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
+      <ion-col size="12">
+        <ion-card-content class="ion-no-padding">
+          <ion-item
+            class="ion-no-padding"
+            style="--inner-padding-end: 0 !important"
+          >
+            <ion-grid>
+              <ion-row>
+                <ion-col size="1">
+                  <fa-icon
+                    class="ion-padding-top"
+                    [fixedWidth]="true"
+                    icon="temperature-half"
+                  ></fa-icon>
+                </ion-col>
+                <ion-col size="6">
+                  <app-range
+                    [attr.disabled]="probes?.temp ? false : true"
+                    [minValue]="probes?.temp?.type?.minAcceptableValue"
+                    [maxValue]="probes?.temp?.type?.maxAcceptableValue"
+                    [minWarningValue]="probes?.temp?.type?.minWarningValue"
+                    [maxWarningValue]="probes?.temp?.type?.maxWarningValue"
+                    [value]="probes?.temp?.value"
+                    [um]="probes?.temp?.type?.um"
+                  ></app-range>
+                </ion-col>
+                <ion-col size="1">
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    [disabled]="!probes?.temp"
+                    (click)="read(probes?.temp?.id)"
+                  >
+                    <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
+                  </ion-button>
+                </ion-col>
+                <ion-col size="4">
+                  <ion-item
+                    class="ion-no-padding"
+                    lines="none"
+                    style="
+                      --inner-padding-start: -2px !important;
+                      --inner-padding-end: 0 !important;
+                    "
+                  >
+                    <ion-label class="label-toggle">
+                      H<sub>2</sub>O <ion-icon name="reload-outline"></ion-icon>
+                    </ion-label>
+                    <ion-toggle
+                      slot="end"
+                      (ionChange)="toggleWaterRecycle(workers?.waterLoop)"
+                      [disabled]="!workers?.waterLoop"
+                      [checked]="
+                        workers?.waterLoop?.status === 'ON' ? true : false
+                      "
+                      color="primary"
+                    ></ion-toggle>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-item>
         </ion-card-content>
       </ion-col>
     </ion-row>

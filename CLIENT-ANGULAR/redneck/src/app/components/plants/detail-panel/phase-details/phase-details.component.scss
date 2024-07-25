@@ -1,17 +1,27 @@
 .label {
-    font-size: 14px;
-  }
-  
-  ion-button {
-    text-transform: capitalize;
-    --padding-start: 0.7em;
-    --padding-end: 0.7em;
-  }
-  
-  app-range { width: 100%;}
-  
-  ion-toggle { zoom:0.5 }
-  .label-toggle { font-size: 13px; margin:0; text-align: center; font-weight: 500}
-  
-  item-native { padding-inline-start:10px ; }
-  
+  font-size: 14px;
+}
+
+ion-button {
+  text-transform: capitalize;
+  --padding-start: 0.7em;
+  --padding-end: 0.7em;
+}
+
+app-range {
+  width: 100%;
+}
+
+ion-toggle {
+  zoom: 0.5;
+}
+.label-toggle {
+  font-size: 13px;
+  margin: 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+item-native {
+  padding-inline-start: 10px;
+}

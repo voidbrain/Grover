@@ -1,4 +1,3 @@
-
 <ion-card>
   <ion-card-content>
     <div class="app-input-select">
@@ -6,7 +5,12 @@
         <ion-row>
           @for (option of config.options; track option; let index = $index) {
             <ion-col class="ion-text-center">
-              <ion-checkbox class="ion-no-padding ion-no-margin" (ionChange)="updateSelection($event)" [checked]="option.isChecked" [value]="option.id"></ion-checkbox>
+              <ion-checkbox
+                class="ion-no-padding ion-no-margin"
+                (ionChange)="updateSelection($event)"
+                [checked]="option.isChecked"
+                [value]="option.id"
+              ></ion-checkbox>
               <br /><ion-label color="primary">{{ option.name }}</ion-label>
             </ion-col>
           }

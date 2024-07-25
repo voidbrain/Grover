@@ -35,5 +35,4 @@ export interface RoomExtended extends Room {
   serialNumber?: string;
 }
 
-
 // PH = 5.8 +/- 0.5

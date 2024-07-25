@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
@@ -16,14 +23,8 @@ import { FieldConfig } from '../../models/field-config.interface';
     [formGroup]="form"
     (submit)="handleSubmit($event)"
   >
-    @for(field of config; track field){
-      <ng-container
-        
-        dynamicField
-        config="field"
-        group="form"
-      >
-      </ng-container>
+    @for (field of config; track field) {
+      <ng-container dynamicField config="field" group="form"> </ng-container>
     }
   </form>`,
 })
@@ -64,7 +65,9 @@ export class DynamicFormComponent implements OnChanges, OnInit {
       configControls
         .filter((control) => !controls.includes(control))
         .forEach((name) => {
-          const config: any = this.config.find((control) => control.name === name);
+          const config: any = this.config.find(
+            (control) => control.name === name,
+          );
           this.form.addControl(name, this.createControl(config));
         });
     }
@@ -73,7 +76,7 @@ export class DynamicFormComponent implements OnChanges, OnInit {
   createGroup() {
     const group = this.fb.group({});
     this.controls.forEach((control) =>
-      group.addControl(control.name, this.createControl(control))
+      group.addControl(control.name, this.createControl(control)),
     );
     return group;
   }

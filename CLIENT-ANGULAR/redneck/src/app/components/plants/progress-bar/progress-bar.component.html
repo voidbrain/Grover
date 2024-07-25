@@ -1,26 +1,48 @@
 <ion-card>
   <ion-card-content>
     <div class="label">
-      {{ plant.phase?.name }} &mdash; {{ (
-        plant.daysFromFlush ? plant.daysFromFlush :
-        plant.daysFromBloom ? plant.daysFromBloom :
-        plant.daysFromGrow)
+      {{ plant.phase?.name }} &mdash;
+      {{
+        plant.daysFromFlush
+          ? plant.daysFromFlush
+          : plant.daysFromBloom
+            ? plant.daysFromBloom
+            : plant.daysFromGrow
       }}/{{ plant.phase?.duration }}d
-      <div class="pull-right">Tot {{ (+plant.daysFromGrow + +plant.daysFromBloom + +plant.daysFromFlush) / 7  | number : '1.0-0' }}w</div>
+      <div class="pull-right">
+        Tot
+        {{
+          (+plant.daysFromGrow + +plant.daysFromBloom + +plant.daysFromFlush) /
+            7 | number: "1.0-0"
+        }}w
+      </div>
     </div>
     <div class="bar" [ngStyle]="style">
-      <div class="macrophase" [style.width]="plantdaysFromGrowPerc">{{ +plant.daysFromGrow / 7  | number : '1.0-0' }}w</div>
-      <div class="macrophase" [style.width]="plantdaysFromBloomPerc"> {{ +plant.daysFromBloom / 7  | number : '1.0-0' }}w</div>
-      <div class="macrophase" [style.width]="plantdaysFromFlushPerc"> {{ +plant.daysFromFlush / 7  | number : '1.0-0' }}w</div>
+      <div class="macrophase" [style.width]="plantdaysFromGrowPerc">
+        {{ +plant.daysFromGrow / 7 | number: "1.0-0" }}w
+      </div>
+      <div class="macrophase" [style.width]="plantdaysFromBloomPerc">
+        {{ +plant.daysFromBloom / 7 | number: "1.0-0" }}w
+      </div>
+      <div class="macrophase" [style.width]="plantdaysFromFlushPerc">
+        {{ +plant.daysFromFlush / 7 | number: "1.0-0" }}w
+      </div>
     </div>
     <div class="bar" [ngStyle]="style">
       @for (phase of plant.calendar.phases; track phase) {
-        <div [style.width]=" phase.percentDuration + '%' "
-          [class]="'phase ' + (this.plant.phase?.pos >= phase.pos ? '' : 'contrast')"
-          [style.backgroundColor]=" (this.plant.phase?.pos >= phase.pos ? phase.dose.color : this.addAlpha(phase.dose.color, 0.1)) " >
-            {{ phase.duration / 7  | number : '1.0-0' }}w
+        <div
+          [style.width]="phase.percentDuration + '%'"
+          [class]="
+            'phase ' + (this.plant.phase?.pos >= phase.pos ? '' : 'contrast')
+          "
+          [style.backgroundColor]="
+            this.plant.phase?.pos >= phase.pos
+              ? phase.dose.color
+              : this.addAlpha(phase.dose.color, 0.1)
+          "
+        >
+          {{ phase.duration / 7 | number: "1.0-0" }}w
         </div>
-        
       }
     </div>
   </ion-card-content>
