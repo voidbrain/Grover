@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 export enum DevicesStatus {
   ON = 'ON',
   OFF = 'OFF',
@@ -66,8 +64,6 @@ export enum ServerPages {
 export enum WorkersTypes {
   Pot_Water_loop = 1,
   Pot_refill = 2,
-  // Pot_Nutrient_refill = 3,
-  // Pot_PHdown_refill = 4,
 
   Room_Water_refill = 3,
   Room_PhDown_refill = 4,

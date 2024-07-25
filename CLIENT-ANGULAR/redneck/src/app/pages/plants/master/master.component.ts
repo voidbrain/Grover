@@ -1,6 +1,5 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable @typescript-eslint/array-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
   ActivatedRoute,

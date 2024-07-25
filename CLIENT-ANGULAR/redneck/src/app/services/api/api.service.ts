@@ -56,7 +56,7 @@ export class ApiService {
           item.synced = 0;
         });
 
-        let response = { items: items };
+        const response = { items: items };
         resolve(response);
       }
     });
@@ -66,12 +66,10 @@ export class ApiService {
     return new Promise((resolve) => {
       if (this.networkService.status) {
         console.info('[API]: network available');
-        this.http
-          .delete(this.url + table + '?id=' + item.id)
-          .subscribe((response: any) => {
-            console.info('[API]: item deleted online: ', item);
-            resolve(item);
-          });
+        this.http.delete(this.url + table + '?id=' + item.id).subscribe(() => {
+          console.info('[API]: item deleted online: ', item);
+          resolve(item);
+        });
       } else {
         console.warn('[API]: network not available');
         item.deleted = 1;
@@ -91,6 +89,7 @@ export class ApiService {
     type: string,
     duration: number,
   ) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       if (this.networkService.status) {
         if (this.debug) {

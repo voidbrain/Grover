@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable @typescript-eslint/dot-notation */
-/* eslint-disable @typescript-eslint/no-shadow */
 import { Component, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
 import { PlantExtended } from '../../../../interfaces/plant';
@@ -51,21 +48,20 @@ export class PanelChartComponent implements OnChanges {
   }
 
   setup() {
-    const self = this;
-    self.settings = new SettingsService();
+    this.settings = new SettingsService();
     const labels = new Set();
 
-    self.room.workers?.map((item) => {
+    this.room.workers?.map((item) => {
       if (item.log?.length) {
         const dataset = { borderColor: '#FF00FF', data: [], hidden: true };
         item.log.map((log) => {
           dataset.data.push({ t: new Date(log.executedTime), y: log.action });
         });
         item.log.map((log) => labels.add(log.executedTime));
-        self.dataArray.datasets.push(dataset);
+        this.dataArray.datasets.push(dataset);
       }
     });
-    self.room.probes?.map((item) => {
+    this.room.probes?.map((item) => {
       if (item.log?.length) {
         const dataset = { borderColor: '#FFFF00', data: [], hidden: false };
         item.log.map((log) => {
@@ -77,20 +73,20 @@ export class PanelChartComponent implements OnChanges {
           }
         });
         item.log.map((log) => labels.add(log.executedTime));
-        self.dataArray.datasets.push(dataset);
+        this.dataArray.datasets.push(dataset);
       }
     });
-    self.plant?.workers?.map((item) => {
+    this.plant?.workers?.map((item) => {
       if (item.log.length) {
         const dataset = { borderColor: '#FFFFFF', data: [], hidden: true };
         item.log.map((log) => {
           dataset.data.push({ t: log.executedTime, y: log.action });
         });
         item.log.map((log) => labels.add(log.executedTime));
-        self.dataArray.datasets.push(dataset);
+        this.dataArray.datasets.push(dataset);
       }
     });
-    self.plant?.probes?.map((item) => {
+    this.plant?.probes?.map((item) => {
       if (item.log.length) {
         const dataset = { borderColor: '#0000cc', data: [], hidden: false };
         item.log.map((log) => {
@@ -102,13 +98,13 @@ export class PanelChartComponent implements OnChanges {
           }
         });
         item.log.map((log) => labels.add(log.executedTime));
-        self.dataArray.datasets.push(dataset);
+        this.dataArray.datasets.push(dataset);
       }
     });
 
-    const data = self.dataArray;
+    const data = this.dataArray;
     data.labels = [...labels];
-    self.data = data as any;
+    this.data = data as any;
 
     this.filterData('beginning');
   }

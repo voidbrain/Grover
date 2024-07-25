@@ -89,7 +89,6 @@ export class SchedulePanelComponent implements OnChanges {
   }
 
   popuplateDaysArray(item: any, scheduleRow: any) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     if (scheduleRow) {
       const stringCron = `${scheduleRow.atMinute} ${scheduleRow.atHour} * * ${scheduleRow.atDay}`;

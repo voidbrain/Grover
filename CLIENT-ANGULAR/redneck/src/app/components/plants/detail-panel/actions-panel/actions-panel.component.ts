@@ -44,7 +44,7 @@ export class ActionsPanelComponent implements OnChanges {
       this.setup();
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   async presentToast(header: any, message: any, color: any, duration: any) {
     const toast = await this.toastController.create({
       header,

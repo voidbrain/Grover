@@ -80,7 +80,6 @@ import { DatePipe } from '@angular/common';
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
 })
-// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: any;

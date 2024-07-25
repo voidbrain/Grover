@@ -1,5 +1,3 @@
-/* eslint-disable @angular-eslint/directive-selector */
-/* eslint-disable id-blacklist */
 import {
   ComponentFactoryResolver,
   ComponentRef,
@@ -9,8 +7,6 @@ import {
   OnInit,
   Type,
   ViewContainerRef,
-  Output,
-  EventEmitter,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
@@ -27,6 +23,7 @@ import { DateComponent } from '../date/date.component';
 import { Field } from '../../models/field.interface';
 import { FieldConfig } from '../../models/field-config.interface';
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 const components: { [type: string]: Type<Field> } = {
   text: InputTextComponent,
   password: InputTextComponent,
@@ -46,6 +43,7 @@ const components: { [type: string]: Type<Field> } = {
 };
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[dynamicField]',
 })
 export class DynamicFieldDirective implements Field, OnChanges, OnInit {

@@ -2,7 +2,7 @@ import { Component, ViewChildren } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { ChartComponent } from '../../../components/shared/chart/chart.component';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import {
   IonButton,
@@ -74,7 +74,7 @@ export class DosesMasterComponent {
   math = Math;
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table: string = 'doses';
+  table = 'doses';
 
   constructor(
     public db: DbService,
@@ -91,7 +91,7 @@ export class DosesMasterComponent {
     this.db
       .load()
       .then(() => {
-        let forceLoading = true;
+        const forceLoading = true;
         this.db.initService(forceLoading).then(() => {
           this.getItems();
         });
@@ -101,14 +101,7 @@ export class DosesMasterComponent {
 
   getItems() {
     this.db.getItems(this.table).then((items) => {
-      let colors = [
-        'rgba(17, 176, 50, 1)',
-        'rgba(125, 17, 176, 1)',
-        'rgba(176, 17, 17, 1)',
-        'rgba(240, 215, 7, 1)',
-        'rgba(7, 18, 240, 1)',
-      ];
-      items.map((item: any, i: any) => {
+      items.map((item: any) => {
         item.chartConfig = {
           id: 'chart',
           type: 'bar',
@@ -180,7 +173,7 @@ export class DosesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then((result) => {
+    this.db.deleteItem(this.table, item).then(() => {
       this.getItems();
     });
   }
@@ -196,7 +189,7 @@ export class DosesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    let forceLoading = true;
+    const forceLoading = true;
     this.db
       .initService(forceLoading)
       .then(() => {

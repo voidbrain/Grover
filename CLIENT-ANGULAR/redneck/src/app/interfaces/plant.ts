@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { Strain } from './strain';
 import { Pot } from './pot';
 import { Location } from './location';

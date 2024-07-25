@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IonCol, IonGrid, IonRow } from '@ionic/angular/standalone';
