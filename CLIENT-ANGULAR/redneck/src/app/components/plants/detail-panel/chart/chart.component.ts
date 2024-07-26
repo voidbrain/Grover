@@ -4,7 +4,11 @@ import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
 import { ChartComponent } from '../../../shared/chart/chart.component';
 import { ProbesTypes } from '../../../../services/settings/enum';
-import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import { Chart, ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { BoxAnnotationOptions } from 'chartjs-plugin-annotation';
+import zoomPlugin from 'chartjs-plugin-zoom';
+
 import {
   format,
   setMinutes,
@@ -35,6 +39,10 @@ export class PanelChartComponent implements OnChanges {
     labels: [],
     datasets: [],
   };
+
+  constructor(){
+    Chart.register(annotationPlugin, zoomPlugin);
+  }
 
 
   public chartData: ChartConfiguration['data'];
@@ -126,8 +134,8 @@ export class PanelChartComponent implements OnChanges {
   }
 
   drawChart(filteredData) {
-    const xMin = new Date(this.plant?.dayStartGrow).getTime();
-    const xMax = setMinutes(new Date(), 0);
+    const xMin = new Date(this.plant?.dayStartGrow);
+    const xMax = new Date(setMinutes(new Date(), 0));
 
     const operationsArray = filteredData.datasets?.filter(
       (el) => el.hidden === true,
@@ -145,19 +153,6 @@ export class PanelChartComponent implements OnChanges {
     );
 
     this.chartType = 'line';
-    this.chartOptions = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: 'Chart.js Line Chart'
-        }
-      }
-    };
 
     this.chartData = {
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -172,153 +167,144 @@ export class PanelChartComponent implements OnChanges {
       ]
     };
 
+    const chartOptions: ChartOptions = {
+      plugins: {
+        legend: { display: false },
+
+        tooltip: {
+          callbacks: {
+            title: () => {
+              return;
+            },
+            label: (tooltipItem) => {
+              const date = parse(
+                tooltipItem.label,
+                'yyyy-MM-ddTHH:mm:ss.SSSxxx',
+                new Date(),
+              );
+              const formattedDate = format(date, 'MMM dd HH:mm');
+              const label = `${formattedDate} => ${tooltipItem.raw} °C`;
+              return label;
+            },
+          },
+        },
+
+        annotation: {
+          annotations: [
+            /** safe area */
+            {
+              type: 'box',
+              xMin: filteredData.labels[0],
+              xMax: filteredData.labels[filteredData.labels.length - 1],
+              yMax: this.plant?.phase?.minTemp,
+              yMin: probeConfig?.minAcceptableValue,
+              backgroundColor: 'rgba(255, 99, 132, 0.1)',
+              borderColor: 'rgba(255, 99, 132, 0.1)',
+              xScaleID: 'x-axis-0',
+              yScaleID: 'y-axis-0',
+            } as BoxAnnotationOptions,
+            {
+              type: 'box',
+              xMin: filteredData.labels[0],
+              xMax: filteredData.labels[filteredData.labels.length - 1],
+              yMax: this.plant?.phase?.maxTemp,
+              yMin: this.plant?.phase?.minTemp,
+              backgroundColor: 'rgba(47,223,117,0.1)',
+              borderColor: 'rgba(255, 99, 132, 0.1)',
+              xScaleID: 'x-axis-0',
+              yScaleID: 'y-axis-0',
+            } as BoxAnnotationOptions,
+            {
+              type: 'box',
+              xMin: filteredData.labels[0],
+              xMax: filteredData.labels[filteredData.labels.length - 1],
+              yMin: this.plant?.phase?.maxTemp,
+              yMax: probeConfig?.maxAcceptableValue,
+              backgroundColor: 'rgba(255, 99, 132, 0.1)',
+              borderColor: 'rgba(15, 99, 132, 0.1)',
+              xScaleID: 'x-axis-0',
+              yScaleID: 'y-axis-0',
+            } as BoxAnnotationOptions,
+
+            ...annotationsArray.map((data) => {
+              return {
+                type: 'box',
+                borderColor: data.borderColor,
+                backgroundColor: data.borderColor,
+                borderWidth: 2,
+                xScaleID: 'x-axis-0',
+                yScaleID: 'y-axis-0',
+                xMin: data.t,
+                xMax: data.t,
+                yMin: 20,
+                yMax: 20.4,
+              }  as BoxAnnotationOptions;
+            }),
+          ],
+        },
+
+        zoom: {
+          limits:{
+            x: { min: xMin.getTime(), max: xMax.getTime() },
+            y: { min: null, max: null }
+          },
+          pan: {
+            enabled: true,
+            mode: 'x', 
+          },
+          zoom: {
+            mode: 'x',
+          },
+        },
+        
+      },
+
+      responsive: true,
+      maintainAspectRatio: true,
+      
+      elements: {
+        line: { borderWidth: 1, tension: 0 },
+        point: { radius: 1 },
+      },
+      
+      scales: {
+        y: {
+          ticks: {
+            display: true,
+          },
+        },
+        x: { 
+          // type: 'time',
+          time: {
+            displayFormats: {
+              millisecond: 'MMM DD HH:mm',
+              second: 'MMM DD HH:mm',
+              minute: 'MMM DD HH:mm',
+              hour: 'MMM DD HH:mm',
+              day: 'MMM DD HH:mm',
+              week: 'MMM DD HH:mm',
+              month: 'MMM DD YYYY HH:mm',
+              quarter: 'MMM DD YYYY HH:mm',
+              year: 'MMM DD YYYY HH:mm',
+            },
+          },
+          ticks: {
+            display: true,
+          },
+        },
+      },
+      
+    };
+
     this.chartConfig = {
       type: this.chartType,
-      data: this.chartData,
-      options: this.chartOptions,
+      data: filteredData,
+      options: chartOptions,
     }
 
-    // this.chartConfig = {
-    //   type: 'line',
-    //   data: filteredData,
-    //   options: {
-    //     plugins: {
-    //       zoom: {
-    //         pan: {
-    //           enabled: true,
-    //           mode: 'x',
-    //           rangeMin: {
-    //             x: xMin,
-    //             y: null,
-    //           },
-    //           rangeMax: {
-    //             x: xMax,
-    //             y: null,
-    //           },
-    //         },
-    //         zoom: {
-    //           rangeMin: {
-    //             x: xMin,
-    //             y: null,
-    //           },
-    //           rangeMax: {
-    //             x: xMax,
-    //             y: null,
-    //           },
-    //           enabled: true,
-    //           // drag: true,
-    //           mode: 'x',
-    //           // wheel: {
-    //           //   enabled: true,
-    //           // },
-    //           // pinch: {
-    //           //   enabled: true
-    //           // },
-    //         },
-    //       },
-    //     },
-    //     responsive: true,
-    //     maintainAspectRatio: true,
-
-    //     legend: { display: false },
-    //     elements: {
-    //       line: { borderWidth: 1, tension: 0 },
-    //       point: { radius: 1 },
-    //     },
-    //     tooltips: {
-    //       callbacks: {
-    //         title: () => {
-    //           return;
-    //         },
-    //         label: (tooltipItem) => {
-    //           const date = parse(
-    //             tooltipItem.xlabel,
-    //             'yyyy-MM-ddTHH:mm:ss.SSSxxx',
-    //             new Date(),
-    //           );
-    //           const formattedDate = format(date, 'MMM dd HH:mm');
-    //           const label = `${formattedDate} => ${tooltipItem.value} °C`;
-    //           return label;
-    //         },
-    //       },
-    //     },
-    //     scales: {
-    //       yAxes: [{ display: true }],
-    //       xAxes: [
-    //         {
-    //           display: true,
-    //           type: 'time',
-    //           time: {
-    //             displayFormats: {
-    //               millisecond: 'MMM DD HH:mm',
-    //               second: 'MMM DD HH:mm',
-    //               minute: 'MMM DD HH:mm',
-    //               hour: 'MMM DD HH:mm',
-    //               day: 'MMM DD HH:mm',
-    //               week: 'MMM DD HH:mm',
-    //               month: 'MMM DD YYYY HH:mm',
-    //               quarter: 'MMM DD YYYY HH:mm',
-    //               year: 'MMM DD YYYY HH:mm',
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //     annotation: {
-    //       annotations: [
-    //         /** safe area */
-    //         {
-    //           type: 'box',
-    //           xMin: filteredData.labels[0],
-    //           xMax: filteredData.labels[filteredData.labels.length - 1],
-    //           yMax: this.plant?.phase?.minTemp,
-    //           yMin: probeConfig?.minAcceptableValue,
-    //           backgroundColor: 'rgba(255, 99, 132, 0.1)',
-    //           borderColor: 'rgba(255, 99, 132, 0.1)',
-    //           xScaleID: 'x-axis-0',
-    //           yScaleID: 'y-axis-0',
-    //         },
-    //         {
-    //           type: 'box',
-    //           xMin: filteredData.labels[0],
-    //           xMax: filteredData.labels[filteredData.labels.length - 1],
-    //           yMax: this.plant?.phase?.maxTemp,
-    //           yMin: this.plant?.phase?.minTemp,
-    //           backgroundColor: 'rgba(47,223,117,0.1)',
-    //           borderColor: 'rgba(255, 99, 132, 0.1)',
-    //           xScaleID: 'x-axis-0',
-    //           yScaleID: 'y-axis-0',
-    //         },
-    //         {
-    //           type: 'box',
-    //           xMin: filteredData.labels[0],
-    //           xMax: filteredData.labels[filteredData.labels.length - 1],
-    //           yMin: this.plant?.phase?.maxTemp,
-    //           yMax: probeConfig?.maxAcceptableValue,
-    //           backgroundColor: 'rgba(255, 99, 132, 0.1)',
-    //           borderColor: 'rgba(15, 99, 132, 0.1)',
-    //           xScaleID: 'x-axis-0',
-    //           yScaleID: 'y-axis-0',
-    //         },
-    //         ...annotationsArray.map((data) => {
-    //           return {
-    //             type: 'box',
-    //             borderColor: data.borderColor,
-    //             backgroundColor: data.borderColor,
-    //             borderWidth: 2,
-    //             xScaleID: 'x-axis-0',
-    //             yScaleID: 'y-axis-0',
-    //             xMin: data.t,
-    //             xMax: data.t,
-    //             yMin: 20,
-    //             yMax: 20.4,
-    //           };
-    //         }),
-    //       ],
-    //     },
-    //   },
-    // };
-    console.log(this.chartConfig)
+    
+    
+  
   }
 
   filterDates(fromDate, toDate) {
