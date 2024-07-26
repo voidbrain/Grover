@@ -45,7 +45,7 @@ npm build
 
 ## Logical structure
 
-![logical map](./documentation/img/logical_map.jpg)
+![logical map](./documentation/img/logical map.png)
 
 ## Phisical high level structure
 

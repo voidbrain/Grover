@@ -13,19 +13,20 @@ import {
   ChartOptions,
 } from 'chart.js/auto';
 import { BaseChartDirective } from 'ng2-charts';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-chart',
   standalone: true,
-  imports: [BaseChartDirective],
+  imports: [BaseChartDirective, JsonPipe],
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent implements OnChanges {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;
-  @Input() data;
-  @Input() options;
-  @Input() type;
+  @Input() data: ChartConfiguration['data'] | undefined;
+  @Input() options: ChartOptions | undefined;
+  @Input() type: ChartType | undefined;
 
   chartTypes: Record<string, ChartType> = {
     line: 'line',
@@ -34,7 +35,7 @@ export class ChartComponent implements OnChanges {
   };
 
   public chartType: ChartType = this.chartTypes['doughnut'];
-  public chartData: ChartConfiguration['data'] | undefined = undefined;
+  public chartData: ChartConfiguration['data'] | undefined;
   public chartOptions: ChartOptions = {
     responsive: true,
   };
@@ -62,6 +63,5 @@ export class ChartComponent implements OnChanges {
     if (config.options) {
       this.chartOptions = { ...this.chartOptions, ...config.options };
     }
-    this.chart.update();
   }
 }
