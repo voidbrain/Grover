@@ -13,6 +13,7 @@ import {
   IonLabel,
   IonList,
   IonMenu,
+  IonMenuButton,
   IonMenuToggle,
   IonRefresher,
   IonRefresherContent,
@@ -43,6 +44,7 @@ import * as ionIcons from 'ionicons/icons';
     IonLabel,
     IonList,
     IonMenu,
+    IonMenuButton,
     IonMenuToggle,
     IonRefresher,
     IonRefresherContent,
@@ -55,122 +57,85 @@ import * as ionIcons from 'ionicons/icons';
 export class StrainsMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table = 'plants';
+  page = 'strains';
+  debug = true;
 
   constructor(
     private db: DbService,
     private router: Router,
   ) {
     addIcons(ionIcons);
+    this.init();
   }
 
-  private getItems() {
-    const itemsP = this.db.getItems(this.table);
-    const calendarsP = this.db.getItems('calendars');
-    const dosesP = this.db.getItems('doses');
-    const strainsP = this.db.getItems('strains');
-    Promise.all([itemsP, calendarsP, dosesP, strainsP]).then(
-      ([items, calendars, doses, strains]) => {
-        (items as any).sort((a: any, b: any) => {
-          const compare =
-            a.dayHarvest !== 0 && b.dayHarvest !== 0
-              ? 'dayHarvest'
-              : a.dayStartBloom !== 0 && b.dayStartBloom !== 0
-                ? 'dayStartBloom'
-                : a.dayStartGrow !== 0 && b.dayStartGrow !== 0
-                  ? 'dayStartGrow'
-                  : 'id';
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          a[compare] > b[compare] ? 1 : b[compare] > a[compare] ? -1 : 0;
+  init() {
+    console.info('[PAGE]: Start');
+    this.db
+      .load()
+      .then(() => {
+        const forceLoading = true;
+        this.db.initService(forceLoading).then(() => {
+          this.getItems();
         });
-
-        (items as any).map((item: any) => {
-          item.strain = (strains as any).find(
-            (el: any) => el.id == item.idStrain,
-          );
-          item.chartConfig = {
-            id: 'chart',
-            type: 'doughnut',
-            legend: false,
-            data: {
-              labels: ['Sativa', 'Indica'],
-              datasets: [
-                {
-                  data: [
-                    item.strain.percentSativa,
-                    100 - item.strain.percentSativa,
-                  ],
-                  backgroundColor: [
-                    'rgba(17, 176, 50, 1)',
-                    'rgba(125, 17, 176, 1)',
-                  ],
-                  borderWidth: 1,
-                },
-              ],
-            },
-            xAxes: [
-              {
-                id: 'xAxis1',
-                gridLines: {
-                  display: false,
-                },
-                display: false,
-              },
-            ],
-            yAxes: [
-              {
-                display: false,
-                stacked: false,
-                ticks: { beginAtZero: true },
-                gridLines: {
-                  display: false,
-                },
-              },
-            ],
-            labelsFontSize: 9,
-            showValue: false,
-            layout: {
-              padding: {
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-              },
-            },
-          };
-          const timeDiff = Math.abs(
-            Date.now() -
-              new Date(
-                item.dayStartGrow ? item.dayStartGrow : Date.now(),
-              ).getTime(),
-          );
-          item.weeks_n = Math.floor(
-            Math.abs(timeDiff) / (1000 * 7 * 24 * 60 * 60),
-          );
-          for (const phase of calendars as any) {
-            if (item.weeks_n < phase.duration) {
-              item.phase = phase;
-              break;
-            }
-          }
-          const dose = item.phase
-            ? item.phase
-            : (calendars as any)[(calendars as any).length - 1];
-          item.dose = (doses as any).find((singleDose: any) => {
-            singleDose.id = dose.id_dose;
-          });
-        });
-        this.items = items;
-        console.info('[PAGE]: Ready');
-      },
-    );
+      })
+      .catch((err) => console.error(err));
   }
+
+  getItems() {
+		this.db.getItems(this.page).then((items) => {
+            items.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+            items.map((item) => {
+                item.chartConfig = {
+                    id: 'chart',
+                    type : 'doughnut',
+                    legend: false,
+                    data: {
+                        labels: ['Sativa', 'Indica'],
+                        datasets: [{
+                            data: [item.percent_sativa, (100 - item.percent_sativa)],
+                            backgroundColor: [
+                                'rgba(17, 176, 50, 1)',
+                                'rgba(125, 17, 176, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    xAxes: [{
+                        id: 'xAxis1',
+                        gridLines : {
+                            display : false
+                        },
+                        display: false,
+                    }],
+                    yAxes: [{
+                        display: false,
+                        stacked: false,
+                        gridLines : {
+                            display : false
+                        }
+                    }],
+                    labelsFontSize: 9,
+                    showValue: false,
+                    layout: {
+                        padding: {
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0
+                        }
+                    }
+                };
+            });
+            this.items = items;
+            console.info('[PAGE]: Ready');
+        });
+    }
 
   deleteItem(item: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then(() => {
+    this.db.deleteItem(this.page, item).then(() => {
       this.getItems();
     });
   }
@@ -179,7 +144,7 @@ export class StrainsMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.router.navigate([this.table + '/edit', JSON.stringify(item.id)]);
+    this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
   doRefresh(refresher: any) {

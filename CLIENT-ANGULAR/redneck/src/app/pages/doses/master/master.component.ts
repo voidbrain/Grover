@@ -20,6 +20,7 @@ import {
   IonLabel,
   IonList,
   IonMenu,
+  IonMenuButton,
   IonMenuToggle,
   IonRefresher,
   IonRefresherContent,
@@ -57,6 +58,7 @@ import * as ionIcons from 'ionicons/icons';
     IonLabel,
     IonList,
     IonMenu,
+    IonMenuButton,
     IonMenuToggle,
     IonRefresher,
     IonRefresherContent,
@@ -75,6 +77,7 @@ export class DosesMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
   table = 'doses';
+  page = 'doses';
 
   constructor(
     public db: DbService,
@@ -102,6 +105,7 @@ export class DosesMasterComponent {
   getItems() {
     this.db.getItems(this.table).then((items) => {
       items.map((item: any) => {
+        console.log(item)
         item.chartConfig = {
           id: 'chart',
           type: 'bar',
@@ -110,7 +114,7 @@ export class DosesMasterComponent {
             labels: ['Gro', 'Micro', 'Bloom', 'Ripen', 'EC'],
             datasets: [
               {
-                data: [item.gro, item.micro, item.bloom, item.ripen, item.EC],
+                data: [item.grow, item.micro, item.bloom, item.ripen, item.EC],
                 backgroundColor: [
                   'rgba(17, 176, 50, 1)',
                   'rgba(125, 17, 176, 1)',
@@ -122,13 +126,6 @@ export class DosesMasterComponent {
               },
             ],
           },
-          // x: {
-          //     stacked: false,
-          //     show: false,
-          //     gridLines : {
-          //         display : false
-          //     }
-          // },
           xAxes: [
             {
               id: 'xAxis1',
@@ -138,10 +135,6 @@ export class DosesMasterComponent {
               display: false,
             },
           ],
-          // y: {
-          //     stacked: false,
-          //     show: false,
-          // },
           yAxes: [
             {
               display: false,

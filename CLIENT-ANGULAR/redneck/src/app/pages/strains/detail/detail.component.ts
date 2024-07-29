@@ -133,13 +133,13 @@ export class StrainsDetailComponent implements OnInit {
     this.db
       .load()
       .then(() => {
-        this.previousValid = (this.form as DynamicFormComponent).valid;
-        (this.form as DynamicFormComponent).changes.subscribe(() => {
+        this.previousValid = this.form.valid;
+        this.form.changes.subscribe(() => {
           if (
-            (this.form as DynamicFormComponent).valid !== this.previousValid
+            this.form.valid !== this.previousValid
           ) {
-            this.previousValid = (this.form as DynamicFormComponent).valid;
-            (this.form as DynamicFormComponent).setDisabled(
+            this.previousValid = this.form.valid;
+            this.form.setDisabled(
               'submit',
               !this.previousValid,
             );
@@ -151,34 +151,46 @@ export class StrainsDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/pages/' + this.page]);
+    this.router.navigate([this.page]);
   }
 
-  getItem(id: any) {
-    const strainsP: Promise<Array<Strain>> = this.db.getItems('strains');
+  async getItem(id: any) {
+
+    
+    const strains1 = await  this.db.getItem('strains', 1);
+    console.log(strains1)
+
+    const test = this.db.getItem('strains', "1");
+    Promise.all([test]).then((strains) => {
+      console.log(strains)
+    });
+
+    const strainsP: Promise<Strain[]> = this.db.getItems('strains');
     Promise.all([strainsP]).then(([strains]) => {
-      this.formDefinition.find((el: any) => el.name === 'lineage').options =
-        strains;
+      this.formDefinition.find((el: any) => el.name === 'lineage').options = strains;
       if (id) {
-        const itemP: Promise<Strain> = this.db.getItem(this.page, id);
-        itemP.then((item: Strain) => {
+        const itemP: Promise<any> = this.db.getItem(this.page, id);
+        itemP.then((item: any) => {
           if (item) {
-            (this.form as DynamicFormComponent).setFormValues(item);
-            (this.form as DynamicFormComponent).setDisabled('submit', false);
+            this.form.setFormValues(item);
+            this.form.setDisabled('submit', false);
+            console.log("ok", item)
+          } else {
+            console.log("else")
           }
         });
       } else {
-        (this.form as DynamicFormComponent).config
+        this.form.config
           .filter(
             (el) =>
               (el.type === 'date' || el.type === 'number') && !el.validation,
           )
           .map((el) => {
-            (this.form as DynamicFormComponent).setDisabled(el.name, true);
+            this.form.setDisabled(el.name, true);
           });
-        (this.form as DynamicFormComponent).setValue('enabled', 1);
-        (this.form as DynamicFormComponent).setValue('deleted', 0);
-        (this.form as DynamicFormComponent).setDisabled('submit', true);
+        this.form.setValue('enabled', 1);
+        this.form.setValue('deleted', 0);
+        this.form.setDisabled('submit', true);
       }
     });
   }
@@ -188,14 +200,14 @@ export class StrainsDetailComponent implements OnInit {
   }
 
   save(value: any) {
-    (this.form as DynamicFormComponent).config
+    this.form.config
       .filter((el) => el.type === 'date')
       .map((el: any) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     value.lineage = value.lineage.toString();
     this.db.putItem(this.page, value).then(() => {
-      this.router.navigate(['/pages/' + this.page]);
+      this.router.navigate([this.page]);
     });
   }
 }

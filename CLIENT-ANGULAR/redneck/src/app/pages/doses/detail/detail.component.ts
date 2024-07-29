@@ -131,7 +131,7 @@ export class DosesDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/pages/' + this.page]);
+    this.router.navigate([this.page]);
   }
 
   getItem(id: any) {
@@ -161,7 +161,7 @@ export class DosesDetailComponent implements OnInit {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     this.db.putItem(this.page, value).then(() => {
-      this.router.navigate(['/pages/' + this.page]);
+      this.router.navigate([this.page]);
     });
   }
 }

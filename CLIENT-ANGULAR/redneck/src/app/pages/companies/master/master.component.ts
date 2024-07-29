@@ -19,6 +19,7 @@ import {
   IonLabel,
   IonList,
   IonMenu,
+  IonMenuButton,
   IonMenuToggle,
   IonRefresher,
   IonRefresherContent,
@@ -57,6 +58,7 @@ import * as ionIcons from 'ionicons/icons';
     IonLabel,
     IonList,
     IonMenu,
+    IonMenuButton,
     IonMenuToggle,
     IonRefresher,
     IonRefresherContent,
@@ -74,6 +76,7 @@ export class CompaniesMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
   table = 'companies';
+  page = 'plants';
 
   constructor(
     public db: DbService,
@@ -101,6 +104,7 @@ export class CompaniesMasterComponent {
   getItems() {
     this.db.getItems(this.table).then((items) => {
       this.items = items;
+      console.log(items)
       console.info('[PAGE]: Ready');
     });
   }

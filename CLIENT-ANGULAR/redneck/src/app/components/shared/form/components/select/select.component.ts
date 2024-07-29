@@ -21,6 +21,7 @@ import {
       <ion-select
         multiple="{{ config.multiple }}"
         [formControlName]="config.name"
+        ngDefaultControl
       >
         @for (option of config.options; track option) {
           <ion-select-option [value]="option.id">

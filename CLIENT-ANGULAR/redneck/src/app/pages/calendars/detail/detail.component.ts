@@ -80,6 +80,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
+  providers: [DatePipe]
 })
 export class CalendarsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
@@ -142,7 +143,7 @@ export class CalendarsDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/pages/' + this.page]);
+    this.router.navigate([this.page]);
   }
 
   getItem(id: any) {
@@ -173,7 +174,7 @@ export class CalendarsDetailComponent implements OnInit {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     this.db.putItem(this.page, value).then(() => {
-      this.router.navigate(['/pages/' + this.page]);
+      this.router.navigate([this.page]);
     });
   }
 }

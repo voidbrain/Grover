@@ -9,21 +9,46 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
+import { DynamicFieldDirective } from './../../components/dynamic-field/dynamic-field.directive';
+import { ButtonComponent } from './../../components/button/button.component';
+import { InputTextComponent } from './../../components/input-text/input-text.component';
+import { RadioComponent } from './../../components/radio/radio.component';
+import { CheckboxComponent } from './../../components/checkbox/checkbox.component';
+import { DateComponent } from './../../components/date/date.component';
+import { ToggleComponent } from './../../components/toggle/toggle.component';
+import { RangeComponent } from './../../components/range/range.component';
+import { InputHiddenComponent } from './../../components/input-hidden/input-hidden.component';
+import { SelectComponent } from './../../components/select/select.component';
+
 import { FieldConfig } from '../../models/field-config.interface';
 
 @Component({
   exportAs: 'dynamicForm',
   standalone: true,
+  
   selector: 'app-dynamic-form',
   styleUrls: ['form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,
+      DynamicFieldDirective,
+      DynamicFormComponent,
+      ButtonComponent,
+      InputTextComponent,
+      RadioComponent,
+      RadioComponent,
+      CheckboxComponent,
+      DateComponent,
+      ToggleComponent,
+      RangeComponent,
+      InputHiddenComponent,
+      SelectComponent,
+  ],
   template: `<form
     class="dynamic-form"
     [formGroup]="form"
     (submit)="handleSubmit($event)"
   >
     @for (field of config; track field) {
-      <ng-container dynamicField config="field" group="form"> </ng-container>
+      <ng-container dynamicField [config]="field" [group]="form"> </ng-container>
     }
   </form>`,
 })
@@ -110,6 +135,7 @@ export class DynamicFormComponent implements OnChanges, OnInit {
   }
 
   setFormValues(form: any) {
+    console.log(form, this.form)
     this.form.patchValue(form, { emitEvent: true });
   }
 }

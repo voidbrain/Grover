@@ -489,7 +489,7 @@ export class PlantsMasterComponent implements OnInit {
       el.closeOpened();
     });
     this.router.navigate([
-      '/pages/' + this.page + '/edit',
+      this.page + '/edit',
       JSON.stringify(item.id),
     ]);
   }

@@ -79,6 +79,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
+  providers: [DatePipe]
 })
 export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
@@ -134,7 +135,7 @@ export class CompaniesDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/pages/' + this.page]);
+    this.router.navigate([this.page]);
   }
 
   getItem(id: any) {
@@ -166,7 +167,7 @@ export class CompaniesDetailComponent implements OnInit {
       });
 
     this.db.putItem(this.page, value).then(() => {
-      this.router.navigate(['/pages/' + this.page]);
+      this.router.navigate([this.page]);
     });
   }
 }

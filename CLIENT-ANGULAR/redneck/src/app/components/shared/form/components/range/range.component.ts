@@ -31,6 +31,7 @@ import {
         min="{{ config.min }}"
         max="{{ config.max }}"
         [formControlName]="config.name"
+        ngDefaultControl
       >
         <ion-icon size="small" slot="start" name="{{ config.icon }}"></ion-icon>
         <ion-icon slot="end" name="{{ config.icon }}"></ion-icon>

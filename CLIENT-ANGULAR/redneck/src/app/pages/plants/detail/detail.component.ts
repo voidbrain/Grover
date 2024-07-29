@@ -85,6 +85,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
+  providers: [DatePipe]
 })
 export class PlantsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
@@ -177,7 +178,7 @@ export class PlantsDetailComponent implements OnInit {
       .then(() => {
         this.previousValid = this.form.valid;
         this.form.changes.subscribe(() => {
-          console.log(this.form);
+          
           if (this.form.valid !== this.previousValid) {
             this.previousValid = this.form.valid;
             this.form.setDisabled('submit', !this.previousValid);
@@ -189,7 +190,7 @@ export class PlantsDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/pages/' + this.page]);
+    this.router.navigate([this.page]);
   }
 
   getItem(id) {
@@ -259,7 +260,7 @@ export class PlantsDetailComponent implements OnInit {
       });
 
     this.db.putItem(this.page, value).then(() => {
-      this.router.navigate(['/pages/' + this.page]);
+      this.router.navigate([this.page]);
     });
   }
 }

@@ -13,7 +13,7 @@ import { IonItem, IonLabel, IonToggle } from '@ionic/angular/standalone';
   template: `
     <ion-item lines="full" class="dynamic-field toggle" [formGroup]="group">
       <ion-label color="primary">{{ config.label }}</ion-label>
-      <ion-toggle slot="end" [formControlName]="config.name"></ion-toggle>
+      <ion-toggle slot="end" ngDefaultControl [formControlName]="config.name"></ion-toggle>
     </ion-item>
   `,
 })

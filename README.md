@@ -228,6 +228,8 @@ https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/workers_schedule?la
 
 ## Flows
 
+![Fluxes](./documentation/img/fluxes.png)
+
 The connection between Device and Server is granted by the Device SN, connected to a Room.
 Every time that the Device calls a Server API, it passes the SN and the IP is stored/updated.
 Every time that the Servers needs to call the Device, it uses the last IP to call the Device API.
