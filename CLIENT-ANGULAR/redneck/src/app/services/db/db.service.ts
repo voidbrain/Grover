@@ -271,37 +271,19 @@ export class DbService {
     });
   }
 
-  getItem(
-    objectStore: any,
-    id=null,
-    column = 'enabled, deleted',
-  ): Promise<any> {
-    const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
+  getItem(objectStore, id, column='id'): Promise<any> {
+    const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: any = store.index(column);
-    const promise = new Promise<
-      Plant | Strain | Company | Dose | Calendar | any
-    >((resolve) => {
-      if (id) {
-        const queryExecute = dataIndex.get(id);
-        queryExecute.onsuccess = (e: any) => {
-          resolve(e.target.result);
-        };
-        queryExecute.onerror = (e: any) => {
-          console.log(e);
-        };
-      } else {
-        const queryExecute = dataIndex.getAll();
-        queryExecute.onsuccess = (e: any) => {
-          resolve(e.target.result);
-        };
-        queryExecute.onerror = (e: any) => {
-          console.log(e);
-        };
-      }
+    const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(resolve => {
+        if(id){
+            dataIndex.get(id).onsuccess = e => resolve(e.target.result);
+        } else {
+          resolve(null);
+        }
     });
     return promise;
-  }
+}
 
 
   getItems(
