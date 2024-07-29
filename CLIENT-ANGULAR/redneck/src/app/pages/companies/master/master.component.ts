@@ -76,7 +76,6 @@ export class CompaniesMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
   table = 'companies';
-  page = 'plants';
 
   constructor(
     public db: DbService,

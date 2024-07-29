@@ -125,15 +125,14 @@ export class CalendarsDetailComponent implements OnInit {
     this.db
       .load()
       .then(() => {
-        this.previousValid = (this.form as DynamicFormComponent).valid;
-        (this.form as DynamicFormComponent).changes.subscribe(() => {
+        this.form.changes.subscribe(() => {
           if (
-            (this.form as DynamicFormComponent).valid !== this.previousValid
+            this.form.valid
           ) {
-            this.previousValid = (this.form as DynamicFormComponent).valid;
-            (this.form as DynamicFormComponent).setDisabled(
+            this.previousValid = this.form.valid;
+            this.form.setDisabled(
               'submit',
-              !this.previousValid,
+              this.form.valid,
             );
           }
         });
@@ -151,14 +150,14 @@ export class CalendarsDetailComponent implements OnInit {
       const itemP: Promise<Calendar> = this.db.getItem(this.page, id);
       itemP.then((item: Calendar) => {
         if (item) {
-          (this.form as DynamicFormComponent).setFormValues(item);
-          (this.form as DynamicFormComponent).setDisabled('submit', false);
+          this.form.setFormValues(item);
+          this.form.setDisabled('submit', false);
         }
       });
     } else {
-      (this.form as DynamicFormComponent).setValue('enabled', 1);
-      (this.form as DynamicFormComponent).setValue('deleted', 0);
-      (this.form as DynamicFormComponent).setDisabled('submit', true);
+      this.form.setValue('enabled', 1);
+      this.form.setValue('deleted', 0);
+      this.form.setDisabled('submit', true);
     }
   }
 
@@ -168,7 +167,7 @@ export class CalendarsDetailComponent implements OnInit {
   }
 
   save(value: any) {
-    (this.form as DynamicFormComponent).config
+    this.form.config
       .filter((el) => el.type === 'date')
       .map((el: any) => {
         value[el.name] = new Date(value[el.name]).getTime();

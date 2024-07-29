@@ -85,14 +85,21 @@ export class StrainsMasterComponent {
 		this.db.getItems(this.page).then((items) => {
             items.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
             items.map((item) => {
+              console.log(item)
                 item.chartConfig = {
                     id: 'chart',
                     type : 'doughnut',
-                    legend: false,
+                    options: {
+                      plugins: {
+                      legend: {
+                          display: false
+                      },
+                    },
+                    },
                     data: {
                         labels: ['Sativa', 'Indica'],
                         datasets: [{
-                            data: [item.percent_sativa, (100 - item.percent_sativa)],
+                            data: [item.percentSativa, (100 - item.percentSativa)],
                             backgroundColor: [
                                 'rgba(17, 176, 50, 1)',
                                 'rgba(125, 17, 176, 1)'

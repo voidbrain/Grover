@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>{{ page }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/pages/{{ page }}/create"><ion-icon name="add-circle"></ion-icon></ion-button>
+      <ion-button routerLink="/{{ page }}/create"><ion-icon name="add-circle"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -40,7 +40,7 @@
                 <ion-item-option (click)="deleteItem(item)" color="danger">Delete</ion-item-option>
             </ion-item-options>
 
-          
+
         </ion-item-sliding>
       }
   </ion-list>

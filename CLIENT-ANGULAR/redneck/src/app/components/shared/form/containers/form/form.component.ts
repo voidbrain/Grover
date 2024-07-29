@@ -25,7 +25,7 @@ import { FieldConfig } from '../../models/field-config.interface';
 @Component({
   exportAs: 'dynamicForm',
   standalone: true,
-  
+
   selector: 'app-dynamic-form',
   styleUrls: ['form.component.scss'],
   imports: [CommonModule, ReactiveFormsModule,
@@ -33,7 +33,6 @@ import { FieldConfig } from '../../models/field-config.interface';
       DynamicFormComponent,
       ButtonComponent,
       InputTextComponent,
-      RadioComponent,
       RadioComponent,
       CheckboxComponent,
       DateComponent,

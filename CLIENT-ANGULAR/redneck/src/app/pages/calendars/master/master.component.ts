@@ -116,10 +116,11 @@ export class CalendarsMasterComponent {
               data: [Math.floor(dose.duration / 7)], // weeks
               backgroundColor: [phase.color],
             });
+            console.log(valuesArr)
           });
           item.chartConfig = {
             id: 'chart',
-            type: 'horizontalBar',
+            type: 'bar',
             legend: false,
             data: {
               labels: ['Time'],

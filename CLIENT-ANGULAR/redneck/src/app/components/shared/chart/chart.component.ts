@@ -12,6 +12,9 @@ import {
   ChartConfiguration,
   ChartOptions,
 } from 'chart.js/auto';
+
+import annotationPlugin from 'chartjs-plugin-annotation';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { BaseChartDirective } from 'ng2-charts';
 import { JsonPipe } from '@angular/common';
 
@@ -44,7 +47,7 @@ export class ChartComponent implements OnChanges {
   @Input() chartConfig: ChartConfiguration | null = null;
 
   constructor() {
-    Chart.register(...registerables);
+    Chart.register(...registerables, annotationPlugin, zoomPlugin);
   }
 
   ngOnChanges(changes: SimpleChanges) {

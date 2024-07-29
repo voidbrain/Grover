@@ -4,7 +4,7 @@ import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
 import { ChartComponent } from '../../../shared/chart/chart.component';
 import { ProbesTypes } from '../../../../services/settings/enum';
-import { Chart, ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import { Chart, ChartConfiguration, ChartOptions, ChartType, registerables } from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { BoxAnnotationOptions } from 'chartjs-plugin-annotation';
 import zoomPlugin from 'chartjs-plugin-zoom';
@@ -41,7 +41,7 @@ export class PanelChartComponent implements OnChanges {
   };
 
   constructor(){
-    Chart.register(annotationPlugin, zoomPlugin);
+    Chart.register(...registerables, annotationPlugin, zoomPlugin);
   }
 
 
@@ -237,30 +237,30 @@ export class PanelChartComponent implements OnChanges {
           },
           pan: {
             enabled: true,
-            mode: 'x', 
+            mode: 'x',
           },
           zoom: {
             mode: 'x',
           },
         },
-        
+
       },
 
       responsive: true,
       maintainAspectRatio: true,
-      
+
       elements: {
         line: { borderWidth: 1, tension: 0 },
         point: { radius: 1 },
       },
-      
+
       scales: {
         y: {
           ticks: {
             display: true,
           },
         },
-        x: { 
+        x: {
           // type: 'time',
           time: {
             displayFormats: {
@@ -280,7 +280,7 @@ export class PanelChartComponent implements OnChanges {
           },
         },
       },
-      
+
     };
 
     this.chartConfig = {
@@ -289,9 +289,9 @@ export class PanelChartComponent implements OnChanges {
       options: chartOptions,
     }
 
-    
-    
-  
+
+
+
   }
 
   filterDates(fromDate, toDate) {
