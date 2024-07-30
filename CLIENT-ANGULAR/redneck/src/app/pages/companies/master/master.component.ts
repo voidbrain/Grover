@@ -89,13 +89,11 @@ export class CompaniesMasterComponent {
   async init() {
     console.info('[PAGE]: Start');
 
-    const load = await this.db.load();
+    await this.db.load();
 
     const forceLoading = true;
     await this.db.initService(forceLoading);
     this.getItems();
-
-    load.catch((err) => console.error(err));
   }
 
   async getItems() {
@@ -125,12 +123,8 @@ export class CompaniesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    const forceLoading = true;
-    const refresh: any = await this.db.initService(forceLoading);
 
     this.getItems();
     refresher.target.complete();
-
-    refresh.catch((err) => console.error(err));
   }
 }

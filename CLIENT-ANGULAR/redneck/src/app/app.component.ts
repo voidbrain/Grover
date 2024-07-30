@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import {
+  // APP_INITIALIZER,
+  Component,
+} from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import {
   IonApp,
@@ -18,6 +21,16 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { DbService } from './services/db/db.service';
+
+export function initializeApp(dbService: DbService): () => Promise<void> {
+  return async () => {
+    await dbService.load();
+    const forceLoading = true;
+    const initialize = await dbService.initService(forceLoading);
+    return initialize;
+  };
+}
 
 @Component({
   selector: 'app-root',
@@ -42,6 +55,15 @@ import * as ionIcons from 'ionicons/icons';
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  // providers: [
+  //   DbService,
+  //   {
+  //     provide: APP_INITIALIZER,
+  //     useFactory: initializeApp,
+  //     deps: [DbService],
+  //     multi: true,
+  //   },
+  // ],
 })
 export class AppComponent {
   title = 'redneck';

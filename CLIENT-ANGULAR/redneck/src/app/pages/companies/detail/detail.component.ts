@@ -113,21 +113,15 @@ export class CompaniesDetailComponent implements OnInit {
 
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-
-    const load = await this.db.load();
-    this.previousValid = (this.form as DynamicFormComponent).valid;
-    (this.form as DynamicFormComponent).changes.subscribe(() => {
-      if ((this.form as DynamicFormComponent).valid !== this.previousValid) {
-        this.previousValid = (this.form as DynamicFormComponent).valid;
-        (this.form as DynamicFormComponent).setDisabled(
-          'submit',
-          !this.previousValid,
-        );
+    await this.db.load();
+    this.previousValid = this.form.valid;
+    this.form.changes.subscribe(() => {
+      if (this.form.valid !== this.previousValid) {
+        this.previousValid = this.form.valid;
+        this.form.setDisabled('submit', !this.previousValid);
       }
     });
     this.getItem(this.route.snapshot.paramMap.get('id') as string);
-
-    load.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -139,13 +133,13 @@ export class CompaniesDetailComponent implements OnInit {
       const item: Company = await this.db.getItem(this.page, id);
 
       if (item) {
-        (this.form as DynamicFormComponent).setFormValues(item);
-        (this.form as DynamicFormComponent).setDisabled('submit', false);
+        this.form.setFormValues(item);
+        this.form.setDisabled('submit', false);
       }
     } else {
-      (this.form as DynamicFormComponent).setValue('enabled', 1);
-      (this.form as DynamicFormComponent).setValue('deleted', 0);
-      (this.form as DynamicFormComponent).setDisabled('submit', true);
+      this.form.setValue('enabled', 1);
+      this.form.setValue('deleted', 0);
+      this.form.setDisabled('submit', true);
     }
   }
 
@@ -155,7 +149,7 @@ export class CompaniesDetailComponent implements OnInit {
   }
 
   async save(value: any) {
-    (this.form as DynamicFormComponent).config
+    this.form.config
       .filter((el: any) => el.type === 'date')
       .map((el: any) => {
         value[el.name] = new Date(value[el.name]).getTime();

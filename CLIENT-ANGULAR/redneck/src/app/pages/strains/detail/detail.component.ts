@@ -128,7 +128,7 @@ export class StrainsDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load = await this.db.load();
+    await this.db.load();
 
     this.previousValid = this.form.valid;
     this.form.changes.subscribe(() => {
@@ -138,8 +138,6 @@ export class StrainsDetailComponent implements OnInit {
       }
     });
     this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
-
-    load.catch((err) => console.error(err));
   }
 
   goBack() {

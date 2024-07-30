@@ -171,7 +171,7 @@ export class PlantsDetailComponent implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load = this.db.load();
+    this.db.load();
 
     this.previousValid = this.form.valid;
     this.form.changes.subscribe(() => {
@@ -181,8 +181,6 @@ export class PlantsDetailComponent implements OnInit {
       }
     });
     this.getItem(+this.route.snapshot.paramMap.get('id'));
-
-    load.catch((err) => console.error(err));
   }
 
   goBack() {

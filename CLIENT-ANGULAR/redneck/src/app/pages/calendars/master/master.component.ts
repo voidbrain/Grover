@@ -84,12 +84,10 @@ export class CalendarsMasterComponent {
 
   async init() {
     console.info('[PAGE]: Start');
-    const load = await this.db.load();
+    await this.db.load();
     const forceLoading = true;
     await this.db.initService(forceLoading);
     this.getItems();
-
-    load.catch((err) => console.error(err));
   }
 
   async getItems() {
@@ -191,10 +189,7 @@ export class CalendarsMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    const forceLoading = true;
-    const load: any = await this.db.initService(forceLoading);
     this.getItems();
     refresher.target.complete();
-    load.catch((err) => console.error(err));
   }
 }

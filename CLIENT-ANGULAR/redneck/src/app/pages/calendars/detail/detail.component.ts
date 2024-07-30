@@ -122,7 +122,7 @@ export class CalendarsDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const run = await this.db.load();
+    await this.db.load();
 
     this.form.changes.subscribe(() => {
       if (this.form.valid) {
@@ -132,7 +132,6 @@ export class CalendarsDetailComponent implements OnInit {
 
       this.getItem(this.route.snapshot.paramMap.get('id') as string);
     });
-    run.catch((err) => console.error(err));
   }
 
   goBack() {

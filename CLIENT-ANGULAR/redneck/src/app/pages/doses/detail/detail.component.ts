@@ -133,14 +133,12 @@ export class DosesDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load: any = await this.db.load();
+    await this.db.load();
 
     this.form.changes.subscribe(() => {
       this.form.setDisabled('submit', !this.form.valid);
     });
     this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
-
-    load.catch((err) => console.error(err));
   }
 
   goBack() {

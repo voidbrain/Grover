@@ -70,13 +70,11 @@ export class StrainsMasterComponent {
 
   async init() {
     console.info('[PAGE]: Start');
-    const load = await this.db.load();
+    await this.db.load();
 
     const forceLoading = true;
     await this.db.initService(forceLoading);
     this.getItems();
-
-    load.catch((err) => console.error(err));
   }
 
   async getItems() {
