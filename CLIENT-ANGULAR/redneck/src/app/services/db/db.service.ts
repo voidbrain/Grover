@@ -294,6 +294,17 @@ export class DbService {
     return promise;
   }
 
+  hi(): Promise<void> {
+    console.log("ji")
+    return new Promise<void>((resolve) => {
+      console.log('DB Service hi() called');
+      setTimeout(() => {
+        console.log('DB Service hi() resolved');
+        resolve();
+      }, 2000); // Simulating async operation
+    });
+  }
+
   getItems(
     objectStore: any,
     column = 'enabled, deleted',

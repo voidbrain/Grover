@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
-  // APP_INITIALIZER,
+  APP_INITIALIZER,
   Component,
 } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
@@ -23,13 +23,20 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DbService } from './services/db/db.service';
 
+// export function initializeApp(dbService: DbService): () => Promise<void> {
+//   return async () => {
+//     // await dbService.hi();
+//     return dbService.hi();
+//     // await dbService.load();
+//     // const forceLoading = true;
+//     // const initialize = await dbService.initService(forceLoading);
+//     // return initialize;
+//   };
+// }
+
 export function initializeApp(dbService: DbService): () => Promise<void> {
-  return async () => {
-    await dbService.load();
-    const forceLoading = true;
-    const initialize = await dbService.initService(forceLoading);
-    return initialize;
-  };
+  console.log("ooooo")
+  return () => dbService.hi();
 }
 
 @Component({
@@ -55,15 +62,21 @@ export function initializeApp(dbService: DbService): () => Promise<void> {
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  // providers: [
-  //   DbService,
-  //   {
-  //     provide: APP_INITIALIZER,
-  //     useFactory: initializeApp,
-  //     deps: [DbService],
-  //     multi: true,
-  //   },
-  // ],
+  providers: [
+    DbService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [DbService],
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp1,
+      deps: [DbService],
+      multi: true,
+    },
+  ],
 })
 export class AppComponent {
   title = 'redneck';
