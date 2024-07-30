@@ -43,7 +43,6 @@
                         !room?.workersComponents?.nutrientRefill
                       "
                       class="btn"
-
                       size="small"
                       (click)="
                         shuffleNutrient(room?.workersComponents?.nutrientRefill)
@@ -130,7 +129,8 @@
                       icon="temperature-half"
                     ></fa-icon>
 
-                    <app-range class="ion-padding"
+                    <app-range
+                      class="ion-padding"
                       [minValue]="
                         room?.probesComponents?.airtemp?.type.minAcceptableValue
                       "

@@ -80,7 +80,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class CalendarsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
@@ -122,22 +122,17 @@ export class CalendarsDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const run = await this.db.load()
-      
-        this.form.changes.subscribe(() => {
-          if (
-            this.form.valid
-          ) {
-            this.previousValid = this.form.valid;
-            this.form.setDisabled(
-              'submit',
-              this.form.valid,
-            );
-          }
-        
-        this.getItem(this.route.snapshot.paramMap.get('id') as string);
-      })
-      run.catch((err) => console.error(err));
+    const run = await this.db.load();
+
+    this.form.changes.subscribe(() => {
+      if (this.form.valid) {
+        this.previousValid = this.form.valid;
+        this.form.setDisabled('submit', this.form.valid);
+      }
+
+      this.getItem(this.route.snapshot.paramMap.get('id') as string);
+    });
+    run.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -147,12 +142,11 @@ export class CalendarsDetailComponent implements OnInit {
   async getItem(id: any) {
     if (id) {
       const item: Calendar = await this.db.getItem(this.page, id);
-     
-        if (item) {
-          this.form.setFormValues(item);
-          this.form.setDisabled('submit', false);
-        }
-      
+
+      if (item) {
+        this.form.setFormValues(item);
+        this.form.setDisabled('submit', false);
+      }
     } else {
       this.form.setValue('enabled', 1);
       this.form.setValue('deleted', 0);
@@ -173,6 +167,5 @@ export class CalendarsDetailComponent implements OnInit {
       });
     await this.db.putItem(this.page, value);
     this.router.navigate([this.page]);
-    
   }
 }

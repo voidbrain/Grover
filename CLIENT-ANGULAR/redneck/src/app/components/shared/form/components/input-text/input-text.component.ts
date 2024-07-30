@@ -4,7 +4,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Field } from '../../models/field.interface';
 import { FieldConfig } from '../../models/field-config.interface';
 import { CommonModule } from '@angular/common';
-import { IonLabel, IonInput, IonItem} from '@ionic/angular/standalone';
+import { IonLabel, IonInput, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-input-text',

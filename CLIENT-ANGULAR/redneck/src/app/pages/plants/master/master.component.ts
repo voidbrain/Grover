@@ -1,6 +1,4 @@
 /* eslint-disable no-async-promise-executor */
-/* eslint-disable @typescript-eslint/array-type */
-
 import {
   ActivatedRoute,
   Router,
@@ -20,7 +18,10 @@ import {
   ProbesTypes,
 } from '../../../../app/services/settings/enum';
 
-import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import {
+  FontAwesomeModule,
+  FaIconLibrary,
+} from '@fortawesome/angular-fontawesome';
 import { faTemperatureHalf, faEye } from '@fortawesome/free-solid-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
@@ -67,7 +68,7 @@ import {
   IonCardContent,
   IonCardTitle,
   IonSegment,
-  IonSegmentButton
+  IonSegmentButton,
 } from '@ionic/angular/standalone';
 
 import { RangeComponent } from '../../../components/shared/range/range.component';
@@ -175,32 +176,33 @@ export class PlantsMasterComponent implements OnInit {
     if (this.debug) {
       console.info('[PAGE]: Start');
     }
-    const load = await this.db.load()
-      
-        this.getItems();
-      
-      load.catch((err) => console.error(err));
+    const load = await this.db.load();
+
+    this.getItems();
+
+    load.catch((err) => console.error(err));
   }
 
   async getItems() {
-    const settings:any[] = await this.db.getItems('settings');
-    let plants:PlantExtended[] = await this.db.getItems(this.page);
-    const pots:Pot[] = await this.db.getItems('pots');
-    const strains:Strain[] = await this.db.getItems('strains');
-    const calendar:Calendar[] = await this.db.getItems('calendars');
-    const doses:Dose[] = await this.db.getItems('doses');
-    const rooms:any[] = await this.db.getItems('rooms');
-    const locations:any[] = await this.db.getItems('locations');
+    const settings: any[] = await this.db.getItems('settings');
+    let plants: PlantExtended[] = await this.db.getItems(this.page);
+    const pots: Pot[] = await this.db.getItems('pots');
+    const strains: Strain[] = await this.db.getItems('strains');
+    const calendar: Calendar[] = await this.db.getItems('calendars');
+    const doses: Dose[] = await this.db.getItems('doses');
+    const rooms: any[] = await this.db.getItems('rooms');
+    const locations: any[] = await this.db.getItems('locations');
 
-    const workersList:any[] = await this.db.getItems('workers_list');
-    const probesList:any[] = await this.db.getItems('probes_list');
-    const workersType:any[] = await this.db.getItems('workers_type');
-    const probesType:any[] = await this.db.getItems('probes_type');
-    const workersSchedule:any[] = await this.db.getItems('workers_schedule');
-    const probesSchedule:any[] = await this.db.getItems('probes_schedule');
+    const workersList: any[] = await this.db.getItems('workers_list');
+    const probesList: any[] = await this.db.getItems('probes_list');
+    const workersType: any[] = await this.db.getItems('workers_type');
+    const probesType: any[] = await this.db.getItems('probes_type');
+    const workersSchedule: any[] = await this.db.getItems('workers_schedule');
+    const probesSchedule: any[] = await this.db.getItems('probes_schedule');
     const column = 'id';
     const query: any[] = [];
-    const workersLog: any[] = await this.db.getItems('workers_log',
+    const workersLog: any[] = await this.db.getItems(
+      'workers_log',
       column,
       query,
     );
@@ -209,228 +211,212 @@ export class PlantsMasterComponent implements OnInit {
       column,
       query,
     );
-    
-        this.items = plants;
-        this.items.map(async (plant: PlantExtended) => {
-          plant.calendar = calendar.find((el) => el.id === plant.idCalendar);
-          plant.strain = (strains as any[]).find(
-            (el) => el.id === plant.idStrain,
-          );
-          if (plant.idPot) {
-            plant.pot = (pots as any[]).find((el) => el.id === plant.idPot);
-            plant.pot.location = locations.find(
-              (el) => el.id === plant?.pot?.locationId,
-            );
 
-            plant.workers = (workersList as any[]).filter(
-              (el) => el.locationId === plant?.pot?.locationId,
-            );
-            plant.probes = (probesList as any[]).filter(
-              (el) => el.locationId === plant?.pot?.locationId,
-            );
-            plant.probes.map((probe) => {
-              probe.type = probesType.find((el) => el.id === probe.probeType);
-              probe.log = probesLog.filter((el) => el.idProbe === probe.id);
-              probe.schedule = probesSchedule.filter(
-                (el) => el.idProbe === probe.id,
-              );
-            });
-            plant.workers.map((worker) => {
-              worker.type = workersType.find(
-                (el) => el.id === worker.workerType,
-              );
-              worker.log = workersLog.filter((el) => el.idWorker === worker.id);
-              worker.schedule = workersSchedule.filter(
-                (el) => el.idWorker === worker.id,
-              );
-            });
-            const waterLoop = plant.workers.find(
-              (worker) => +worker.workerType === +WorkersTypes.Pot_Water_loop,
-            );
-            plant.workersComponents = { waterLoop };
-            if (waterLoop) {
-              plant.workersComponents.waterLoop.status = plant.workersComponents
-                .waterLoop
-                ? DevicesStatus.ON
-                : DevicesStatus.OFF; // TODO
-            }
-
-            plant.calendar?.phases.forEach((phase) => {
-              phase.dose = doses.find((el) => el.id === phase?.idDose);
-            });
-            const epochDiffGrow: number =
-              new Date().getTime() -
-              new Date(plant.dayStartGrow as number).getTime();
-            plant.daysFromGrow = Math.ceil(
-              epochDiffGrow / (1000 * 60 * 60 * 24),
-            );
-            const epochDiffBloom: number =
-              new Date().getTime() -
-              new Date(plant.dayStartBloom as number).getTime();
-            (plant.daysFromBloom as any) = plant.dayStartBloom
-              ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
-              : null;
-            const epochDiffFlush: number =
-              new Date().getTime() -
-              new Date(plant.dayStartFlush as number).getTime();
-            (plant.daysFromFlush as any) = plant.dayStartFlush
-              ? Math.ceil(epochDiffFlush / (1000 * 60 * 60 * 24))
-              : null;
-
-            let foundPhase: PhaseExtended | undefined;
-
-            let endPhaseDay = 0;
-            // let counter = countingDays;
-            let flagSeedling = false;
-            let flagBlooming = false;
-            let flagFlushing = false;
-            plant.calendar?.phases.forEach((plantPhase: PhaseExtended) => {
-              const countingDays: any = plantPhase?.isFlushing
-                ? plant.daysFromFlush
-                : plantPhase?.isBlooming
-                  ? plant.daysFromBloom
-                  : plant.daysFromGrow;
-
-              if (
-                (plantPhase?.isBlooming && !flagBlooming) ||
-                (plantPhase?.isFlushing && !flagFlushing) ||
-                (!plantPhase?.isBlooming &&
-                  !plantPhase?.isFlushing &&
-                  !flagSeedling)
-              ) {
-                plantPhase.startPhaseDay = 0;
-                //   counter = countingDays;
-                flagSeedling =
-                  !plantPhase?.isBlooming && !plantPhase?.isFlushing;
-                flagBlooming = plantPhase?.isBlooming;
-                flagFlushing = plantPhase?.isFlushing;
-              } else {
-                plantPhase.startPhaseDay = endPhaseDay;
-              }
-              endPhaseDay = plantPhase.startPhaseDay + plantPhase?.duration;
-
-              if (countingDays > plantPhase.startPhaseDay) {
-                foundPhase = plantPhase;
-                // counter += plantPhase?.duration;
-              }
-            });
-            plant.phase = foundPhase;
-          }
-        });
-        plants = plants.filter(
-          (el) =>
-            (this.formDefinition.options.find((el: any) => el.id === 0)
-              .isChecked
-              ? el.dayStartGrow && !el.dayStartBloom
-              : 0) ||
-            (this.formDefinition.options.find((el: any) => el.id === 1)
-              .isChecked
-              ? el.dayStartBloom
-              : 0) ||
-            (this.formDefinition.options.find((el: any) => el.id === 2)
-              .isChecked
-              ? el.dayHarvest
-              : 0),
+    this.items = plants;
+    this.items.map(async (plant: PlantExtended) => {
+      plant.calendar = calendar.find((el) => el.id === plant.idCalendar);
+      plant.strain = (strains as any[]).find((el) => el.id === plant.idStrain);
+      if (plant.idPot) {
+        plant.pot = (pots as any[]).find((el) => el.id === plant.idPot);
+        plant.pot.location = locations.find(
+          (el) => el.id === plant?.pot?.locationId,
         );
-        plants.sort((a: any, b: any) => {
-          if (+a.dayStartBloom === +b.dayStartBloom) {
-            return +a.dayStartGrow > +b.dayStartGrow ? 1 : -1;
-          } else {
-            return +a.dayStartBloom > +b.dayStartBloom ? -1 : 1;
-          }
+
+        plant.workers = (workersList as any[]).filter(
+          (el) => el.locationId === plant?.pot?.locationId,
+        );
+        plant.probes = (probesList as any[]).filter(
+          (el) => el.locationId === plant?.pot?.locationId,
+        );
+        plant.probes.map((probe) => {
+          probe.type = probesType.find((el) => el.id === probe.probeType);
+          probe.log = probesLog.filter((el) => el.idProbe === probe.id);
+          probe.schedule = probesSchedule.filter(
+            (el) => el.idProbe === probe.id,
+          );
         });
-
-        this.rooms = rooms;
-
-        this.rooms.map(async (room: RoomExtended) => {
-          room.settings = settings.find(
-            (el) => el.device === room.serialNumber,
+        plant.workers.map((worker) => {
+          worker.type = workersType.find((el) => el.id === worker.workerType);
+          worker.log = workersLog.filter((el) => el.idWorker === worker.id);
+          worker.schedule = workersSchedule.filter(
+            (el) => el.idWorker === worker.id,
           );
-          room.plants = [
-            ...plants.filter(
-              (plant) => plant.pot?.location?.parent === room.locationId,
-            ),
-            ...plants.filter(
-              (plant) => plant.dayHarvest !== 0 && room.locationId === null,
-            ),
-          ];
-          room.workers = workersList.filter(
-            (el) => el.locationId === room.locationId,
-          );
-          room.probes = probesList.filter(
-            (el) => el.locationId === room.locationId,
-          );
-          room.workers.map((worker) => {
-            worker.type = workersType.find((el) => el.id === worker.workerType);
-            worker.log = workersLog.find((el) => el.idWorker === worker.id);
-            worker.schedule = workersSchedule.filter(
-              (el) => el.idWorker === worker.id,
-            );
-          });
-          room.probes.map((probe) => {
-            probe.type = probesType.find((el) => el.id === probe.probeType);
-            probe.log = probesLog.find((el) => el.idWorker === probe.id);
-            probe.schedule = probesSchedule.filter(
-              (el) => el.idProbe === probe.id,
-            );
-          });
-          const airtemp = room.probes.find(
-            (probe) => +probe.probeType === +ProbesTypes.Air_temperature,
-          );
-          room.probesComponents = { airtemp };
-          if (airtemp) {
-            room.probesComponents.airtemp.type.maxWarningValue =
-              room?.plants[0]?.phase?.maxTemp;
-            room.probesComponents.airtemp.type.minWarningValue =
-              room?.plants[0]?.phase?.minTemp;
-            this.read(room?.probesComponents?.airtemp);
-          }
-
-          const light = room?.workers.find(
-            (worker) => +worker.workerType === +WorkersTypes.Room_Light,
-          );
-          const fan = room?.workers.find(
-            (worker) => worker.workerType === WorkersTypes.Room_Fan,
-          );
-          const nutrientRefill = room?.workers.find(
-            (worker) =>
-              +worker.workerType === +WorkersTypes.Room_Nutrient_refill,
-          );
-          const phDown = room?.workers.find(
-            (worker) => worker.workerType === WorkersTypes.Room_PhDown_refill,
-          );
-          room.workersComponents = { light, fan, nutrientRefill, phDown };
-          if (light) {
-            room.workersComponents.light.status = DevicesStatus.ON;
-          } // TODO
-          if (fan) {
-            room.workersComponents.fan.status = DevicesStatus.ON;
-          } // TODO
-
-          const modes: any[] = [];
-          const enumValues = Object.values(OperatingModes);
-          const k = enumValues.slice(0, enumValues.length / 2);
-
-          k.map((el: any) => {
-            modes.push({
-              name: el,
-              value: OperatingModes[el],
-            });
-          });
-          room.operatingModes = modes;
-          if (room.settings) {
-            room.operatingMode = room.operatingModes.find(
-              (el) => +el.value === +room.settings.operatingMode,
-            ).value;
-          }
         });
-        console.log("[PAGE/PLANTS/MASTER]: ", rooms)
-
-        this.filterList();
-        if (this.debug) {
-          console.info('[PAGE]: Ready');
+        const waterLoop = plant.workers.find(
+          (worker) => +worker.workerType === +WorkersTypes.Pot_Water_loop,
+        );
+        plant.workersComponents = { waterLoop };
+        if (waterLoop) {
+          plant.workersComponents.waterLoop.status = plant.workersComponents
+            .waterLoop
+            ? DevicesStatus.ON
+            : DevicesStatus.OFF; // TODO
         }
 
+        plant.calendar?.phases.forEach((phase) => {
+          phase.dose = doses.find((el) => el.id === phase?.idDose);
+        });
+        const epochDiffGrow: number =
+          new Date().getTime() -
+          new Date(plant.dayStartGrow as number).getTime();
+        plant.daysFromGrow = Math.ceil(epochDiffGrow / (1000 * 60 * 60 * 24));
+        const epochDiffBloom: number =
+          new Date().getTime() -
+          new Date(plant.dayStartBloom as number).getTime();
+        (plant.daysFromBloom as any) = plant.dayStartBloom
+          ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
+          : null;
+        const epochDiffFlush: number =
+          new Date().getTime() -
+          new Date(plant.dayStartFlush as number).getTime();
+        (plant.daysFromFlush as any) = plant.dayStartFlush
+          ? Math.ceil(epochDiffFlush / (1000 * 60 * 60 * 24))
+          : null;
+
+        let foundPhase: PhaseExtended | undefined;
+
+        let endPhaseDay = 0;
+        // let counter = countingDays;
+        let flagSeedling = false;
+        let flagBlooming = false;
+        let flagFlushing = false;
+        plant.calendar?.phases.forEach((plantPhase: PhaseExtended) => {
+          const countingDays: any = plantPhase?.isFlushing
+            ? plant.daysFromFlush
+            : plantPhase?.isBlooming
+              ? plant.daysFromBloom
+              : plant.daysFromGrow;
+
+          if (
+            (plantPhase?.isBlooming && !flagBlooming) ||
+            (plantPhase?.isFlushing && !flagFlushing) ||
+            (!plantPhase?.isBlooming &&
+              !plantPhase?.isFlushing &&
+              !flagSeedling)
+          ) {
+            plantPhase.startPhaseDay = 0;
+            //   counter = countingDays;
+            flagSeedling = !plantPhase?.isBlooming && !plantPhase?.isFlushing;
+            flagBlooming = plantPhase?.isBlooming;
+            flagFlushing = plantPhase?.isFlushing;
+          } else {
+            plantPhase.startPhaseDay = endPhaseDay;
+          }
+          endPhaseDay = plantPhase.startPhaseDay + plantPhase?.duration;
+
+          if (countingDays > plantPhase.startPhaseDay) {
+            foundPhase = plantPhase;
+            // counter += plantPhase?.duration;
+          }
+        });
+        plant.phase = foundPhase;
+      }
+    });
+    plants = plants.filter(
+      (el) =>
+        (this.formDefinition.options.find((el: any) => el.id === 0).isChecked
+          ? el.dayStartGrow && !el.dayStartBloom
+          : 0) ||
+        (this.formDefinition.options.find((el: any) => el.id === 1).isChecked
+          ? el.dayStartBloom
+          : 0) ||
+        (this.formDefinition.options.find((el: any) => el.id === 2).isChecked
+          ? el.dayHarvest
+          : 0),
+    );
+    plants.sort((a: any, b: any) => {
+      if (+a.dayStartBloom === +b.dayStartBloom) {
+        return +a.dayStartGrow > +b.dayStartGrow ? 1 : -1;
+      } else {
+        return +a.dayStartBloom > +b.dayStartBloom ? -1 : 1;
+      }
+    });
+
+    this.rooms = rooms;
+
+    this.rooms.map(async (room: RoomExtended) => {
+      room.settings = settings.find((el) => el.device === room.serialNumber);
+      room.plants = [
+        ...plants.filter(
+          (plant) => plant.pot?.location?.parent === room.locationId,
+        ),
+        ...plants.filter(
+          (plant) => plant.dayHarvest !== 0 && room.locationId === null,
+        ),
+      ];
+      room.workers = workersList.filter(
+        (el) => el.locationId === room.locationId,
+      );
+      room.probes = probesList.filter(
+        (el) => el.locationId === room.locationId,
+      );
+      room.workers.map((worker) => {
+        worker.type = workersType.find((el) => el.id === worker.workerType);
+        worker.log = workersLog.find((el) => el.idWorker === worker.id);
+        worker.schedule = workersSchedule.filter(
+          (el) => el.idWorker === worker.id,
+        );
+      });
+      room.probes.map((probe) => {
+        probe.type = probesType.find((el) => el.id === probe.probeType);
+        probe.log = probesLog.find((el) => el.idWorker === probe.id);
+        probe.schedule = probesSchedule.filter((el) => el.idProbe === probe.id);
+      });
+      const airtemp = room.probes.find(
+        (probe) => +probe.probeType === +ProbesTypes.Air_temperature,
+      );
+      room.probesComponents = { airtemp };
+      if (airtemp) {
+        room.probesComponents.airtemp.type.maxWarningValue =
+          room?.plants[0]?.phase?.maxTemp;
+        room.probesComponents.airtemp.type.minWarningValue =
+          room?.plants[0]?.phase?.minTemp;
+        this.read(room?.probesComponents?.airtemp);
+      }
+
+      const light = room?.workers.find(
+        (worker) => +worker.workerType === +WorkersTypes.Room_Light,
+      );
+      const fan = room?.workers.find(
+        (worker) => worker.workerType === WorkersTypes.Room_Fan,
+      );
+      const nutrientRefill = room?.workers.find(
+        (worker) => +worker.workerType === +WorkersTypes.Room_Nutrient_refill,
+      );
+      const phDown = room?.workers.find(
+        (worker) => worker.workerType === WorkersTypes.Room_PhDown_refill,
+      );
+      room.workersComponents = { light, fan, nutrientRefill, phDown };
+      if (light) {
+        room.workersComponents.light.status = DevicesStatus.ON;
+      } // TODO
+      if (fan) {
+        room.workersComponents.fan.status = DevicesStatus.ON;
+      } // TODO
+
+      const modes: any[] = [];
+      const enumValues = Object.values(OperatingModes);
+      const k = enumValues.slice(0, enumValues.length / 2);
+
+      k.map((el: any) => {
+        modes.push({
+          name: el,
+          value: OperatingModes[el],
+        });
+      });
+      room.operatingModes = modes;
+      if (room.settings) {
+        room.operatingMode = room.operatingModes.find(
+          (el) => +el.value === +room.settings.operatingMode,
+        ).value;
+      }
+    });
+    console.log('[PAGE/PLANTS/MASTER]: ', rooms);
+
+    this.filterList();
+    if (this.debug) {
+      console.info('[PAGE]: Ready');
+    }
   }
 
   async deleteItem(item: PlantExtended) {
@@ -438,18 +424,14 @@ export class PlantsMasterComponent implements OnInit {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
-      this.getItems();
-    
+    this.getItems();
   }
 
   showDetail(item: PlantExtended) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.router.navigate([
-      this.page + '/edit',
-      JSON.stringify(item.id),
-    ]);
+    this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
   async doRefresh(refresher: any) {
@@ -457,13 +439,12 @@ export class PlantsMasterComponent implements OnInit {
       el.closeOpened();
     });
     const forceLoading = true;
-    const load:any = await this.db
-      .initService(forceLoading)
-     
-        this.getItems();
-        refresher.target.complete();
-     
-      load.catch((err) => console.error(err));
+    const load: any = await this.db.initService(forceLoading);
+
+    this.getItems();
+    refresher.target.complete();
+
+    load.catch((err) => console.error(err));
   }
 
   filterList() {
@@ -517,20 +498,20 @@ export class PlantsMasterComponent implements OnInit {
       probe.id,
       Peripherals.Probe,
     );
-      if (response.error) {
-        const header = `Error`;
-        const message = response.error;
-        const color = 'danger';
-        const duration = 3000;
-        this.presentToast(header, message, color, duration);
-      } else {
-        room.probesComponents.airtemp.value = response.value;
-        const header = `Success`;
-        const message = `Action executed`;
-        const color = 'success';
-        const duration = 3000;
-        this.presentToast(header, message, color, duration);
-      }
+    if (response.error) {
+      const header = `Error`;
+      const message = response.error;
+      const color = 'danger';
+      const duration = 3000;
+      this.presentToast(header, message, color, duration);
+    } else {
+      room.probesComponents.airtemp.value = response.value;
+      const header = `Success`;
+      const message = `Action executed`;
+      const color = 'success';
+      const duration = 3000;
+      this.presentToast(header, message, color, duration);
+    }
   }
 
   async toggleLight(worker: any) {
@@ -563,27 +544,26 @@ export class PlantsMasterComponent implements OnInit {
       ServerPages.actuators,
       action,
       worker.id,
-      Peripherals.Worker);
-      if (response.error) {
-        const header = `Error`;
-        const message = `Error occured`;
-        const color = 'danger';
-        const duration = 3000;
-        this.presentToast(header, message, color, duration);
-      }
-    
+      Peripherals.Worker,
+    );
+    if (response.error) {
+      const header = `Error`;
+      const message = `Error occured`;
+      const color = 'danger';
+      const duration = 3000;
+      this.presentToast(header, message, color, duration);
+    }
   }
 
   async setRoomStatus(event: any, room: RoomExtended) {
-    const response:any = this.runRemoteCommand(
+    const response: any = this.runRemoteCommand(
       room,
       ServerPages.system,
       ServerCommands.SET_MODE,
       room.id,
       event.detail.value,
     );
-      room.operatingMode = +response.mode;
-    
+    room.operatingMode = +response.mode;
   }
 
   async shufflePhDown(worker: any) {
@@ -629,43 +609,43 @@ export class PlantsMasterComponent implements OnInit {
     duration?: any,
   ) {
     return new Promise(async (resolve, reject) => {
-      const run:any = this.db.api.remoteDeviceExecute(
-          room?.settings?.address,
-          room?.settings?.port,
-          page,
-          action,
-          id,
-          type,
-          duration,
-        )
-      
-          let header = ``;
-          let message = ``;
-          let color = '';
-          
-          const toastDuration = 3000;
-          if (run.error) {
-            header = `Error`;
-            message = `Error occured`;
-            color = 'danger';
-            
-            this.presentToast(header, message, color, toastDuration);
-            reject(run.error);
-          }
-          header = `Success`;
-          message = `Action executed`;
-          color = 'success';
-          this.presentToast(header, message, color, toastDuration);
-          resolve(run);
-        
-        run.catch((err) => {
-          console.log(err);
-          const header = `Error`;
-          const message = `Error occured`;
-          const color = 'danger';
-          this.presentToast(header, message, color, toastDuration);
-          reject(err);
-        });
+      const run: any = this.db.api.remoteDeviceExecute(
+        room?.settings?.address,
+        room?.settings?.port,
+        page,
+        action,
+        id,
+        type,
+        duration,
+      );
+
+      let header = ``;
+      let message = ``;
+      let color = '';
+
+      const toastDuration = 3000;
+      if (run.error) {
+        header = `Error`;
+        message = `Error occured`;
+        color = 'danger';
+
+        this.presentToast(header, message, color, toastDuration);
+        reject(run.error);
+      }
+      header = `Success`;
+      message = `Action executed`;
+      color = 'success';
+      this.presentToast(header, message, color, toastDuration);
+      resolve(run);
+
+      run.catch((err) => {
+        console.log(err);
+        const header = `Error`;
+        const message = `Error occured`;
+        const color = 'danger';
+        this.presentToast(header, message, color, toastDuration);
+        reject(err);
+      });
     });
   }
 }

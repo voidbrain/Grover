@@ -25,8 +25,7 @@ export class ToastService {
     });
     toast.present();
     await toast.onDidDismiss();
-      this.toastMsgs = [];
-  
+    this.toastMsgs = [];
   }
 
   pushMessage(message: string) {

@@ -70,81 +70,83 @@ export class StrainsMasterComponent {
 
   async init() {
     console.info('[PAGE]: Start');
-    const load = await this.db
-      .load();
-      
-        const forceLoading = true;
-        await this.db.initService(forceLoading); 
-          this.getItems();
-        
-      
-      load.catch((err) => console.error(err));
+    const load = await this.db.load();
+
+    const forceLoading = true;
+    await this.db.initService(forceLoading);
+    this.getItems();
+
+    load.catch((err) => console.error(err));
   }
 
   async getItems() {
-		const items = await this.db.getItems(this.page);
-            items.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-            items.map((item) => {
-              console.log(item)
-                item.chartConfig = {
-                    id: 'chart',
-                    type : 'doughnut',
-                    options: {
-                      plugins: {
-                      legend: {
-                          display: false
-                      },
-                    },
-                    },
-                    data: {
-                        labels: ['Sativa', 'Indica'],
-                        datasets: [{
-                            data: [item.percentSativa, (100 - item.percentSativa)],
-                            backgroundColor: [
-                                'rgba(17, 176, 50, 1)',
-                                'rgba(125, 17, 176, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    xAxes: [{
-                        id: 'xAxis1',
-                        gridLines : {
-                            display : false
-                        },
-                        display: false,
-                    }],
-                    yAxes: [{
-                        display: false,
-                        stacked: false,
-                        gridLines : {
-                            display : false
-                        }
-                    }],
-                    labelsFontSize: 9,
-                    showValue: false,
-                    layout: {
-                        padding: {
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0
-                        }
-                    }
-                };
-            });
-            this.items = items;
-            console.info('[PAGE]: Ready');
-        
-    }
+    const items = await this.db.getItems(this.page);
+    items.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+    items.map((item) => {
+      console.log(item);
+      item.chartConfig = {
+        id: 'chart',
+        type: 'doughnut',
+        options: {
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+        data: {
+          labels: ['Sativa', 'Indica'],
+          datasets: [
+            {
+              data: [item.percentSativa, 100 - item.percentSativa],
+              backgroundColor: [
+                'rgba(17, 176, 50, 1)',
+                'rgba(125, 17, 176, 1)',
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        xAxes: [
+          {
+            id: 'xAxis1',
+            gridLines: {
+              display: false,
+            },
+            display: false,
+          },
+        ],
+        yAxes: [
+          {
+            display: false,
+            stacked: false,
+            gridLines: {
+              display: false,
+            },
+          },
+        ],
+        labelsFontSize: 9,
+        showValue: false,
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+          },
+        },
+      };
+    });
+    this.items = items;
+    console.info('[PAGE]: Ready');
+  }
 
   async deleteItem(item: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
-      this.getItems();
-    
+    this.getItems();
   }
 
   showDetail(item: any) {
@@ -159,12 +161,11 @@ export class StrainsMasterComponent {
       el.closeOpened();
     });
     const forceLoading = true;
-    const load:any = await this.db
-      .initService(forceLoading)
-      
-        this.getItems();
-        refresher.target.complete();
-      
-      load.catch((err) => console.error(err));
+    const load: any = await this.db.initService(forceLoading);
+
+    this.getItems();
+    refresher.target.complete();
+
+    load.catch((err) => console.error(err));
   }
 }

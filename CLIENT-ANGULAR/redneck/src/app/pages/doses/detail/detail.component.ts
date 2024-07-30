@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
 import {
@@ -92,11 +91,36 @@ export class DosesDetailComponent implements OnInit {
     public router: Router,
   ) {
     this.formDefinition = [
-      { type: 'number', label: 'grow', name: 'grow', validation:[Validators.required] },
-      { type: 'number', label: 'micro', name: 'micro', validation:[Validators.required] },
-      { type: 'number', label: 'bloom', name: 'bloom', validation:[Validators.required] },
-      { type: 'number', label: 'ripen', name: 'ripen', validation:[Validators.required] },
-      { type: 'number', label: 'EC', name: 'EC', validation:[Validators.required] },
+      {
+        type: 'number',
+        label: 'grow',
+        name: 'grow',
+        validation: [Validators.required],
+      },
+      {
+        type: 'number',
+        label: 'micro',
+        name: 'micro',
+        validation: [Validators.required],
+      },
+      {
+        type: 'number',
+        label: 'bloom',
+        name: 'bloom',
+        validation: [Validators.required],
+      },
+      {
+        type: 'number',
+        label: 'ripen',
+        name: 'ripen',
+        validation: [Validators.required],
+      },
+      {
+        type: 'number',
+        label: 'EC',
+        name: 'EC',
+        validation: [Validators.required],
+      },
       { type: 'hidden', label: '', name: 'id' },
       { type: 'toggle', label: 'Enabled', name: 'enabled' },
       { type: 'hidden', label: '', name: 'deleted' },
@@ -109,18 +133,14 @@ export class DosesDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load: any = await this.db
-      .load()
-     
-        this.form.changes.subscribe(() => {
-          this.form.setDisabled(
-            'submit',
-            !this.form.valid,
-          );
-        });
-        this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
-      
-      load.catch((err) => console.error(err));
+    const load: any = await this.db.load();
+
+    this.form.changes.subscribe(() => {
+      this.form.setDisabled('submit', !this.form.valid);
+    });
+    this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
+
+    load.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -130,12 +150,11 @@ export class DosesDetailComponent implements OnInit {
   async getItem(id: any) {
     if (id) {
       const item: Dose = await this.db.getItem(this.page, id);
-      
-        if (item) {
-          this.form.setFormValues(item);
-          this.form.setDisabled('submit', false);
-        }
-     
+
+      if (item) {
+        this.form.setFormValues(item);
+        this.form.setDisabled('submit', false);
+      }
     } else {
       this.form.setValue('enabled', 1);
       this.form.setValue('deleted', 0);
@@ -143,7 +162,7 @@ export class DosesDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: { [name: string]: any }) {
+  formSubmitted(value: Record<string, any>) {
     this.save(value as Dose);
   }
 
@@ -154,7 +173,6 @@ export class DosesDetailComponent implements OnInit {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     await this.db.putItem(this.page, value);
-      this.router.navigate([this.page]);
-    
+    this.router.navigate([this.page]);
   }
 }

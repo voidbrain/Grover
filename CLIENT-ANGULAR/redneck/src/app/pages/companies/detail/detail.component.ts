@@ -79,7 +79,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
@@ -114,23 +114,20 @@ export class CompaniesDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load = await this.db
-      .load()
+    const load = await this.db.load();
+    this.previousValid = (this.form as DynamicFormComponent).valid;
+    (this.form as DynamicFormComponent).changes.subscribe(() => {
+      if ((this.form as DynamicFormComponent).valid !== this.previousValid) {
         this.previousValid = (this.form as DynamicFormComponent).valid;
-        (this.form as DynamicFormComponent).changes.subscribe(() => {
-          if (
-            (this.form as DynamicFormComponent).valid !== this.previousValid
-          ) {
-            this.previousValid = (this.form as DynamicFormComponent).valid;
-            (this.form as DynamicFormComponent).setDisabled(
-              'submit',
-              !this.previousValid,
-            );
-          }
-        });
-        this.getItem(this.route.snapshot.paramMap.get('id') as string);
-      
-      load.catch((err) => console.error(err));
+        (this.form as DynamicFormComponent).setDisabled(
+          'submit',
+          !this.previousValid,
+        );
+      }
+    });
+    this.getItem(this.route.snapshot.paramMap.get('id') as string);
+
+    load.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -140,11 +137,11 @@ export class CompaniesDetailComponent implements OnInit {
   async getItem(id: any) {
     if (id) {
       const item: Company = await this.db.getItem(this.page, id);
-      
-        if (item) {
-          (this.form as DynamicFormComponent).setFormValues(item);
-          (this.form as DynamicFormComponent).setDisabled('submit', false);
-        }
+
+      if (item) {
+        (this.form as DynamicFormComponent).setFormValues(item);
+        (this.form as DynamicFormComponent).setDisabled('submit', false);
+      }
     } else {
       (this.form as DynamicFormComponent).setValue('enabled', 1);
       (this.form as DynamicFormComponent).setValue('deleted', 0);
@@ -166,6 +163,5 @@ export class CompaniesDetailComponent implements OnInit {
 
     await this.db.putItem(this.page, value);
     this.router.navigate([this.page]);
-    
   }
 }

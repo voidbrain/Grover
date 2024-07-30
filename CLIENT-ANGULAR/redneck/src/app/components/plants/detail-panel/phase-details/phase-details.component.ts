@@ -159,7 +159,6 @@ export class PhaseDetailComponent implements OnChanges {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       }
-      
     } else {
       const header = `Error`;
       const message = `Probe ID not defined`;
@@ -240,38 +239,37 @@ export class PhaseDetailComponent implements OnChanges {
   ) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      const run = this.db.api
-        .remoteDeviceExecute(
-          this.room?.settings?.address,
-          this.room?.settings?.port,
-          page,
-          action,
-          id,
-          type,
-          duration,
-        )
-       
+      const run = this.db.api.remoteDeviceExecute(
+        this.room?.settings?.address,
+        this.room?.settings?.port,
+        page,
+        action,
+        id,
+        type,
+        duration,
+      );
+
+      if (this.debug) {
+        console.log(run);
+      }
+      const header = `Success`;
+      const message = `Action executed`;
+      const color = 'success';
+      const toastDuration = 3000;
+      this.presentToast(header, message, color, toastDuration);
+      resolve(run);
+
+      run.catch((err) => {
         if (this.debug) {
-          console.log(run);
+          console.log(err);
         }
-        const header = `Success`;
-        const message = `Action executed`;
-        const color = 'success';
+        const header = `Connection Error`;
+        const message = `Error connecting to the Grover device`;
+        const color = 'danger';
         const toastDuration = 3000;
         this.presentToast(header, message, color, toastDuration);
-        resolve(run);
-        
-        run.catch((err) => {
-          if (this.debug) {
-            console.log(err);
-          }
-          const header = `Connection Error`;
-          const message = `Error connecting to the Grover device`;
-          const color = 'danger';
-          const toastDuration = 3000;
-          this.presentToast(header, message, color, toastDuration);
-          reject(err);
-        });
+        reject(err);
+      });
     });
   }
 }

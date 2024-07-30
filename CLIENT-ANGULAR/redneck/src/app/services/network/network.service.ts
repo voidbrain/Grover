@@ -32,13 +32,12 @@ export class NetworkService {
     this.updateNetworkStatus(
       navigator.onLine ? ConnectionStatus.Online : ConnectionStatus.Offline,
     );
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const el = this;
+
     window.addEventListener('online', function () {
-      el.updateNetworkStatus(ConnectionStatus.Online);
+      globalThis.updateNetworkStatus(ConnectionStatus.Online);
     });
     window.addEventListener('offline', function () {
-      el.updateNetworkStatus(ConnectionStatus.Offline);
+      globalThis.updateNetworkStatus(ConnectionStatus.Offline);
     });
   }
 

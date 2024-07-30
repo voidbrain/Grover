@@ -20,15 +20,20 @@ import {
   IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faArrowsRotate,
-  faFill,
-} from '@fortawesome/free-solid-svg-icons';
+import { faArrowsRotate, faFill } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-actions-panel',
   standalone: true,
-  imports: [IonCard, IonCardContent, IonCardTitle, IonButton, IonSegment, IonSegmentButton, FontAwesomeModule],
+  imports: [
+    IonCard,
+    IonCardContent,
+    IonCardTitle,
+    IonButton,
+    IonSegment,
+    IonSegmentButton,
+    FontAwesomeModule,
+  ],
   templateUrl: './actions-panel.component.html',
   styleUrl: './actions-panel.component.scss',
 })
@@ -46,8 +51,7 @@ export class ActionsPanelComponent implements OnChanges {
   constructor(
     private db: DbService,
     private toastController: ToastController,
-  ) {
-  }
+  ) {}
 
   ngOnChanges() {
     if (this.plant && this.plant !== undefined) {
@@ -124,11 +128,12 @@ export class ActionsPanelComponent implements OnChanges {
   async read(id: any) {
     if (id) {
       const response: any = await this.runRemoteCommand(
-      ServerPages.actuators,
-      ServerCommands.READ,
-      id,
-      Peripherals.Probe);
-    
+        ServerPages.actuators,
+        ServerCommands.READ,
+        id,
+        Peripherals.Probe,
+      );
+
       if (response.error) {
         const header = `Error`;
         const message = response.error;
@@ -143,7 +148,6 @@ export class ActionsPanelComponent implements OnChanges {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       }
-      
     } else {
       const header = `Error`;
       const message = `Probe ID not defined`;
@@ -216,38 +220,37 @@ export class ActionsPanelComponent implements OnChanges {
   ) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      const run = this.db.api
-        .remoteDeviceExecute(
-          this.room?.settings?.address,
-          this.room?.settings?.port,
-          page,
-          action,
-          id,
-          type,
-          duration,
-        )
-        
-          if (this.debug) {
-            console.log(run);
-          }
-          const header = `Success`;
-          const message = `Action executed`;
-          const color = 'success';
-          const toastDuration = 3000;
-          this.presentToast(header, message, color, toastDuration);
-          resolve(run);
-        
-        run.catch((err) => {
-          if (this.debug) {
-            console.log(err);
-          }
-          const header = `Connection Error`;
-          const message = `Error connecting to the Grover device`;
-          const color = 'danger';
-          const toastDuration = 3000;
-          this.presentToast(header, message, color, toastDuration);
-          reject(err);
-        });
+      const run = this.db.api.remoteDeviceExecute(
+        this.room?.settings?.address,
+        this.room?.settings?.port,
+        page,
+        action,
+        id,
+        type,
+        duration,
+      );
+
+      if (this.debug) {
+        console.log(run);
+      }
+      const header = `Success`;
+      const message = `Action executed`;
+      const color = 'success';
+      const toastDuration = 3000;
+      this.presentToast(header, message, color, toastDuration);
+      resolve(run);
+
+      run.catch((err) => {
+        if (this.debug) {
+          console.log(err);
+        }
+        const header = `Connection Error`;
+        const message = `Error connecting to the Grover device`;
+        const color = 'danger';
+        const toastDuration = 3000;
+        this.presentToast(header, message, color, toastDuration);
+        reject(err);
+      });
     });
   }
 }

@@ -85,94 +85,91 @@ export class CalendarsMasterComponent {
   async init() {
     console.info('[PAGE]: Start');
     const load = await this.db.load();
-        const forceLoading = true;
-        await this.db.initService(forceLoading);
-        this.getItems();
-        
-    
-      load.catch((err) => console.error(err));
+    const forceLoading = true;
+    await this.db.initService(forceLoading);
+    this.getItems();
+
+    load.catch((err) => console.error(err));
   }
 
   async getItems() {
     const items = await this.db.getItems(this.table);
     const doses = await this.db.getItems('doses');
 
-    
-      (items as any).map((item: any) => {
-        if (typeof item.phases == 'string') {
-          if (item.phases != '') {
-            item.phases = JSON.parse(item.phases);
-          } else {
-            item.phases = [];
-          }
+    (items as any).map((item: any) => {
+      if (typeof item.phases == 'string') {
+        if (item.phases != '') {
+          item.phases = JSON.parse(item.phases);
+        } else {
+          item.phases = [];
         }
-        item.doses = item.phases;
-        const valuesArr: any[] = [];
-        if (item.doses && item.doses != null) {
-          item.doses.forEach((dose: any) => {
-            const phase = (doses as any).find((el: any) => el.id == dose.id);
-            valuesArr.push({
-              data: [Math.floor(dose.duration / 7)], // weeks
-              backgroundColor: [phase.color],
-            });
-            console.log(valuesArr)
+      }
+      item.doses = item.phases;
+      const valuesArr: any[] = [];
+      if (item.doses && item.doses != null) {
+        item.doses.forEach((dose: any) => {
+          const phase = (doses as any).find((el: any) => el.id == dose.id);
+          valuesArr.push({
+            data: [Math.floor(dose.duration / 7)], // weeks
+            backgroundColor: [phase.color],
           });
-          item.chartConfig = {
-            id: 'chart',
-            type: 'bar',
-            legend: false,
-            data: {
-              labels: ['Time'],
-              datasets: valuesArr,
+          console.log(valuesArr);
+        });
+        item.chartConfig = {
+          id: 'chart',
+          type: 'bar',
+          legend: false,
+          data: {
+            labels: ['Time'],
+            datasets: valuesArr,
+          },
+          // x: {
+          //     stacked: true,
+          //     show: false,
+          //     gridLines : {
+          //         display : false
+          //     }
+          // },
+          xAxes: [
+            {
+              id: 'xAxis1',
+              stacked: true,
+              gridLines: {
+                display: false,
+              },
+              display: false,
             },
-            // x: {
-            //     stacked: true,
-            //     show: false,
-            //     gridLines : {
-            //         display : false
-            //     }
-            // },
-            xAxes: [
-              {
-                id: 'xAxis1',
-                stacked: true,
-                gridLines: {
-                  display: false,
-                },
+          ],
+          // y: {
+          //     stacked: true,
+          //     show: false,
+          // },
+          yAxes: [
+            {
+              display: false,
+              stacked: true,
+              ticks: { beginAtZero: true },
+              gridLines: {
                 display: false,
               },
-            ],
-            // y: {
-            //     stacked: true,
-            //     show: false,
-            // },
-            yAxes: [
-              {
-                display: false,
-                stacked: true,
-                ticks: { beginAtZero: true },
-                gridLines: {
-                  display: false,
-                },
-              },
-            ],
-            labelsFontSize: 9,
-            showValue: true,
-            showLineTitle: false,
-            // layout: {
-            //     padding: {
-            //         left: 0,
-            //         right: 0,
-            //         top: 20,
-            //         bottom: 0
-            //     }
-            // }
-          };
-        }
-      });
-      this.items = items;
-      console.info('[PAGE]: Ready');
-    
+            },
+          ],
+          labelsFontSize: 9,
+          showValue: true,
+          showLineTitle: false,
+          // layout: {
+          //     padding: {
+          //         left: 0,
+          //         right: 0,
+          //         top: 20,
+          //         bottom: 0
+          //     }
+          // }
+        };
+      }
+    });
+    this.items = items;
+    console.info('[PAGE]: Ready');
   }
 
   async deleteItem(item: any) {
@@ -181,7 +178,6 @@ export class CalendarsMasterComponent {
     });
     await this.db.deleteItem(this.table, item);
     this.getItems();
-  
   }
 
   showDetail(item: any) {
@@ -196,7 +192,7 @@ export class CalendarsMasterComponent {
       el.closeOpened();
     });
     const forceLoading = true;
-    const load:any = await this.db.initService(forceLoading);
+    const load: any = await this.db.initService(forceLoading);
     this.getItems();
     refresher.target.complete();
     load.catch((err) => console.error(err));

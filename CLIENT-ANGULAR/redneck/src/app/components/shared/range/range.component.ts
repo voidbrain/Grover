@@ -8,7 +8,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SanitizeHtmlPipe } from '../../../pipes/sanitize-html/sanitize-html.pipe'
+import { SanitizeHtmlPipe } from '../../../pipes/sanitize-html/sanitize-html.pipe';
 
 @Component({
   selector: 'app-range',
@@ -25,7 +25,7 @@ import { SanitizeHtmlPipe } from '../../../pipes/sanitize-html/sanitize-html.pip
     NgStyle,
     NgClass,
     CommonModule,
-    SanitizeHtmlPipe
+    SanitizeHtmlPipe,
   ],
 })
 export class RangeComponent implements OnChanges {
@@ -77,9 +77,10 @@ export class RangeComponent implements OnChanges {
     const normalizedMax = 100;
     const normalizedMin = 0;
 
-    const normalizedRange = normalizedMin +
-    ((val - minVal) * (normalizedMax - normalizedMin)) / (maxVal - minVal)
+    const normalizedRange =
+      normalizedMin +
+      ((val - minVal) * (normalizedMax - normalizedMin)) / (maxVal - minVal);
 
-    return (normalizedRange);
+    return normalizedRange;
   }
 }

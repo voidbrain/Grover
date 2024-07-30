@@ -89,23 +89,20 @@ export class CompaniesMasterComponent {
   async init() {
     console.info('[PAGE]: Start');
 
-    const load = await this.db
-      .load()
-     
-        const forceLoading = true;
-        await this.db.initService(forceLoading);
-          this.getItems();
-        
-      
-      load.catch((err) => console.error(err));
+    const load = await this.db.load();
+
+    const forceLoading = true;
+    await this.db.initService(forceLoading);
+    this.getItems();
+
+    load.catch((err) => console.error(err));
   }
 
   async getItems() {
     const items = await this.db.getItems(this.table);
-      this.items = items;
-      console.log(items)
-      console.info('[PAGE]: Ready');
-    
+    this.items = items;
+    console.log(items);
+    console.info('[PAGE]: Ready');
   }
 
   async deleteItem(item: any) {
@@ -113,7 +110,7 @@ export class CompaniesMasterComponent {
       el.closeOpened();
     });
     await this.db.deleteItem(this.table, item);
-      this.getItems();
+    this.getItems();
   }
 
   showDetail(item: any) {
@@ -129,12 +126,11 @@ export class CompaniesMasterComponent {
       el.closeOpened();
     });
     const forceLoading = true;
-    const refresh:any = await this.db
-      .initService(forceLoading)
-     
-        this.getItems();
-        refresher.target.complete();
-     
-        refresh.catch((err) => console.error(err));
+    const refresh: any = await this.db.initService(forceLoading);
+
+    this.getItems();
+    refresher.target.complete();
+
+    refresh.catch((err) => console.error(err));
   }
 }

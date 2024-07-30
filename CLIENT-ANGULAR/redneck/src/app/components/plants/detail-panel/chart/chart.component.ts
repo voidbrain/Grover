@@ -4,7 +4,13 @@ import { PlantExtended } from '../../../../interfaces/plant';
 import { RoomExtended } from '../../../../interfaces/room';
 import { ChartComponent } from '../../../shared/chart/chart.component';
 import { ProbesTypes } from '../../../../services/settings/enum';
-import { Chart, ChartConfiguration, ChartOptions, ChartType, registerables } from 'chart.js/auto';
+import {
+  Chart,
+  ChartConfiguration,
+  ChartOptions,
+  ChartType,
+  registerables,
+} from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { BoxAnnotationOptions } from 'chartjs-plugin-annotation';
 import zoomPlugin from 'chartjs-plugin-zoom';
@@ -19,7 +25,11 @@ import {
 } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
-import { IonLabel, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
+import {
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-detail-chart',
@@ -40,10 +50,9 @@ export class PanelChartComponent implements OnChanges {
     datasets: [],
   };
 
-  constructor(){
+  constructor() {
     Chart.register(...registerables, annotationPlugin, zoomPlugin);
   }
-
 
   public chartData: ChartConfiguration['data'];
 
@@ -225,15 +234,15 @@ export class PanelChartComponent implements OnChanges {
                 xMax: data.t,
                 yMin: 20,
                 yMax: 20.4,
-              }  as BoxAnnotationOptions;
+              } as BoxAnnotationOptions;
             }),
           ],
         },
 
         zoom: {
-          limits:{
+          limits: {
             x: { min: xMin.getTime(), max: xMax.getTime() },
-            y: { min: null, max: null }
+            y: { min: null, max: null },
           },
           pan: {
             enabled: true,
@@ -243,7 +252,6 @@ export class PanelChartComponent implements OnChanges {
             mode: 'x',
           },
         },
-
       },
 
       responsive: true,
@@ -280,24 +288,17 @@ export class PanelChartComponent implements OnChanges {
           },
         },
       },
-
     };
 
     this.chartConfig = {
       type: this.chartType,
       data: filteredData,
       options: chartOptions,
-    }
-
-
-
-
+    };
   }
 
   filterDates(fromDate, toDate) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
-    const filteredData = JSON.parse(JSON.stringify(self.data));
+    const filteredData = JSON.parse(JSON.stringify(this.data));
     filteredData['datasets'].map((dataset) => {
       dataset.data = dataset['data']?.filter((item: any) => {
         return (

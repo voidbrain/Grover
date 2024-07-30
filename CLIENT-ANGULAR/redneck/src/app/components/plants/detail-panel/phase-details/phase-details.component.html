@@ -34,7 +34,6 @@
                 </ion-col>
                 <ion-col size="1">
                   <ion-button
-
                     [disabled]="!probes?.waterLevel"
                     size="small"
                     (click)="read(probes?.waterLevel?.id)"
@@ -46,7 +45,6 @@
                   <ion-button
                     expand="block"
                     class="btn"
-
                     [disabled]="!workers?.refill"
                     size="small"
                     (click)="fillWaterLevel(workers?.refill?.id)"
@@ -89,7 +87,6 @@
                 </ion-col>
                 <ion-col size="1">
                   <ion-button
-
                     size="small"
                     [disabled]="!probes?.ph"
                     (click)="read(probes?.ph?.id)"
@@ -101,7 +98,6 @@
                   <ion-button
                     expand="block"
                     class="btn"
-
                     size="small"
                     [disabled]="!workers?.refill"
                     (click)="fillPhDown(workers?.refill?.id)"
@@ -144,7 +140,6 @@
                 </ion-col>
                 <ion-col size="1">
                   <ion-button
-
                     size="small"
                     [disabled]="!probes?.ec"
                     (click)="read(probes?.ec?.id)"
@@ -156,7 +151,6 @@
                   <ion-button
                     expand="block"
                     class="btn"
-
                     size="small"
                     [disabled]="!workers?.refill"
                     (click)="fillNutrient(workers?.refill?.id)"
@@ -212,7 +206,6 @@
                 </ion-col>
                 <ion-col size="1">
                   <ion-button
-
                     size="small"
                     [disabled]="!probes?.temp"
                     (click)="read(probes?.temp?.id)"

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { stringToArray } from 'cron-converter';
@@ -47,7 +46,7 @@ export interface weekRow {
     IonSegment,
     IonSegmentButton,
     FontAwesomeModule,
-    NgClass
+    NgClass,
   ],
   templateUrl: './schedule-panel.component.html',
   styleUrl: './schedule-panel.component.scss',
@@ -91,7 +90,6 @@ export class SchedulePanelComponent implements OnChanges {
   }
 
   popuplateDaysArray(item: any, scheduleRow: any) {
-    const self = this;
     if (scheduleRow) {
       const stringCron = `${scheduleRow.atMinute} ${scheduleRow.atHour} * * ${scheduleRow.atDay}`;
 
@@ -124,51 +122,49 @@ export class SchedulePanelComponent implements OnChanges {
               },
           operatingMode: scheduleRow.operatingMode,
         };
-        self.daysOfWeek[day].values.push(el);
+        this.daysOfWeek[day].values.push(el);
       });
     }
   }
 
   setup() {
-    const self = this;
-
-    self.settings = new SettingsService();
-    self.todayOfTheWeek = getDay(new Date());
-    self.actualDayIndex = self.todayOfTheWeek;
+    this.settings = new SettingsService();
+    this.todayOfTheWeek = getDay(new Date());
+    this.actualDayIndex = this.todayOfTheWeek;
     for (let i = 0; i < 24; i++) {
-      self.hoursOfDay.push(i.toString().padStart(2, '0'));
+      this.hoursOfDay.push(i.toString().padStart(2, '0'));
     }
 
-    self.room.workers?.map((item) => {
+    this.room.workers?.map((item) => {
       if (item.schedule && item.schedule.length) {
         item.schedule.map((el: any) => {
-          self.popuplateDaysArray(item, el);
+          this.popuplateDaysArray(item, el);
         });
       }
     });
-    self.room.probes?.map((item) => {
+    this.room.probes?.map((item) => {
       if (item.schedule && item.schedule.length) {
         item.schedule.map((el: any) => {
-          self.popuplateDaysArray(item, el);
+          this.popuplateDaysArray(item, el);
         });
       }
     });
-    self.plant.workers?.map((item) => {
+    this.plant.workers?.map((item) => {
       if (item.schedule && item.schedule.length) {
         item.schedule.map((el: any) => {
-          self.popuplateDaysArray(item, el);
+          this.popuplateDaysArray(item, el);
         });
       }
     });
-    self.plant.probes?.map((item) => {
+    this.plant.probes?.map((item) => {
       if (item.schedule && item.schedule.length) {
         item.schedule.map((el: any) => {
-          self.popuplateDaysArray(item, el);
+          this.popuplateDaysArray(item, el);
         });
       }
     });
 
-    self.daysOfWeek.map((day) => {
+    this.daysOfWeek.map((day) => {
       const data: { labels: any[]; datasets: any[] } = {
         labels: [...day.values.map((el) => el.key)],
         datasets: [],
@@ -211,7 +207,7 @@ export class SchedulePanelComponent implements OnChanges {
       const chartConfig = {
         data,
       };
-      self.chartConfig.push(chartConfig);
+      this.chartConfig.push(chartConfig);
     });
 
     this.daysOfWeek.push(this.daysOfWeek.shift() as weekRow);

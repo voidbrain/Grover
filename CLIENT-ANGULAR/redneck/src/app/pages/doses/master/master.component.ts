@@ -91,75 +91,72 @@ export class DosesMasterComponent {
   async init() {
     console.info('[PAGE]: Start');
 
-    const load = await this.db
-      .load()
-     
-        const forceLoading = true;
-        await this.db.initService(forceLoading);
-          this.getItems();
-        
-      
-      load.catch((err) => console.error(err));
+    const load = await this.db.load();
+
+    const forceLoading = true;
+    await this.db.initService(forceLoading);
+    this.getItems();
+
+    load.catch((err) => console.error(err));
   }
 
   async getItems() {
     const items = await this.db.getItems(this.table);
-      items.map((item: any) => {
-        console.log(item)
-        item.chartConfig = {
-          id: 'chart',
-          type: 'bar',
-          legend: false,
-          data: {
-            labels: ['Gro', 'Micro', 'Bloom', 'Ripen', 'EC'],
-            datasets: [
-              {
-                data: [item.grow, item.micro, item.bloom, item.ripen, item.EC],
-                backgroundColor: [
-                  'rgba(17, 176, 50, 1)',
-                  'rgba(125, 17, 176, 1)',
-                  'rgba(176, 17, 17, 1)',
-                  'rgba(240, 215, 7, 1)',
-                  'rgba(7, 18, 240, 1)',
-                ],
-                borderWidth: 1,
-              },
-            ],
-          },
-          xAxes: [
+    items.map((item: any) => {
+      console.log(item);
+      item.chartConfig = {
+        id: 'chart',
+        type: 'bar',
+        legend: false,
+        data: {
+          labels: ['Gro', 'Micro', 'Bloom', 'Ripen', 'EC'],
+          datasets: [
             {
-              id: 'xAxis1',
-              gridLines: {
-                display: false,
-              },
-              display: false,
+              data: [item.grow, item.micro, item.bloom, item.ripen, item.EC],
+              backgroundColor: [
+                'rgba(17, 176, 50, 1)',
+                'rgba(125, 17, 176, 1)',
+                'rgba(176, 17, 17, 1)',
+                'rgba(240, 215, 7, 1)',
+                'rgba(7, 18, 240, 1)',
+              ],
+              borderWidth: 1,
             },
           ],
-          yAxes: [
-            {
+        },
+        xAxes: [
+          {
+            id: 'xAxis1',
+            gridLines: {
               display: false,
-              stacked: false,
-              ticks: { beginAtZero: true },
-              gridLines: {
-                display: false,
-              },
             },
-          ],
-          labelsFontSize: 9,
-          showValue: true,
-          layout: {
-            padding: {
-              left: 0,
-              right: 0,
-              top: 20,
-              bottom: 0,
+            display: false,
+          },
+        ],
+        yAxes: [
+          {
+            display: false,
+            stacked: false,
+            ticks: { beginAtZero: true },
+            gridLines: {
+              display: false,
             },
           },
-        };
-      });
-      this.items = items;
-      console.info('[PAGE]: Ready');
-    
+        ],
+        labelsFontSize: 9,
+        showValue: true,
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 20,
+            bottom: 0,
+          },
+        },
+      };
+    });
+    this.items = items;
+    console.info('[PAGE]: Ready');
   }
 
   async deleteItem(item: any) {
@@ -167,8 +164,7 @@ export class DosesMasterComponent {
       el.closeOpened();
     });
     await this.db.deleteItem(this.table, item);
-      this.getItems();
-    
+    this.getItems();
   }
 
   showDetail(item: any) {
@@ -183,12 +179,11 @@ export class DosesMasterComponent {
       el.closeOpened();
     });
     const forceLoading = true;
-    const load:any = await this.db
-      .initService(forceLoading)
-      
-        this.getItems();
-        refresher.target.complete();
-      
-      load.catch((err) => console.error(err));
+    const load: any = await this.db.initService(forceLoading);
+
+    this.getItems();
+    refresher.target.complete();
+
+    load.catch((err) => console.error(err));
   }
 }

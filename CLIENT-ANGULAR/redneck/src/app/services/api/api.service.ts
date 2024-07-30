@@ -33,13 +33,12 @@ export class ApiService {
 
   async get(table: string, params?: any): Promise<any> {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise( async (resolve) => {
+    return new Promise(async (resolve) => {
       const response = await this.http
         .get(this.url + table, { params: params })
         .toPromise();
-        
-          resolve(response);
-        
+
+      resolve(response);
     });
   }
 
@@ -103,8 +102,8 @@ export class ApiService {
             backdropDismiss: true,
           });
           await loading.onDidDismiss();
-            this.loadingFlag = false;
-          
+          this.loadingFlag = false;
+
           loading.present();
           this.http
             .get(

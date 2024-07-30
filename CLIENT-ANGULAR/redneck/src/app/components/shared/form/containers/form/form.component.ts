@@ -28,18 +28,20 @@ import { FieldConfig } from '../../models/field-config.interface';
 
   selector: 'app-dynamic-form',
   styleUrls: ['form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule,
-      DynamicFieldDirective,
-      DynamicFormComponent,
-      ButtonComponent,
-      InputTextComponent,
-      RadioComponent,
-      CheckboxComponent,
-      DateComponent,
-      ToggleComponent,
-      RangeComponent,
-      InputHiddenComponent,
-      SelectComponent,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DynamicFieldDirective,
+    DynamicFormComponent,
+    ButtonComponent,
+    InputTextComponent,
+    RadioComponent,
+    CheckboxComponent,
+    DateComponent,
+    ToggleComponent,
+    RangeComponent,
+    InputHiddenComponent,
+    SelectComponent,
   ],
   template: `<form
     class="dynamic-form"
@@ -47,7 +49,8 @@ import { FieldConfig } from '../../models/field-config.interface';
     (submit)="handleSubmit($event)"
   >
     @for (field of config; track field) {
-      <ng-container dynamicField [config]="field" [group]="form"> </ng-container>
+      <ng-container dynamicField [config]="field" [group]="form">
+      </ng-container>
     }
   </form>`,
 })
@@ -134,7 +137,7 @@ export class DynamicFormComponent implements OnChanges, OnInit {
   }
 
   setFormValues(form: any) {
-    console.log(form, this.form)
+    console.log(form, this.form);
     this.form.patchValue(form, { emitEvent: true });
   }
 }

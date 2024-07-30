@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/array-type */
-/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   ActivatedRoute,
@@ -85,7 +83,7 @@ import { DatePipe } from '@angular/common';
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class PlantsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
@@ -173,20 +171,18 @@ export class PlantsDetailComponent implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load = this.db
-      .load()
-  
+    const load = this.db.load();
+
+    this.previousValid = this.form.valid;
+    this.form.changes.subscribe(() => {
+      if (this.form.valid !== this.previousValid) {
         this.previousValid = this.form.valid;
-        this.form.changes.subscribe(() => {
-          
-          if (this.form.valid !== this.previousValid) {
-            this.previousValid = this.form.valid;
-            this.form.setDisabled('submit', !this.previousValid);
-          }
-        });
-        this.getItem(+this.route.snapshot.paramMap.get('id'));
-      
-      load.catch((err) => console.error(err));
+        this.form.setDisabled('submit', !this.previousValid);
+      }
+    });
+    this.getItem(+this.route.snapshot.paramMap.get('id'));
+
+    load.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -198,53 +194,51 @@ export class PlantsDetailComponent implements OnInit {
     const pots: Pot[] = await this.db.getItems('pots');
     const strains: Strain[] = await this.db.getItems('strains');
     const gMedium: GrowingMedium[] = await this.db.getItems('growing_mediums');
-    const gScenario: GrowingScenario[] = await this.db.getItems('growing_scenarios');
-    
-        this.formDefinition.find((el) => el.name === 'idCompany').options =
-          companies.sort((a, b) => (a.name > b.name ? 1 : -1));
-        this.formDefinition.find((el) => el.name === 'idStrain').options =
-          strains.sort((a, b) => (a.name > b.name ? 1 : -1));
-        this.formDefinition.find((el) => el.name === 'idPot').options =
-          pots.sort((a, b) => (a.name > b.name ? 1 : -1));
-        this.formDefinition.find(
-          (el) => el.name === 'idGrowingMedium',
-        ).options = gMedium;
-        this.formDefinition.find(
-          (el) => el.name === 'idGrowingScenario',
-        ).options = gScenario;
-        if (id) {
-          const item: Plant = await this.db.getItem(this.page, id);
-         
-            if (item) {
-              this.form.config
-                .filter((el) => el.type === 'date')
-                .map((el) => {
-                  item[el.name] = this.datePipe.transform(
-                    item[el.name],
-                    'yyyy-MM-dd',
-                  );
-                });
-              this.form.setFormValues(item);
-              this.form.setDisabled('submit', false);
-            }
-          
-        } else {
-          this.form.config
-            .filter(
-              (el) =>
-                (el.type === 'date' || el.type === 'number') && !el.validation,
-            )
-            .map((el) => {
-              this.form.setDisabled(el.name, true);
-            });
-          this.form.setValue('enabled', 1);
-          this.form.setValue('deleted', 0);
-          this.form.setDisabled('submit', true);
-        }
-   
+    const gScenario: GrowingScenario[] =
+      await this.db.getItems('growing_scenarios');
+
+    this.formDefinition.find((el) => el.name === 'idCompany').options =
+      companies.sort((a, b) => (a.name > b.name ? 1 : -1));
+    this.formDefinition.find((el) => el.name === 'idStrain').options =
+      strains.sort((a, b) => (a.name > b.name ? 1 : -1));
+    this.formDefinition.find((el) => el.name === 'idPot').options = pots.sort(
+      (a, b) => (a.name > b.name ? 1 : -1),
+    );
+    this.formDefinition.find((el) => el.name === 'idGrowingMedium').options =
+      gMedium;
+    this.formDefinition.find((el) => el.name === 'idGrowingScenario').options =
+      gScenario;
+    if (id) {
+      const item: Plant = await this.db.getItem(this.page, id);
+
+      if (item) {
+        this.form.config
+          .filter((el) => el.type === 'date')
+          .map((el) => {
+            item[el.name] = this.datePipe.transform(
+              item[el.name],
+              'yyyy-MM-dd',
+            );
+          });
+        this.form.setFormValues(item);
+        this.form.setDisabled('submit', false);
+      }
+    } else {
+      this.form.config
+        .filter(
+          (el) =>
+            (el.type === 'date' || el.type === 'number') && !el.validation,
+        )
+        .map((el) => {
+          this.form.setDisabled(el.name, true);
+        });
+      this.form.setValue('enabled', 1);
+      this.form.setValue('deleted', 0);
+      this.form.setDisabled('submit', true);
+    }
   }
 
-  formSubmitted(value: { [name: string]: any }) {
+  formSubmitted(value: Record<string, any>) {
     this.save(value as Plant);
   }
 
@@ -255,8 +249,7 @@ export class PlantsDetailComponent implements OnInit {
         value[el.name] = new Date(value[el.name]).getTime();
       });
 
-    await this.db.putItem(this.page, value)
-      this.router.navigate([this.page]);
-    
+    await this.db.putItem(this.page, value);
+    this.router.navigate([this.page]);
   }
 }

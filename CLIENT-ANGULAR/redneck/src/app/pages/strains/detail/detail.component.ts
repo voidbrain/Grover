@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
-/* eslint-disable @typescript-eslint/array-type */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   ActivatedRoute,
@@ -130,24 +128,18 @@ export class StrainsDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    const load = await this.db
-      .load()
-    
+    const load = await this.db.load();
+
+    this.previousValid = this.form.valid;
+    this.form.changes.subscribe(() => {
+      if (this.form.valid !== this.previousValid) {
         this.previousValid = this.form.valid;
-        this.form.changes.subscribe(() => {
-          if (
-            this.form.valid !== this.previousValid
-          ) {
-            this.previousValid = this.form.valid;
-            this.form.setDisabled(
-              'submit',
-              !this.previousValid,
-            );
-          }
-        });
-        this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
-      
-      load.catch((err) => console.error(err));
+        this.form.setDisabled('submit', !this.previousValid);
+      }
+    });
+    this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
+
+    load.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -156,36 +148,35 @@ export class StrainsDetailComponent implements OnInit {
 
   async getItem(id: any) {
     const strains: Strain[] = await this.db.getItems('strains');
-    
-      this.formDefinition.find((el: any) => el.name === 'lineage').options = strains;
-      if (id) {
-        const item:any = await this.db.getItem(this.page, id);
-        
-          if (item) {
-            this.form.setFormValues(item);
-            this.form.setDisabled('submit', false);
-            console.log("ok", item)
-          } else {
-            console.log("else")
-          }
-        
+
+    this.formDefinition.find((el: any) => el.name === 'lineage').options =
+      strains;
+    if (id) {
+      const item: any = await this.db.getItem(this.page, id);
+
+      if (item) {
+        this.form.setFormValues(item);
+        this.form.setDisabled('submit', false);
+        console.log('ok', item);
       } else {
-        this.form.config
-          .filter(
-            (el) =>
-              (el.type === 'date' || el.type === 'number') && !el.validation,
-          )
-          .map((el) => {
-            this.form.setDisabled(el.name, true);
-          });
-        this.form.setValue('enabled', 1);
-        this.form.setValue('deleted', 0);
-        this.form.setDisabled('submit', true);
+        console.log('else');
       }
-    
+    } else {
+      this.form.config
+        .filter(
+          (el) =>
+            (el.type === 'date' || el.type === 'number') && !el.validation,
+        )
+        .map((el) => {
+          this.form.setDisabled(el.name, true);
+        });
+      this.form.setValue('enabled', 1);
+      this.form.setValue('deleted', 0);
+      this.form.setDisabled('submit', true);
+    }
   }
 
-  formSubmitted(value: { [name: string]: any }) {
+  formSubmitted(value: Record<string, any>) {
     this.save(value as Strain);
   }
 
@@ -197,7 +188,6 @@ export class StrainsDetailComponent implements OnInit {
       });
     value.lineage = value.lineage.toString();
     await this.db.putItem(this.page, value);
-      this.router.navigate([this.page]);
-    
+    this.router.navigate([this.page]);
   }
 }
