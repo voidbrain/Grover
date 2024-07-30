@@ -70,12 +70,6 @@ export function initializeApp(dbService: DbService): () => Promise<void> {
       deps: [DbService],
       multi: true,
     },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp1,
-      deps: [DbService],
-      multi: true,
-    },
   ],
 })
 export class AppComponent {
