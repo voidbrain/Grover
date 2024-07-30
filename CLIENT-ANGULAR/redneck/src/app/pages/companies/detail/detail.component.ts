@@ -86,7 +86,6 @@ export class CompaniesDetailComponent implements OnInit {
   public id: any;
   public page = 'companies';
   formDefinition: any;
-  previousValid = false;
   pots: Pot[] = [];
 
   constructor(
@@ -114,12 +113,8 @@ export class CompaniesDetailComponent implements OnInit {
   async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
     await this.db.load();
-    this.previousValid = this.form.valid;
     this.form.changes.subscribe(() => {
-      if (this.form.valid !== this.previousValid) {
-        this.previousValid = this.form.valid;
-        this.form.setDisabled('submit', !this.previousValid);
-      }
+      this.form.setDisabled('submit', !this.form.valid);
     });
     this.getItem(this.route.snapshot.paramMap.get('id') as string);
   }
@@ -134,7 +129,7 @@ export class CompaniesDetailComponent implements OnInit {
 
       if (item) {
         this.form.setFormValues(item);
-        this.form.setDisabled('submit', false);
+        this.form.setDisabled('submit', true);
       }
     } else {
       this.form.setValue('enabled', 1);

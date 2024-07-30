@@ -130,12 +130,8 @@ export class StrainsDetailComponent implements OnInit {
 
     await this.db.load();
 
-    this.previousValid = this.form.valid;
     this.form.changes.subscribe(() => {
-      if (this.form.valid !== this.previousValid) {
-        this.previousValid = this.form.valid;
-        this.form.setDisabled('submit', !this.previousValid);
-      }
+      this.form.setDisabled('submit', !this.form.valid);
     });
     this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
   }
@@ -154,7 +150,7 @@ export class StrainsDetailComponent implements OnInit {
 
       if (item) {
         this.form.setFormValues(item);
-        this.form.setDisabled('submit', false);
+        this.form.setDisabled('submit', true);
         console.log('ok', item);
       } else {
         console.log('else');

@@ -87,7 +87,6 @@ export class CalendarsDetailComponent implements OnInit {
   public id: any;
   public page = 'calendars';
   formDefinition: any;
-  previousValid = false;
 
   constructor(
     public db: DbService,
@@ -125,13 +124,10 @@ export class CalendarsDetailComponent implements OnInit {
     await this.db.load();
 
     this.form.changes.subscribe(() => {
-      if (this.form.valid) {
-        this.previousValid = this.form.valid;
-        this.form.setDisabled('submit', this.form.valid);
-      }
-
-      this.getItem(this.route.snapshot.paramMap.get('id') as string);
+      this.form.setDisabled('submit', !this.form.valid);
     });
+
+      this.getItem(this.route.snapshot.paramMap.get('id') as string)
   }
 
   goBack() {
@@ -144,7 +140,7 @@ export class CalendarsDetailComponent implements OnInit {
 
       if (item) {
         this.form.setFormValues(item);
-        this.form.setDisabled('submit', false);
+        this.form.setDisabled('submit', true);
       }
     } else {
       this.form.setValue('enabled', 1);

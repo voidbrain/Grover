@@ -151,7 +151,7 @@ export class DosesDetailComponent implements OnInit {
 
       if (item) {
         this.form.setFormValues(item);
-        this.form.setDisabled('submit', false);
+        this.form.setDisabled('submit', true);
       }
     } else {
       this.form.setValue('enabled', 1);

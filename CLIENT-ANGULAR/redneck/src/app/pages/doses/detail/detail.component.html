@@ -24,5 +24,6 @@
       (submitForm)="formSubmitted($event)"
     >
     </app-dynamic-form>
+    {{ !this.form?.valid }}{{ !this.form?.form?.touched }}
   </div>
 </ion-content>
