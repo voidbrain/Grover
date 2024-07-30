@@ -173,9 +173,9 @@ export class PlantsDetailComponent implements OnInit {
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    this.db
+    const load = this.db
       .load()
-      .then(() => {
+  
         this.previousValid = this.form.valid;
         this.form.changes.subscribe(() => {
           
@@ -185,24 +185,21 @@ export class PlantsDetailComponent implements OnInit {
           }
         });
         this.getItem(+this.route.snapshot.paramMap.get('id'));
-      })
-      .catch((err) => console.error(err));
+      
+      load.catch((err) => console.error(err));
   }
 
   goBack() {
     this.router.navigate([this.page]);
   }
 
-  getItem(id) {
-    const companiesP: Promise<Array<Company>> = this.db.getItems('companies');
-    const potsP: Promise<Array<Pot>> = this.db.getItems('pots');
-    const strainsP: Promise<Array<Strain>> = this.db.getItems('strains');
-    const gMediumP: Promise<Array<GrowingMedium>> =
-      this.db.getItems('growing_mediums');
-    const gMScenarioP: Promise<Array<GrowingScenario>> =
-      this.db.getItems('growing_scenarios');
-    Promise.all([companiesP, strainsP, gMediumP, gMScenarioP, potsP]).then(
-      ([companies, strains, gMedium, gScenario, pots]) => {
+  async getItem(id) {
+    const companies: Company[] = await this.db.getItems('companies');
+    const pots: Pot[] = await this.db.getItems('pots');
+    const strains: Strain[] = await this.db.getItems('strains');
+    const gMedium: GrowingMedium[] = await this.db.getItems('growing_mediums');
+    const gScenario: GrowingScenario[] = await this.db.getItems('growing_scenarios');
+    
         this.formDefinition.find((el) => el.name === 'idCompany').options =
           companies.sort((a, b) => (a.name > b.name ? 1 : -1));
         this.formDefinition.find((el) => el.name === 'idStrain').options =
@@ -216,8 +213,8 @@ export class PlantsDetailComponent implements OnInit {
           (el) => el.name === 'idGrowingScenario',
         ).options = gScenario;
         if (id) {
-          const itemP: Promise<Plant> = this.db.getItem(this.page, id);
-          itemP.then((item: Plant) => {
+          const item: Plant = await this.db.getItem(this.page, id);
+         
             if (item) {
               this.form.config
                 .filter((el) => el.type === 'date')
@@ -230,7 +227,7 @@ export class PlantsDetailComponent implements OnInit {
               this.form.setFormValues(item);
               this.form.setDisabled('submit', false);
             }
-          });
+          
         } else {
           this.form.config
             .filter(
@@ -244,23 +241,22 @@ export class PlantsDetailComponent implements OnInit {
           this.form.setValue('deleted', 0);
           this.form.setDisabled('submit', true);
         }
-      },
-    );
+   
   }
 
   formSubmitted(value: { [name: string]: any }) {
     this.save(value as Plant);
   }
 
-  save(value: Plant) {
+  async save(value: Plant) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
 
-    this.db.putItem(this.page, value).then(() => {
+    await this.db.putItem(this.page, value)
       this.router.navigate([this.page]);
-    });
+    
   }
 }

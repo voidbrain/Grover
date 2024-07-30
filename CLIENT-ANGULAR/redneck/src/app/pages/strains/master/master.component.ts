@@ -68,21 +68,21 @@ export class StrainsMasterComponent {
     this.init();
   }
 
-  init() {
+  async init() {
     console.info('[PAGE]: Start');
-    this.db
-      .load()
-      .then(() => {
+    const load = await this.db
+      .load();
+      
         const forceLoading = true;
-        this.db.initService(forceLoading).then(() => {
+        await this.db.initService(forceLoading); 
           this.getItems();
-        });
-      })
-      .catch((err) => console.error(err));
+        
+      
+      load.catch((err) => console.error(err));
   }
 
-  getItems() {
-		this.db.getItems(this.page).then((items) => {
+  async getItems() {
+		const items = await this.db.getItems(this.page);
             items.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
             items.map((item) => {
               console.log(item)
@@ -135,16 +135,16 @@ export class StrainsMasterComponent {
             });
             this.items = items;
             console.info('[PAGE]: Ready');
-        });
+        
     }
 
-  deleteItem(item: any) {
+  async deleteItem(item: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.page, item).then(() => {
+    await this.db.deleteItem(this.page, item);
       this.getItems();
-    });
+    
   }
 
   showDetail(item: any) {
@@ -154,17 +154,17 @@ export class StrainsMasterComponent {
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  doRefresh(refresher: any) {
+  async doRefresh(refresher: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
     const forceLoading = true;
-    this.db
+    const load:any = await this.db
       .initService(forceLoading)
-      .then(() => {
+      
         this.getItems();
         refresher.target.complete();
-      })
-      .catch((err) => console.error(err));
+      
+      load.catch((err) => console.error(err));
   }
 }

@@ -171,88 +171,47 @@ export class PlantsMasterComponent implements OnInit {
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     if (this.debug) {
       console.info('[PAGE]: Start');
     }
-    this.db
-      .load()
-      .then(() => {
+    const load = await this.db.load()
+      
         this.getItems();
-      })
-      .catch((err) => console.error(err));
+      
+      load.catch((err) => console.error(err));
   }
 
   async getItems() {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
-    const settingsP: Promise<Array<any>> = this.db.getItems('settings');
-    const itemsP: Promise<Array<PlantExtended>> = this.db.getItems(this.page);
-    const potsP: Promise<Array<Pot>> = this.db.getItems('pots');
-    const strainsP: Promise<Array<Strain>> = this.db.getItems('strains');
-    const calendarP: Promise<Array<Calendar>> = this.db.getItems('calendars');
-    const dosesP: Promise<Array<Dose>> = this.db.getItems('doses');
-    const roomsP: Promise<Array<any>> = this.db.getItems('rooms');
-    const locationsP: Promise<Array<any>> = this.db.getItems('locations');
+    const settings:any[] = await this.db.getItems('settings');
+    let plants:PlantExtended[] = await this.db.getItems(this.page);
+    const pots:Pot[] = await this.db.getItems('pots');
+    const strains:Strain[] = await this.db.getItems('strains');
+    const calendar:Calendar[] = await this.db.getItems('calendars');
+    const doses:Dose[] = await this.db.getItems('doses');
+    const rooms:any[] = await this.db.getItems('rooms');
+    const locations:any[] = await this.db.getItems('locations');
 
-    const workersP: Promise<Array<any>> = this.db.getItems('workers_list');
-    const probesP: Promise<Array<any>> = this.db.getItems('probes_list');
-    const workersTypeP: Promise<Array<any>> = this.db.getItems('workers_type');
-    const probesTypeP: Promise<Array<any>> = this.db.getItems('probes_type');
-    const workersScheduleP: Promise<Array<any>> =
-      this.db.getItems('workers_schedule');
-    const probesScheduleP: Promise<Array<any>> =
-      this.db.getItems('probes_schedule');
+    const workersList:any[] = await this.db.getItems('workers_list');
+    const probesList:any[] = await this.db.getItems('probes_list');
+    const workersType:any[] = await this.db.getItems('workers_type');
+    const probesType:any[] = await this.db.getItems('probes_type');
+    const workersSchedule:any[] = await this.db.getItems('workers_schedule');
+    const probesSchedule:any[] = await this.db.getItems('probes_schedule');
     const column = 'id';
     const query: any[] = [];
-    const workersLogP: Promise<Array<any>> = this.db.getItems(
-      'workers_log',
+    const workersLog: any[] = await this.db.getItems('workers_log',
       column,
       query,
     );
-    const probesLogP: Promise<Array<any>> = this.db.getItems(
+    const probesLog: any[] = await this.db.getItems(
       'probes_log',
       column,
       query,
     );
-    Promise.all([
-      itemsP,
-      strainsP,
-      potsP,
-      calendarP,
-      dosesP,
-      roomsP,
-      locationsP,
-      workersP,
-      probesP,
-      workersTypeP,
-      probesTypeP,
-      workersLogP,
-      probesLogP,
-      workersScheduleP,
-      probesScheduleP,
-      settingsP,
-    ]).then(
-      ([
-        plants,
-        strains,
-        pots,
-        calendar,
-        doses,
-        rooms,
-        locations,
-        workersList,
-        probesList,
-        workersType,
-        probesType,
-        workersLog,
-        probesLog,
-        workersSchedule,
-        probesSchedule,
-        settings,
-      ]) => {
-        self.items = plants;
-        self.items.map(async (plant: PlantExtended) => {
+    
+        this.items = plants;
+        this.items.map(async (plant: PlantExtended) => {
           plant.calendar = calendar.find((el) => el.id === plant.idCalendar);
           plant.strain = (strains as any[]).find(
             (el) => el.id === plant.idStrain,
@@ -381,9 +340,9 @@ export class PlantsMasterComponent implements OnInit {
           }
         });
 
-        self.rooms = rooms;
+        this.rooms = rooms;
 
-        self.rooms.map(async (room: RoomExtended) => {
+        this.rooms.map(async (room: RoomExtended) => {
           room.settings = settings.find(
             (el) => el.device === room.serialNumber,
           );
@@ -424,7 +383,7 @@ export class PlantsMasterComponent implements OnInit {
               room?.plants[0]?.phase?.maxTemp;
             room.probesComponents.airtemp.type.minWarningValue =
               room?.plants[0]?.phase?.minTemp;
-            self.read(room?.probesComponents?.airtemp);
+            this.read(room?.probesComponents?.airtemp);
           }
 
           const light = room?.workers.find(
@@ -471,17 +430,16 @@ export class PlantsMasterComponent implements OnInit {
         if (this.debug) {
           console.info('[PAGE]: Ready');
         }
-      },
-    );
+
   }
 
-  deleteItem(item: PlantExtended) {
+  async deleteItem(item: PlantExtended) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.page, item).then(() => {
+    await this.db.deleteItem(this.page, item);
       this.getItems();
-    });
+    
   }
 
   showDetail(item: PlantExtended) {
@@ -494,18 +452,18 @@ export class PlantsMasterComponent implements OnInit {
     ]);
   }
 
-  doRefresh(refresher: any) {
+  async doRefresh(refresher: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
     const forceLoading = true;
-    this.db
+    const load:any = await this.db
       .initService(forceLoading)
-      .then(() => {
+     
         this.getItems();
         refresher.target.complete();
-      })
-      .catch((err) => console.error(err));
+     
+      load.catch((err) => console.error(err));
   }
 
   filterList() {
@@ -552,13 +510,13 @@ export class PlantsMasterComponent implements OnInit {
       (el) => el.locationId === probe.locationId,
     );
     const action = ServerCommands.READ;
-    this.runRemoteCommand(
+    const response: any = await this.runRemoteCommand(
       room,
       ServerPages.actuators,
       action,
       probe.id,
       Peripherals.Probe,
-    ).then((response: any) => {
+    );
       if (response.error) {
         const header = `Error`;
         const message = response.error;
@@ -573,7 +531,6 @@ export class PlantsMasterComponent implements OnInit {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       }
-    });
   }
 
   async toggleLight(worker: any) {
@@ -601,13 +558,12 @@ export class PlantsMasterComponent implements OnInit {
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
         : ServerCommands.ON;
-    this.runRemoteCommand(
+    const response: any = await this.runRemoteCommand(
       room,
       ServerPages.actuators,
       action,
       worker.id,
-      Peripherals.Worker,
-    ).then((response: any) => {
+      Peripherals.Worker);
       if (response.error) {
         const header = `Error`;
         const message = `Error occured`;
@@ -615,19 +571,19 @@ export class PlantsMasterComponent implements OnInit {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       }
-    });
+    
   }
 
   async setRoomStatus(event: any, room: RoomExtended) {
-    this.runRemoteCommand(
+    const response:any = this.runRemoteCommand(
       room,
       ServerPages.system,
       ServerCommands.SET_MODE,
       room.id,
       event.detail.value,
-    ).then((response: any) => {
+    );
       room.operatingMode = +response.mode;
-    });
+    
   }
 
   async shufflePhDown(worker: any) {
@@ -673,8 +629,7 @@ export class PlantsMasterComponent implements OnInit {
     duration?: any,
   ) {
     return new Promise(async (resolve, reject) => {
-      this.db.api
-        .remoteDeviceExecute(
+      const run:any = this.db.api.remoteDeviceExecute(
           room?.settings?.address,
           room?.settings?.port,
           page,
@@ -683,29 +638,32 @@ export class PlantsMasterComponent implements OnInit {
           type,
           duration,
         )
-        .then((run: any) => {
+      
+          let header = ``;
+          let message = ``;
+          let color = '';
+          
+          const toastDuration = 3000;
           if (run.error) {
-            const header = `Error`;
-            const message = `Error occured`;
-            const color = 'danger';
-            const duration = 3000;
-            this.presentToast(header, message, color, duration);
+            header = `Error`;
+            message = `Error occured`;
+            color = 'danger';
+            
+            this.presentToast(header, message, color, toastDuration);
             reject(run.error);
           }
-          const header = `Success`;
-          const message = `Action executed`;
-          const color = 'success';
-          const duration = 3000;
-          this.presentToast(header, message, color, duration);
+          header = `Success`;
+          message = `Action executed`;
+          color = 'success';
+          this.presentToast(header, message, color, toastDuration);
           resolve(run);
-        })
-        .catch((err) => {
+        
+        run.catch((err) => {
           console.log(err);
           const header = `Error`;
           const message = `Error occured`;
           const color = 'danger';
-          const duration = 3000;
-          this.presentToast(header, message, color, duration);
+          this.presentToast(header, message, color, toastDuration);
           reject(err);
         });
     });

@@ -24,9 +24,9 @@ export class ToastService {
       cssClass: 'globe',
     });
     toast.present();
-    toast.onDidDismiss().then(() => {
+    await toast.onDidDismiss();
       this.toastMsgs = [];
-    });
+  
   }
 
   pushMessage(message: string) {

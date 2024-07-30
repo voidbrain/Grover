@@ -123,27 +123,27 @@ export class ActionsPanelComponent implements OnChanges {
 
   async read(id: any) {
     if (id) {
-      this.runRemoteCommand(
-        ServerPages.actuators,
-        ServerCommands.READ,
-        id,
-        Peripherals.Probe,
-      ).then((response: any) => {
-        if (response.error) {
-          const header = `Error`;
-          const message = response.error;
-          const color = 'danger';
-          const duration = 3000;
-          this.presentToast(header, message, color, duration);
-        } else {
-          this.probes.temp.value = response.value;
-          const header = `Success`;
-          const message = `Action executed`;
-          const color = 'success';
-          const duration = 3000;
-          this.presentToast(header, message, color, duration);
-        }
-      });
+      const response: any = await this.runRemoteCommand(
+      ServerPages.actuators,
+      ServerCommands.READ,
+      id,
+      Peripherals.Probe);
+    
+      if (response.error) {
+        const header = `Error`;
+        const message = response.error;
+        const color = 'danger';
+        const duration = 3000;
+        this.presentToast(header, message, color, duration);
+      } else {
+        this.probes.temp.value = response.value;
+        const header = `Success`;
+        const message = `Action executed`;
+        const color = 'success';
+        const duration = 3000;
+        this.presentToast(header, message, color, duration);
+      }
+      
     } else {
       const header = `Error`;
       const message = `Probe ID not defined`;
@@ -188,14 +188,6 @@ export class ActionsPanelComponent implements OnChanges {
     );
   }
 
-  // async shufflePhDown(id: any) {
-  //   this.runRemoteCommand(ServerPages.actuators, ServerCommands.RUN_PHDOWN, id, Peripherals.Worker)
-  //     .then ((response) => {
-  //       const value = response;
-  //     })
-  //     .catch (() => {});
-  // }
-
   async fillNutrient(id: any) {
     const duration = 1000;
     this.runRemoteCommand(
@@ -224,7 +216,7 @@ export class ActionsPanelComponent implements OnChanges {
   ) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      this.db.api
+      const run = this.db.api
         .remoteDeviceExecute(
           this.room?.settings?.address,
           this.room?.settings?.port,
@@ -234,7 +226,7 @@ export class ActionsPanelComponent implements OnChanges {
           type,
           duration,
         )
-        .then((run) => {
+        
           if (this.debug) {
             console.log(run);
           }
@@ -244,8 +236,8 @@ export class ActionsPanelComponent implements OnChanges {
           const toastDuration = 3000;
           this.presentToast(header, message, color, toastDuration);
           resolve(run);
-        })
-        .catch((err) => {
+        
+        run.catch((err) => {
           if (this.debug) {
             console.log(err);
           }

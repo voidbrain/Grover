@@ -127,12 +127,12 @@ export class StrainsDetailComponent implements OnInit {
     addIcons(ionIcons);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    this.db
+    const load = await this.db
       .load()
-      .then(() => {
+    
         this.previousValid = this.form.valid;
         this.form.changes.subscribe(() => {
           if (
@@ -146,8 +146,8 @@ export class StrainsDetailComponent implements OnInit {
           }
         });
         this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
-      })
-      .catch((err) => console.error(err));
+      
+      load.catch((err) => console.error(err));
   }
 
   goBack() {
@@ -155,22 +155,12 @@ export class StrainsDetailComponent implements OnInit {
   }
 
   async getItem(id: any) {
-
+    const strains: Strain[] = await this.db.getItems('strains');
     
-    const strains1 = await  this.db.getItem('strains', 1);
-    console.log(strains1)
-
-    const test = this.db.getItem('strains', "1");
-    Promise.all([test]).then((strains) => {
-      console.log(strains)
-    });
-
-    const strainsP: Promise<Strain[]> = this.db.getItems('strains');
-    Promise.all([strainsP]).then(([strains]) => {
       this.formDefinition.find((el: any) => el.name === 'lineage').options = strains;
       if (id) {
-        const itemP: Promise<any> = this.db.getItem(this.page, id);
-        itemP.then((item: any) => {
+        const item:any = await this.db.getItem(this.page, id);
+        
           if (item) {
             this.form.setFormValues(item);
             this.form.setDisabled('submit', false);
@@ -178,7 +168,7 @@ export class StrainsDetailComponent implements OnInit {
           } else {
             console.log("else")
           }
-        });
+        
       } else {
         this.form.config
           .filter(
@@ -192,22 +182,22 @@ export class StrainsDetailComponent implements OnInit {
         this.form.setValue('deleted', 0);
         this.form.setDisabled('submit', true);
       }
-    });
+    
   }
 
   formSubmitted(value: { [name: string]: any }) {
     this.save(value as Strain);
   }
 
-  save(value: any) {
+  async save(value: any) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el: any) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     value.lineage = value.lineage.toString();
-    this.db.putItem(this.page, value).then(() => {
+    await this.db.putItem(this.page, value);
       this.router.navigate([this.page]);
-    });
+    
   }
 }

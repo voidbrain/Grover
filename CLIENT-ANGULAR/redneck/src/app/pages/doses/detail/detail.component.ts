@@ -106,12 +106,12 @@ export class DosesDetailComponent implements OnInit {
     addIcons(ionIcons);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    this.db
+    const load: any = await this.db
       .load()
-      .then(() => {
+     
         this.form.changes.subscribe(() => {
           this.form.setDisabled(
             'submit',
@@ -119,23 +119,23 @@ export class DosesDetailComponent implements OnInit {
           );
         });
         this.getItem(+(this.route.snapshot.paramMap.get('id') as string));
-      })
-      .catch((err) => console.error(err));
+      
+      load.catch((err) => console.error(err));
   }
 
   goBack() {
     this.router.navigate([this.page]);
   }
 
-  getItem(id: any) {
+  async getItem(id: any) {
     if (id) {
-      const itemP: Promise<Dose> = this.db.getItem(this.page, id);
-      itemP.then((item: Dose) => {
+      const item: Dose = await this.db.getItem(this.page, id);
+      
         if (item) {
           this.form.setFormValues(item);
           this.form.setDisabled('submit', false);
         }
-      });
+     
     } else {
       this.form.setValue('enabled', 1);
       this.form.setValue('deleted', 0);
@@ -147,14 +147,14 @@ export class DosesDetailComponent implements OnInit {
     this.save(value as Dose);
   }
 
-  save(value: any) {
+  async save(value: any) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
-    this.db.putItem(this.page, value).then(() => {
+    await this.db.putItem(this.page, value);
       this.router.navigate([this.page]);
-    });
+    
   }
 }

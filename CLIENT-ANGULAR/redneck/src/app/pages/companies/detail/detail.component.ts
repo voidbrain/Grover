@@ -111,12 +111,11 @@ export class CompaniesDetailComponent implements OnInit {
     addIcons(ionIcons);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    this.db
+    const load = await this.db
       .load()
-      .then(() => {
         this.previousValid = (this.form as DynamicFormComponent).valid;
         (this.form as DynamicFormComponent).changes.subscribe(() => {
           if (
@@ -130,23 +129,22 @@ export class CompaniesDetailComponent implements OnInit {
           }
         });
         this.getItem(this.route.snapshot.paramMap.get('id') as string);
-      })
-      .catch((err) => console.error(err));
+      
+      load.catch((err) => console.error(err));
   }
 
   goBack() {
     this.router.navigate([this.page]);
   }
 
-  getItem(id: any) {
+  async getItem(id: any) {
     if (id) {
-      const itemP: Promise<Company> = this.db.getItem(this.page, id);
-      itemP.then((item: Company) => {
+      const item: Company = await this.db.getItem(this.page, id);
+      
         if (item) {
           (this.form as DynamicFormComponent).setFormValues(item);
           (this.form as DynamicFormComponent).setDisabled('submit', false);
         }
-      });
     } else {
       (this.form as DynamicFormComponent).setValue('enabled', 1);
       (this.form as DynamicFormComponent).setValue('deleted', 0);
@@ -159,15 +157,15 @@ export class CompaniesDetailComponent implements OnInit {
     this.save(value as Company);
   }
 
-  save(value: any) {
+  async save(value: any) {
     (this.form as DynamicFormComponent).config
       .filter((el: any) => el.type === 'date')
       .map((el: any) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
 
-    this.db.putItem(this.page, value).then(() => {
-      this.router.navigate([this.page]);
-    });
+    await this.db.putItem(this.page, value);
+    this.router.navigate([this.page]);
+    
   }
 }

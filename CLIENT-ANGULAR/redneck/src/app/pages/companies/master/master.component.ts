@@ -86,35 +86,34 @@ export class CompaniesMasterComponent {
     addIcons(ionIcons);
   }
 
-  init() {
+  async init() {
     console.info('[PAGE]: Start');
 
-    this.db
+    const load = await this.db
       .load()
-      .then(() => {
+     
         const forceLoading = true;
-        this.db.initService(forceLoading).then(() => {
+        await this.db.initService(forceLoading);
           this.getItems();
-        });
-      })
-      .catch((err) => console.error(err));
+        
+      
+      load.catch((err) => console.error(err));
   }
 
-  getItems() {
-    this.db.getItems(this.table).then((items) => {
+  async getItems() {
+    const items = await this.db.getItems(this.table);
       this.items = items;
       console.log(items)
       console.info('[PAGE]: Ready');
-    });
+    
   }
 
-  deleteItem(item: any) {
+  async deleteItem(item: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then(() => {
+    await this.db.deleteItem(this.table, item);
       this.getItems();
-    });
   }
 
   showDetail(item: any) {
@@ -125,17 +124,17 @@ export class CompaniesMasterComponent {
     this.router.navigate([this.table + '/edit', JSON.stringify(item.id)]);
   }
 
-  doRefresh(refresher: any) {
+  async doRefresh(refresher: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
     const forceLoading = true;
-    this.db
+    const refresh:any = await this.db
       .initService(forceLoading)
-      .then(() => {
+     
         this.getItems();
         refresher.target.complete();
-      })
-      .catch((err) => console.error(err));
+     
+        refresh.catch((err) => console.error(err));
   }
 }

@@ -32,13 +32,14 @@ export class ApiService {
   }
 
   async get(table: string, params?: any): Promise<any> {
-    return new Promise((resolve) => {
-      this.http
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise( async (resolve) => {
+      const response = await this.http
         .get(this.url + table, { params: params })
-        .toPromise()
-        .then((response: any) => {
+        .toPromise();
+        
           resolve(response);
-        });
+        
     });
   }
 
@@ -101,9 +102,9 @@ export class ApiService {
             message: 'Please wait&hellip;',
             backdropDismiss: true,
           });
-          loading.onDidDismiss().then(() => {
+          await loading.onDidDismiss();
             this.loadingFlag = false;
-          });
+          
           loading.present();
           this.http
             .get(

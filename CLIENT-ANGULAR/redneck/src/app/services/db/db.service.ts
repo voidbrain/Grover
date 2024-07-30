@@ -29,24 +29,25 @@ export class DbService {
 
   async load(): Promise<any> {
     const self = this;
-    return new Promise<void>((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise<void>(async (resolve) => {
       const resetDb = false; // DB also forged on resetDb
       const forceLoading = true;
-      this.initDb(resetDb).then(() => {
-        this.initService(resetDb ? resetDb : forceLoading).then(() => {
-          this.api.networkService.status.subscribe((networkStatus) => {
+      await this.initDb(resetDb);
+        await this.initService(resetDb ? resetDb : forceLoading);
+          this.api.networkService.status.subscribe(async (networkStatus) => {
             if (self.debug) {
               console.info(
                 '[DB]: Network status: ' +
                   (networkStatus ? 'Online' : 'Offline'),
               );
             }
-              this.syncAndClean('Online').then(() => {
+              await this.syncAndClean('Online');
                 resolve();
-              });
+              
           });
-        });
-      });
+        
+      
     });
   }
 
@@ -133,14 +134,15 @@ export class DbService {
 
   async initDb(resetDb = false): Promise<any> {
     const self = this;
-    return new Promise<void>((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise<void>(async (resolve) => {
       if (resetDb) {
         if (self.debug) {
           console.info('[DB]: Delete db');
         }
-        this.deleteDb().then(() => {
+        await this.deleteDb();
           resolve();
-        });
+        
       } else {
         if (self.debug) {
           console.info('[DB]: Delete db not required');
@@ -155,7 +157,6 @@ export class DbService {
     const networkStatus = this.api.networkService.status.getValue();
     const date = new Date();
     const now = Date.now();
-    const lastUpdate: any[] = [];
 
     const promise = this.createDb();
 
@@ -182,30 +183,49 @@ export class DbService {
     const loading = await this.loadingController.create({ message: 'Loading' });
     loading.present();
 
-    return promise
-      .then(() =>
-        Promise.all(
-          this.tables.map((table) => {
-            lastUpdate[table] = localStorage.getItem(
-              this.appSettings.appName + '_' + table,
-            );
-              return this.loadData(table, lastUpdate[table]);
-          }),
-        ),
-      )
-      .then((results) => {
-        this.syncData(results)
-        loading.dismiss();
-        return;
-      });
+    // return promise
+    //   .then(() =>
+    //     Promise.all(
+    //       this.tables.map((table) => {
+    //         lastUpdate[table] = localStorage.getItem(
+    //           this.appSettings.appName + '_' + table,
+    //         );
+    //           return this.loadData(table, lastUpdate[table]);
+    //       }),
+    //     ),
+    //   )
+    //   .then((results) => {
+    //     this.syncData(results)
+    //     loading.dismiss();
+    //     return;
+    //   });
+    try {
+      await promise;
+  
+      const results = await Promise.all(
+        this.tables.map(async (table) => {
+          const lastUpdate = localStorage.getItem(
+            `${this.appSettings.appName}_${table}`
+          );
+          return await this.loadData(table, lastUpdate);
+        })
+      );
+  
+      this.syncData(results);
+      loading.dismiss();
+    } catch (error) {
+      console.error('An error occurred:', error);
+      // Handle error appropriately, for example, by showing an error message
+    }
   }
 
   async loadData(table: any, lastUpdate: any): Promise<any> {
-    return new Promise((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
       const params = { lastUpdate };
-      this.api.get(table, params).then((res) => {
+      const res = await this.api.get(table, params);
         resolve({ [table]: res });
-      });
+      
     });
   }
 
@@ -322,7 +342,8 @@ export class DbService {
     objectStore: any,
     item: Partial<Plant> | Strain | Company | Dose | Calendar,
   ): Promise<void> {
-    return new Promise((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
       if (!item.id) {
         delete item.id;
       }
@@ -330,7 +351,7 @@ export class DbService {
         this.appSettings.appName + '_' + objectStore,
       );
       const params = { lastUpdate };
-      this.api.post(objectStore, item, params).then((response) => {
+      const response = await this.api.post(objectStore, item, params)
         const tx = (this.db as IDBDatabase).transaction(
           objectStore,
           'readwrite',
@@ -343,14 +364,15 @@ export class DbService {
         promise.onerror = function (e) {
           console.error('[DB]: Error adding: ' + e);
         };
-      });
+      
     });
   }
 
   deleteItem(objectStore: any, itemToDelete: any): Promise<void> {
     const self = this;
-    return new Promise((resolve) => {
-      this.api.delete(objectStore, itemToDelete).then((item) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      const item = await this.api.delete(objectStore, itemToDelete);
         const tx = (this.db as IDBDatabase).transaction(
           objectStore,
           'readwrite',
@@ -393,7 +415,7 @@ export class DbService {
           };
         }
       });
-    });
+  
   }
 
   ////////////////////////////////////////////////
@@ -404,17 +426,18 @@ export class DbService {
 
   syncAndClean(networkStatus: any): Promise<any> {
     const self = this;
-    const promise = new Promise<void>((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    const promise = new Promise<void>(async (resolve) => {
       if (networkStatus) {
         this.toastService.pushMessage('Database sync and cleaning');
-        this.syncStoredItems().then(() => {
-          this.removeDeletedItem().then(() => {
+        await this.syncStoredItems();
+          await this.removeDeletedItem()
             if (self.debug) {
               console.info('[DB]: Db cleaned');
             }
             resolve();
-          });
-        });
+          
+        
       } else {
         resolve();
       }
@@ -428,8 +451,8 @@ export class DbService {
       if (self.debug) {
         console.info('[DB]: Sync stored items with remote');
       }
-      this.tables.map((table) => {
-        this.getItemsToBeSynced(table).then((items) => {
+      this.tables.map(async (table) => {
+        const items = await this.getItemsToBeSynced(table);
           if (items.length) {
             if (self.debug) {
               console.info(
@@ -437,15 +460,14 @@ export class DbService {
                 items,
               );
             }
-            items.map((item: any) => {
-              this.putItem(table, item).then(() => {
+            items.map(async (item: any) => {
+              await this.putItem(table, item);
                 resolve();
-              });
+              
             });
           } else {
             resolve();
           }
-        });
       });
     });
     return promise;
@@ -478,8 +500,8 @@ export class DbService {
       if (this.debug) {
         console.info('[DB]: Sync deleted items with remote then remove');
       }
-      this.tables.map((table) => {
-        this.getItemsToBeRemoved(table).then((items) => {
+      this.tables.map(async (table) => {
+        const items = await this.getItemsToBeRemoved(table);
           if (items.length) {
             if (this.debug) {
               console.info(
@@ -487,15 +509,15 @@ export class DbService {
                 items,
               );
             }
-            items.map((item: any) => {
-              this.deleteItem(table, item).then(() => {
+            items.map(async (item: any) => {
+              await this.deleteItem(table, item);
                 resolve();
-              });
+              
             });
           } else {
             resolve();
           }
-        });
+        
       });
     });
     return promise;

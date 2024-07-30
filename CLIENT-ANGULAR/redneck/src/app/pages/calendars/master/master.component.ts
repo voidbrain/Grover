@@ -82,23 +82,22 @@ export class CalendarsMasterComponent {
     addIcons(ionIcons);
   }
 
-  init() {
+  async init() {
     console.info('[PAGE]: Start');
-    this.db
-      .load()
-      .then(() => {
+    const load = await this.db.load();
         const forceLoading = true;
-        this.db.initService(forceLoading).then(() => {
-          this.getItems();
-        });
-      })
-      .catch((err) => console.error(err));
+        await this.db.initService(forceLoading);
+        this.getItems();
+        
+    
+      load.catch((err) => console.error(err));
   }
 
-  getItems() {
-    const itemsP = this.db.getItems(this.table);
-    const dosesP = this.db.getItems('doses');
-    Promise.all([itemsP, dosesP]).then(([items, doses]) => {
+  async getItems() {
+    const items = await this.db.getItems(this.table);
+    const doses = await this.db.getItems('doses');
+
+    
       (items as any).map((item: any) => {
         if (typeof item.phases == 'string') {
           if (item.phases != '') {
@@ -173,16 +172,16 @@ export class CalendarsMasterComponent {
       });
       this.items = items;
       console.info('[PAGE]: Ready');
-    });
+    
   }
 
-  deleteItem(item: any) {
+  async deleteItem(item: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.db.deleteItem(this.table, item).then(() => {
-      this.getItems();
-    });
+    await this.db.deleteItem(this.table, item);
+    this.getItems();
+  
   }
 
   showDetail(item: any) {
@@ -192,17 +191,14 @@ export class CalendarsMasterComponent {
     this.router.navigate([this.table + '/edit', JSON.stringify(item.id)]);
   }
 
-  doRefresh(refresher: any) {
+  async doRefresh(refresher: any) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
     const forceLoading = true;
-    this.db
-      .initService(forceLoading)
-      .then(() => {
-        this.getItems();
-        refresher.target.complete();
-      })
-      .catch((err) => console.error(err));
+    const load:any = await this.db.initService(forceLoading);
+    this.getItems();
+    refresher.target.complete();
+    load.catch((err) => console.error(err));
   }
 }
