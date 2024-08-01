@@ -72,7 +72,7 @@ import * as ionIcons from 'ionicons/icons';
 export class CalendarsMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table = 'calendars';
+  page = 'calendars';
 
   constructor(
     private db: DbService,
@@ -91,7 +91,7 @@ export class CalendarsMasterComponent {
   }
 
   async getItems() {
-    const items = await this.db.getItems(this.table);
+    const items = await this.db.getItems(this.page);
     const doses = await this.db.getItems('doses');
 
     (items as any).map((item: any) => {
@@ -174,7 +174,7 @@ export class CalendarsMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    await this.db.deleteItem(this.table, item);
+    await this.db.deleteItem(this.page, item);
     this.getItems();
   }
 
@@ -182,7 +182,7 @@ export class CalendarsMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.router.navigate([this.table + '/edit', JSON.stringify(item.id)]);
+    this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
   async doRefresh(refresher: any) {

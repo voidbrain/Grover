@@ -86,7 +86,6 @@ export class StrainsDetailComponent implements OnInit {
   public id: any;
   public page = 'strains';
   formDefinition: any;
-  previousValid = false;
 
   constructor(
     public db: DbService,

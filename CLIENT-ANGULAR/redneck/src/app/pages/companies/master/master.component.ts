@@ -75,7 +75,7 @@ import * as ionIcons from 'ionicons/icons';
 export class CompaniesMasterComponent {
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table = 'companies';
+  page = 'companies';
 
   constructor(
     public db: DbService,
@@ -97,7 +97,7 @@ export class CompaniesMasterComponent {
   }
 
   async getItems() {
-    const items = await this.db.getItems(this.table);
+    const items = await this.db.getItems(this.page);
     this.items = items;
     console.log(items);
     console.info('[PAGE]: Ready');
@@ -107,7 +107,7 @@ export class CompaniesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    await this.db.deleteItem(this.table, item);
+    await this.db.deleteItem(this.page, item);
     this.getItems();
   }
 
@@ -116,7 +116,7 @@ export class CompaniesMasterComponent {
       el.closeOpened();
     });
 
-    this.router.navigate([this.table + '/edit', JSON.stringify(item.id)]);
+    this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
   async doRefresh(refresher: any) {

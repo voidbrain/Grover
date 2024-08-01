@@ -138,7 +138,6 @@ export class PlantsMasterComponent implements OnInit {
   page = 'plants';
   debug = false;
   formDefinition: any;
-  previousValid = false;
 
   remoteAddress = '';
   port: number | undefined;

@@ -76,7 +76,6 @@ export class DosesMasterComponent {
   math = Math;
   @ViewChildren('slidingItem') private slidingItem: any;
   items: any;
-  table = 'doses';
   page = 'doses';
 
   constructor(
@@ -99,7 +98,7 @@ export class DosesMasterComponent {
   }
 
   async getItems() {
-    const items = await this.db.getItems(this.table);
+    const items = await this.db.getItems(this.page);
     items.map((item: any) => {
       console.log(item);
       item.chartConfig = {
@@ -161,7 +160,7 @@ export class DosesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    await this.db.deleteItem(this.table, item);
+    await this.db.deleteItem(this.page, item);
     this.getItems();
   }
 
@@ -169,7 +168,7 @@ export class DosesMasterComponent {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });
-    this.router.navigate([this.table + '/edit', JSON.stringify(item.id)]);
+    this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
   async doRefresh(refresher: any) {
