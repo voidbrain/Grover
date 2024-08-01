@@ -100,7 +100,6 @@ export class DosesMasterComponent {
   async getItems() {
     const items = await this.db.getItems(this.page);
     items.map((item: any) => {
-      console.log(item);
       item.chartConfig = {
         id: 'chart',
         type: 'bar',

@@ -23,17 +23,6 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DbService } from './services/db/db.service';
 
-// export function initializeApp(dbService: DbService): () => Promise<void> {
-//   return async () => {
-//     // await dbService.hi();
-//     return dbService.hi();
-//     // await dbService.load();
-//     // const forceLoading = true;
-//     // const initialize = await dbService.initService(forceLoading);
-//     // return initialize;
-//   };
-// }
-
 export function initializeApp(dbService: DbService): () => Promise<void> {
   console.log("ooooo")
   return () => dbService.hi();

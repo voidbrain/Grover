@@ -278,22 +278,6 @@ export class DbService {
     });
   }
 
-  getItem(objectStore, id, column = 'id'): Promise<any> {
-    const tx = this.db.transaction(objectStore, 'readonly');
-    const store = tx.objectStore(objectStore);
-    const dataIndex: any = store.index(column);
-    const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(
-      (resolve) => {
-        if (id) {
-          dataIndex.get(id).onsuccess = (e) => resolve(e.target.result);
-        } else {
-          resolve(null);
-        }
-      },
-    );
-    return promise;
-  }
-
   hi(): Promise<void> {
     console.log("ji")
     return new Promise<void>((resolve) => {
@@ -303,6 +287,32 @@ export class DbService {
         resolve();
       }, 2000); // Simulating async operation
     });
+  }
+
+  getItem(objectStore, id, column = 'id'): Promise<any> {
+    const tx = this.db.transaction(objectStore, 'readonly');
+    const store = tx.objectStore(objectStore);
+    const dataIndex: any = store.index(column);
+    const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(
+      (resolve) => {
+        if (id) {
+          const queryExecute = dataIndex.get(id);
+          console.log(id)
+          queryExecute.onsuccess = (e: any) => {
+            console.log(e)
+            resolve(e.target.result);
+          };
+          queryExecute.onerror = (e: any) => {
+            console.log(e);
+          };
+              
+        } else {
+          console.log("else")
+          resolve(null);
+        }
+      },
+    );
+    return promise;
   }
 
   getItems(
