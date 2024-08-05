@@ -71,7 +71,7 @@ export class DosesBarHorizontalComponent implements OnChanges {
       },
       {
         id: 'Water',
-        data: +((this.dose.water * 100) / tot).toFixed(2),
+        data: +(this.dose.water).toFixed(2),
         originalValue: +this.dose.water,
         backgroundColor: '#00f',
         label: 'Water',
@@ -79,34 +79,37 @@ export class DosesBarHorizontalComponent implements OnChanges {
       },
     ];
 
+    const pHDown = dosesArray.find((el) => el.id === 'pHDown');
+    const Grow = dosesArray.find((el) => el.id === 'Grow');
+    const Micro = dosesArray.find((el) => el.id === 'Micro');
+    const Bloom = dosesArray.find((el) => el.id === 'Bloom');
+    const Ripen = dosesArray.find((el) => el.id === 'Ripen');
+    const Water = dosesArray.find((el) => el.id === 'Water');
+
     const doseStyle =
-      ' ' +
-      dosesArray[4].backgroundColor +
-      ' ' +
-      0 +
-      '% ' +
-      dosesArray[4].data +
-      '%,' +
-      ' ' +
-      dosesArray[3].backgroundColor +
+      Ripen.backgroundColor +
       ' ' +
       0 +
       '% ' +
-      dosesArray[3].data +
+      Ripen.data +
       '%,' +
+      Bloom.backgroundColor +
       ' ' +
-      dosesArray[2].backgroundColor +
-      ' ' +
-      dosesArray[3].data +
+      0 +
       '% ' +
-      (dosesArray[2].data + dosesArray[3].data) +
+      Bloom.data +
       '%,' +
+      Micro.backgroundColor +
       ' ' +
-      dosesArray[1].backgroundColor +
-      ' ' +
-      (dosesArray[2].data + dosesArray[3].data) +
+      Bloom.data +
       '% ' +
-      (dosesArray[1].data + dosesArray[2].data + dosesArray[3].data) +
+      (Micro.data + Bloom.data) +
+      '%,' +
+      Grow.backgroundColor +
+      ' ' +
+      (Micro.data + Bloom.data) +
+      '% ' +
+      (Grow.data + Micro.data + Bloom.data) +
       '%';
 
     this.styleDoses = {
@@ -117,13 +120,13 @@ export class DosesBarHorizontalComponent implements OnChanges {
     this.stylePhDown = {
       height: '8px',
 
-      width: dosesArray[0].data + 'px',
-      'background-color': dosesArray[0].backgroundColor,
+      width: 3 + 'px',
+      'background-color': pHDown.backgroundColor,
     };
     this.styleWater = {
       height: '8px',
-      width: dosesArray[5].data + 'px',
-      'background-color': dosesArray[5].backgroundColor,
+      width: Water.data + 'px',
+      'background-color': Water.backgroundColor,
     };
 
     const style = document.createElement('style');
@@ -132,14 +135,16 @@ export class DosesBarHorizontalComponent implements OnChanges {
       if (el.data > 0) {
         const rowstyle = `
           .${el.id}_${this.dose?.id} {
-            width: ${ el.id==='pHDown'? 10 : 3*el.data}px;
+            width: ${el.id === 'pHDown' ? 10 :
+              el.id === 'Water' ? '' :
+              3 * el.data}px;
           }
 
           .${el.id}_${this.dose?.id}:after {
             font-size: 9px;
             dispaly:block;
             position:relative;
-            content:  "${ el.id==='pHDown'? el.originalValue : el.label +' '+ el.originalValue + 'ml'}";
+            content:  "${el.id === 'pHDown' ? '' : el.label + ' ' + el.originalValue + 'ml'}";
             z-index: 1;
             line-height:0
           }

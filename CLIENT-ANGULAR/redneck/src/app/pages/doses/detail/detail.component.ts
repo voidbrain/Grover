@@ -148,6 +148,7 @@ export class DosesDetailComponent implements OnInit {
   async getItem(id: any) {
     if (id) {
       const item: Dose = await this.db.getItem(this.page, id);
+      console.log(item)
       if (item) {
         this.form.setFormValues(item);
         this.form.setDisabled('submit', true);
