@@ -278,14 +278,21 @@ export class DbService {
     });
   }
 
+  // hi(): Promise<void> {
+  //   console.log("ji")
+  //   return new Promise<void>((resolve) => {
+  //     console.log('DB Service hi() called');
+  //     setTimeout(() => {
+  //       console.log('DB Service hi() resolved');
+  //       resolve();
+  //     }, 2000); // Simulating async operation
+  //   });
+  // }
+
   hi(): Promise<void> {
-    console.log("ji")
-    return new Promise<void>((resolve) => {
-      console.log('DB Service hi() called');
-      setTimeout(() => {
-        console.log('DB Service hi() resolved');
-        resolve();
-      }, 2000); // Simulating async operation
+    return new Promise((resolve) => {
+      console.log('DbService initialized');
+      resolve();
     });
   }
 
@@ -297,17 +304,14 @@ export class DbService {
       (resolve) => {
         if (id) {
           const queryExecute = dataIndex.get(id);
-          console.log(id)
           queryExecute.onsuccess = (e: any) => {
-            console.log(e)
             resolve(e.target.result);
           };
           queryExecute.onerror = (e: any) => {
             console.log(e);
           };
-              
+
         } else {
-          console.log("else")
           resolve(null);
         }
       },

@@ -7,8 +7,9 @@ import * as util from 'util';
 import { LocalStorage } from 'node-localstorage';
 import moment from 'moment';
 import schedule from 'node-schedule';
+import process from 'process';
 
-import { Owner, OperatingModes, ServerCommands, ServerPages, DevicesStatus } from './app/services/settings/enums';
+import { Emitter, OperatingModes, ServerCommands, ServerPages, DevicesStatus } from './app/services/settings/enums';
 
 import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
@@ -71,9 +72,9 @@ class Main {
     self.settings.setOperatingMode(device.item.operatingMode);
 
     console.log('[main] => init done');
-    const  owner = Owner.start;
+    const  emitter = Emitter.start;
     const operatingMode = self.settings.getOperatingMode();
-    self.SYS_LOG({owner, operatingMode});
+    self.SYS_LOG({emitter, operatingMode});
     self.main();
   }
 
@@ -89,13 +90,13 @@ class Main {
     console.log(`[main] => ready`);  
   }
 
-  async SYS_LOG({owner, operatingMode, expectedTime = null}) {
+  async SYS_LOG({emitter, operatingMode, expectedTime = null}) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if(operatingMode >= systemOperatingMode) {
         const job = {
-          owner, 
+          emitter, 
           action: ServerCommands.SYS_LOG,
           expectedTime: (expectedTime ? new Date(expectedTime) : null),
           executedTime: new Date(),
@@ -103,22 +104,22 @@ class Main {
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,
         };
-        switch(owner){
-          case Owner.start: // system start
+        switch(emitter){
+          case Emitter.start: // system start
             if (this.debug) { console.log("[MAIN]: system log on start");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('system_log', job);
               resolve(job);
             }
           break;
-          case Owner.user: // manual action
+          case Emitter.user: // manual action
             if (this.debug) { console.log("[MAIN]: system log manual");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('system_log', job);
               resolve(job);
             }
           break;
-          case Owner.schedule: // scheduled action
+          case Emitter.schedule: // scheduled action
             if (this.debug) { console.log("[MAIN]: system log scheduled");}
             if (self.settings.getLogMode() === true) { 
               await self.db.logItem('system_log', job);
@@ -137,11 +138,11 @@ class Main {
     if (Object.values(OperatingModes)?.includes(mode)) {
       self.settings.setOperatingMode(mode);
       self.rooms.map(async room => {
-        room.probes.map(async probe => { await probe.component?.setStatus(Owner.start); });
-        room.workers.map(async worker => { await worker.component?.setStatus(Owner.start); })
+        room.probes.map(async probe => { await probe.component?.setStatus(emitter.start); });
+        room.workers.map(async worker => { await worker.component?.setStatus(emitter.start); })
         room.pots.map(async pot => {
-          pot.probes.map(async probe => { await probe.component?.setStatus(Owner.start); })
-          pot.workers.map(async worker => { await worker.component?.setStatus(Owner.start); })
+          pot.probes.map(async probe => { await probe.component?.setStatus(emitter.start); })
+          pot.workers.map(async worker => { await worker.component?.setStatus(emitter.start); })
         })
       })
       return mode;
@@ -165,11 +166,11 @@ class Main {
     
     scheduleArr.map(job => {
       schedule.scheduleJob(job.cron, async (expectedTime) => {
-        const owner = Owner.schedule;
+        const emitter = Emitter.schedule;
         const doJob = await eval(
           `this.${job.action}({
             expectedTime: '${expectedTime}', 
-            owner: '${owner}', 
+            emitter: '${emitter}', 
             operatingMode: ${job.operatingMode}
           })`);
       })
@@ -200,7 +201,7 @@ class Main {
       }
       const action: string = q.query.action as string;
       const page: string = q.pathname;
-      const owner: string = Owner.user;
+      const emitter: string = Emitter.user;
       const operatingMode: number = self.settings.getOperatingMode();
       const now = moment();
       
@@ -224,7 +225,7 @@ class Main {
                 if(el){
                   const hasMethod = self.hasMethod(el.component, action);
                   if(hasMethod) {
-                    const doJob = await el.component[action]({now, owner, operatingMode, duration});
+                    const doJob = await el.component[action]({now, emitter, operatingMode, duration});
                     if (this.debug) { console.log("[SERVER]: ", JSON.stringify(doJob)); }
                     res.write(JSON.stringify(doJob));
                   } else {
@@ -264,7 +265,7 @@ class Main {
               res.write(JSON.stringify({mode:updatedMode}));
               const systemOperatingMode = self.settings.getOperatingMode();
                 const job = {
-                  owner, 
+                  emitter, 
                   action: ServerCommands.SET_MODE,
                   expectedTime: null,
                   executedTime: new Date(),

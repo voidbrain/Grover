@@ -12,7 +12,7 @@ export enum OperatingModes {
   Off = 3,
 }
 
-export enum Owner {
+export enum Emitter {
   schedule = 'schedule',
   user = 'user',
   start = 'start'

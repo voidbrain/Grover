@@ -1,6 +1,7 @@
 {
   "main": "./index.ts",
   "compilerOptions": {
+    "lib": ["es2017"],
     "moduleResolution": "node",
     "module": "ESNEXT",
     "esModuleInterop": true,
@@ -29,5 +30,4 @@
     "allowUnusedLabels": true,                        /* Disable error reporting for unused labels. */
     "allowUnreachableCode": false, 
   },
-  "lib": ["es2015"]
 }

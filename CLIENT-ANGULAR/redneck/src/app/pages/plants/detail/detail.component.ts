@@ -44,7 +44,7 @@ import * as ionIcons from 'ionicons/icons';
 import { Plant } from '../../../interfaces/plant';
 import { Pot } from '../../../interfaces/pot';
 import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-plants-detail',
@@ -80,10 +80,11 @@ import { DatePipe } from '@angular/common';
     IonTitle,
     IonToolbar,
     DynamicFormComponent,
+
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
-  providers: [DatePipe],
+  providers: [CommonModule, DatePipe, JsonPipe],
 })
 export class PlantsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
