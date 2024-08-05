@@ -31,7 +31,10 @@
               <div [innerHtml]="item.name"></div>
 
               <div slot="end" class="canvasContainer">
-                <app-chart [chartConfig]="item.chartConfig"></app-chart>
+                <app-chart 
+                [chartConfig]="item.chartConfig"
+                [chartLegend]="false"
+                ></app-chart>
               </div>
             </ion-item>
           </ion-label>

@@ -42,7 +42,7 @@ export class ChartComponent implements OnChanges {
   public chartOptions: ChartOptions = {
     responsive: true,
   };
-  public chartLegend = true;
+  @Input() chartLegend = true;
 
   @Input() chartConfig: ChartConfiguration | null = null;
 
