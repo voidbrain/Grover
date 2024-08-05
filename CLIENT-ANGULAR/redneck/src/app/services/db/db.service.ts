@@ -296,7 +296,7 @@ export class DbService {
     const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(
       (resolve) => {
         if (id) {
-          const queryExecute = dataIndex.get([id]);
+          const queryExecute = dataIndex.get([+id]);
           queryExecute.onsuccess = (e: any) => {
             resolve(e.target.result);
           };
