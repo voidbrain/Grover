@@ -33,6 +33,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { DosesBarHorizontalComponent } from '../../../components/plants/detail-panel/doses-bar-horizontal/doses-bar-horizontal.component';
 
 @Component({
   selector: 'app-doses-master',
@@ -68,7 +69,8 @@ import * as ionIcons from 'ionicons/icons';
     IonSelectOption,
     IonTitle,
     IonToolbar,
-  ],
+    DosesBarHorizontalComponent
+],
   templateUrl: './master.component.html',
   styleUrl: './master.component.scss',
 })

@@ -32,6 +32,13 @@
               <ion-item lines="none" (click)="showDetail(item)">
                 <ion-icon name="flask" slot="start"></ion-icon>
                 <div [innerHtml]="item.name"></div>
+
+                <div slot="end" class="canvasContainer">
+                  <app-doses-bar-horizontal 
+                    [dose]="item">
+                  </app-doses-bar-horizontal>
+                </div>
+                
               </ion-item>
             </ion-label>
           </ion-item>
