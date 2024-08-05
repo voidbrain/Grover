@@ -59,7 +59,7 @@ export class ActionsPanelComponent implements OnChanges {
     }
   }
 
-  async presentToast(header: any, message: any, color: any, duration: any) {
+  async presentToast(header: string, message: string, color: string, duration: number) {
     const toast = await this.toastController.create({
       header,
       message,
@@ -113,19 +113,19 @@ export class ActionsPanelComponent implements OnChanges {
     }
 
     const workers = {
-      waterLoop: (this.plant as any).workers.find(
-        (el: any) => el.type.id === WorkersTypes.Pot_Water_loop,
+      waterLoop: this.plant.workers.find(
+        (el) => el.type.id === WorkersTypes.Pot_Water_loop,
       ),
-      refill: (this.plant as any).workers.find(
-        (el: any) => el.type.id === WorkersTypes.Pot_refill,
+      refill: this.plant.workers.find(
+        (el) => el.type.id === WorkersTypes.Pot_refill,
       ),
     };
 
-    this.probes = probes as any;
-    this.workers = workers as any;
+    this.probes = probes;
+    this.workers = workers;
   }
 
-  async read(id: any) {
+  async read(id: number) {
     if (id) {
       const response: any = await this.runRemoteCommand(
         ServerPages.actuators,
@@ -170,7 +170,7 @@ export class ActionsPanelComponent implements OnChanges {
     );
   }
 
-  async fillWaterLevel(id: any) {
+  async fillWaterLevel(id: number) {
     const duration = 1000;
     this.runRemoteCommand(
       ServerPages.actuators,
@@ -181,7 +181,7 @@ export class ActionsPanelComponent implements OnChanges {
     );
   }
 
-  async fillPhDown(id: any) {
+  async fillPhDown(id: number) {
     const duration = 1000;
     this.runRemoteCommand(
       ServerPages.actuators,
@@ -192,7 +192,7 @@ export class ActionsPanelComponent implements OnChanges {
     );
   }
 
-  async fillNutrient(id: any) {
+  async fillNutrient(id: number) {
     const duration = 1000;
     this.runRemoteCommand(
       ServerPages.actuators,
@@ -203,7 +203,7 @@ export class ActionsPanelComponent implements OnChanges {
     );
   }
 
-  // async shuffleNutrient(id: any) {
+  // async shuffleNutrient(id: number) {
   //   this.runRemoteCommand(ServerPages.actuators, ServerCommands.ON, id, Peripherals.Worker)
   //     .then ((response) => {
   //       const value = response;
