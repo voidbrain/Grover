@@ -75,3 +75,11 @@ export enum WorkersTypes {
   Room_Light = 10,
   Room_Nutrient_refill = 11,
 }
+export interface ObjWorker {
+  id: number,
+  status: string
+}
+export interface CommandResponse {
+  error: string,
+  value: string,
+}
