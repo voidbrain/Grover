@@ -5,9 +5,10 @@
   "type": "module",
   "dependencies": {
     "axios": "^1.7.3",
-    "ds18x20": "^0.2.0",
+    "ds18x20": "^0.1.1",
     "esm": "^3.2.25",
     "i2c-bus": "^5.2.3",
+    "module-alias": "^2.2.3",
     "moment": "^2.30.1",
     "node-localstorage": "^3.0.5",
     "node-mcp23017": "^0.1.0",
@@ -26,8 +27,15 @@
     "@types/node-localstorage": "^1.3.3",
     "@types/node-schedule": "2.1.7",
     "@types/websql": "^0.0.30",
+    "mock-fs": "^5.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
+  },
+  "_moduleAliases": {
+    "node-mcp23017": "./mocks/node-mcp23017.cjs",
+    "i2c-bus": "./mocks/i2c-bus.cjs",
+    "pca9685": "./mocks/pca9685.cjs",
+    "ds18x20": "./mocks/ds18x20.cjs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -41,7 +41,7 @@ class WaterLevelComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (self.serialNumber.found) {
+    if (true) { // if (self.serialNumber.found) {
       this.setSchedule();
     } else {
       console.log(

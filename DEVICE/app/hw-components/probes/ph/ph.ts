@@ -9,7 +9,7 @@ import {
 import schedule from "node-schedule";
 import moment from "moment";
 
-var MiniPh = require("./index.js");
+import MiniPh from './index.js';
 var miniPh = new MiniPh("/dev/i2c-0", 0x4d);
 
 class PhProbeComponent {

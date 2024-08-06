@@ -1,5 +1,5 @@
 'use strict';
-
+import 'module-alias/register';
 import driver from 'ds18x20';
 
 
