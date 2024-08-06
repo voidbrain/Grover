@@ -2,7 +2,7 @@
 
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
-  Owner,
+  EventEmitter,
   Peripherals,
   ServerCommands,
   DevicesStatus,
@@ -109,7 +109,7 @@ class RoomNutrientRefillComponent {
     // }
   }
 
-  async setStatus(owner) {
+  async setStatus(eventEmitter) {
     const self = this;
     let scheduledStart;
     const now = moment();
@@ -134,7 +134,7 @@ class RoomNutrientRefillComponent {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
-        owner,
+        eventEmitter,
         operatingMode,
       });
     } else {
@@ -146,7 +146,7 @@ class RoomNutrientRefillComponent {
       const systemOperatingMode = self.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
-        owner,
+        eventEmitter,
         action: ServerCommands.SET_STATUS,
         idWorker: self.id,
         parentId: self.parentId,
@@ -216,11 +216,11 @@ class RoomNutrientRefillComponent {
 
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
+          const eventEmitter = EventEmitter.schedule;
           const doJob = await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
-              owner: '${owner}', 
+              eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
             })`

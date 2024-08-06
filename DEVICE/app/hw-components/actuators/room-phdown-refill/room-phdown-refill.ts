@@ -2,7 +2,7 @@
 
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
-  Owner,
+  EventEmitter,
   Peripherals,
   ServerCommands,
   DevicesStatus,
@@ -56,7 +56,7 @@ class RoomPhDownRefillComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (self.serialNumber.found && +self.i2cAddress) {
+    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.primaryPhDownPump = new MCP23017({
           address: +self.i2cAddress,
@@ -80,7 +80,7 @@ class RoomPhDownRefillComponent {
     }
   }
 
-  async setStatus(owner) {
+  async setStatus(eventEmitter) {
     const self = this;
     let scheduledStart;
     const now = moment();
@@ -105,7 +105,7 @@ class RoomPhDownRefillComponent {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
-        owner,
+        eventEmitter,
         operatingMode,
       });
     } else {
@@ -117,7 +117,7 @@ class RoomPhDownRefillComponent {
       const systemOperatingMode = self.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
-        owner,
+        eventEmitter,
         action: ServerCommands.SET_STATUS,
         idWorker: self.id,
         parentId: self.parentId,
@@ -201,11 +201,11 @@ class RoomPhDownRefillComponent {
 
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
+          const eventEmitter = EventEmitter.schedule;
           const doJob = await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
-              owner: '${owner}', 
+              eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
             })`

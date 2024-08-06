@@ -1,0 +1,18 @@
+Tue Aug 06 2024 21:31:22 GMT+0200 – Caught exception: [Error: SQLITE_ERROR: no such table: system_schedule] {
+  errno: 1,
+  code: 'SQLITE_ERROR'
+}
+Tue Aug 06 2024 21:31:48 GMT+0200 – Caught exception: [Error: SQLITE_ERROR: no such table: system_schedule] {
+  errno: 1,
+  code: 'SQLITE_ERROR'
+}
+Tue Aug 06 2024 21:33:11 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at Server.<anonymous> (file:///Users/voidbrain/Grover/Grover/DEVICE/index.ts:166:21)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}

@@ -3,7 +3,7 @@ import moment from "moment";
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
   DevicesStatus,
-  Owner,
+  EventEmitter,
   Peripherals,
   ServerCommands,
 } from "../../../services/settings/enums";
@@ -53,7 +53,7 @@ class FanComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (self.serialNumber.found && +self.i2cAddress) {
+    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.mcp = new MCP23017({
           address: +self.i2cAddress,
@@ -73,13 +73,13 @@ class FanComponent {
     }
   }
 
-  public async ON({ expectedTime, owner, operatingMode }) {
+  public async ON({ expectedTime, eventEmitter, operatingMode }) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
         const job = {
-          owner,
+          eventEmitter,
           action: ServerCommands.ON,
           idWorker: self.id,
           parentId: self.parentId,
@@ -91,8 +91,8 @@ class FanComponent {
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,
         };
-        switch (owner) {
-          case Owner.user: // manual action
+        switch (eventEmitter) {
+          case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[FAN-MOTOR]: ON manual", job);
             }
@@ -101,7 +101,7 @@ class FanComponent {
               resolve(job);
             }
             break;
-          case Owner.schedule: // scheduled action
+          case EventEmitter.schedule: // scheduled action
             if (this.debug) {
               console.log("[FAN-MOTOR]: ON scheduled", job);
             }
@@ -121,13 +121,13 @@ class FanComponent {
     });
   }
 
-  public async OFF({ expectedTime, owner, operatingMode }) {
+  public async OFF({ expectedTime, eventEmitter, operatingMode }) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
         const job = {
-          owner,
+          eventEmitter,
           action: ServerCommands.OFF,
           idWorker: self.id,
           parentId: self.parentId,
@@ -139,8 +139,8 @@ class FanComponent {
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,
         };
-        switch (owner) {
-          case Owner.user: // manual action
+        switch (eventEmitter) {
+          case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[FAN-MOTOR]: OFF manual");
             }
@@ -149,7 +149,7 @@ class FanComponent {
               resolve(job);
             }
             break;
-          case Owner.schedule: // scheduled action
+          case EventEmitter.schedule: // scheduled action
             if (this.debug) {
               console.log("[FAN-MOTOR]: OFF scheduled");
             }
@@ -169,7 +169,7 @@ class FanComponent {
     });
   }
 
-  async setStatus(owner) {
+  async setStatus(eventEmitter) {
     const self = this;
     let scheduledStart;
     const now = moment();
@@ -194,7 +194,7 @@ class FanComponent {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
-        owner,
+        eventEmitter,
         operatingMode,
       });
     } else {
@@ -206,7 +206,7 @@ class FanComponent {
       const systemOperatingMode = self.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
-        owner,
+        eventEmitter,
         action: ServerCommands.SET_STATUS,
         idWorker: self.id,
         parentId: self.parentId,
@@ -237,11 +237,11 @@ class FanComponent {
 
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
+          const eventEmitter = EventEmitter.schedule;
           const doJob = await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
-              owner: '${owner}', 
+              eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
             })`
           );

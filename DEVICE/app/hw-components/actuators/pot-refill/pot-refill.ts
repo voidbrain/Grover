@@ -2,7 +2,7 @@
 
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
-  Owner,
+  EventEmitter,
   Peripherals,
   ServerCommands,
   DevicesStatus,
@@ -76,7 +76,7 @@ class RefillComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (self.serialNumber.found && +self.i2cAddress) {
+    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.secondaryPump = new MCP23017({
           address: +self.i2cAddress,
@@ -105,7 +105,7 @@ class RefillComponent {
     }
   }
 
-  async setStatus(owner) {
+  async setStatus(eventEmitter) {
     const self = this;
     let scheduledStart;
     const now = moment();
@@ -130,7 +130,7 @@ class RefillComponent {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
-        owner,
+        eventEmitter,
         operatingMode,
       });
     } else {
@@ -142,7 +142,7 @@ class RefillComponent {
       const systemOperatingMode = self.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
-        owner,
+        eventEmitter,
         action: ServerCommands.SET_STATUS,
         idWorker: self.id,
         parentId: self.parentId,
@@ -190,7 +190,7 @@ class RefillComponent {
     });
   }
 
-  public async RUN_WATER({ expectedTime, owner, operatingMode, duration }) {
+  public async RUN_WATER({ expectedTime, eventEmitter, operatingMode, duration }) {
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=RUN_WATER&duration=1000&id=1&type=worker
     const self = this;
     return new Promise(async (resolve) => {
@@ -207,7 +207,7 @@ class RefillComponent {
         await self.stop();
 
         const job = {
-          owner,
+          eventEmitter,
           action: ServerCommands.RUN_WATER,
           idWorker: self.id,
           parentId: self.parentId,
@@ -220,8 +220,8 @@ class RefillComponent {
           serialNumber: self.serialNumber.sn,
         };
 
-        switch (owner) {
-          case Owner.user: // manual action
+        switch (eventEmitter) {
+          case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[POT-REFILL]: RUN_WATER manual", job);
             }
@@ -230,7 +230,7 @@ class RefillComponent {
               resolve(job);
             }
             break;
-          case Owner.schedule: // scheduled action
+          case EventEmitter.schedule: // scheduled action
             if (this.debug) {
               console.log("[POT-REFILL]: RUN_WATER scheduled", job);
             }
@@ -250,7 +250,7 @@ class RefillComponent {
     });
   }
 
-  public async RUN_DOSE({ expectedTime, owner, operatingMode, duration }) {
+  public async RUN_DOSE({ expectedTime, eventEmitter, operatingMode, duration }) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -286,7 +286,7 @@ class RefillComponent {
         await self.stop();
 
         const job = {
-          owner,
+          eventEmitter,
           action: ServerCommands.RUN_DOSE,
           idWorker: self.id,
           parentId: self.parentId,
@@ -299,8 +299,8 @@ class RefillComponent {
           serialNumber: self.serialNumber.sn,
         };
 
-        switch (owner) {
-          case Owner.user: // manual action
+        switch (eventEmitter) {
+          case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[POT-REFILL]: RUN_DOSE manual", job);
             }
@@ -309,7 +309,7 @@ class RefillComponent {
               resolve(job);
             }
             break;
-          case Owner.schedule: // scheduled action
+          case EventEmitter.schedule: // scheduled action
             if (this.debug) {
               console.log("[POT-REFILL]: RUN_DOSE scheduled", job);
             }
@@ -329,7 +329,7 @@ class RefillComponent {
     });
   }
 
-  public async RUN_PHDOWN({ expectedTime, owner, operatingMode, duration }) {
+  public async RUN_PHDOWN({ expectedTime, eventEmitter, operatingMode, duration }) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -347,7 +347,7 @@ class RefillComponent {
         await self.stop();
 
         const job = {
-          owner,
+          eventEmitter,
           action: ServerCommands.RUN_PHDOWN,
           idWorker: self.id,
           parentId: self.parentId,
@@ -360,8 +360,8 @@ class RefillComponent {
           serialNumber: self.serialNumber.sn,
         };
 
-        switch (owner) {
-          case Owner.user: // manual action
+        switch (eventEmitter) {
+          case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[POT-REFILL]: RUN_PHDOWN manual", job);
             }
@@ -370,7 +370,7 @@ class RefillComponent {
               resolve(job);
             }
             break;
-          case Owner.schedule: // scheduled action
+          case EventEmitter.schedule: // scheduled action
             if (this.debug) {
               console.log("[POT-REFILL]: RUN_PHDOWN scheduled", job);
             }
@@ -406,11 +406,11 @@ class RefillComponent {
 
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
+          const eventEmitter = EventEmitter.schedule;
           const doJob = await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
-              owner: '${owner}', 
+              eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
             })`

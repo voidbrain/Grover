@@ -1,6 +1,6 @@
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
-  Owner,
+  EventEmitter,
   DevicesStatus,
   ServerCommands,
   Peripherals,
@@ -34,7 +34,7 @@ class PhProbeComponent {
     echoPin = echoPin;
   }
 
-  async setStatus(owner) {
+  async setStatus(eventEmitter) {
     const self = this;
     let scheduledStart;
     const now = moment();
@@ -59,7 +59,7 @@ class PhProbeComponent {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
-        owner,
+        eventEmitter,
         operatingMode,
       });
     } else {
@@ -71,7 +71,7 @@ class PhProbeComponent {
       const systemOperatingMode = self.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
-        owner,
+        eventEmitter,
         action: ServerCommands.SET_STATUS,
         idProbe: self.id,
         parentId: self.parentId,
@@ -119,11 +119,11 @@ class PhProbeComponent {
 
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
+          const eventEmitter = EventEmitter.schedule;
           const doJob = await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
-              owner: '${owner}', 
+              eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
             })`
           );

@@ -1,6 +1,6 @@
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
-  Owner,
+  EventEmitter,
   Peripherals,
   ServerCommands,
   DevicesStatus,
@@ -57,7 +57,7 @@ class TemperatureComponent {
     }
   }
 
-  async setStatus(owner) {
+  async setStatus(eventEmitter) {
     const self = this;
     let scheduledStart;
     const now = moment();
@@ -82,7 +82,7 @@ class TemperatureComponent {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
-        owner,
+        eventEmitter,
         operatingMode,
       });
     } else {
@@ -94,7 +94,7 @@ class TemperatureComponent {
       const systemOperatingMode = self.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
-        owner,
+        eventEmitter,
         action: ServerCommands.SET_STATUS,
         idProbe: self.id,
         parentId: self.parentId,
@@ -110,7 +110,7 @@ class TemperatureComponent {
     }
   }
 
-  public async READ({ expectedTime, owner, operatingMode }) {
+  public async READ({ expectedTime, eventEmitter, operatingMode }) {
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=READ&id=1&type=probe
     const self = this;
     return new Promise(async (resolve, reject) => {
@@ -119,13 +119,13 @@ class TemperatureComponent {
         sensor.get(self.address, async function (err: any, value: any) {
           if (err) {
             if (self.debug) {
-              console.log(`[TEMP]: READ ${owner}, error: ${err}`);
+              console.log(`[TEMP]: READ ${eventEmitter}, error: ${err}`);
             }
             reject(err);
             // throw err;
           } else {
             const job = {
-              owner,
+              eventEmitter,
               action: ServerCommands.READ,
               value,
               idProbe: self.id,
@@ -139,8 +139,8 @@ class TemperatureComponent {
               systemOperatingMode: systemOperatingMode,
               serialNumber: self.serialNumber.sn,
             };
-            switch (owner) {
-              case Owner.user: // manual action
+            switch (eventEmitter) {
+              case EventEmitter.user: // manual action
                 if (self.debug) {
                   console.log("[TEMP]: READ manual", job);
                 }
@@ -151,7 +151,7 @@ class TemperatureComponent {
                   console.log("don't log ");
                 }
                 break;
-              case Owner.schedule: // scheduled action
+              case EventEmitter.schedule: // scheduled action
                 if (self.debug) {
                   console.log("[TEMP]: READ schedule", job);
                 }
@@ -188,11 +188,11 @@ class TemperatureComponent {
 
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
-          const owner = Owner.schedule;
+          const eventEmitter = EventEmitter.schedule;
           const doJob = await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
-              owner: '${owner}', 
+              eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
             })`
           );
