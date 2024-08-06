@@ -19,8 +19,6 @@ import { PotObject } from './app/interfaces/pot';
 import { LocationInterface } from './app/interfaces/location';
 import { CronJobInterface } from './app/interfaces/cron-job';
 
-
-
 class Main {
     server: http.Server;
     webServerPort: number;

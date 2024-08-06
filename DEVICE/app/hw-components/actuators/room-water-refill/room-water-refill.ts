@@ -160,6 +160,64 @@ class RoomWaterRefillComponent {
     });
   }
 
+  public async RUN_WATER({ expectedTime, eventEmitter, operatingMode, duration }) {
+    // EXAMPLE: http://151.61.172.169:8084/actuators?action=RUN_WATER&duration=1000&id=1&type=worker
+    const self = this;
+    return new Promise(async (resolve) => {
+      const systemOperatingMode = self.settings.getOperatingMode();
+      if (operatingMode >= systemOperatingMode) {
+        const waterMl = 10;
+
+ 
+
+        await self.forward();
+        await self.delay(100);
+        await self.stop();
+
+        const job = {
+          eventEmitter,
+          action: ServerCommands.RUN_WATER,
+          idWorker: self.id,
+          parentId: self.parentId,
+          parentName: self.parentName,
+          type: Peripherals.Worker,
+          expectedTime: expectedTime ? new Date(expectedTime) : null,
+          executedTime: new Date(),
+          operatingMode: operatingMode,
+          systemOperatingMode: systemOperatingMode,
+          serialNumber: self.serialNumber.sn,
+        };
+
+        switch (eventEmitter) {
+          case EventEmitter.user: // manual action
+            if (this.debug) {
+              console.log("[ROOM-WATER-REFILL]: RUN_WATER manual", job);
+            }
+            if (self.settings.getLogMode() === true) {
+              await self.db.logItem("workers_log", job);
+              resolve(job);
+            }
+            break;
+          case EventEmitter.schedule: // scheduled action
+            if (this.debug) {
+              console.log("[ROOM-WATER-REFILL]: RUN_WATER scheduled", job);
+            }
+            if (self.settings.getLogMode() === true) {
+              await self.db.logItem("workers_log", job);
+              resolve;
+            }
+            break;
+        }
+      } else {
+        if (this.debug) {
+          console.log(
+            `[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+          );
+        }
+      }
+    });
+  }
+
   async setSchedule(id: number, scheduledCrons: any[]) {
     const self = this;
     if (id && scheduledCrons) {

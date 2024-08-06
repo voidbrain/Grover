@@ -1142,3 +1142,16 @@ Tue Aug 06 2024 22:08:43 GMT+0200 – Unhandled Rejection at Promise: Promise {
       at ReadFileContext.callback (/Users/voidbrain/Grover/Grover/DEVICE/node_modules/ds18x20/lib/reader.js:27:29)
       at FSReqCallback.readFileAfterOpen [as oncomplete] (node:fs:298:13)
 }
+Tue Aug 06 2024 23:53:31 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Could not read device content. Device '28-0119140b7bd7' not found
+      at checkErrors (/Users/voidbrain/Grover/Grover/DEVICE/node_modules/ds18x20/lib/reader.js:8:15)
+      at ReadFileContext.callback (/Users/voidbrain/Grover/Grover/DEVICE/node_modules/ds18x20/lib/reader.js:27:29)
+      at FSReqCallback.readFileAfterOpen [as oncomplete] (node:fs:298:13)
+}
+Wed Aug 07 2024 00:02:01 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: self.primaryWaterPump.forward is not a function
+      at file:///Users/voidbrain/Grover/Grover/DEVICE/app/hw-components/actuators/room-water-refill/room-water-refill.ts:129:45
+      at new Promise (<anonymous>)
+      at RoomWaterRefillComponent.RUN_WATER (file:///Users/voidbrain/Grover/Grover/DEVICE/app/hw-components/actuators/room-water-refill/room-water-refill.ts:125:16)
+      at Server.<anonymous> (file:///Users/voidbrain/Grover/Grover/DEVICE/index.ts:196:85)
+}
