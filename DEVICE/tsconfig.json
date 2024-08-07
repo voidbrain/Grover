@@ -8,6 +8,8 @@
     "strict": false,
     "baseUrl": ".",
     "paths": {
+      "ds18x20": ["./mocks/ds18x20.cjs"],
+      "i2c-bus": ["./mocks/i2c-bus.cjs"],
       "*": ["node_modules/*"]
     }
   },
