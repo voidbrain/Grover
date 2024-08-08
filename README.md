@@ -45,7 +45,7 @@ npm build
 
 ## Logical structure
 
-![logical map](./documentation/img/logical map.png)
+![Logical](./documentation/img/logical map.png)
 
 ## Phisical high level structure
 
@@ -292,7 +292,7 @@ Every new read and execution is logged and ML is retrained on the data to optimi
 
 Nutrients, water and pH ideal levels based on the phase.
 
-| Dose              | Water (L) | Grow (mL) | Micro (mL) | Bloom (mL) | Ripen (mL) | phDown (mL) |
+| Dose (mL/10L)     | Water (L) | Grow (mL) | Micro (mL) | Bloom (mL) | Ripen (mL) | phDown (mL) |
 | :---------------- | --------: | --------: | ---------: | ---------: | ---------: | ----------: |
 | Seedling          |   10      | 5         | 5          | 5          | 0          | 1           |
 | Veg Growth        |   10      | 18        | 12         | 6          | 0          | 1           |
@@ -312,3 +312,5 @@ Min/max levels for EC, pH, Temp and WaterLevel based on the phase.
 | Early Bloom       |   14            | 3   |  true      |  false     | 1.8   | 2.0   | 5.7   | 6.0   | 15           | 35           | 10                 | 90                 |
 | Late Bloom        |   42            | 4   |  true      |  false     | 1.4   | 2.2   | 5.7   | 6.2   | 15           | 35           | 10                 | 90                 |
 | Ripen             |   14            | 5   |  true      |  true      | 1.6   | 2.6   | 6.0   | 6.4   | 15           | 35           | 10                 | 90                 |
+
+![Doses](./documentation/img/Doses Flux.png)
