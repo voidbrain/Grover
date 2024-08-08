@@ -57,6 +57,11 @@ export enum ServerCommands {
   START = 'START',
   SYS_LOG = 'SYS_LOG',
   SET_MODE = 'SET_MODE',
+
+  AI_GET_DOSES = 'AI_GETDOSES',
+  AI_GET_EC_PH = 'AI_GET_EC_PH',
+  AI_TRAIN_DOSES_MODEL = 'AI_TRAIN_DOSES_MODEL',
+  AI_TRAIN_EC_PH = 'AI_TRAIN_EC_PH',
 }
 
 export enum ServerPages {
