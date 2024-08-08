@@ -255,6 +255,12 @@ class RefillComponent {
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
+
+        /////////
+        // TODO
+        // phase.dose.gro is wanted final value
+        // calculate the gap for the actuator
+
         const groMl = self.phase.dose.gro;
         const microMl = self.phase.dose.micro;
         const bloomMl = self.phase.dose.bloom;
