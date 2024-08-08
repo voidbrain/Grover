@@ -13,6 +13,8 @@ import SettingsService from './app/services/settings/settings.service';
 import DbService from './app/services/db/db.service';
 import ApiService from './app/services/api/api.service';
 
+import AiService from './app/services/ai/ai.service';
+
 import { RoomObject } from './app/interfaces/room';
 import RoomComponent from './app/hw-components/environment/room/room';
 import { PotObject } from './app/interfaces/pot';
@@ -28,6 +30,7 @@ class Main {
     scheduledCrons: any[] = [];
     settings = new SettingsService();
     api = new ApiService();
+    ai = new AiService();
     db = new DbService(this.settings, this.api);
     localStorage = new LocalStorage('./data/scratch');
 
@@ -42,6 +45,8 @@ class Main {
     }
 
     async appSetup() {
+        await this.ai.init();
+
         const log_file_err = fs.createWriteStream('./error.log', { flags: 'a' });
         const now = moment();
         process
@@ -187,6 +192,7 @@ class Main {
             res.setHeader('Access-Control-Max-Age', 2592000);
 
             res.writeHead(200, {'Content-Type': 'text/plain'});
+            const u = req.url;
             const q = url.parse(req.url, true);
             if (q.pathname === '/favicon.ico') {
                 res.writeHead(200, {'Content-Type': 'image/x-icon'} );
@@ -219,7 +225,15 @@ class Main {
                                     if (el) {
                                         const hasMethod = this.hasMethod(el.component, action);
                                         if (hasMethod) {
+                                            // console.log("1", now, emitter, operatingMode, duration, action);
+                                            // const doJob = await el.component[action]({ now, emitter, operatingMode, duration });
+
+                                            const action = 'READ';
+                                            emitter = "me";
+                                             operatingMode = 1, 
+                                             duration = null;
                                             const doJob = await el.component[action]({ now, emitter, operatingMode, duration });
+
                                             if (this.debug) { console.log("[SERVER]: ", JSON.stringify(doJob)); }
                                             res.write(JSON.stringify(doJob));
                                         } else {

@@ -113,6 +113,7 @@ class TemperatureComponent {
   }
 
   public async READ({ expectedTime, eventEmitter, operatingMode }) {
+    console.log("2",expectedTime, eventEmitter, operatingMode);
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=READ&id=1&type=probe
     const self = this;
     return new Promise(async (resolve, reject) => {
@@ -141,6 +142,7 @@ class TemperatureComponent {
               systemOperatingMode: systemOperatingMode,
               serialNumber: self.serialNumber.sn,
             };
+            console.log(eventEmitter)
             switch (eventEmitter) {
               case EventEmitter.user: // manual action
                 if (self.debug) {

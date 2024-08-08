@@ -1172,3 +1172,10 @@ Thu Aug 08 2024 12:22:34 GMT+0200 – Caught exception: [Error: SQLITE_ERROR: no
   errno: 1,
   code: 'SQLITE_ERROR'
 }
+Thu Aug 08 2024 12:23:06 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: sensor.get is not a function
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/hw-components/probes/temperature/temperature.ts:121:16
+      at new Promise (<anonymous>)
+      at TemperatureComponent.READ (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/hw-components/probes/temperature/temperature.ts:118:12)
+      at Server.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/index.ts:222:85)
+}
