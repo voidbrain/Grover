@@ -365,16 +365,19 @@ class Main {
                   await this.db.logItem("system_log", job);
                 }
                 break;
-
+                
               case ServerCommands.AI_GET_DOSES:
+                // http://localhost:8084/system?action=AI_GET_DOSES&waterLevel=1&plantAge=22&desiredEC=1.2&desiredPH=5.5
                 const waterLevel = q.query.waterLevel;
-                const plantAge = q.query.waterLevel;
-                const desiredEC = q.query.waterLevel;
-                const desiredPH = q.query.waterLevel;
-                this.ai.getDoses({ waterLevel, plantAge, desiredEC, desiredPH });
+                const plantAge = q.query.plantAge;
+                const desiredEC = q.query.desiredEC;
+                const desiredPH = q.query.desiredPH;
+                const resultGetDoses = await this.ai.getDoses({ waterLevel, plantAge, desiredEC, desiredPH });
+                res.write(JSON.stringify({ result: resultGetDoses }));
                 break;
               case ServerCommands.AI_GET_EC_PH:
-                this.ai.getEcPh({ plantAge: q.query.plantAge });
+                const resultGetEcPh = await this.ai.getEcPh({ plantAge: q.query.plantAge });
+                res.write(JSON.stringify({ result: resultGetEcPh }));
                 break;
               case ServerCommands.AI_TRAIN_DOSES_MODEL:
                 this.ai.defineDosesModel();

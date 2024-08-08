@@ -1,5 +1,5 @@
 import tf  from '@tensorflow/tfjs-node';
-const fs = require('fs');
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -40,7 +40,7 @@ export class AiService {
           return ({ error: 'Missing parameters' });
         }
     
-        const inputTensor = tf.tensor2d([[waterLevel, plantAge, desiredEC, desiredPH]]);
+        const inputTensor = tf.tensor2d([[+waterLevel, +plantAge, +desiredEC, +desiredPH]]);
         const prediction = this.fertilizerModel.predict(inputTensor);
         const result = prediction.arraySync();
     
@@ -65,7 +65,7 @@ export class AiService {
           return { error: 'Missing plantAge parameter' };
         }
     
-        const inputTensor = tf.tensor2d([[plantAge]]);
+        const inputTensor = tf.tensor2d([[+plantAge]]);
         const prediction = this.ecPhModel.predict(inputTensor);
         const result = prediction.arraySync();
     
