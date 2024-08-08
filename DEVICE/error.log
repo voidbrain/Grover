@@ -1155,3 +1155,20 @@ Wed Aug 07 2024 00:02:01 GMT+0200 – Unhandled Rejection at Promise: Promise {
       at RoomWaterRefillComponent.RUN_WATER (file:///Users/voidbrain/Grover/Grover/DEVICE/app/hw-components/actuators/room-water-refill/room-water-refill.ts:125:16)
       at Server.<anonymous> (file:///Users/voidbrain/Grover/Grover/DEVICE/index.ts:196:85)
 }
+Thu Aug 08 2024 11:42:34 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+      at new NodeError (internal/errors.js:322:7)
+      at ServerResponse.setHeader (_http_outgoing.js:561:11)
+      at ServerResponse.writeHead (_http_server.js:293:21)
+      at Server.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/index.ts:192:21)
+      at Server.emit (events.js:400:28)
+      at Server.emit (domain.js:475:12)
+      at parserOnIncoming (_http_server.js:900:12)
+      at HTTPParser.parserOnHeadersComplete (_http_common.js:127:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Thu Aug 08 2024 12:22:34 GMT+0200 – Caught exception: [Error: SQLITE_ERROR: no such table: system_schedule] {
+  errno: 1,
+  code: 'SQLITE_ERROR'
+}

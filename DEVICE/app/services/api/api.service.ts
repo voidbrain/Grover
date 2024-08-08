@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
+
 import { NetworkService } from '../network/network.service';
 import { SettingsService } from '../settings/settings.service';
 

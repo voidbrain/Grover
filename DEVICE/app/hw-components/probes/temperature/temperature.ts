@@ -7,7 +7,8 @@ import {
   DevicesStatus,
 } from "../../../services/settings/enums";
 
-import sensor from "ds18x20";
+import sensor from '../../../../mocks/ds18x20.cjs';
+
 import schedule from "node-schedule";
 import moment from "moment";
 class TemperatureComponent {
