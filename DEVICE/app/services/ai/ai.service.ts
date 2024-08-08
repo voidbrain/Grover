@@ -1,4 +1,6 @@
 import tf  from '@tensorflow/tfjs-node';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 export class AiService {
   
@@ -10,8 +12,12 @@ export class AiService {
     }
     
     async init(){
-      this.fertilizerModel = await tf.loadLayersModel('file://../../../../data/ai/history-model/model.json');
-      this.ecPhModel = await tf.loadLayersModel('file:////../../../../data/ai/ec-ph-levels/model.json');
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const rootDir = __dirname.replace(path.join('services', 'ai'), '');
+
+      this.fertilizerModel = await tf.loadLayersModel('file://' + rootDir + '/data/ai/history-model/model.json');
+      this.ecPhModel = await tf.loadLayersModel('file://' + rootDir + '/data/ai/history-model/model.json');
       console.log('Models loaded');
     }
 

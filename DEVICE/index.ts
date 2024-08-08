@@ -45,7 +45,7 @@ class Main {
     }
 
     async appSetup() {
-        // await this.ai.init();
+        await this.ai.init();
 
         const log_file_err = fs.createWriteStream('./error.log', { flags: 'a' });
         const now = moment();

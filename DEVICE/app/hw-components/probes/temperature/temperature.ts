@@ -22,8 +22,6 @@ if (isPi()) {
   sensor = ds18x20Mock;
 }
 
-console.log(isPi);
-
 
 import schedule from "node-schedule";
 import moment from "moment";
