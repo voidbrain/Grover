@@ -202,27 +202,31 @@ From Client to Device (using stored ${ip}:${port})
 remoteDeviceExecute(ip: string, port: string, page: string, action: string, id: number, type: string, duration: number)
 http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}
 
-http://151.51.241.133:8084/actuators?action=READ&duration=undefined&id=1&type=probe
+<http://151.51.241.133:8084/actuators?action=READ&duration=undefined&id=1&type=probe>
 
-| Commands          |                                                                                      | Notes                           |
-| :---------------- | :----------------------------------------------------------------------------------- | :------------------------------ |
-| RUN_WATER         | http://${ip}:${port}/actuators?action=RUN_WATER&duration=1000&id=${id}&type=worker   |                                 |
-| RUN_PHDOWN        | http://${ip}:${port}/actuators?action=RUN_PHDOWN&duration=1000&id=${id}&type=worker  |                                 |
-| RUN_DOSE          | http://${ip}:${port}/actuators?action=RUN_DOSE&duration=1000&id=${id}&type=worker    |                                 |
-| SHUFFLE_PHDOWN    |                                                                                      |                                 |
-| SHUFFLE_DOSE      |                                                                                      |                                 |
-| READ              | http://${ip}:${port}/actuators?action=READ&id=${id}&type=probe                       |                                 |
-| ON                | http://${ip}:${port}/actuators?action=ON&id=${id}&type=worker                        |                                 |
-| OFF               | http://${ip}:${port}/actuators?action=OFF&id=${id}&type=worker                       |                                 |
-| SET_STATUS        |                                                                                      |                                 |
-| LOG               |                                                                                      |                                 |
-| START             |                                                                                      |                                 |
-| SYS_LOG           |                                                                                      |                                 |
-| SET_MODE          | http://${ip}:${port}/system?action=SET_MODE&mode=2                                   | Normal = 1, Silent = 2, Off = 3 |
+| Commands             |                                                                                                        | Notes                           |
+| :------------------- | :-----------------------------------------------------------------------------------                   | :------------------------------ |
+| RUN_WATER            | http://${ip}:${port}/actuators?action=RUN_WATER&duration=1000&id=${id}&type=worker                     |                                 |
+| RUN_PHDOWN           | http://${ip}:${port}/actuators?action=RUN_PHDOWN&duration=1000&id=${id}&type=worker                    |                                 |
+| RUN_DOSE             | http://${ip}:${port}/actuators?action=RUN_DOSE&duration=1000&id=${id}&type=worker                      |                                 |
+| SHUFFLE_PHDOWN       |                                                                                                        |                                 |
+| SHUFFLE_DOSE         |                                                                                                        |                                 |
+| READ                 | http://${ip}:${port}/actuators?action=READ&id=${id}&type=probe                                         |                                 |
+| ON                   | http://${ip}:${port}/actuators?action=ON&id=${id}&type=worker                                          |                                 |
+| OFF                  | http://${ip}:${port}/actuators?action=OFF&id=${id}&type=worker                                         |                                 |
+| SET_STATUS           |                                                                                                        |                                 |
+| LOG                  |                                                                                                        |                                 |
+| START                |                                                                                                        |                                 |
+| SYS_LOG              |                                                                                                        |                                 |
+| SET_MODE             | http://${ip}:${port}/system?action=SET_MODE&mode=2                                                     | Normal = 1, Silent = 2, Off = 3 |
+| AI_GET_DOSES         | http://${ip}:${port}/system?action=AI_GET_DOSES&waterLevel=1&plantAge=22&desiredEC=1.2&desiredPH=5.5   |                                 |
+| AI_GET_EC_PH         | http://${ip}:${port}/system?action=AI_GET_EC_PH&plantAge=1                                             |                                 |
+| AI_TRAIN_DOSES_MODEL | http://${ip}:${port}/system?action=AI_TRAIN_DOSES_MODEL                                                |                                 |
+| AI_TRAIN_EC_PH       | http://${ip}:${port}/system?action=AI_TRAIN_EC_PH                                                      |                                 |
 
 ### From Device
 
-https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/workers_schedule?lastUpdate={lastUpdate}&action=read&serialNumber={serialNumber}
+<https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/workers_schedule?lastUpdate={lastUpdate}&action=read&serialNumber={serialNumber}>
 
 (table, lastUpdate, 'read', this.serialNumber)
 

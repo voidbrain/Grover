@@ -367,7 +367,6 @@ class Main {
                 break;
                 
               case ServerCommands.AI_GET_DOSES:
-                // http://localhost:8084/system?action=AI_GET_DOSES&waterLevel=1&plantAge=22&desiredEC=1.2&desiredPH=5.5
                 const waterLevel = q.query.waterLevel;
                 const plantAge = q.query.plantAge;
                 const desiredEC = q.query.desiredEC;
