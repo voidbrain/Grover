@@ -1179,3 +1179,19 @@ Thu Aug 08 2024 12:23:06 GMT+0200 – Unhandled Rejection at Promise: Promise {
       at TemperatureComponent.READ (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/hw-components/probes/temperature/temperature.ts:118:12)
       at Server.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/index.ts:222:85)
 }
+Thu Aug 08 2024 14:52:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Path /Users/daniele/data/ai/history-model/model.json does not exist: loading failed
+      at /Users/daniele/Projects/Grover/Grover/DEVICE/node_modules/@tensorflow/tfjs-node/dist/io/file_system.js:69:23
+}
+Thu Aug 08 2024 14:53:49 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Path /Users/daniele/data/ai/history-model/model.json does not exist: loading failed
+      at /Users/daniele/Projects/Grover/Grover/DEVICE/node_modules/@tensorflow/tfjs-node/dist/io/file_system.js:69:23
+}
+Thu Aug 08 2024 14:54:20 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Path /Users/daniele/data/ai/history-model/model.json does not exist: loading failed
+      at /Users/daniele/Projects/Grover/Grover/DEVICE/node_modules/@tensorflow/tfjs-node/dist/io/file_system.js:69:23
+}
+Thu Aug 08 2024 14:55:31 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Path /Users/daniele/data/ai/history-model/model.json does not exist: loading failed
+      at /Users/daniele/Projects/Grover/Grover/DEVICE/node_modules/@tensorflow/tfjs-node/dist/io/file_system.js:69:23
+}

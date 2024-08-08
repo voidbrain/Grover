@@ -6,6 +6,7 @@
   "dependencies": {
     "@tensorflow/tfjs-node": "^4.20.0",
     "axios": "^1.7.3",
+    "detect-rpi": "^1.5.0",
     "ds18x20": "^0.1.1",
     "esm": "^3.2.25",
     "express": "^4.19.2",

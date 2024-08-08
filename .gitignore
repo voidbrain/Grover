@@ -1,3 +1,5 @@
 node_modules
+data/scratch
+data/db.sqlite
 package-lock.json
 Documentation/.DS_Store

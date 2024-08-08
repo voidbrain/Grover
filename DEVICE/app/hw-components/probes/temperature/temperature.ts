@@ -7,7 +7,23 @@ import {
   DevicesStatus,
 } from "../../../services/settings/enums";
 
-import sensor from '../../../../mocks/ds18x20.cjs';
+
+// import sensor from '../../../../mocks/ds18x20.cjs';
+
+import isPi from 'detect-rpi';
+
+let sensor;
+
+if (isPi()) {
+  const { default: ds18x20 } = await import('ds18x20');
+  sensor = ds18x20;
+} else {
+  const { default: ds18x20Mock } = await import('../../../../mocks/ds18x20.cjs');
+  sensor = ds18x20Mock;
+}
+
+console.log(isPi);
+
 
 import schedule from "node-schedule";
 import moment from "moment";
