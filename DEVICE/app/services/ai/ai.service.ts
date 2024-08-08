@@ -14,7 +14,7 @@ export class AiService {
     async init(){
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
-      const rootDir = __dirname.replace(path.join('services', 'ai'), '');
+      const rootDir = __dirname.replace(path.join('app', 'services', 'ai'), '');
 
       this.fertilizerModel = await tf.loadLayersModel('file://' + rootDir + '/data/ai/history-model/model.json');
       this.ecPhModel = await tf.loadLayersModel('file://' + rootDir + '/data/ai/history-model/model.json');
