@@ -55,20 +55,19 @@ class RoomMicroRefillComponent {
   }
 
   async setup() {
-      import("node-mcp23017").then(({ default: MCP23017 }) => {
-        this.primaryMicroPump = new MCP23017({
-          address: +this.i2cAddress,
-          device: 1,
-          debug: false,
-        });
-        this.primaryMicroPump.pinMode(this.pin1, this.primaryMicroPump.OUTPUT);
-        this.primaryMicroPump.pinMode(this.pin2, this.primaryMicroPump.OUTPUT);
+    import("node-mcp23017").then(({ default: MCP23017 }) => {
+      this.primaryMicroPump = new MCP23017({
+        address: +this.i2cAddress,
+        device: 1,
+        debug: false,
       });
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.primaryMicroPump.pinMode(this.pin1, this.primaryMicroPump.OUTPUT);
+      this.primaryMicroPump.pinMode(this.pin2, this.primaryMicroPump.OUTPUT);
+    });
+    this.setSchedule(this.id, this.scheduledCrons);
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -155,7 +154,6 @@ class RoomMicroRefillComponent {
   }
 
   async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
-    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

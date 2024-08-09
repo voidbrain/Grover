@@ -1,6 +1,9 @@
 // import i2cBus from 'i2c-bus';
 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -54,20 +57,19 @@ class RoomGroRefillComponent {
   }
 
   async setup() {
-      import("node-mcp23017").then(({ default: MCP23017 }) => {
-        this.primaryGroPump = new MCP23017({
-          address: +this.i2cAddress,
-          device: 1,
-          debug: false,
-        });
-        this.primaryGroPump.pinMode(this.pin1, this.primaryGroPump.OUTPUT);
-        this.primaryGroPump.pinMode(this.pin2, this.primaryGroPump.OUTPUT);
+    import("node-mcp23017").then(({ default: MCP23017 }) => {
+      this.primaryGroPump = new MCP23017({
+        address: +this.i2cAddress,
+        device: 1,
+        debug: false,
       });
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.primaryGroPump.pinMode(this.pin1, this.primaryGroPump.OUTPUT);
+      this.primaryGroPump.pinMode(this.pin2, this.primaryGroPump.OUTPUT);
+    });
+    this.setSchedule(this.id, this.scheduledCrons);
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -154,7 +156,6 @@ class RoomGroRefillComponent {
   }
 
   async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
-    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

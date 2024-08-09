@@ -1,5 +1,8 @@
 import "module-alias/register";
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -64,13 +67,11 @@ class TemperatureComponent {
   }
 
   async setup() {
-    
     this.serialNumber = await this.settings.getSerialNumber();
-      this.setSchedule();
+    this.setSchedule();
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -122,24 +123,32 @@ class TemperatureComponent {
     }
   }
 
-  public async READ({ expectedTime, eventEmitter, operatingMode }: { expectedTime?: Date, eventEmitter: EventEmitter, operatingMode: number }): Promise<unknown> {
+  public async READ({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+  }: {
+    expectedTime?: Date;
+    eventEmitter: EventEmitter;
+    operatingMode: number;
+  }): Promise<unknown> {
     try {
       console.log("2", expectedTime, eventEmitter, operatingMode);
-  
+
       // Check operating mode
       const systemOperatingMode = this.settings.getOperatingMode();
       if (operatingMode < systemOperatingMode) {
         if (this.debug) {
           console.log(
-            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
-        throw new Error('Operating mode insufficient');
+        throw new Error("Operating mode insufficient");
       }
-  
+
       // Read from sensor
       const value = await this.getSensorValue();
-  
+
       // Prepare job details
       const job = {
         eventEmitter,
@@ -156,20 +165,20 @@ class TemperatureComponent {
         systemOperatingMode,
         serialNumber: this.serialNumber.sn,
       };
-  
+
       console.log(eventEmitter);
-  
+
       // Log and return job details
       if (this.debug) {
         console.log(`[TEMP]: READ ${eventEmitter}`, job);
       }
-  
+
       if (this.settings.getLogMode()) {
         await this.db.logItem("probes_log", job);
       } else {
         console.log("Don't log");
       }
-  
+
       return job;
     } catch (error) {
       if (this.debug) {
@@ -178,7 +187,7 @@ class TemperatureComponent {
       throw error; // Propagate the error to be handled by the caller
     }
   }
-  
+
   // Helper method to get sensor value
   private getSensorValue(): Promise<unknown> {
     return new Promise((resolve, reject) => {
@@ -191,10 +200,8 @@ class TemperatureComponent {
       });
     });
   }
-  
 
   async setSchedule() {
-    
     if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       this.scheduledCrons.map((probeScheduleRow) => {

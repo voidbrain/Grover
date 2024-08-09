@@ -2,7 +2,6 @@ import { i2c } from "i2c-bus";
 import { writeFileSync } from "fs";
 import params from "./ph-config.json";
 
-
 /* To Do
  * temperature adjustment - calibration, and read of pH
  * Event emitter?
@@ -103,8 +102,9 @@ class MiniPh {
   //to find out how many steps that is away from 7, then apply our calibrated slope to calculate real pH
   calcpH(raw) {
     var millivolts = (raw / 4096.0) * MiniPh.params.vRef * 1000;
-    var delta = (((MiniPh.params.vRef * MiniPh.params.pHCalHigh) / 4096.0) * 1000 -
-      millivolts) /
+    var delta =
+      (((MiniPh.params.vRef * MiniPh.params.pHCalHigh) / 4096.0) * 1000 -
+        millivolts) /
       MiniPh.params.opampGain;
     var pH = MiniPh.params.pHCalHighSolution - delta / MiniPh.params.pHStep;
     pH = Math.round(pH * MiniPh.params.scale) / MiniPh.params.scale;
@@ -129,7 +129,7 @@ class MiniPh {
         this.last = this.filter;
         this.filter = Math.round(
           (this.filter * (MiniPh.params.filter_n - 1) + this.raw) /
-          MiniPh.params.filter_n
+            MiniPh.params.filter_n,
         );
         var delta = Math.abs(this.raw - this.last);
         if (delta > 600) {

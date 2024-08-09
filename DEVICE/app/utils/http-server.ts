@@ -11,7 +11,10 @@ import { PotObject } from "../../app/interfaces/pot";
 import { LocationInterface } from "../../app/interfaces/location";
 import { RoomInterface } from "../../app/interfaces/room";
 import { PotInterface } from "../../app/interfaces/pot";
-import { CronJobInterface, ExtendedCronJobInterface } from "../../app/interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../app/interfaces/cron-job";
 import schedule from "node-schedule";
 
 import {
@@ -73,17 +76,22 @@ export class WebServer {
           if (action && id && terminalType) {
             const duration = q.query.duration ? +q.query.duration : 0;
 
-            const terminal: LocationInterface | RoomInterface | PotInterface | undefined  = await this.db.getItem(
+            const terminal:
+              | LocationInterface
+              | RoomInterface
+              | PotInterface
+              | undefined = await this.db.getItem(
               terminalType + "s_list",
               +id,
               "id",
             );
-            const parentLocation: LocationInterface | undefined = await this.db.getItem(
-              "locations",
-              +terminal.locationId,
-              "id",
-            );
-            const parent: LocationInterface | RoomInterface | PotInterface | undefined  = await this.db.findParent(parentLocation.id);
+            const parentLocation: LocationInterface | undefined =
+              await this.db.getItem("locations", +terminal.locationId, "id");
+            const parent:
+              | LocationInterface
+              | RoomInterface
+              | PotInterface
+              | undefined = await this.db.findParent(parentLocation.id);
             const environments = +parent.parent > 0 ? this.pots : this.rooms;
             const environmentType = +parent.parent > 0 ? "pot" : "room";
             const environment = environments.find(
@@ -220,7 +228,7 @@ export class WebServer {
               res.write(JSON.stringify({ result: resultDosesModel }));
               break;
             }
-            case ServerCommands.AI_TRAIN_EC_PH:{
+            case ServerCommands.AI_TRAIN_EC_PH: {
               this.ai.defineEcPhModel();
               const resultEcPhModel = await this.ai.trainEcPhModel();
               res.write(JSON.stringify({ result: resultEcPhModel }));

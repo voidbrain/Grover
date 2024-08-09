@@ -1,6 +1,9 @@
 import moment from "moment";
 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -73,7 +76,7 @@ class LightSwitchComponent {
     operatingMode: number;
   }): Promise<unknown> {
     const systemOperatingMode = this.settings.getOperatingMode();
-  
+
     if (operatingMode >= systemOperatingMode) {
       const job = {
         eventEmitter,
@@ -88,16 +91,19 @@ class LightSwitchComponent {
         systemOperatingMode,
         serialNumber: this.serialNumber.sn,
       };
-  
+
       try {
         if (this.debug) {
-          console.log(`[LIGHT-SWITCH]: ON ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+          console.log(
+            `[LIGHT-SWITCH]: ON ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+            job,
+          );
         }
-  
+
         if (this.settings.getLogMode()) {
           await this.db.logItem("workers_log", job);
         }
-  
+
         return job;
       } catch (err) {
         console.error("Error logging job:", err);
@@ -105,12 +111,13 @@ class LightSwitchComponent {
       }
     } else {
       if (this.debug) {
-        console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log(
+          `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
+        );
       }
       return null; // Or throw an error if preferred
     }
   }
-  
 
   public async OFF({
     expectedTime,
@@ -122,7 +129,7 @@ class LightSwitchComponent {
     operatingMode: number;
   }): Promise<unknown> {
     const systemOperatingMode = this.settings.getOperatingMode();
-  
+
     if (operatingMode >= systemOperatingMode) {
       const job = {
         eventEmitter,
@@ -137,16 +144,18 @@ class LightSwitchComponent {
         systemOperatingMode,
         serialNumber: this.serialNumber.sn,
       };
-  
+
       try {
         if (this.debug) {
-          console.log(`[LIGHT-SWITCH]: OFF ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`);
+          console.log(
+            `[LIGHT-SWITCH]: OFF ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+          );
         }
-  
+
         if (this.settings.getLogMode()) {
           await this.db.logItem("workers_log", job);
         }
-  
+
         return job;
       } catch (err) {
         console.error("Error logging job:", err);
@@ -154,19 +163,19 @@ class LightSwitchComponent {
       }
     } else {
       if (this.debug) {
-        console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        console.log(
+          `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
+        );
       }
       return null; // Or throw an error if preferred
     }
   }
-  
 
   public async getStatus() {
     return this.status;
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -219,7 +228,6 @@ class LightSwitchComponent {
   }
 
   async setSchedule() {
-    
     if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       this.scheduledCrons.map((probeScheduleRow) => {

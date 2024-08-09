@@ -46,7 +46,6 @@ class RoomComponent {
   }
 
   async setup() {
-    
     const room: RoomInterface = (await this.db.getItem(
       "rooms",
       this.serialNumber,

@@ -1,6 +1,9 @@
 import moment from "moment";
 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   DevicesStatus,
   EventEmitter,
@@ -20,7 +23,7 @@ class FanComponent {
   pin: number;
   status: string;
 
-  scheduledCrons:ExtendedCronJobInterface[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   settings;
   db;
@@ -73,7 +76,7 @@ class FanComponent {
     operatingMode: number;
   }): Promise<unknown> {
     const systemOperatingMode = this.settings.getOperatingMode();
-  
+
     if (operatingMode >= systemOperatingMode) {
       const job = {
         eventEmitter,
@@ -88,16 +91,19 @@ class FanComponent {
         systemOperatingMode,
         serialNumber: this.serialNumber.sn,
       };
-  
+
       try {
         if (this.debug) {
-          console.log(`[FAN-MOTOR]: ON ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+          console.log(
+            `[FAN-MOTOR]: ON ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+            job,
+          );
         }
-  
+
         if (this.settings.getLogMode() === true) {
           await this.db.logItem("workers_log", job);
         }
-  
+
         return job;
       } catch (err) {
         console.error("Error logging job:", err);
@@ -106,13 +112,12 @@ class FanComponent {
     } else {
       if (this.debug) {
         console.log(
-          `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+          `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
         );
       }
       return null; // Or throw an error if you prefer
     }
   }
-  
 
   public async OFF({
     expectedTime,
@@ -124,7 +129,7 @@ class FanComponent {
     operatingMode: number;
   }): Promise<unknown> {
     const systemOperatingMode = this.settings.getOperatingMode();
-  
+
     if (operatingMode >= systemOperatingMode) {
       const job = {
         eventEmitter,
@@ -139,16 +144,18 @@ class FanComponent {
         systemOperatingMode,
         serialNumber: this.serialNumber.sn,
       };
-  
+
       try {
         if (this.debug) {
-          console.log(`[FAN-MOTOR]: OFF ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`);
+          console.log(
+            `[FAN-MOTOR]: OFF ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+          );
         }
-  
+
         if (this.settings.getLogMode() === true) {
           await this.db.logItem("workers_log", job);
         }
-  
+
         return job;
       } catch (err) {
         console.error("Error logging job:", err);
@@ -157,13 +164,12 @@ class FanComponent {
     } else {
       if (this.debug) {
         console.log(
-          `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+          `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
         );
       }
       return null; // Or throw an error if you prefer
     }
   }
-  
 
   async setStatus(eventEmitter) {
     let scheduledStart;

@@ -1,4 +1,7 @@
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -38,13 +41,11 @@ class WaterLevelComponent {
   }
 
   async setup() {
-    
     this.serialNumber = await this.settings.getSerialNumber();
-      this.setSchedule();
+    this.setSchedule();
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -97,7 +98,6 @@ class WaterLevelComponent {
   }
 
   async READ() {
-    
     return new Promise((resolve) => {
       const trigger = new Gpio(this.triggerPin, { mode: Gpio.OUTPUT });
       const echo = new Gpio(this.echoPin, { mode: Gpio.INPUT, alert: true });
@@ -124,7 +124,6 @@ class WaterLevelComponent {
   }
 
   async setSchedule() {
-    
     if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       this.scheduledCrons.map((probeScheduleRow) => {

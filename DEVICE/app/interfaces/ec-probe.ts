@@ -3,5 +3,5 @@ export interface EcProbeInterface {
   echoPin: number;
   component: {
     setup: () => object;
-  }
+  };
 }

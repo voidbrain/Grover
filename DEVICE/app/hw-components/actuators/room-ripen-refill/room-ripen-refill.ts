@@ -1,6 +1,9 @@
 // import i2cBus from 'i2c-bus';
 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -67,7 +70,6 @@ class RoomRipenRefillComponent {
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -154,7 +156,6 @@ class RoomRipenRefillComponent {
   }
 
   async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
-    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

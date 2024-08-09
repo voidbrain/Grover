@@ -26,19 +26,19 @@ export class ApiService {
     serialNumber?: string,
     port?: string,
   ): Promise<unknown> {
-    const path = `${this.settings.getRemoteServerEndpoint()}${endpoint}` +
-        `?lastUpdate=${lastUpdate || ''}&action=${action || ''}` +
-        `&serialNumber=${serialNumber || ''}&port=${port || ''}`;
+    const path =
+      `${this.settings.getRemoteServerEndpoint()}${endpoint}` +
+      `?lastUpdate=${lastUpdate || ""}&action=${action || ""}` +
+      `&serialNumber=${serialNumber || ""}&port=${port || ""}`;
     try {
       // Construct the URL path
-      
-  
+
       // Perform the HTTPS GET request
       const res = await this.httpsGet({
         hostname: this.settings.getRemoteServerHostname(),
         path,
       });
-  
+
       // Return the result
       return res;
     } catch (error) {
@@ -47,7 +47,6 @@ export class ApiService {
       throw error;
     }
   }
-  
 
   async httpsGet({ ...options }) {
     return new Promise((resolve, reject) => {

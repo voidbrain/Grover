@@ -1,6 +1,9 @@
 // import i2cBus from 'i2c-bus';
 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -86,7 +89,6 @@ class RoomNutrientRefillComponent {
   }
 
   async setup() {
-    
     this.serialNumber = await this.settings.getSerialNumber();
     // if(this.serialNumber.found && +this.i2cAddressGro && +this.i2cAddressMicro && +this.i2cAddressBloom && +this.i2cAddressRipen) {
     //   import('node-mcp23017').then(({default: MCP23017}) => {
@@ -110,7 +112,6 @@ class RoomNutrientRefillComponent {
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -171,7 +172,6 @@ class RoomNutrientRefillComponent {
   }
 
   public async forward(pump) {
-    
     if (this.debug) {
       console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
     }
@@ -185,7 +185,6 @@ class RoomNutrientRefillComponent {
   }
 
   public async backward(pump) {
-    
     if (this.debug) {
       console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
     }
@@ -193,7 +192,6 @@ class RoomNutrientRefillComponent {
   }
 
   public async stop(pump) {
-    
     if (this.debug) {
       console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
     }
@@ -201,7 +199,6 @@ class RoomNutrientRefillComponent {
   }
 
   async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
-    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

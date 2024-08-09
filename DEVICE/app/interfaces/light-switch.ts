@@ -3,5 +3,5 @@ export interface LightSwitchInterface {
 
   component: {
     setup: () => object;
-  }
+  };
 }

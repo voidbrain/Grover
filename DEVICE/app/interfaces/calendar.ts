@@ -1,6 +1,4 @@
-
 import { PhaseExtended } from "./phase";
-
 
 export interface Calendar {
   id: number;

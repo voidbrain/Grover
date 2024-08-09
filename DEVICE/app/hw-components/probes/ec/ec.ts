@@ -1,4 +1,7 @@
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   DevicesStatus,
@@ -32,11 +35,10 @@ class EcProbeComponent {
 
   async setup() {
     this.serialNumber = await this.settings.getSerialNumber();
-      this.setSchedule();
+    this.setSchedule();
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -99,7 +101,6 @@ class EcProbeComponent {
   }
 
   async setSchedule() {
-    
     if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       this.scheduledCrons.map((probeScheduleRow) => {

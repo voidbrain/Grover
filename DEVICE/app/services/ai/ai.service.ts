@@ -100,7 +100,7 @@ export class AiService {
 
     // Load training data
     const rawData = fs.readFileSync("../../../data/ec-ph-levels.json");
-    const trainingData = JSON.parse(''+rawData);
+    const trainingData = JSON.parse("" + rawData);
 
     const inputs = trainingData.map((d) => [d.plantAge]);
     const labels = trainingData.map((d) => [d.desiredEC, d.desiredPH]);
@@ -139,7 +139,7 @@ export class AiService {
 
     // Load training data
     const rawData = fs.readFileSync("../../../data/history.json");
-    const trainingData = JSON.parse(''+rawData);
+    const trainingData = JSON.parse("" + rawData);
 
     const inputs = trainingData.map((d) => [
       d.waterLevel,

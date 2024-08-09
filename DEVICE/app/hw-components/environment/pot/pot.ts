@@ -55,7 +55,6 @@ class PotComponent {
   }
 
   async setup(locationId) {
-    
     this.locationId = locationId;
     const pot: PotInterface = (await this.db.getItem(
       "pots",
@@ -67,34 +66,34 @@ class PotComponent {
       pot.locationId,
       "id",
     )) as LocationInterface;
-    const probesArr: ProbeInterface[] = (await this.db.getItems(
+    const probesArr: ProbeInterface[] = await this.db.getItems(
       "probes_list",
       pot.locationId,
       "locationId",
-    ));
-    const workersArr: WorkerInterface[] = (await this.db.getItems(
+    );
+    const workersArr: WorkerInterface[] = await this.db.getItems(
       "workers_list",
       pot.locationId,
       "locationId",
-    ));
+    );
 
-    const plant: PlantExtended = (await this.db.getItem(
+    const plant: PlantExtended = await this.db.getItem(
       "plants",
       pot.id,
       "idPot",
-    ));
-    const phases: PhaseExtended[] = (await this.db.getItems(
+    );
+    const phases: PhaseExtended[] = await this.db.getItems(
       "calendar_phases",
       plant.idCalendar,
       "idCalendar",
-    ));
+    );
     await Promise.all(
       phases.map(async (phase) => {
-        const dose = (await this.db.getItem(
+        const dose = await this.db.getItem(
           "calendar_doses",
           phase.idDose,
           "id",
-        ));
+        );
         phase.dose = dose;
       }),
     );
@@ -138,11 +137,11 @@ class PotComponent {
 
     await Promise.all(
       probesArr.map(async (probe: ProbeInterface) => {
-        probe.type = (await this.db.getItem(
+        probe.type = await this.db.getItem(
           "probes_type",
           probe.probeType,
           "id",
-        ));
+        );
         // probe.logs = await this.db.getItems('probes_log', probe.id, 'idProbe') as unknown[];
         const schedule: unknown[] = (await this.db.getItems(
           "probes_schedule",
@@ -181,11 +180,11 @@ class PotComponent {
     );
     await Promise.all(
       workersArr.map(async (worker) => {
-        worker.type = (await this.db.getItem(
+        worker.type = await this.db.getItem(
           "workers_type",
           worker.workerType,
           "id",
-        ));
+        );
         // worker.logs = await this.db.getItems('workers_log', worker.id, 'idworker') as unknown[];
 
         const schedule: any[] = (await this.db.getItems(

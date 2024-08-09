@@ -1,6 +1,9 @@
 // import i2cBus from 'i2c-bus';
 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -62,7 +65,8 @@ class RefillComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
-    this.i2cAddress = "0x" + parseInt((i2cAddress ? i2cAddress.toString(10) : '')).toString(16);
+    this.i2cAddress =
+      "0x" + parseInt(i2cAddress ? i2cAddress.toString(10) : "").toString(16);
     this.pin1 = +(pin1 ?? 0);
     this.pin2 = +(pin2 ?? 0);
     this.api = api;
@@ -75,29 +79,28 @@ class RefillComponent {
   }
 
   async setup() {
-      import("node-mcp23017").then(({ default: MCP23017 }) => {
-        this.secondaryPump = new MCP23017({
-          address: +this.i2cAddress,
-          device: 1,
-          debug: false,
-        });
-        this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
-        this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
-
-        this.secondaryPump.pinMode(
-          this.primaryWaterPump.pin1,
-          this.secondaryPump.OUTPUT,
-        );
-        this.secondaryPump.pinMode(
-          this.primaryWaterPump.pin2,
-          this.secondaryPump.OUTPUT,
-        );
+    import("node-mcp23017").then(({ default: MCP23017 }) => {
+      this.secondaryPump = new MCP23017({
+        address: +this.i2cAddress,
+        device: 1,
+        debug: false,
       });
-      this.setSchedule(+this.id, this.scheduledCrons);
+      this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
+      this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
+
+      this.secondaryPump.pinMode(
+        this.primaryWaterPump.pin1,
+        this.secondaryPump.OUTPUT,
+      );
+      this.secondaryPump.pinMode(
+        this.primaryWaterPump.pin2,
+        this.secondaryPump.OUTPUT,
+      );
+    });
+    this.setSchedule(+this.id, this.scheduledCrons);
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -194,41 +197,49 @@ class RefillComponent {
   }): Promise<unknown> {
     try {
       const systemOperatingMode = this.settings.getOperatingMode();
-  
+
       if (operatingMode < systemOperatingMode) {
         if (this.debug) {
-          console.log(`[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode}, system: ${systemOperatingMode})`);
+          console.log(
+            `[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode}, system: ${systemOperatingMode})`,
+          );
         }
         return;
       }
-  
+
       const waterMl = this.phase?.dose?.water ?? 0;
-  
+
       await this.primaryWaterPump.forward();
       await this.primaryWaterPump.delay(duration * waterMl);
       await this.primaryWaterPump.stop();
-  
+
       await this.forward();
       await this.delay(this.waterToPotTime);
       await this.stop();
-  
-      const job = this.createJob(ServerCommands.RUN_WATER, eventEmitter, expectedTime);
-      
+
+      const job = this.createJob(
+        ServerCommands.RUN_WATER,
+        eventEmitter,
+        expectedTime,
+      );
+
       if (this.settings.getLogMode()) {
         await this.db.logItem("workers_log", job);
       }
-  
+
       if (this.debug) {
-        console.log(`[POT-REFILL]: RUN_WATER ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+        console.log(
+          `[POT-REFILL]: RUN_WATER ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+          job,
+        );
       }
-  
+
       return job;
     } catch (error) {
       console.error("[POT-REFILL]: Error in RUN_WATER action", error);
       throw error;
     }
   }
-  
 
   public async RUN_DOSE({
     expectedTime,
@@ -243,21 +254,23 @@ class RefillComponent {
   }): Promise<boolean> {
     try {
       const systemOperatingMode = this.settings.getOperatingMode();
-  
+
       if (operatingMode < systemOperatingMode) {
         if (this.debug) {
-          console.log(`[POT-REFILL]: RUN_DOSE operatingMode insufficient level (probe: ${operatingMode}, system: ${systemOperatingMode})`);
+          console.log(
+            `[POT-REFILL]: RUN_DOSE operatingMode insufficient level (probe: ${operatingMode}, system: ${systemOperatingMode})`,
+          );
         }
         return false;
       }
-  
+
       const doses = {
         gro: this.phase?.dose?.grow ?? 0,
         micro: this.phase?.dose?.micro ?? 0,
         bloom: this.phase?.dose?.bloom ?? 0,
-        ripen: this.phase?.dose?.ripen ?? 0
+        ripen: this.phase?.dose?.ripen ?? 0,
       };
-  
+
       for (const [, ml] of Object.entries(doses)) {
         if (ml) {
           await this.primaryWaterPump.forward();
@@ -265,28 +278,34 @@ class RefillComponent {
           await this.primaryWaterPump.stop();
         }
       }
-  
+
       await this.delay(this.waterToPotTime);
       await this.forward();
       await this.stop();
-  
-      const job = this.createJob(ServerCommands.RUN_DOSE, eventEmitter, expectedTime);
-  
+
+      const job = this.createJob(
+        ServerCommands.RUN_DOSE,
+        eventEmitter,
+        expectedTime,
+      );
+
       if (this.settings.getLogMode()) {
         await this.db.logItem("workers_log", job);
       }
-  
+
       if (this.debug) {
-        console.log(`[POT-REFILL]: RUN_DOSE ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+        console.log(
+          `[POT-REFILL]: RUN_DOSE ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+          job,
+        );
       }
-  
+
       return true;
     } catch (error) {
       console.error("[POT-REFILL]: Error in RUN_DOSE action", error);
       throw error;
     }
   }
-  
 
   public async RUN_PHDOWN({
     expectedTime,
@@ -301,36 +320,45 @@ class RefillComponent {
   }): Promise<unknown> {
     try {
       const systemOperatingMode = this.settings.getOperatingMode();
-  
+
       if (operatingMode < systemOperatingMode) {
         if (this.debug) {
-          console.log(`[POT-REFILL]: RUN_PHDOWN operatingMode insufficient level (probe: ${operatingMode}, system: ${systemOperatingMode})`);
+          console.log(
+            `[POT-REFILL]: RUN_PHDOWN operatingMode insufficient level (probe: ${operatingMode}, system: ${systemOperatingMode})`,
+          );
         }
         return;
       }
-  
+
       const pHDown = this.phase?.dose?.pHDown ?? 0;
-  
+
       if (pHDown) {
         await this.primaryWaterPump.forward();
         await this.primaryWaterPump.delay(duration * pHDown);
         await this.primaryWaterPump.stop();
       }
-  
+
       await this.delay(this.waterToPotTime);
       await this.forward();
       await this.stop();
-  
-      const job = this.createJob(ServerCommands.RUN_PHDOWN, eventEmitter, expectedTime);
-  
+
+      const job = this.createJob(
+        ServerCommands.RUN_PHDOWN,
+        eventEmitter,
+        expectedTime,
+      );
+
       if (this.settings.getLogMode()) {
         await this.db.logItem("workers_log", job);
       }
-  
+
       if (this.debug) {
-        console.log(`[POT-REFILL]: RUN_PHDOWN ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+        console.log(
+          `[POT-REFILL]: RUN_PHDOWN ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+          job,
+        );
       }
-  
+
       return job;
     } catch (error) {
       console.error("[POT-REFILL]: Error in RUN_PHDOWN action", error);
@@ -338,7 +366,11 @@ class RefillComponent {
     }
   }
 
-  private createJob(action: string, eventEmitter: EventEmitter, expectedTime?: string) {
+  private createJob(
+    action: string,
+    eventEmitter: EventEmitter,
+    expectedTime?: string,
+  ) {
     return {
       eventEmitter,
       action,
@@ -353,11 +385,8 @@ class RefillComponent {
       serialNumber: this.serialNumber.sn,
     };
   }
-  
-  
 
   async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
-    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

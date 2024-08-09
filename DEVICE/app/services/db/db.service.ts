@@ -1,7 +1,7 @@
 import { LocationInterface } from "../../interfaces/location";
 import { RoomInterface } from "../../interfaces/room";
 import { PotInterface } from "../../interfaces/pot";
-import { ExtendedCronJobInterface } from "../../interfaces/cron-job"
+import { ExtendedCronJobInterface } from "../../interfaces/cron-job";
 
 import { LocalStorage } from "node-localstorage";
 import sqlite3 from "sqlite3";
@@ -31,12 +31,12 @@ export class DbService {
       if (this.debug) {
         console.log(`[DB]: load`);
       }
-  
+
       this.serialNumber = (await this.settings.getSerialNumber()).sn;
-  
+
       const resetDb = false;
       const forceLoading = true;
-  
+
       await this.initService(resetDb || forceLoading);
     } catch (error) {
       console.error("[DB]: load error", error);
@@ -69,11 +69,11 @@ export class DbService {
     const networkStatus = true;
     const now = moment();
     const lastUpdate = [];
-    
+
     if (this.debug) {
       console.log(`[DB]: init service`);
     }
-    
+
     await this.openDb();
 
     const lastGlobalUpdate =
@@ -120,20 +120,23 @@ export class DbService {
   }
 
   private async loadData(table: string, lastUpdate: Date): Promise<void> {
-    
-      const res = await this.api.get(table, lastUpdate, "read", this.serialNumber);
-      await this.syncData({ [table]: res });
-    
+    const res = await this.api.get(
+      table,
+      lastUpdate,
+      "read",
+      this.serialNumber,
+    );
+    await this.syncData({ [table]: res });
   }
 
   private async syncData(data: any): Promise<void> {
     if (this.debug) {
       console.info("[DB]: entering sync data");
     }
-    
+
     const table = Object.keys(data)[0];
     const res = data[table];
-    
+
     if (this.debug) {
       console.info("[DB]: Db Sync records ready ", table);
     }
@@ -162,17 +165,21 @@ export class DbService {
           if (row.id) {
             if (row.deleted) {
               await new Promise<void>((resolve, reject) => {
-                this.db.run(`DELETE FROM ${table} WHERE id=?`, +row.id, (err) => {
-                  if (err) {
-                    console.error(err.message);
-                    reject(err);
-                  } else {
-                    if (this.debug) {
-                      console.log(`[DB] Row(s) deleted ID ${row.id}`);
+                this.db.run(
+                  `DELETE FROM ${table} WHERE id=?`,
+                  +row.id,
+                  (err) => {
+                    if (err) {
+                      console.error(err.message);
+                      reject(err);
+                    } else {
+                      if (this.debug) {
+                        console.log(`[DB] Row(s) deleted ID ${row.id}`);
+                      }
+                      resolve();
                     }
-                    resolve();
-                  }
-                });
+                  },
+                );
               });
             } else {
               const cols = Object.keys(row);
@@ -207,16 +214,18 @@ export class DbService {
   ): Promise<LocationInterface | RoomInterface | PotInterface | undefined> {
     if (value) {
       const query = `SELECT * from ${table} WHERE ${column}=(?)`;
-      return new Promise<LocationInterface | RoomInterface | PotInterface>((resolve, reject) => {
-        this.db.get(query, [value], (err, row) => {
-          if (err) {
-            console.log("[DB]: getItem err ", query, err);
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      });
+      return new Promise<LocationInterface | RoomInterface | PotInterface>(
+        (resolve, reject) => {
+          this.db.get(query, [value], (err, row) => {
+            if (err) {
+              console.log("[DB]: getItem err ", query, err);
+              reject(err);
+            } else {
+              resolve(row);
+            }
+          });
+        },
+      );
     } else {
       return null;
     }
@@ -226,21 +235,28 @@ export class DbService {
     table: string,
     value: number | null = null,
     column: string = "id",
-  ): Promise<LocationInterface[] | RoomInterface[] | ExtendedCronJobInterface[]> {
-    const query = `SELECT * from ${table}` + (value ? ` WHERE ${column}=(?)` : '');
+  ): Promise<
+    LocationInterface[] | RoomInterface[] | ExtendedCronJobInterface[]
+  > {
+    const query =
+      `SELECT * from ${table}` + (value ? ` WHERE ${column}=(?)` : "");
     const where = value ? [value] : [];
-    return new Promise<LocationInterface[] | RoomInterface[]>((resolve, reject) => {
-      this.db.all(query, where, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+    return new Promise<LocationInterface[] | RoomInterface[]>(
+      (resolve, reject) => {
+        this.db.all(query, where, (err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rows);
+          }
+        });
+      },
+    );
   }
 
-  public async findParent(id: number): Promise<RoomInterface | PotInterface | LocationInterface | undefined> {
+  public async findParent(
+    id: number,
+  ): Promise<RoomInterface | PotInterface | LocationInterface | undefined> {
     if (id) {
       const query = `
         SELECT ROOMS.*, ROOMS.name AS roomName, ROOMS.locationId AS roomLocationId, 
@@ -350,7 +366,14 @@ export class DbService {
         .then((response: any) => {
           if (response) {
             if (this.debug) {
-              console.log(endpoint, lastUpdate, action, item, this.serialNumber, response);
+              console.log(
+                endpoint,
+                lastUpdate,
+                action,
+                item,
+                this.serialNumber,
+                response,
+              );
             }
             const row = response;
             const values: any[] = [];
@@ -377,7 +400,10 @@ export class DbService {
     });
   }
 
-  public async deleteItem(objectStore: string, itemToDelete: any): Promise<void> {
+  public async deleteItem(
+    objectStore: string,
+    itemToDelete: any,
+  ): Promise<void> {
     return this.api.delete(objectStore, itemToDelete).then((item: any) => {
       if (item.synced !== 0) {
         return;
@@ -421,9 +447,12 @@ export class DbService {
       const items = await this.getItemsToBeSynced(table);
       if (items.length) {
         if (this.debug) {
-          console.info('[DB]: Items to sync. Table:"' + table + '" items:', items);
+          console.info(
+            '[DB]: Items to sync. Table:"' + table + '" items:',
+            items,
+          );
         }
-        await Promise.all(items.map(item => this.putItem(table, item)));
+        await Promise.all(items.map((item) => this.putItem(table, item)));
       }
     }
   }
@@ -450,9 +479,12 @@ export class DbService {
       const items = await this.getItemsToBeRemoved(table);
       if (items.length) {
         if (this.debug) {
-          console.info('[DB]: items to remove. Table:"' + table + '" items:', items);
+          console.info(
+            '[DB]: items to remove. Table:"' + table + '" items:',
+            items,
+          );
         }
-        await Promise.all(items.map(item => this.deleteItem(table, item)));
+        await Promise.all(items.map((item) => this.deleteItem(table, item)));
       }
     }
   }

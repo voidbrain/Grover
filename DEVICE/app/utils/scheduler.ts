@@ -1,16 +1,16 @@
 import schedule from "node-schedule";
 import { DbService } from "../services/db/db.service";
 import { ExtendedCronJobInterface } from "../../app/interfaces/cron-job";
-import {
-  EventEmitter,
-} from "../../app/services/settings/enums";
+import { EventEmitter } from "../../app/services/settings/enums";
 
 export class Scheduler {
   constructor(private db: DbService) {}
 
   async setMainSchedule() {
-    const scheduledCrons: ExtendedCronJobInterface[] = await this.db.getItems("system_schedule") as  ExtendedCronJobInterface[];
-    
+    const scheduledCrons: ExtendedCronJobInterface[] = (await this.db.getItems(
+      "system_schedule",
+    )) as ExtendedCronJobInterface[];
+
     console.log(scheduledCrons);
     const scheduleArr: ExtendedCronJobInterface[] = scheduledCrons.map(
       (systemScheduleRow) => ({

@@ -1,4 +1,7 @@
-import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   DevicesStatus,
@@ -52,20 +55,19 @@ class RoomWaterRefillComponent {
   }
 
   async setup() {
-      import("node-mcp23017").then(({ default: MCP23017 }) => {
-        this.primaryWaterPump = new MCP23017({
-          address: +this.i2cAddress,
-          device: 1,
-          debug: false,
-        });
-        this.primaryWaterPump.pinMode(this.pin1, this.primaryWaterPump.OUTPUT);
-        this.primaryWaterPump.pinMode(this.pin2, this.primaryWaterPump.OUTPUT);
+    import("node-mcp23017").then(({ default: MCP23017 }) => {
+      this.primaryWaterPump = new MCP23017({
+        address: +this.i2cAddress,
+        device: 1,
+        debug: false,
       });
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.primaryWaterPump.pinMode(this.pin1, this.primaryWaterPump.OUTPUT);
+      this.primaryWaterPump.pinMode(this.pin2, this.primaryWaterPump.OUTPUT);
+    });
+    this.setSchedule(this.id, this.scheduledCrons);
   }
 
   async setStatus(eventEmitter) {
-    
     let scheduledStart;
     const now = moment();
     let status: string;
@@ -165,18 +167,20 @@ class RoomWaterRefillComponent {
   }): Promise<boolean> {
     try {
       const systemOperatingMode = this.settings.getOperatingMode();
-      
+
       if (operatingMode < systemOperatingMode) {
         if (this.debug) {
-          console.log(`[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+          console.log(
+            `[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
+          );
         }
         return false; // Exit early if operating mode is insufficient
       }
-  
+
       await this.forward();
       await this.delay(duration);
       await this.stop();
-  
+
       const job = {
         eventEmitter,
         action: ServerCommands.RUN_WATER,
@@ -190,25 +194,26 @@ class RoomWaterRefillComponent {
         systemOperatingMode,
         serialNumber: this.serialNumber.sn,
       };
-  
+
       if (this.debug) {
-        console.log(`[ROOM-WATER-REFILL]: RUN_WATER ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+        console.log(
+          `[ROOM-WATER-REFILL]: RUN_WATER ${eventEmitter === EventEmitter.user ? "manual" : "scheduled"}`,
+          job,
+        );
       }
-  
+
       if (this.settings.getLogMode()) {
         await this.db.logItem("workers_log", job);
       }
-  
+
       return true;
     } catch (error) {
       console.error("[ROOM-WATER-REFILL]: Error in RUN_WATER action", error);
       throw error; // Ensure errors are propagated
     }
   }
-  
 
   async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
-    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

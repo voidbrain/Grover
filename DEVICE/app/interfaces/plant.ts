@@ -1,5 +1,3 @@
- 
-
 import { Strain } from "./strain";
 import { PotInterface } from "./pot";
 import { Calendar } from "./calendar";
