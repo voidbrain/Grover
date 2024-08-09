@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 
-import { Strain } from './strain';
-import { Pot } from './pot';
-import { Calendar, PhaseExtended } from './calendar';
+import { Strain } from "./strain";
+import { Pot } from "./pot";
+import { Calendar, PhaseExtended } from "./calendar";
 
 export interface Plant {
   alerts: string;

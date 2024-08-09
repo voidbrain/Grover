@@ -8,11 +8,11 @@ export interface WaterRefillInterface {
 }
 
 export interface Device {
-  dNum: number,
-  en: number,
-  in1: number,
-  in2: number,
-  enGpio: any,
-  in1Gpio: any,
-  in2Gpio: any,
+  dNum: number;
+  en: number;
+  in1: number;
+  in2: number;
+  enGpio: any;
+  in1Gpio: any;
+  in2Gpio: any;
 }

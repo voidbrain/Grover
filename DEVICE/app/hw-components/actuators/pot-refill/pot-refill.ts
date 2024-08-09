@@ -55,7 +55,7 @@ class RefillComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.phase = phase;
     this.id = id;
@@ -76,7 +76,8 @@ class RefillComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    if (true) {
+      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.secondaryPump = new MCP23017({
           address: +self.i2cAddress,
@@ -88,18 +89,18 @@ class RefillComponent {
 
         this.secondaryPump.pinMode(
           this.primaryWaterPump.pin1,
-          this.secondaryPump.OUTPUT
+          this.secondaryPump.OUTPUT,
         );
         this.secondaryPump.pinMode(
           this.primaryWaterPump.pin2,
-          this.secondaryPump.OUTPUT
+          this.secondaryPump.OUTPUT,
         );
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
       if (this.debug) {
         console.log(
-          "[POT-REFILL]: EXIT on --> Raspberry OR i2c Address not found"
+          "[POT-REFILL]: EXIT on --> Raspberry OR i2c Address not found",
         );
       }
     }
@@ -125,13 +126,13 @@ class RefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -150,7 +151,7 @@ class RefillComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -190,7 +191,12 @@ class RefillComponent {
     });
   }
 
-  public async RUN_WATER({ expectedTime, eventEmitter, operatingMode, duration }) {
+  public async RUN_WATER({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+    duration,
+  }) {
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=RUN_WATER&duration=1000&id=1&type=worker
     const self = this;
     return new Promise(async (resolve) => {
@@ -243,19 +249,23 @@ class RefillComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[POT-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
     });
   }
 
-  public async RUN_DOSE({ expectedTime, eventEmitter, operatingMode, duration }) {
+  public async RUN_DOSE({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+    duration,
+  }) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
-
         /////////
         // TODO
         // phase.dose.gro is wanted final value
@@ -328,14 +338,19 @@ class RefillComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[POT-REFILL]: RUN_DOSE operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[POT-REFILL]: RUN_DOSE operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
     });
   }
 
-  public async RUN_PHDOWN({ expectedTime, eventEmitter, operatingMode, duration }) {
+  public async RUN_PHDOWN({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+    duration,
+  }) {
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
@@ -389,7 +404,7 @@ class RefillComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[POT-REFILL]: RUN_PHDOWN operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[POT-REFILL]: RUN_PHDOWN operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -419,7 +434,7 @@ class RefillComponent {
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
-            })`
+            })`,
           );
         });
       });

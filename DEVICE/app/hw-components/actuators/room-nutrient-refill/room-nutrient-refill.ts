@@ -58,7 +58,7 @@ class RoomNutrientRefillComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -129,13 +129,13 @@ class RoomNutrientRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -154,7 +154,7 @@ class RoomNutrientRefillComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -223,7 +223,7 @@ class RoomNutrientRefillComponent {
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
-            })`
+            })`,
           );
         });
       });

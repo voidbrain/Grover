@@ -8,7 +8,7 @@ import {
 
 import schedule from "node-schedule";
 import moment from "moment";
-import { Gpio } from 'pigpio';
+import { Gpio } from "pigpio";
 
 class WaterLevelComponent {
   id: number;
@@ -26,12 +26,11 @@ class WaterLevelComponent {
   status: string;
   debug = false;
 
-  MICROSECDONDS_PER_CM = 1e6/34321; // The number of microseconds it takes sound to travel 1cm at 20 degrees celcius
-
+  MICROSECDONDS_PER_CM = 1e6 / 34321; // The number of microseconds it takes sound to travel 1cm at 20 degrees celcius
 
   triggerPin: number;
   echoPin: number;
-  
+
   constructor(id: number, triggerPin: number, echoPin: number) {
     this.id = id;
     this.triggerPin = triggerPin;
@@ -41,11 +40,12 @@ class WaterLevelComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { // if (self.serialNumber.found) {
+    if (true) {
+      // if (self.serialNumber.found) {
       this.setSchedule();
     } else {
       console.log(
-        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found"
+        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found",
       );
     }
   }
@@ -70,13 +70,13 @@ class WaterLevelComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -95,7 +95,7 @@ class WaterLevelComponent {
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -105,20 +105,20 @@ class WaterLevelComponent {
 
   async READ() {
     const self = this;
-    return new Promise(resolve => {
-      const trigger = new Gpio(self.triggerPin, {mode: Gpio.OUTPUT});
-      const echo = new Gpio(self.echoPin, {mode: Gpio.INPUT, alert: true});
+    return new Promise((resolve) => {
+      const trigger = new Gpio(self.triggerPin, { mode: Gpio.OUTPUT });
+      const echo = new Gpio(self.echoPin, { mode: Gpio.INPUT, alert: true });
       trigger.digitalWrite(0); // Make sure trigger is low
       const watchHCSR04 = () => {
         let startTick;
-        echo.on('alert', (level, tick) => {
+        echo.on("alert", (level, tick) => {
           if (level == 1) {
             startTick = tick;
           } else {
             const endTick = tick;
             const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
             console.log(diff / 2 / self.MICROSECDONDS_PER_CM);
-            resolve('water level result');
+            resolve("water level result");
           }
         });
       };
@@ -127,7 +127,6 @@ class WaterLevelComponent {
       setInterval(() => {
         trigger.trigger(10, 1); // Set trigger high for 10 microseconds
       }, 1000);
-
     });
   }
 
@@ -152,12 +151,11 @@ class WaterLevelComponent {
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
-            })`
+            })`,
           );
         });
       });
     }
   }
-
 }
 export default WaterLevelComponent;

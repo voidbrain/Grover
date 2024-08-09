@@ -1,4 +1,4 @@
-import 'module-alias/register';
+import "module-alias/register";
 import { CronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
@@ -7,21 +7,21 @@ import {
   DevicesStatus,
 } from "../../../services/settings/enums";
 
-
 // import sensor from '../../../../mocks/ds18x20.cjs';
 
-import isPi from 'detect-rpi';
+import isPi from "detect-rpi";
 
 let sensor;
 
 if (isPi()) {
-  const { default: ds18x20 } = await import('ds18x20');
+  const { default: ds18x20 } = await import("ds18x20");
   sensor = ds18x20;
 } else {
-  const { default: ds18x20Mock } = await import('../../../../mocks/ds18x20.cjs');
+  const { default: ds18x20Mock } = await import(
+    "../../../../mocks/ds18x20.cjs"
+  );
   sensor = ds18x20Mock;
 }
-
 
 import schedule from "node-schedule";
 import moment from "moment";
@@ -49,7 +49,7 @@ class TemperatureComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -64,11 +64,12 @@ class TemperatureComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { // if (self.serialNumber.found) {
+    if (true) {
+      // if (self.serialNumber.found) {
       this.setSchedule();
     } else {
       console.log(
-        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found"
+        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found",
       );
     }
   }
@@ -93,13 +94,13 @@ class TemperatureComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -118,7 +119,7 @@ class TemperatureComponent {
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -127,7 +128,7 @@ class TemperatureComponent {
   }
 
   public async READ({ expectedTime, eventEmitter, operatingMode }) {
-    console.log("2",expectedTime, eventEmitter, operatingMode);
+    console.log("2", expectedTime, eventEmitter, operatingMode);
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=READ&id=1&type=probe
     const self = this;
     return new Promise(async (resolve, reject) => {
@@ -156,7 +157,7 @@ class TemperatureComponent {
               systemOperatingMode: systemOperatingMode,
               serialNumber: self.serialNumber.sn,
             };
-            console.log(eventEmitter)
+            console.log(eventEmitter);
             switch (eventEmitter) {
               case EventEmitter.user: // manual action
                 if (self.debug) {
@@ -184,7 +185,7 @@ class TemperatureComponent {
       } else {
         if (self.debug) {
           console.log(
-            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -212,7 +213,7 @@ class TemperatureComponent {
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
-            })`
+            })`,
           );
         });
       });

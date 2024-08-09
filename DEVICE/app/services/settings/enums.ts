@@ -1,6 +1,6 @@
 export enum DevicesStatus {
-  ON = 'ON',
-  OFF = 'OFF',
+  ON = "ON",
+  OFF = "OFF",
 }
 
 export enum OperatingModes {
@@ -13,19 +13,19 @@ export enum OperatingModes {
 }
 
 export enum EventEmitter {
-  schedule = 'schedule',
-  user = 'user',
-  start = 'start'
+  schedule = "schedule",
+  user = "user",
+  start = "start",
 }
 
 export enum Peripherals {
-  Probe = 'probe',
-  Worker = 'worker',
+  Probe = "probe",
+  Worker = "worker",
 }
 
 export enum Purposes {
   client = 1,
-  worker = 2
+  worker = 2,
 }
 
 export enum ProbesTypes {
@@ -42,31 +42,31 @@ export enum ScheduleTypes {
 }
 
 export enum ServerCommands {
-  RUN_WATER = 'RUN_WATER',
-  RUN_PHDOWN = 'RUN_PHDOWN',
-  RUN_DOSE = 'RUN_DOSE',
-  SHUFFLE_PHDOWN = 'SHUFFLE_PHDOWN',
-  SHUFFLE_DOSE = 'SHUFFLE_DOSE',
+  RUN_WATER = "RUN_WATER",
+  RUN_PHDOWN = "RUN_PHDOWN",
+  RUN_DOSE = "RUN_DOSE",
+  SHUFFLE_PHDOWN = "SHUFFLE_PHDOWN",
+  SHUFFLE_DOSE = "SHUFFLE_DOSE",
 
-  READ = 'READ',
-  ON = 'ON',
-  OFF = 'OFF',
-  SET_STATUS = 'SET_STATUS',
-  LOG = 'LOG',
+  READ = "READ",
+  ON = "ON",
+  OFF = "OFF",
+  SET_STATUS = "SET_STATUS",
+  LOG = "LOG",
 
-  START = 'START',
-  SYS_LOG = 'SYS_LOG',
-  SET_MODE = 'SET_MODE',
+  START = "START",
+  SYS_LOG = "SYS_LOG",
+  SET_MODE = "SET_MODE",
 
-  AI_GET_DOSES = 'AI_GET_DOSES',
-  AI_GET_EC_PH = 'AI_GET_EC_PH',
-  AI_TRAIN_DOSES_MODEL = 'AI_TRAIN_DOSES_MODEL',
-  AI_TRAIN_EC_PH = 'AI_TRAIN_EC_PH',
+  AI_GET_DOSES = "AI_GET_DOSES",
+  AI_GET_EC_PH = "AI_GET_EC_PH",
+  AI_TRAIN_DOSES_MODEL = "AI_TRAIN_DOSES_MODEL",
+  AI_TRAIN_EC_PH = "AI_TRAIN_EC_PH",
 }
 
 export enum ServerPages {
-  actuators = 'actuators',
-  system = 'system',
+  actuators = "actuators",
+  system = "system",
 }
 
 export enum WorkersTypes {

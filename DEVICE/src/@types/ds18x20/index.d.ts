@@ -1,1 +1,1 @@
-declare module 'ds18x20';
+declare module "ds18x20";

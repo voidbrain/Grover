@@ -7,7 +7,7 @@ export interface RoomInterface {
   isBlooming: boolean;
   serialNumber: string;
   locationId: number;
-  
+
   probes: any[];
   workers: any[];
   pots: PotObject[];
@@ -15,7 +15,7 @@ export interface RoomInterface {
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
-  
+
   setup?: () => {};
 }
 

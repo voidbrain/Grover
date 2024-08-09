@@ -37,7 +37,7 @@ class RoomWaterRefillComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -54,7 +54,8 @@ class RoomWaterRefillComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    if (true) {
+      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.primaryWaterPump = new MCP23017({
           address: +self.i2cAddress,
@@ -67,7 +68,7 @@ class RoomWaterRefillComponent {
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
       console.log(
-        "[ROOM-WATER-REFILL]: EXIT on --> Raspberry OR i2c Address not found"
+        "[ROOM-WATER-REFILL]: EXIT on --> Raspberry OR i2c Address not found",
       );
     }
   }
@@ -92,13 +93,13 @@ class RoomWaterRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -117,7 +118,7 @@ class RoomWaterRefillComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -160,15 +161,18 @@ class RoomWaterRefillComponent {
     });
   }
 
-  public async RUN_WATER({ expectedTime, eventEmitter, operatingMode, duration }) {
+  public async RUN_WATER({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+    duration,
+  }) {
     // EXAMPLE: http://151.61.172.169:8084/actuators?action=RUN_WATER&duration=1000&id=1&type=worker
     const self = this;
     return new Promise(async (resolve) => {
       const systemOperatingMode = self.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
         const waterMl = 10;
-
- 
 
         await self.forward();
         await self.delay(100);
@@ -183,7 +187,7 @@ class RoomWaterRefillComponent {
           type: Peripherals.Worker,
           expectedTime: expectedTime ? new Date(expectedTime) : null,
           executedTime: new Date(),
-          operatingMode: operatingMode,
+          operatingMode: operatingMode!,
           systemOperatingMode: systemOperatingMode,
           serialNumber: self.serialNumber.sn,
         };
@@ -211,7 +215,7 @@ class RoomWaterRefillComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[ROOM-WATER-REFILL]: RUN_WATER operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -241,7 +245,7 @@ class RoomWaterRefillComponent {
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
-            })`
+            })`,
           );
         });
       });

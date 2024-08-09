@@ -33,11 +33,12 @@ class EcProbeComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { // if (self.serialNumber.found) {
+    if (true) {
+      // if (self.serialNumber.found) {
       this.setSchedule();
     } else {
       console.log(
-        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found"
+        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found",
       );
     }
   }
@@ -62,13 +63,13 @@ class EcProbeComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -87,7 +88,7 @@ class EcProbeComponent {
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -126,7 +127,7 @@ class EcProbeComponent {
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
-            })`
+            })`,
           );
         });
       });

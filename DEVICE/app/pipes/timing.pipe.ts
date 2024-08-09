@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
-@Pipe({ name: 'timing' })
+@Pipe({ name: "timing" })
 export class TimingPipe implements PipeTransform {
   transform(time: number): string {
     if (time) {
@@ -9,10 +9,10 @@ export class TimingPipe implements PipeTransform {
       return `${this.initZero(minutes)}${minutes}:${this.initZero(seconds)}${seconds}`;
     }
 
-    return '00:00';
+    return "00:00";
   }
 
   private initZero(time: number): string {
-    return time < 10 ? '0' : '';
+    return time < 10 ? "0" : "";
   }
 }

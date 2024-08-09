@@ -37,7 +37,7 @@ class WaterLoopComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -51,12 +51,12 @@ class WaterLoopComponent {
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    this.serialNumber = await this.settings.getSerialNumber();
+    if (true) {
+      //(this.serialNumber.found && +this.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.mcp = new MCP23017({
-          address: +self.i2cAddress,
+          address: +this.i2cAddress,
           device: 1,
           debug: false,
         });
@@ -67,37 +67,36 @@ class WaterLoopComponent {
     } else {
       if (this.debug) {
         console.log(
-          "[WATER-LOOP]: EXIT on --> Raspberry OR i2c Address not found"
+          "[WATER-LOOP]: EXIT on --> Raspberry OR i2c Address not found",
         );
       }
     }
   }
 
   public async ON({ expectedTime, eventEmitter, operatingMode }) {
-    const self = this;
     return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
         const job = {
           eventEmitter,
           action: ServerCommands.ON,
-          idWorker: self.id,
-          parentId: self.parentId,
-          parentName: self.parentName,
+          idWorker: this.id,
+          parentId: this.parentId,
+          parentName: this.parentName,
           type: Peripherals.Worker,
           expectedTime,
           executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
+          serialNumber: this.serialNumber.sn,
         };
         switch (eventEmitter) {
           case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[WATER-LOOP]: ON manual", job);
             }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
+            if (this.settings.getLogMode() === true) {
+              await this.db.logItem("workers_log", job);
               resolve(job);
             }
             break;
@@ -105,8 +104,8 @@ class WaterLoopComponent {
             if (this.debug) {
               console.log("[WATER-LOOP]: ON scheduled", job);
             }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
+            if (this.settings.getLogMode() === true) {
+              await this.db.logItem("workers_log", job);
               resolve;
             }
             break;
@@ -114,7 +113,7 @@ class WaterLoopComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -122,30 +121,29 @@ class WaterLoopComponent {
   }
 
   public async OFF({ expectedTime, eventEmitter, operatingMode }) {
-    const self = this;
     return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       if (operatingMode >= systemOperatingMode) {
         const job = {
           eventEmitter,
           action: ServerCommands.OFF,
-          idWorker: self.id,
-          parentId: self.parentId,
-          parentName: self.parentName,
+          idWorker: this.id,
+          parentId: this.parentId,
+          parentName: this.parentName,
           type: Peripherals.Worker,
           expectedTime: expectedTime ? new Date(expectedTime) : null,
           executedTime: new Date(),
           operatingMode: operatingMode,
           systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
+          serialNumber: this.serialNumber.sn,
         };
         switch (eventEmitter) {
           case EventEmitter.user: // manual action
             if (this.debug) {
               console.log("[WATER-LOOP]: OFF manual");
             }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
+            if (this.settings.getLogMode() === true) {
+              await this.db.logItem("workers_log", job);
               resolve(job);
             }
             break;
@@ -153,8 +151,8 @@ class WaterLoopComponent {
             if (this.debug) {
               console.log("[WATER-LOOP]: OFF scheduled");
             }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
+            if (this.settings.getLogMode() === true) {
+              await this.db.logItem("workers_log", job);
               resolve;
             }
             break;
@@ -162,7 +160,7 @@ class WaterLoopComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -170,12 +168,11 @@ class WaterLoopComponent {
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -189,44 +186,43 @@ class WaterLoopComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      this[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[WATER-LOOP]: status", self.status);
+        console.log("[WATER-LOOP]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idWorker: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("workers_log", job);
+      await this.db.logItem("workers_log", job);
     }
   }
 
   async setSchedule() {
-    const self = this;
-    if (self.id && self.scheduledCrons) {
+    if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      self.scheduledCrons.map((probeScheduleRow) => {
+      this.scheduledCrons.map((probeScheduleRow) => {
         const scheduleRow: CronJobInterface = {
           action: probeScheduleRow.action,
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
@@ -239,13 +235,13 @@ class WaterLoopComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
-            })`
+            })`,
           );
         });
       });

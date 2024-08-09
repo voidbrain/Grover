@@ -9,8 +9,8 @@ import {
 import schedule from "node-schedule";
 import moment from "moment";
 
-import MiniPh from './index.js';
-var miniPh = new MiniPh("/dev/i2c-0", 0x4d);
+import MiniPh from "./index.js";
+const miniPh = new MiniPh("/dev/i2c-0", 0x4d);
 
 class PhProbeComponent {
   triggerPin: number;
@@ -54,13 +54,13 @@ class PhProbeComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -79,7 +79,7 @@ class PhProbeComponent {
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -125,7 +125,7 @@ class PhProbeComponent {
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
-            })`
+            })`,
           );
         });
       });

@@ -37,7 +37,7 @@ class LightSwitchComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -53,7 +53,8 @@ class LightSwitchComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    if (true) {
+      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.light = new MCP23017({
           address: +self.i2cAddress,
@@ -67,7 +68,7 @@ class LightSwitchComponent {
     } else {
       if (this.debug) {
         console.log(
-          "[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found"
+          "[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found",
         );
       }
     }
@@ -114,7 +115,7 @@ class LightSwitchComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -162,7 +163,7 @@ class LightSwitchComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -193,13 +194,13 @@ class LightSwitchComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -218,7 +219,7 @@ class LightSwitchComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -247,7 +248,7 @@ class LightSwitchComponent {
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
-            })`
+            })`,
           );
         });
       });

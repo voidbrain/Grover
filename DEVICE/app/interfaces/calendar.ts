@@ -1,4 +1,4 @@
-import { Dose } from './dose';
+import { Dose } from "./dose";
 
 export interface Phase {
   id: number;

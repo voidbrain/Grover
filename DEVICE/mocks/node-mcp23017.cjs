@@ -1,16 +1,16 @@
 class MCP23017 {
   // Mock methods and properties
   constructor() {
-      // Initialization code if needed
+    // Initialization code if needed
   }
 
   // Mock methods
   someMethod() {
-      return 'mocked result';
+    return "mocked result";
   }
 
   anotherMethod() {
-      return 'another mocked result';
+    return "another mocked result";
   }
 }
 

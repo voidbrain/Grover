@@ -37,7 +37,7 @@ class FanComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -53,7 +53,8 @@ class FanComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    if (true) {
+      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.mcp = new MCP23017({
           address: +self.i2cAddress,
@@ -67,7 +68,7 @@ class FanComponent {
     } else {
       if (this.debug) {
         console.log(
-          "[FAN-MOTOR]: EXIT on --> Raspberry OR i2c Address not found"
+          "[FAN-MOTOR]: EXIT on --> Raspberry OR i2c Address not found",
         );
       }
     }
@@ -114,7 +115,7 @@ class FanComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -162,7 +163,7 @@ class FanComponent {
       } else {
         if (this.debug) {
           console.log(
-            `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
+            `[FAN-MOTOR]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
           );
         }
       }
@@ -189,13 +190,13 @@ class FanComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -214,7 +215,7 @@ class FanComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -243,7 +244,7 @@ class FanComponent {
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode}
-            })`
+            })`,
           );
         });
       });

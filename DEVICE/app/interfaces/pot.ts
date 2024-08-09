@@ -3,7 +3,7 @@ export interface PotInterface {
   id: number;
   name: string;
   locationId: number;
-  
+
   probes: any[];
   workers: any[];
 

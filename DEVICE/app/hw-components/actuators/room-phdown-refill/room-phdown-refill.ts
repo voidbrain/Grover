@@ -39,7 +39,7 @@ class RoomPhDownRefillComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -56,7 +56,8 @@ class RoomPhDownRefillComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    if (true) {
+      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.primaryPhDownPump = new MCP23017({
           address: +self.i2cAddress,
@@ -65,17 +66,17 @@ class RoomPhDownRefillComponent {
         });
         this.primaryPhDownPump.pinMode(
           this.pin1,
-          this.primaryPhDownPump.OUTPUT
+          this.primaryPhDownPump.OUTPUT,
         );
         this.primaryPhDownPump.pinMode(
           this.pin2,
-          this.primaryPhDownPump.OUTPUT
+          this.primaryPhDownPump.OUTPUT,
         );
       });
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
       console.log(
-        "[ROOM-PhDown-REFILL]: EXIT on --> Raspberry OR i2c Address not found"
+        "[ROOM-PhDown-REFILL]: EXIT on --> Raspberry OR i2c Address not found",
       );
     }
   }
@@ -100,13 +101,13 @@ class RoomPhDownRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -125,7 +126,7 @@ class RoomPhDownRefillComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -146,11 +147,11 @@ class RoomPhDownRefillComponent {
     return new Promise((resolve, reject) => {
       this.primaryPhDownPump.digitalWrite(
         this.pin1,
-        this.primaryPhDownPump.HIGH
+        this.primaryPhDownPump.HIGH,
       );
       this.primaryPhDownPump.digitalWrite(
         this.pin2,
-        this.primaryPhDownPump.LOW
+        this.primaryPhDownPump.LOW,
       );
       resolve(true);
     });
@@ -160,11 +161,11 @@ class RoomPhDownRefillComponent {
     return new Promise((resolve) => {
       this.primaryPhDownPump.digitalWrite(
         this.pin1,
-        this.primaryPhDownPump.LOW
+        this.primaryPhDownPump.LOW,
       );
       this.primaryPhDownPump.digitalWrite(
         this.pin2,
-        this.primaryPhDownPump.HIGH
+        this.primaryPhDownPump.HIGH,
       );
       resolve(true);
     });
@@ -175,11 +176,11 @@ class RoomPhDownRefillComponent {
     return new Promise((resolve) => {
       this.primaryPhDownPump.digitalWrite(
         this.pin1,
-        this.primaryPhDownPump.LOW
+        this.primaryPhDownPump.LOW,
       );
       this.primaryPhDownPump.digitalWrite(
         this.pin2,
-        this.primaryPhDownPump.LOW
+        this.primaryPhDownPump.LOW,
       );
       resolve(true);
     });
@@ -208,7 +209,7 @@ class RoomPhDownRefillComponent {
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
-            })`
+            })`,
           );
         });
       });

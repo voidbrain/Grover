@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { NetworkService } from './network.service';
+import { NetworkService } from "./network.service";
 
-describe('NetworkService', () => {
+describe("NetworkService", () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
-  it('should be created', () => {
+  it("should be created", () => {
     const service: NetworkService = TestBed.get(NetworkService);
     expect(service).toBeTruthy();
   });

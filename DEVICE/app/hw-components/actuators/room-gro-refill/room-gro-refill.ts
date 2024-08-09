@@ -39,7 +39,7 @@ class RoomGroRefillComponent {
     scheduleArr,
     db,
     api,
-    settings
+    settings,
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -56,7 +56,8 @@ class RoomGroRefillComponent {
   async setup() {
     const self = this;
     self.serialNumber = await self.settings.getSerialNumber();
-    if (true) { //(self.serialNumber.found && +self.i2cAddress) {
+    if (true) {
+      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.primaryGroPump = new MCP23017({
           address: +self.i2cAddress,
@@ -69,7 +70,7 @@ class RoomGroRefillComponent {
       this.setSchedule(this.id, this.scheduledCrons);
     } else {
       console.log(
-        "[ROOM-Gro-REFILL]: EXIT on --> Raspberry OR i2c Address not found"
+        "[ROOM-Gro-REFILL]: EXIT on --> Raspberry OR i2c Address not found",
       );
     }
   }
@@ -94,13 +95,13 @@ class RoomGroRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status;
+    self.status = status!;
     if (self.status) {
       // status from cron
       self[self.status]({
         expectedTime: scheduledStart,
         eventEmitter,
-        operatingMode,
+        operatingMode: operatingMode!,
       });
     } else {
       // default off
@@ -119,7 +120,7 @@ class RoomGroRefillComponent {
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
-        operatingMode: operatingMode,
+        operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
         serialNumber: self.serialNumber.sn,
       };
@@ -184,7 +185,7 @@ class RoomGroRefillComponent {
               eventEmitter: '${eventEmitter}', 
               operatingMode: ${job.operatingMode},
               duration: ${job.duration}
-            })`
+            })`,
           );
         });
       });

@@ -1,1 +1,1 @@
-declare module 'websql';
+declare module "websql";
