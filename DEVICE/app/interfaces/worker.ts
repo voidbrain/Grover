@@ -12,4 +12,6 @@ export interface WorkerInterface {
   pin1?: number;
   pin2?: number;
   schedule?: object;
+
+  
 }

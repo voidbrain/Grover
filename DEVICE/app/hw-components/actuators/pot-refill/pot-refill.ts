@@ -386,7 +386,10 @@ class RefillComponent {
     };
   }
 
-  async setSchedule(id: number | string | undefined, scheduledCrons: ExtendedCronJobInterface[]) {
+  async setSchedule(
+    id: number | string | undefined,
+    scheduledCrons: ExtendedCronJobInterface[],
+  ) {
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

@@ -1,7 +1,6 @@
 export interface LightSwitchInterface {
   id: number;
 
-  component: {
-    setup: () => object;
-  };
+  setup: () => object;
+  setStatus: (a) => object;
 }

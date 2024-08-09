@@ -48,57 +48,53 @@ class RoomComponent {
   }
 
   async setup() {
-    const room: RoomInterface = (await this.db.getItem(
+    const room: RoomInterface = await this.db.getItem(
       "rooms",
       this.serialNumber,
       "serialNumber",
-    )) as RoomInterface;
-    const location: LocationInterface = (await this.db.getItem(
+    );
+    const location: LocationInterface = await this.db.getItem(
       "locations",
       room.locationId,
       "id",
-    )) as LocationInterface;
-    const probesArr: ProbeInterface[] = (await this.db.getItems(
+    );
+    const probesArr: ProbeInterface[] = await this.db.getItems(
       "probes_list",
       room.locationId,
       "locationId",
-    ));
-    const workersArr: WorkerInterface[] = (await this.db.getItems(
+    );
+    const workersArr: WorkerInterface[] = await this.db.getItems(
       "workers_list",
       room.locationId,
       "locationId",
-    ));
+    );
 
     probesArr.forEach(async (el) => {
-      el.schedule = (await this.db.getItem(
-        "probes_schedule",
-        el.id,
-        "idProbe",
-      ));
+      el.schedule = await this.db.getItem("probes_schedule", el.id, "idProbe");
     });
     workersArr.forEach(async (el) => {
-      el.schedule = (await this.db.getItem(
+      el.schedule = await this.db.getItem(
         "workers_schedule",
         el.id,
         "idWorker",
-      ));
+      );
     });
     this.room = room;
     this.location = location;
 
     await Promise.all(
       probesArr.map(async (probe) => {
-        probe.type = (await this.db.getItem(
+        probe.type = await this.db.getItem(
           "probes_type",
           probe.probeType,
           "id",
-        ))
-        
-        const schedule: unknown[] = (await this.db.getItems(
+        );
+
+        const schedule: unknown[] = await this.db.getItems(
           "probes_schedule",
           probe.id,
           "idProbe",
-        ));
+        );
 
         switch (probe.probeType) {
           case ProbesTypes.Air_temperature:
@@ -137,17 +133,17 @@ class RoomComponent {
 
     await Promise.all(
       workersArr.map(async (worker) => {
-        worker.type = (await this.db.getItem(
+        worker.type = await this.db.getItem(
           "workers_type",
           worker.workerType,
           "id",
-        ));
-        
-        const schedule: unknown[] = (await this.db.getItems(
+        );
+
+        const schedule: unknown[] = await this.db.getItems(
           "workers_schedule",
           worker.id,
           "idworker",
-        ));
+        );
         switch (worker.workerType) {
           case WorkersTypes.Room_Fan:
             worker.component = new FanComponent(
@@ -191,7 +187,8 @@ class RoomComponent {
               this.settings,
             );
             await worker.component.setup();
-            this.primaryWaterPump = worker.component;
+            this.primaryWaterPump =
+              worker.component as RoomWaterRefillComponent;
             break;
           case WorkersTypes.Room_PhDown_refill:
             worker.component = new RoomPhDownRefillComponent(
@@ -207,7 +204,8 @@ class RoomComponent {
               this.settings,
             );
             await worker.component.setup();
-            this.primaryPhDownPump = worker.component;
+            this.primaryPhDownPump =
+              worker.component as RoomPhDownRefillComponent;
             break;
           case WorkersTypes.Room_Gro_refill:
             worker.component = new RoomGroRefillComponent(
@@ -223,7 +221,7 @@ class RoomComponent {
               this.settings,
             );
             await worker.component.setup();
-            this.primaryGroPump = worker.component;
+            this.primaryGroPump = worker.component as RoomGroRefillComponent;
             break;
           case WorkersTypes.Room_Micro_refill:
             worker.component = new RoomMicroRefillComponent(
@@ -239,7 +237,8 @@ class RoomComponent {
               this.settings,
             );
             await worker.component.setup();
-            this.primaryMicroPump = worker.component;
+            this.primaryMicroPump =
+              worker.component as RoomMicroRefillComponent;
             break;
           case WorkersTypes.Room_Bloom_refill:
             worker.component = new RoomBloomRefillComponent(
@@ -255,7 +254,8 @@ class RoomComponent {
               this.settings,
             );
             await worker.component.setup();
-            this.primaryBloomPump = worker.component;
+            this.primaryBloomPump =
+              worker.component as RoomBloomRefillComponent;
             break;
           case WorkersTypes.Room_Ripen_refill:
             worker.component = new RoomRipenRefillComponent(
@@ -271,7 +271,8 @@ class RoomComponent {
               this.settings,
             );
             await worker.component.setup();
-            this.primaryRipenPump = worker.component;
+            this.primaryRipenPump =
+              worker.component as RoomRipenRefillComponent;
             break;
           // case WorkersTypes.Room_Nutrient_refill:
           //   worker.component = new RoomNutrientRefillComponent(room.id, room.name, worker.id,

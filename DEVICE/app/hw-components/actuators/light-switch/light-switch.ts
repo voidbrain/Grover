@@ -45,7 +45,8 @@ class LightSwitchComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
-    this.i2cAddress = "0x" + parseInt((i2cAddress ?? '').toString(10)).toString(16);
+    this.i2cAddress =
+      "0x" + parseInt((i2cAddress ?? "").toString(10)).toString(16);
     this.pin = +(pin ?? 0);
     this.db = db;
     this.api = api;

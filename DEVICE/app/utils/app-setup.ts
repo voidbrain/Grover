@@ -8,40 +8,58 @@ import { Logger } from "../utils/logger";
 import { Scheduler } from "../utils/scheduler";
 
 export class AppSetup {
-  server: http.Server;
-  settings: SettingsService;
-  api: ApiService;
-  ai: AiService;
-  db: DbService;
-  clock: number;
+  private server: http.Server | null = null;
+  private readonly settings: SettingsService;
+  private readonly api: ApiService;
+  private readonly ai: AiService;
+  private readonly db: DbService;
+  private clock: number | null = null;
 
-  constructor() {
-    this.settings = new SettingsService();
-    this.api = new ApiService();
-    this.ai = new AiService();
-    this.db = new DbService(this.settings, this.api);
+  constructor(
+    settingsService: SettingsService = new SettingsService(),
+    apiService: ApiService = new ApiService(),
+    aiService: AiService = new AiService(),
+    dbService: DbService = new DbService(settingsService, apiService)
+  ) {
+    this.settings = settingsService;
+    this.api = apiService;
+    this.ai = aiService;
+    this.db = dbService;
   }
 
-  async start() {
-    await this.ai.init();
-    Logger.setupErrorHandling();
-    this.clock = this.settings.getClockInterval();
-
+  async start(): Promise<void> {
     try {
+      // Initialize AI service
+      await this.ai.init();
+
+      // Setup global error handling
+      Logger.setupErrorHandling();
+
+      // Initialize clock interval
+      this.clock = this.settings.getClockInterval();
+
+      // Load database
       await this.db.load();
-      this.server = new WebServer(
-        this.settings,
-        this.db,
-        this.api,
-        this.ai,
-      ).init();
+
+      // Initialize and start the web server (await the promise)
+      this.server = await new WebServer(this.settings, this.db, this.api, this.ai).init();
+
+      // Set up the scheduler
       const scheduler = new Scheduler(this.db);
       scheduler.setMainSchedule();
 
       console.log("[main] => init done");
-      // Add more initialization as needed
     } catch (err) {
       console.error("Error during app setup:", err);
+    }
+  }
+
+  stop(): void {
+    // Implement server shutdown and cleanup logic here
+    if (this.server) {
+      this.server.close(() => {
+        console.log("[main] => server closed");
+      });
     }
   }
 }

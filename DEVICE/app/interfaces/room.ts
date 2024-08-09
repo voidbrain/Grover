@@ -1,8 +1,7 @@
 import { LocationInterface } from "./location";
 import { PotObject } from "./pot";
-import { EcProbeInterface } from "./ec-probe";
-import { PhProbeInterface } from "./ph-probe";
-import { TemperatureInterface } from "./temperature";
+import { ProbeInterface } from "./probe";
+import { WorkerInterface } from "./worker";
 
 export interface RoomInterface {
   id: number;
@@ -11,8 +10,8 @@ export interface RoomInterface {
   serialNumber: string;
   locationId: number;
 
-  probes: (EcProbeInterface | PhProbeInterface | TemperatureInterface)[];
-  workers: object[];
+  probes: ProbeInterface[];
+  workers: WorkerInterface[];
   pots: PotObject[];
 
   enabled: boolean;

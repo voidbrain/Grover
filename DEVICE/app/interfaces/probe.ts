@@ -1,12 +1,12 @@
-import { EcProbeInterface } from "./ec-probe";
-import { PhProbeInterface } from "./ph-probe";
-import { TemperatureInterface } from "./temperature";
+import TemperatureComponent from "../hw-components/probes/temperature/temperature";
+import PhProbeComponent from "../hw-components/probes/ph/ph";
+import EcProbeComponent from "../hw-components/probes/ec/ec";
 
 export interface ProbeInterface {
   id: number | string;
   type?: string;
   probeType?: number;
-  component?: TemperatureInterface | PhProbeInterface | EcProbeInterface;
+  component?: TemperatureComponent | PhProbeComponent | EcProbeComponent;
   address: string;
   schedule?: object;
 }

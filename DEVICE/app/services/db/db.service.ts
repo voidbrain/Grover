@@ -10,6 +10,18 @@ import moment from "moment";
 
 import { ServerCommands } from "../../../app/services/settings/enums";
 
+export interface Item {
+  id?: number | string;
+  synced?: number;
+  deleted?: number; 
+}
+export interface El {
+  name?: string;
+  type?: string;
+  primary_key?: string
+}
+
+
 export class DbService {
   private settings;
   private api;
@@ -129,20 +141,20 @@ export class DbService {
     await this.syncData({ [table]: res });
   }
 
-  private async syncData(data: any): Promise<void> {
+  private async syncData(data: unknown): Promise<void> {
     if (this.debug) {
       console.info("[DB]: entering sync data");
     }
 
-    const table = Object.keys(data)[0];
-    const res = data[table];
+    const table = Object.keys((data ?? {}))[0];
+    const res = (data ?? {})[table];
 
     if (this.debug) {
       console.info("[DB]: Db Sync records ready ", table);
     }
 
     const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (
-      ${res.tableDefinition.map((el: any) => `${el.name} ${el.type} ${el.primary_key ? "PRIMARY KEY" : ""}`).join(", ")}
+      ${res.tableDefinition.map((el: El) => `${el.name} ${el.type} ${el.primary_key ? "PRIMARY KEY" : ""}`).join(", ")}
     )`;
 
     try {
@@ -227,7 +239,7 @@ export class DbService {
         },
       );
     } else {
-      return null;
+      return undefined;
     }
   }
 
@@ -276,14 +288,14 @@ export class DbService {
         });
       });
     } else {
-      return null;
+      return undefined;
     }
   }
 
-  public async findTable(table: string): Promise<any> {
+  public async findTable(table: string): Promise<undefined> {
     if (table) {
       const query = `SELECT count(*) as found FROM sqlite_master WHERE type='table' AND name='${table}';`;
-      return new Promise<any>((resolve, reject) => {
+      return new Promise<undefined>((resolve, reject) => {
         this.db.get(query, [], (err, row) => {
           if (err) {
             console.log("[DB]:", err);
@@ -294,7 +306,7 @@ export class DbService {
         });
       });
     } else {
-      return null;
+      return undefined;
     }
   }
 
@@ -308,7 +320,7 @@ export class DbService {
     });
   }
 
-  public async putItem(table: string, item: any): Promise<void> {
+  public async putItem(table: string, item: undefined): Promise<void> {
     const lastUpdate = this.localStorage.getItem(
       this.settings.getAppName() + "_" + table,
     );
@@ -318,10 +330,10 @@ export class DbService {
     return new Promise<void>((resolve, reject) => {
       this.api
         .post(endpoint, lastUpdate, action, item, this.serialNumber)
-        .then((response: any) => {
+        .then((response: undefined) => {
           if (response) {
             const row = response;
-            const values: any[] = [];
+            const values: undefined[] = [];
             const cols: string[] = [];
             if (row) {
               Object.keys(row).forEach((key) => {
@@ -353,7 +365,7 @@ export class DbService {
     });
   }
 
-  public async logItem(table: string, item: any): Promise<void> {
+  public async logItem(table: string, item: undefined): Promise<void> {
     const lastUpdate = this.localStorage.getItem(
       this.settings.getAppName() + "_" + table,
     );
@@ -363,7 +375,7 @@ export class DbService {
     return new Promise<void>((resolve, reject) => {
       this.api
         .post(endpoint, lastUpdate, action, item, this.serialNumber)
-        .then((response: any) => {
+        .then((response: undefined) => {
           if (response) {
             if (this.debug) {
               console.log(
@@ -376,7 +388,7 @@ export class DbService {
               );
             }
             const row = response;
-            const values: any[] = [];
+            const values: undefined[] = [];
             const cols: string[] = [];
             if (row) {
               Object.keys(row).forEach((key) => {
@@ -400,11 +412,13 @@ export class DbService {
     });
   }
 
+  
+
   public async deleteItem(
     objectStore: string,
-    itemToDelete: any,
+    itemToDelete: undefined,
   ): Promise<void> {
-    return this.api.delete(objectStore, itemToDelete).then((item: any) => {
+    return this.api.delete(objectStore, itemToDelete).then((item: Item) => {
       if (item.synced !== 0) {
         return;
       } else {
@@ -457,9 +471,9 @@ export class DbService {
     }
   }
 
-  private getItemsToBeSynced(table: string): Promise<any[]> {
+  private getItemsToBeSynced(table: string): Promise<undefined[]> {
     const query = `SELECT * from ${table} WHERE sinced=(0)`;
-    return new Promise<any[]>((resolve, reject) => {
+    return new Promise<undefined[]>((resolve, reject) => {
       this.db.all(query, (err, rows) => {
         if (err) {
           reject(err);
@@ -489,8 +503,9 @@ export class DbService {
     }
   }
 
-  private getItemsToBeRemoved(objectStore: string): Promise<any[]> {
+  private getItemsToBeRemoved(objectStore: string): Promise<undefined[]> {
     // Implement the logic to get items to be removed.
+    console.log(objectStore)
     return Promise.resolve([]);
   }
 }

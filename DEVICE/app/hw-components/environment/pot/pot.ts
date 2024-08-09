@@ -187,12 +187,12 @@ class PotComponent {
         );
         // worker.logs = await this.db.getItems('workers_log', worker.id, 'idworker') as unknown[];
 
-        const schedule: unknown[] = (await this.db.getItems(
+        const schedule: unknown[] = await this.db.getItems(
           "workers_schedule",
           worker.id,
           "idworker",
-        ));
-        
+        );
+
         switch (worker.workerType) {
           case WorkersTypes.Pot_Water_loop:
             worker.component = new WaterLoopComponent(

@@ -5,6 +5,8 @@ export interface WaterRefillInterface {
   in2Pin: number;
 
   forward?: () => object;
+  setup: () => object;
+  setStatus: (a) => object;
 }
 
 export interface Device {

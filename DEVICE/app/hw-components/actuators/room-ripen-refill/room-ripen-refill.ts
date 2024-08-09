@@ -47,7 +47,8 @@ class RoomRipenRefillComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
-    this.i2cAddress = "0x" + parseInt((i2cAddress ?? '').toString(10)).toString(16);
+    this.i2cAddress =
+      "0x" + parseInt((i2cAddress ?? "").toString(10)).toString(16);
     this.pin1 = +(pin1 ?? 0);
     this.pin2 = +(pin2 ?? 0);
     this.api = api;
@@ -59,7 +60,7 @@ class RoomRipenRefillComponent {
   async setup() {
     import("node-mcp23017").then(({ default: MCP23017 }) => {
       this.primaryRipenPump = new MCP23017({
-        address: +(this.i2cAddress ?? ''),
+        address: +(this.i2cAddress ?? ""),
         device: 1,
         debug: false,
       });
@@ -155,7 +156,10 @@ class RoomRipenRefillComponent {
     });
   }
 
-  async setSchedule(id: number | string | undefined, scheduledCrons: ExtendedCronJobInterface[]) {
+  async setSchedule(
+    id: number | string | undefined,
+    scheduledCrons: ExtendedCronJobInterface[],
+  ) {
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {
