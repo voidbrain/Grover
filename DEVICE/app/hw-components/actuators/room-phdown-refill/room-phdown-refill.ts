@@ -22,7 +22,7 @@ class RoomPhDownRefillComponent {
 
   serialNumber: { sn: string; found: boolean };
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   settings;
   db;
@@ -54,13 +54,9 @@ class RoomPhDownRefillComponent {
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) {
-      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.primaryPhDownPump = new MCP23017({
-          address: +self.i2cAddress,
+          address: +this.i2cAddress,
           device: 1,
           debug: false,
         });
@@ -74,20 +70,15 @@ class RoomPhDownRefillComponent {
         );
       });
       this.setSchedule(this.id, this.scheduledCrons);
-    } else {
-      console.log(
-        "[ROOM-PhDown-REFILL]: EXIT on --> Raspberry OR i2c Address not found",
-      );
-    }
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -101,36 +92,36 @@ class RoomPhDownRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[ROOM-PhDown-REFILL]: status", self.status);
+        console.log("[ROOM-PhDown-REFILL]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idWorker: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("workers_log", job);
+      await this.db.logItem("workers_log", job);
     }
   }
 
@@ -144,7 +135,7 @@ class RoomPhDownRefillComponent {
 
   public async forward() {
     console.log("[ROOM-PhDown-REFILL]: forward");
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.primaryPhDownPump.digitalWrite(
         this.pin1,
         this.primaryPhDownPump.HIGH,
@@ -186,8 +177,8 @@ class RoomPhDownRefillComponent {
     });
   }
 
-  async setSchedule(id: number, scheduledCrons: any[]) {
-    const self = this;
+  async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
+    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {
@@ -203,7 +194,7 @@ class RoomPhDownRefillComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

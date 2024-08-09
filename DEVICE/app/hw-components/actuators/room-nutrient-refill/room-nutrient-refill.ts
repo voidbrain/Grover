@@ -34,7 +34,7 @@ class RoomNutrientRefillComponent {
 
   serialNumber: { sn: string; found: boolean };
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   settings;
   db;
@@ -75,31 +75,31 @@ class RoomNutrientRefillComponent {
     // this.i2cAddressRipen =  '0x'+parseInt(i2cAddressRipen.toString(10)).toString(16);
     // this.pin1Ripen = +pin1Ripen;
     // this.pin2Ripen = +pin2Ripen;
-    (this.primaryNutrientPumpGro = primaryNutrientPumpGro),
-      (this.primaryNutrientPumpMicro = primaryNutrientPumpMicro),
-      (this.primaryNutrientPumpBloom = primaryNutrientPumpBloom),
-      (this.primaryNutrientPumpRipen = primaryNutrientPumpRipen),
-      (this.api = api);
+    this.primaryNutrientPumpGro = primaryNutrientPumpGro;
+    this.primaryNutrientPumpMicro = primaryNutrientPumpMicro;
+    this.primaryNutrientPumpBloom = primaryNutrientPumpBloom;
+    this.primaryNutrientPumpRipen = primaryNutrientPumpRipen;
+    this.api = api;
     this.db = db;
     this.settings = settings;
     this.scheduledCrons = scheduleArr;
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    // if(self.serialNumber.found && +self.i2cAddressGro && +self.i2cAddressMicro && +self.i2cAddressBloom && +self.i2cAddressRipen) {
+    
+    this.serialNumber = await this.settings.getSerialNumber();
+    // if(this.serialNumber.found && +this.i2cAddressGro && +this.i2cAddressMicro && +this.i2cAddressBloom && +this.i2cAddressRipen) {
     //   import('node-mcp23017').then(({default: MCP23017}) => {
-    //     this.primaryNutrientPumpGro = new MCP23017({ address: +self.i2cAddressGro, device: 1, debug: false });
+    //     this.primaryNutrientPumpGro = new MCP23017({ address: +this.i2cAddressGro, device: 1, debug: false });
     //     this.primaryNutrientPumpGro.pinMode(this.pin1Gro, this.primaryNutrientPumpGro.OUTPUT);
     //     this.primaryNutrientPumpGro.pinMode(this.pin2Gro, this.primaryNutrientPumpGro.OUTPUT);
-    //     this.primaryNutrientPumpMicro = new MCP23017({ address: +self.i2cAddressMicro, device: 1, debug: false });
+    //     this.primaryNutrientPumpMicro = new MCP23017({ address: +this.i2cAddressMicro, device: 1, debug: false });
     //     this.primaryNutrientPumpMicro.pinMode(this.pin1Micro, this.primaryNutrientPumpMicro.OUTPUT);
     //     this.primaryNutrientPumpMicro.pinMode(this.pin2Micro, this.primaryNutrientPumpMicro.OUTPUT);
-    //     this.primaryNutrientPumpBloom = new MCP23017({ address: +self.i2cAddressBloom, device: 1, debug: false });
+    //     this.primaryNutrientPumpBloom = new MCP23017({ address: +this.i2cAddressBloom, device: 1, debug: false });
     //     this.primaryNutrientPumpBloom.pinMode(this.pin1Bloom, this.primaryNutrientPumpBloom.OUTPUT);
     //     this.primaryNutrientPumpBloom.pinMode(this.pin2Bloom, this.primaryNutrientPumpBloom.OUTPUT);
-    //     this.primaryNutrientPumpRipen = new MCP23017({ address: +self.i2cAddressRipen, device: 1, debug: false });
+    //     this.primaryNutrientPumpRipen = new MCP23017({ address: +this.i2cAddressRipen, device: 1, debug: false });
     //     this.primaryNutrientPumpRipen.pinMode(this.pin1Ripen, this.primaryNutrientPumpRipen.OUTPUT);
     //     this.primaryNutrientPumpRipen.pinMode(this.pin2Ripen, this.primaryNutrientPumpRipen.OUTPUT);
     //   });
@@ -110,12 +110,12 @@ class RoomNutrientRefillComponent {
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -129,36 +129,36 @@ class RoomNutrientRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[ROOM-Nutrient-REFILL]: status", self.status);
+        console.log("[ROOM-Nutrient-REFILL]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idWorker: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("workers_log", job);
+      await this.db.logItem("workers_log", job);
     }
   }
 
@@ -171,11 +171,11 @@ class RoomNutrientRefillComponent {
   }
 
   public async forward(pump) {
-    const self = this;
+    
     if (this.debug) {
       console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
     }
-    await self[pump].forward();
+    await this[pump].forward();
 
     // return new Promise((resolve, reject) => {
     //   this[`primaryNutrientPump${pump}`].digitalWrite(this[`pin1${pump}`], this[`primaryNutrientPump${pump}`].HIGH);
@@ -185,23 +185,23 @@ class RoomNutrientRefillComponent {
   }
 
   public async backward(pump) {
-    const self = this;
+    
     if (this.debug) {
       console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
     }
-    await self[pump].backward();
+    await this[pump].backward();
   }
 
   public async stop(pump) {
-    const self = this;
+    
     if (this.debug) {
       console.log(`[ROOM-Nutrient-REFILL]: forward ${pump}`);
     }
     await self[pump].stop();
   }
 
-  async setSchedule(id: number, scheduledCrons: any[]) {
-    const self = this;
+  async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
+    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {
@@ -217,7 +217,7 @@ class RoomNutrientRefillComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

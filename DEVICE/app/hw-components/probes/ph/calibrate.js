@@ -2,7 +2,7 @@ import MiniPh from "./index.js";
 var miniPh = new MiniPh("/dev/i2c-0", 0x4d);
 
 function read() {
-  miniPh.readPh(function (err, m) {
+  miniPh.readPh(function (err) {
     if (err) {
       console.log(err);
     }

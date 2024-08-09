@@ -8,15 +8,15 @@ export interface RoomInterface {
   serialNumber: string;
   locationId: number;
 
-  probes: any[];
-  workers: any[];
+  probes: object[];
+  workers: object[];
   pots: PotObject[];
 
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
 
-  setup?: () => {};
+  setup?: () => object;
 }
 
 export interface RoomObject extends LocationInterface, RoomInterface {}

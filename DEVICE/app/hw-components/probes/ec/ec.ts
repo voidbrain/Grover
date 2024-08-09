@@ -1,4 +1,4 @@
-import { CronJobInterface } from "../../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   DevicesStatus,
@@ -17,7 +17,7 @@ class EcProbeComponent {
   parentName: string;
   serialNumber: { sn: string; found: boolean };
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   db;
   settings;
@@ -26,30 +26,22 @@ class EcProbeComponent {
   status: string;
 
   constructor(triggerPin: number, echoPin: number) {
-    triggerPin = triggerPin;
-    echoPin = echoPin;
+    this.triggerPin = triggerPin;
+    this.echoPin = echoPin;
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) {
-      // if (self.serialNumber.found) {
+    this.serialNumber = await this.settings.getSerialNumber();
       this.setSchedule();
-    } else {
-      console.log(
-        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found",
-      );
-    }
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -63,54 +55,54 @@ class EcProbeComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[FAN-MOTOR]: status", self.status);
+        console.log("[FAN-MOTOR]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idProbe: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idProbe: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("probes_log", job);
+      await this.db.logItem("probes_log", job);
     }
   }
 
   async READ() {
     return new Promise((resolve) => {
-      // sensor.get(self.id, function (err, tempObj) {
+      // sensor.get(this.id, function (err, tempObj) {
       //  if (err) { throw err; }
-      //  resolve({id: self.id, value: tempObj});
+      //  resolve({id: this.id, value: tempObj});
       //  });
-      resolve;
+      resolve(true);
     });
   }
 
   async setSchedule() {
-    const self = this;
-    if (self.id && self.scheduledCrons) {
+    
+    if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      self.scheduledCrons.map((probeScheduleRow) => {
+      this.scheduledCrons.map((probeScheduleRow) => {
         const scheduleRow: CronJobInterface = {
           action: probeScheduleRow.action,
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
@@ -122,7 +114,7 @@ class EcProbeComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

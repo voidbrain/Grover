@@ -4,3 +4,8 @@ export interface CronJobInterface {
   operatingMode: number;
   duration?: number;
 }
+export interface ExtendedCronJobInterface extends CronJobInterface {
+  atHour: number;
+  atMinute: number;
+  atDay: number;
+}

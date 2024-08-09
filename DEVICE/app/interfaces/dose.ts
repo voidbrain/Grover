@@ -5,11 +5,13 @@ export interface Dose {
   micro: number;
   bloom: number;
   ripen: number;
-  phDown: number;
+  pHDown: number;
+  
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
   color: string;
+  water: number
 }
 
 // PH = 5.8 +/- 0.5

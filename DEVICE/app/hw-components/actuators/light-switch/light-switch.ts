@@ -20,7 +20,7 @@ class LightSwitchComponent {
   pin: number;
   status: string;
   defaultStatus: string = DevicesStatus.OFF;
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   settings;
   db;
@@ -51,136 +51,127 @@ class LightSwitchComponent {
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) {
-      //(self.serialNumber.found && +self.i2cAddress) {
-      import("node-mcp23017").then(({ default: MCP23017 }) => {
-        this.light = new MCP23017({
-          address: +self.i2cAddress,
-          device: 1,
-          debug: false,
-        });
-        this.light.pinMode(this.pin, this.light.OUTPUT);
+    import("node-mcp23017").then(({ default: MCP23017 }) => {
+      this.light = new MCP23017({
+        address: +this.i2cAddress,
+        device: 1,
+        debug: false,
       });
+      this.light.pinMode(this.pin, this.light.OUTPUT);
+    });
 
-      this.setSchedule();
+    this.setSchedule();
+  }
+
+  public async ON({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+  }: {
+    expectedTime: Date | null;
+    eventEmitter: EventEmitter;
+    operatingMode: number;
+  }): Promise<unknown> {
+    const systemOperatingMode = this.settings.getOperatingMode();
+  
+    if (operatingMode >= systemOperatingMode) {
+      const job = {
+        eventEmitter,
+        action: ServerCommands.ON,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
+        type: Peripherals.Worker,
+        expectedTime,
+        executedTime: new Date(),
+        operatingMode,
+        systemOperatingMode,
+        serialNumber: this.serialNumber.sn,
+      };
+  
+      try {
+        if (this.debug) {
+          console.log(`[LIGHT-SWITCH]: ON ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+        }
+  
+        if (this.settings.getLogMode()) {
+          await this.db.logItem("workers_log", job);
+        }
+  
+        return job;
+      } catch (err) {
+        console.error("Error logging job:", err);
+        throw err; // Re-throw the error to handle it upstream
+      }
     } else {
       if (this.debug) {
-        console.log(
-          "[LIGHT-SWITCH]: EXIT on --> Raspberry OR i2c Address not found",
-        );
+        console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
+      return null; // Or throw an error if preferred
     }
   }
+  
 
-  public async ON({ expectedTime, eventEmitter, operatingMode }) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if (operatingMode >= systemOperatingMode) {
-        const job = {
-          eventEmitter,
-          action: ServerCommands.ON,
-          idWorker: self.id,
-          parentId: self.parentId,
-          parentName: self.parentName,
-          type: Peripherals.Worker,
-          expectedTime,
-          executedTime: new Date(),
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-        switch (eventEmitter) {
-          case EventEmitter.user: // manual action
-            if (this.debug) {
-              console.log("[LIGHT-SWITCH]: ON manual", job);
-            }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
-              resolve(job);
-            }
-            break;
-          case EventEmitter.schedule: // scheduled action
-            if (this.debug) {
-              console.log("[LIGHT-SWITCH]: ON scheduled", job);
-            }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
-              resolve;
-            }
-            break;
-        }
-      } else {
+  public async OFF({
+    expectedTime,
+    eventEmitter,
+    operatingMode,
+  }: {
+    expectedTime: Date | null;
+    eventEmitter: EventEmitter;
+    operatingMode: number;
+  }): Promise<unknown> {
+    const systemOperatingMode = this.settings.getOperatingMode();
+  
+    if (operatingMode >= systemOperatingMode) {
+      const job = {
+        eventEmitter,
+        action: ServerCommands.OFF,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
+        type: Peripherals.Worker,
+        expectedTime: expectedTime ? new Date(expectedTime) : null,
+        executedTime: new Date(),
+        operatingMode,
+        systemOperatingMode,
+        serialNumber: this.serialNumber.sn,
+      };
+  
+      try {
         if (this.debug) {
-          console.log(
-            `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
-          );
+          console.log(`[LIGHT-SWITCH]: OFF ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`);
         }
+  
+        if (this.settings.getLogMode()) {
+          await this.db.logItem("workers_log", job);
+        }
+  
+        return job;
+      } catch (err) {
+        console.error("Error logging job:", err);
+        throw err; // Re-throw the error to handle it upstream
       }
-    });
-  }
-
-  public async OFF({ expectedTime, eventEmitter, operatingMode }) {
-    const self = this;
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if (operatingMode >= systemOperatingMode) {
-        const job = {
-          eventEmitter,
-          action: ServerCommands.OFF,
-          idWorker: self.id,
-          parentId: self.parentId,
-          parentName: self.parentName,
-          type: Peripherals.Worker,
-          expectedTime: expectedTime ? new Date(expectedTime) : null,
-          executedTime: new Date(),
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: self.serialNumber.sn,
-        };
-        switch (eventEmitter) {
-          case EventEmitter.user: // manual action
-            if (this.debug) {
-              console.log("[LIGHT-SWITCH]: OFF manual");
-            }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
-              resolve(job);
-            }
-            break;
-          case EventEmitter.schedule: // scheduled action
-            if (this.debug) {
-              console.log("[LIGHT-SWITCH]: OFF scheduled");
-            }
-            if (self.settings.getLogMode() === true) {
-              await self.db.logItem("workers_log", job);
-              resolve;
-            }
-            break;
-        }
-      } else {
-        if (this.debug) {
-          console.log(
-            `[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
-          );
-        }
+    } else {
+      if (this.debug) {
+        console.log(`[LIGHT-SWITCH]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
       }
-    });
+      return null; // Or throw an error if preferred
+    }
   }
+  
 
   public async getStatus() {
     return this.status;
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -194,44 +185,44 @@ class LightSwitchComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[LIGHT-SWITCH]: status", self.status);
+        console.log("[LIGHT-SWITCH]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idWorker: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("workers_log", job);
+      await this.db.logItem("workers_log", job);
     }
   }
 
   async setSchedule() {
-    const self = this;
-    if (self.id && self.scheduledCrons) {
+    
+    if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      self.scheduledCrons.map((probeScheduleRow) => {
+      this.scheduledCrons.map((probeScheduleRow) => {
         const scheduleRow: CronJobInterface = {
           action: probeScheduleRow.action,
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
@@ -243,7 +234,7 @@ class LightSwitchComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

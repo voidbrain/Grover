@@ -5,4 +5,5 @@ export interface LocationInterface {
   deleted: boolean;
   lastUpdate: number;
   parent: number;
+  locationId: number;
 }

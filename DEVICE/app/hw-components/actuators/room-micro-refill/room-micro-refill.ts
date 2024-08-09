@@ -7,6 +7,7 @@ import {
   ServerCommands,
   DevicesStatus,
 } from "../../../services/settings/enums";
+import { ExtendedCronJobInterface } from "../../../../app/interfaces/cron-job";
 
 import schedule from "node-schedule";
 import moment from "moment";
@@ -22,7 +23,7 @@ class RoomMicroRefillComponent {
 
   serialNumber: { sn: string; found: boolean };
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   settings;
   db;
@@ -54,13 +55,9 @@ class RoomMicroRefillComponent {
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) {
-      //(self.serialNumber.found && +self.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.primaryMicroPump = new MCP23017({
-          address: +self.i2cAddress,
+          address: +this.i2cAddress,
           device: 1,
           debug: false,
         });
@@ -68,20 +65,15 @@ class RoomMicroRefillComponent {
         this.primaryMicroPump.pinMode(this.pin2, this.primaryMicroPump.OUTPUT);
       });
       this.setSchedule(this.id, this.scheduledCrons);
-    } else {
-      console.log(
-        "[ROOM-Micro-REFILL]: EXIT on --> Raspberry OR i2c Address not found",
-      );
-    }
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -95,36 +87,36 @@ class RoomMicroRefillComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[ROOM-Micro-REFILL]: status", self.status);
+        console.log("[ROOM-Micro-REFILL]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idWorker: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Worker,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("workers_log", job);
+      await this.db.logItem("workers_log", job);
     }
   }
 
@@ -138,7 +130,7 @@ class RoomMicroRefillComponent {
 
   public async forward() {
     console.log("[ROOM-Micro-REFILL]: forward");
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.primaryMicroPump.digitalWrite(this.pin1, this.primaryMicroPump.HIGH);
       this.primaryMicroPump.digitalWrite(this.pin2, this.primaryMicroPump.LOW);
       resolve(true);
@@ -162,8 +154,8 @@ class RoomMicroRefillComponent {
     });
   }
 
-  async setSchedule(id: number, scheduledCrons: any[]) {
-    const self = this;
+  async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
+    
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {
@@ -179,7 +171,7 @@ class RoomMicroRefillComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

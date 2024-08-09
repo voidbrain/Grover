@@ -4,7 +4,7 @@ export interface WaterRefillInterface {
   in1Pin: number;
   in2Pin: number;
 
-  forward?: () => {};
+  forward?: () => object;
 }
 
 export interface Device {
@@ -12,7 +12,7 @@ export interface Device {
   en: number;
   in1: number;
   in2: number;
-  enGpio: any;
-  in1Gpio: any;
-  in2Gpio: any;
+  enGpio: number;
+  in1Gpio: number;
+  in2Gpio: number;
 }

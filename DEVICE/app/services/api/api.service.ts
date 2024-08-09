@@ -3,7 +3,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import { NetworkService } from "../network/network.service";
 import { SettingsService } from "../settings/settings.service";
 
-import * as http from "http";
 import https from "https";
 import axios from "axios";
 export class ApiService {
@@ -20,33 +19,35 @@ export class ApiService {
       "/";
   }
 
-  // async get(table: string, params?: any): Promise<any> {
-  //   return new Promise((resolve) => {
-  //     http.get(this.url + table, params, response => {
-  //       resolve(response);
-  //     })
-  //   });
-  // }
-
-  async get(
-    endpont: string,
-    lastUpdate?: any,
-    action?: any,
-    serialNumber?: any,
-    port?: any,
-  ) {
-    return new Promise(async (resolve, reject) => {
-      const path =
-        `${this.settings.getRemoteServerEndpoint()}${endpont}` +
-        `?lastUpdate=${lastUpdate}&action=${action}&serialNumber=${serialNumber}&port=${port}`;
-
+  public async get(
+    endpoint: string,
+    lastUpdate?: string,
+    action?: string,
+    serialNumber?: string,
+    port?: string,
+  ): Promise<unknown> {
+    const path = `${this.settings.getRemoteServerEndpoint()}${endpoint}` +
+        `?lastUpdate=${lastUpdate || ''}&action=${action || ''}` +
+        `&serialNumber=${serialNumber || ''}&port=${port || ''}`;
+    try {
+      // Construct the URL path
+      
+  
+      // Perform the HTTPS GET request
       const res = await this.httpsGet({
         hostname: this.settings.getRemoteServerHostname(),
         path,
       });
-      resolve(res);
-    });
+  
+      // Return the result
+      return res;
+    } catch (error) {
+      // Handle errors as appropriate
+      console.error(`[GET] Request failed for ${path}:`, error);
+      throw error;
+    }
   }
+  
 
   async httpsGet({ ...options }) {
     return new Promise((resolve, reject) => {
@@ -66,24 +67,24 @@ export class ApiService {
             try {
               parseJSON = JSON.parse(data);
               resolve(parseJSON);
-            } catch (e) {
-              reject;
+            } catch (err) {
+              reject(err);
             }
           });
         })
         .on("error", (err) => {
           console.log("[API]: Error: " + err.message);
-          reject;
+          reject(err);
         });
     });
   }
 
   async post(
     endpont: string,
-    lastUpdate: any,
-    action: any,
-    item: any,
-    serialNumber: any,
+    lastUpdate: string,
+    action: string,
+    item: unknown,
+    serialNumber: string,
   ) {
     const path =
       `${this.settings.getRemoteServerHostname()}/${this.settings.getRemoteServerEndpoint()}${endpont}` +
@@ -107,13 +108,13 @@ export class ApiService {
         })
         .catch((err) => {
           console.log("[API]: POST error", err);
-          reject;
+          reject(err);
         });
     });
   }
 
-  async delete(table: string, item: any) {
-    const res = await this.httpsDelete({
+  async delete(table: string) {
+    await this.httpsDelete({
       hostname: this.settings.getRemoteServerHostname(),
       path: this.settings.getRemoteServerEndpoint() + table,
       headers: {
@@ -134,7 +135,7 @@ export class ApiService {
           ...options,
         },
         (res) => {
-          const chunks = [];
+          const chunks: Uint8Array[] = [];
           res.on("data", (data) => chunks.push(data));
           res.on("end", () => {
             let resBody = Buffer.concat(chunks);
@@ -154,41 +155,6 @@ export class ApiService {
       req.end();
     });
   }
-
-  // async post(table: string, item: any, params?: any): Promise<any> {
-  //     return new Promise((resolve) => {
-  //         if(this.networkService.status){
-  //             console.info('[API]: network available');
-  //             params.items = [item];
-  //             http.request(this.url + table, params).subscribe((response) => {
-  //                 resolve(response);
-  //             });
-  //         }else{
-  //             console.warn('[API]: not available');
-  //             item.synced = 0;
-  //             const response = { item };
-  //             resolve(response);
-  //         }
-  //     });
-  // }
-
-  // async delete(table: string, item: any): Promise<any> {
-  //     return new Promise((resolve) => {
-  //         if(this.networkService.status){
-  //             console.info('[API]: network available');
-  //             http.delete(this.url + table+'?id='+item.id, response => {
-  //                 console.log('[API]: item deleted online: ',item);
-  //                 resolve(item);
-  //             });
-  //         }else{
-  //             console.warn('[API]: network not available');
-  //             item.deleted = 1;
-  //             item.synced = 0;
-  //             console.log('[API]: item deleted offline: ',item);
-  //             resolve(item);
-  //         }
-  //     });
-  // }
 }
 
 export default ApiService;

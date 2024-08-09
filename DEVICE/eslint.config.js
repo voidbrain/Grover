@@ -4,6 +4,11 @@ import tseslint from "typescript-eslint";
 
 
 export default [
+  {rules: {
+    "no-explicit-any": "off",
+    "no-async-promise-executor": "off"
+   },
+  },
   {files: ["**/*.{js,mjs,cjs,ts}"]},
   {languageOptions: { globals: {...globals.browser, ...globals.node} }},
   pluginJs.configs.recommended,

@@ -1,7 +1,7 @@
 import net from "net";
 
 export class NetworkService {
-  status: { _value: any };
+  status: { _value: unknown };
 
   constructor() {}
 

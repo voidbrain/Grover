@@ -14,6 +14,8 @@ import RoomNutrientRefillComponent from "../../actuators/room-nutrient-refill/ro
 import { LocationInterface } from "../../../interfaces/location";
 import { PotInterface } from "../../../interfaces/pot";
 import { RoomInterface } from "../../../interfaces/room";
+import { PlantExtended } from "../../../interfaces/plant";
+import { PhaseExtended } from "../../../interfaces/phase";
 
 class PotComponent {
   room: RoomInterface;
@@ -24,8 +26,8 @@ class PotComponent {
   api;
   pot: PotInterface | null = null;
   location: LocationInterface | null = null;
-  probes: any[] = [];
-  workers: any[] = [];
+  probes: object[] = [];
+  workers: object[] = [];
   settings;
   locationId: number;
   phase;
@@ -51,46 +53,46 @@ class PotComponent {
   }
 
   async setup(locationId) {
-    const self = this;
-    self.locationId = locationId;
-    const pot: PotInterface = (await self.db.getItem(
+    
+    this.locationId = locationId;
+    const pot: PotInterface = (await this.db.getItem(
       "pots",
       locationId,
       "locationId",
     )) as PotInterface;
-    const location: LocationInterface = (await self.db.getItem(
+    const location: LocationInterface = (await this.db.getItem(
       "locations",
       pot.locationId,
       "id",
     )) as LocationInterface;
-    const probesArr: any[] = (await self.db.getItems(
+    const probesArr: object[] = (await this.db.getItems(
       "probes_list",
       pot.locationId,
       "locationId",
-    )) as any[];
-    const workersArr: any[] = (await self.db.getItems(
+    ));
+    const workersArr: object[] = (await this.db.getItems(
       "workers_list",
       pot.locationId,
       "locationId",
-    )) as any[];
+    ));
 
-    const plant: any = (await self.db.getItem(
+    const plant: PlantExtended = (await this.db.getItem(
       "plants",
       pot.id,
       "idPot",
-    )) as any;
-    const phases = (await self.db.getItems(
+    ));
+    const phases: PhaseExtended[] = (await this.db.getItems(
       "calendar_phases",
       plant.idCalendar,
       "idCalendar",
-    )) as any;
+    ));
     await Promise.all(
       phases.map(async (phase) => {
-        const dose = (await self.db.getItem(
+        const dose = (await this.db.getItem(
           "calendar_doses",
           phase.idDose,
           "id",
-        )) as any;
+        ));
         phase.dose = dose;
       }),
     );
@@ -106,8 +108,8 @@ class PotComponent {
     let countingDays = plant.daysFromBloom
       ? +plant.daysFromBloom
       : +plant.daysFromGrow;
-    let foundPhase: any;
-    phases.map((phase: any) => {
+    let foundPhase: PhaseExtended;
+    phases.map((phase: PhaseExtended) => {
       if (
         +countingDays > 0 &&
         ((plant.daysFromBloom && phase.isBlooming) ||
@@ -117,7 +119,7 @@ class PotComponent {
         foundPhase = phase;
       }
     });
-    self.phase = foundPhase;
+    this.phase = foundPhase;
 
     /*
     plant.phase.minEC
@@ -134,17 +136,17 @@ class PotComponent {
 
     await Promise.all(
       probesArr.map(async (probe) => {
-        probe.type = (await self.db.getItem(
+        probe.type = (await this.db.getItem(
           "probes_type",
           probe.probeType,
           "id",
-        )) as any;
-        // probe.logs = await self.db.getItems('probes_log', probe.id, 'idProbe') as unknown as any[];
-        const schedule: any[] = (await self.db.getItems(
+        ));
+        // probe.logs = await this.db.getItems('probes_log', probe.id, 'idProbe') as unknown[];
+        const schedule: any[] = (await this.db.getItems(
           "probes_schedule",
           probe.id,
           "idProbe",
-        )) as unknown as any[];
+        )) as unknown[];
 
         switch (probe.probeType) {
           case ProbesTypes.Water_level:
@@ -158,9 +160,9 @@ class PotComponent {
               probe.id,
               probe.address,
               schedule,
-              self.db,
-              self.api,
-              self.settings,
+              this.db,
+              this.api,
+              this.settings,
             );
             await probe.component.setup();
             break;
@@ -177,18 +179,18 @@ class PotComponent {
     );
     await Promise.all(
       workersArr.map(async (worker) => {
-        worker.type = (await self.db.getItem(
+        worker.type = (await this.db.getItem(
           "workers_type",
           worker.workerType,
           "id",
-        )) as any;
-        // worker.logs = await self.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
+        ));
+        // worker.logs = await this.db.getItems('workers_log', worker.id, 'idworker') as unknown[];
 
-        const schedule: any[] = (await self.db.getItems(
+        const schedule: any[] = (await this.db.getItems(
           "workers_schedule",
           worker.id,
           "idworker",
-        )) as unknown as any[];
+        )) as unknown[];
         switch (worker.workerType) {
           case WorkersTypes.Pot_Water_loop:
             worker.component = new WaterLoopComponent(
@@ -198,18 +200,18 @@ class PotComponent {
               worker.i2cAddress,
               worker.pin1,
               schedule,
-              self.db,
-              self.api,
-              self.settings,
+              this.db,
+              this.api,
+              this.settings,
             );
             await worker.component.setup();
             break;
           case WorkersTypes.Pot_refill:
             worker.component = new RefillComponent(
-              self.phase,
-              self.primaryWaterPump,
-              self.primaryPhDownPump,
-              self.primaryNutrientPump,
+              this.phase,
+              this.primaryWaterPump,
+              this.primaryPhDownPump,
+              this.primaryNutrientPump,
               pot.id,
               pot.name,
               worker.id,
@@ -217,9 +219,9 @@ class PotComponent {
               worker.pin1,
               worker.pin2,
               schedule,
-              self.db,
-              self.api,
-              self.settings,
+              this.db,
+              this.api,
+              this.settings,
             );
             await worker.component.setup();
             break;
@@ -227,10 +229,10 @@ class PotComponent {
       }),
     );
 
-    self.pot = pot;
-    self.location = location;
-    self.probes = probesArr;
-    self.workers = workersArr;
+    this.pot = pot;
+    this.location = location;
+    this.probes = probesArr;
+    this.workers = workersArr;
   }
 }
 export default PotComponent;

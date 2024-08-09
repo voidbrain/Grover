@@ -7,10 +7,11 @@ import url from "url";
 import moment from "moment";
 
 import { RoomObject } from "../../app/interfaces/room";
-import RoomComponent from "../../app/hw-components/environment/room/room";
 import { PotObject } from "../../app/interfaces/pot";
 import { LocationInterface } from "../../app/interfaces/location";
-import { CronJobInterface } from "../../app/interfaces/cron-job";
+import { RoomInterface } from "../../app/interfaces/room";
+import { PotInterface } from "../../app/interfaces/pot";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../app/interfaces/cron-job";
 import schedule from "node-schedule";
 
 import {
@@ -27,7 +28,7 @@ export class WebServer {
   pots: PotObject[] = [];
   rooms: RoomObject[] = [];
   serialNumber: { sn: string; found: boolean };
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
 
   constructor(
     private settings: SettingsService,
@@ -52,7 +53,6 @@ export class WebServer {
     res.setHeader("Access-Control-Max-Age", 2592000);
 
     res.writeHead(200, { "Content-Type": "text/plain" });
-    const u = req.url;
     const q = url.parse(req.url!, true);
     if (q.pathname === "/favicon.ico") {
       res.writeHead(200, { "Content-Type": "image/x-icon" });
@@ -67,13 +67,13 @@ export class WebServer {
 
     try {
       switch (page) {
-        case `/${ServerPages.actuators}`:
+        case `/${ServerPages.actuators}`: {
           const id = q.query.id as string;
           const terminalType = q.query.type as string;
           if (action && id && terminalType) {
             const duration = q.query.duration ? +q.query.duration : 0;
 
-            const terminal: any = await this.db.getItem(
+            const terminal: LocationInterface | RoomInterface | PotInterface  = await this.db.getItem(
               terminalType + "s_list",
               +id,
               "id",
@@ -83,7 +83,7 @@ export class WebServer {
               +terminal.locationId,
               "id",
             );
-            const parent: any = await this.db.findParent(parentLocation.id);
+            const parent: LocationInterface | RoomInterface | PotInterface = await this.db.findParent(parentLocation.id);
             const environments = +parent.parent > 0 ? this.pots : this.rooms;
             const environmentType = +parent.parent > 0 ? "pot" : "room";
             const environment = environments.find(
@@ -164,9 +164,10 @@ export class WebServer {
             );
           }
           break;
-        case `/${ServerPages.system}`:
+        }
+        case `/${ServerPages.system}`: {
           switch (action) {
-            case ServerCommands.SET_MODE:
+            case ServerCommands.SET_MODE: {
               const mode = +q.query.type! as number;
               const updatedMode = await this.updateOperatingMode(mode);
               if (this.debug) {
@@ -190,8 +191,9 @@ export class WebServer {
                 await this.db.logItem("system_log", job);
               }
               break;
+            }
 
-            case ServerCommands.AI_GET_DOSES:
+            case ServerCommands.AI_GET_DOSES: {
               const waterLevel = q.query.waterLevel;
               const plantAge = q.query.plantAge;
               const desiredEC = q.query.desiredEC;
@@ -204,22 +206,26 @@ export class WebServer {
               });
               res.write(JSON.stringify({ result: resultGetDoses }));
               break;
-            case ServerCommands.AI_GET_EC_PH:
+            }
+            case ServerCommands.AI_GET_EC_PH: {
               const resultGetEcPh = await this.ai.getEcPh({
                 plantAge: q.query.plantAge,
               });
               res.write(JSON.stringify({ result: resultGetEcPh }));
               break;
-            case ServerCommands.AI_TRAIN_DOSES_MODEL:
+            }
+            case ServerCommands.AI_TRAIN_DOSES_MODEL: {
               this.ai.defineDosesModel();
               const resultDosesModel = await this.ai.trainDosesModel();
               res.write(JSON.stringify({ result: resultDosesModel }));
               break;
-            case ServerCommands.AI_TRAIN_EC_PH:
+            }
+            case ServerCommands.AI_TRAIN_EC_PH:{
               this.ai.defineEcPhModel();
               const resultEcPhModel = await this.ai.trainEcPhModel();
               res.write(JSON.stringify({ result: resultEcPhModel }));
               break;
+            }
 
             default:
               res.write(
@@ -230,9 +236,11 @@ export class WebServer {
               break;
           }
           break;
-        default:
+        }
+        default: {
           res.write(JSON.stringify({ error: `Page "${page}" not found` }));
           break;
+        }
       }
     } catch (err) {
       console.error("Error handling request:", err);
@@ -287,7 +295,7 @@ export class WebServer {
     try {
       this.scheduledCrons = (await this.db.getItems(
         "system_schedule",
-      )) as unknown as any[];
+      )) as ExtendedCronJobInterface[];
       const scheduleArr: CronJobInterface[] = this.scheduledCrons.map(
         (systemScheduleRow) => ({
           action: systemScheduleRow.action,
@@ -311,7 +319,7 @@ export class WebServer {
     }
   }
 
-  hasMethod(subject: any, methodName: string): boolean {
+  hasMethod(subject: unknown, methodName: string): boolean {
     return subject != null && typeof subject[methodName] === "function";
   }
 }

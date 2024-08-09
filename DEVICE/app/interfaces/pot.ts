@@ -4,13 +4,13 @@ export interface PotInterface {
   name: string;
   locationId: number;
 
-  probes: any[];
-  workers: any[];
+  probes: object[];
+  workers: object[];
 
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
 
-  setup: (locationId) => {};
+  setup: (locationId) => object;
 }
 export interface PotObject extends LocationInterface, PotInterface {}

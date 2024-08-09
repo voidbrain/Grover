@@ -1,4 +1,4 @@
-import { CronJobInterface } from "../../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -18,7 +18,7 @@ class WaterLevelComponent {
 
   serialNumber: { sn: string; found: boolean };
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   db;
   settings;
@@ -38,25 +38,18 @@ class WaterLevelComponent {
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) {
-      // if (self.serialNumber.found) {
+    
+    this.serialNumber = await this.settings.getSerialNumber();
       this.setSchedule();
-    } else {
-      console.log(
-        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found",
-      );
-    }
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -70,44 +63,44 @@ class WaterLevelComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[TEMPERATURE]: status", self.status);
+        console.log("[TEMPERATURE]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idProbe: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idProbe: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("probes_log", job);
+      await this.db.logItem("probes_log", job);
     }
   }
 
   async READ() {
-    const self = this;
+    
     return new Promise((resolve) => {
-      const trigger = new Gpio(self.triggerPin, { mode: Gpio.OUTPUT });
-      const echo = new Gpio(self.echoPin, { mode: Gpio.INPUT, alert: true });
+      const trigger = new Gpio(this.triggerPin, { mode: Gpio.OUTPUT });
+      const echo = new Gpio(this.echoPin, { mode: Gpio.INPUT, alert: true });
       trigger.digitalWrite(0); // Make sure trigger is low
       const watchHCSR04 = () => {
         let startTick;
@@ -117,7 +110,7 @@ class WaterLevelComponent {
           } else {
             const endTick = tick;
             const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
-            console.log(diff / 2 / self.MICROSECDONDS_PER_CM);
+            console.log(diff / 2 / this.MICROSECDONDS_PER_CM);
             resolve("water level result");
           }
         });
@@ -131,10 +124,10 @@ class WaterLevelComponent {
   }
 
   async setSchedule() {
-    const self = this;
-    if (self.id && self.scheduledCrons) {
+    
+    if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      self.scheduledCrons.map((probeScheduleRow) => {
+      this.scheduledCrons.map((probeScheduleRow) => {
         const scheduleRow: CronJobInterface = {
           action: probeScheduleRow.action,
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
@@ -146,7 +139,7 @@ class WaterLevelComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

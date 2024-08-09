@@ -1,7 +1,7 @@
 import moment from "moment";
 import schedule from "node-schedule";
 
-import { CronJobInterface } from "../../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -19,7 +19,7 @@ class WaterLoopComponent {
   pin: number;
   status: string;
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   settings;
   db;
@@ -51,9 +51,6 @@ class WaterLoopComponent {
   }
 
   async setup() {
-    this.serialNumber = await this.settings.getSerialNumber();
-    if (true) {
-      //(this.serialNumber.found && +this.i2cAddress) {
       import("node-mcp23017").then(({ default: MCP23017 }) => {
         this.mcp = new MCP23017({
           address: +this.i2cAddress,
@@ -64,108 +61,89 @@ class WaterLoopComponent {
       });
 
       this.setSchedule();
-    } else {
-      if (this.debug) {
-        console.log(
-          "[WATER-LOOP]: EXIT on --> Raspberry OR i2c Address not found",
-        );
+  }
+
+  public async ON({ expectedTime, eventEmitter, operatingMode }: { expectedTime?: string; eventEmitter: EventEmitter; operatingMode: number }): Promise<boolean> {
+    try {
+      const systemOperatingMode = this.settings.getOperatingMode();
+      
+      if (operatingMode < systemOperatingMode) {
+        if (this.debug) {
+          console.log(`[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
+        }
+        return false; // Exit early if operating mode is insufficient
       }
+  
+      const job = {
+        eventEmitter,
+        action: ServerCommands.ON,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
+        type: Peripherals.Worker,
+        expectedTime,
+        executedTime: new Date(),
+        operatingMode,
+        systemOperatingMode,
+        serialNumber: this.serialNumber.sn,
+      };
+  
+      if (this.debug) {
+        console.log(`[WATER-LOOP]: ON ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`, job);
+      }
+  
+      if (this.settings.getLogMode()) {
+        await this.db.logItem("workers_log", job);
+      }
+  
+      return true;
+    } catch (error) {
+      console.error("[WATER-LOOP]: Error in ON action", error);
+      throw error; // Ensure errors are propagated
     }
   }
+  
 
-  public async ON({ expectedTime, eventEmitter, operatingMode }) {
-    return new Promise(async (resolve) => {
+  public async OFF({ expectedTime, eventEmitter, operatingMode }: { expectedTime?: string; eventEmitter: EventEmitter; operatingMode: number }): Promise<boolean> {
+    try {
       const systemOperatingMode = this.settings.getOperatingMode();
-      if (operatingMode >= systemOperatingMode) {
-        const job = {
-          eventEmitter,
-          action: ServerCommands.ON,
-          idWorker: this.id,
-          parentId: this.parentId,
-          parentName: this.parentName,
-          type: Peripherals.Worker,
-          expectedTime,
-          executedTime: new Date(),
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: this.serialNumber.sn,
-        };
-        switch (eventEmitter) {
-          case EventEmitter.user: // manual action
-            if (this.debug) {
-              console.log("[WATER-LOOP]: ON manual", job);
-            }
-            if (this.settings.getLogMode() === true) {
-              await this.db.logItem("workers_log", job);
-              resolve(job);
-            }
-            break;
-          case EventEmitter.schedule: // scheduled action
-            if (this.debug) {
-              console.log("[WATER-LOOP]: ON scheduled", job);
-            }
-            if (this.settings.getLogMode() === true) {
-              await this.db.logItem("workers_log", job);
-              resolve;
-            }
-            break;
-        }
-      } else {
+      
+      if (operatingMode < systemOperatingMode) {
         if (this.debug) {
-          console.log(
-            `[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
-          );
+          console.log(`[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`);
         }
+        return false; // Exit early if operating mode is insufficient
       }
-    });
-  }
-
-  public async OFF({ expectedTime, eventEmitter, operatingMode }) {
-    return new Promise(async (resolve) => {
-      const systemOperatingMode = this.settings.getOperatingMode();
-      if (operatingMode >= systemOperatingMode) {
-        const job = {
-          eventEmitter,
-          action: ServerCommands.OFF,
-          idWorker: this.id,
-          parentId: this.parentId,
-          parentName: this.parentName,
-          type: Peripherals.Worker,
-          expectedTime: expectedTime ? new Date(expectedTime) : null,
-          executedTime: new Date(),
-          operatingMode: operatingMode,
-          systemOperatingMode: systemOperatingMode,
-          serialNumber: this.serialNumber.sn,
-        };
-        switch (eventEmitter) {
-          case EventEmitter.user: // manual action
-            if (this.debug) {
-              console.log("[WATER-LOOP]: OFF manual");
-            }
-            if (this.settings.getLogMode() === true) {
-              await this.db.logItem("workers_log", job);
-              resolve(job);
-            }
-            break;
-          case EventEmitter.schedule: // scheduled action
-            if (this.debug) {
-              console.log("[WATER-LOOP]: OFF scheduled");
-            }
-            if (this.settings.getLogMode() === true) {
-              await this.db.logItem("workers_log", job);
-              resolve;
-            }
-            break;
-        }
-      } else {
-        if (this.debug) {
-          console.log(
-            `[WATER-LOOP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
-          );
-        }
+  
+      const job = {
+        eventEmitter,
+        action: ServerCommands.OFF,
+        idWorker: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
+        type: Peripherals.Worker,
+        expectedTime: expectedTime ? new Date(expectedTime) : null,
+        executedTime: new Date(),
+        operatingMode,
+        systemOperatingMode,
+        serialNumber: this.serialNumber.sn,
+      };
+  
+      if (this.debug) {
+        console.log(`[WATER-LOOP]: OFF ${eventEmitter === EventEmitter.user ? 'manual' : 'scheduled'}`);
       }
-    });
+  
+      if (this.settings.getLogMode()) {
+        await this.db.logItem("workers_log", job);
+      }
+  
+      return true;
+    } catch (error) {
+      console.error("[WATER-LOOP]: Error in OFF action", error);
+      throw error; // Ensure errors are propagated
+    }
   }
+  
 
   async setStatus(eventEmitter) {
     let scheduledStart;

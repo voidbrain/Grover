@@ -1149,7 +1149,7 @@ Tue Aug 06 2024 23:53:31 GMT+0200 – Unhandled Rejection at Promise: Promise {
       at FSReqCallback.readFileAfterOpen [as oncomplete] (node:fs:298:13)
 }
 Wed Aug 07 2024 00:02:01 GMT+0200 – Unhandled Rejection at Promise: Promise {
-  <rejected> TypeError: self.primaryWaterPump.forward is not a function
+  <rejected> TypeError: this.primaryWaterPump.forward is not a function
       at file:///Users/voidbrain/Grover/Grover/DEVICE/app/hw-components/actuators/room-water-refill/room-water-refill.ts:129:45
       at new Promise (<anonymous>)
       at RoomWaterRefillComponent.RUN_WATER (file:///Users/voidbrain/Grover/Grover/DEVICE/app/hw-components/actuators/room-water-refill/room-water-refill.ts:125:16)
@@ -1194,4 +1194,733 @@ Thu Aug 08 2024 14:54:20 GMT+0200 – Unhandled Rejection at Promise: Promise {
 Thu Aug 08 2024 14:55:31 GMT+0200 – Unhandled Rejection at Promise: Promise {
   <rejected> Error: Path /Users/daniele/data/ai/history-model/model.json does not exist: loading failed
       at /Users/daniele/Projects/Grover/Grover/DEVICE/node_modules/@tensorflow/tfjs-node/dist/io/file_system.js:69:23
+}
+Fri Aug 09 2024 11:22:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> ReferenceError: self is not defined
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:24:13
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:23:12 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:31:37 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:129:37)
+}
+Fri Aug 09 2024 11:32:06 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Client network socket disconnected before secure TLS connection was established
+      at TLSSocket.onConnectEnd (node:_tls_wrap:1727:19)
+      at TLSSocket.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+    code: 'ECONNRESET',
+    path: null,
+    host: 'www.voidbrain.net',
+    port: 443,
+    localAddress: undefined
+  }
+}
+Fri Aug 09 2024 11:33:51 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Client network socket disconnected before secure TLS connection was established
+      at TLSSocket.onConnectEnd (node:_tls_wrap:1727:19)
+      at TLSSocket.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+    code: 'ECONNRESET',
+    path: null,
+    host: 'www.voidbrain.net',
+    port: 443,
+    localAddress: undefined
+  }
+}
+Fri Aug 09 2024 11:33:51 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Client network socket disconnected before secure TLS connection was established
+      at TLSSocket.onConnectEnd (node:_tls_wrap:1727:19)
+      at TLSSocket.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+    code: 'ECONNRESET',
+    path: null,
+    host: 'www.voidbrain.net',
+    port: 443,
+    localAddress: undefined
+  }
+}
+Fri Aug 09 2024 11:33:51 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Client network socket disconnected before secure TLS connection was established
+      at TLSSocket.onConnectEnd (node:_tls_wrap:1727:19)
+      at TLSSocket.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+    code: 'ECONNRESET',
+    path: null,
+    host: 'www.voidbrain.net',
+    port: 443,
+    localAddress: undefined
+  }
+}
+Fri Aug 09 2024 11:33:51 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Client network socket disconnected before secure TLS connection was established
+      at TLSSocket.onConnectEnd (node:_tls_wrap:1727:19)
+      at TLSSocket.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+    code: 'ECONNRESET',
+    path: null,
+    host: 'www.voidbrain.net',
+    port: 443,
+    localAddress: undefined
+  }
+}
+Fri Aug 09 2024 11:33:51 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error: Client network socket disconnected before secure TLS connection was established
+      at TLSSocket.onConnectEnd (node:_tls_wrap:1727:19)
+      at TLSSocket.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+    code: 'ECONNRESET',
+    path: null,
+    host: 'www.voidbrain.net',
+    port: 443,
+    localAddress: undefined
+  }
+}
+Fri Aug 09 2024 11:36:04 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> ReferenceError: self is not defined
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:24:13
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:36:18 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:151:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:128:54)
+}
+Fri Aug 09 2024 11:37:10 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'getSerialNumber')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:21:66
+      at new Promise (<anonymous>)
+      at DbService.load (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:17:16)
+      at AppSetup.start (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/utils/app-setup.ts:20:27)
+}
+Fri Aug 09 2024 11:37:35 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: globalThis.initService is not a function
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:25:18
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 11:41:32 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'get')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:91:18
+      at new Promise (<anonymous>)
+      at DbService.loadData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:89:16)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:81:24
+      at Array.map (<anonymous>)
+      at DbService.initService (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:76:33)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:06:26 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:41
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:13 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'run')
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:149:47
+      at Array.map (<anonymous>)
+      at Statement.<anonymous> (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:127:37)
+}
+Fri Aug 09 2024 12:07:24 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> ReferenceError: self is not defined
+      at DbService.syncData (file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:101:9)
+      at file:///Users/daniele/Projects/Grover/Grover/DEVICE/app/services/db/db.service.ts:93:36
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 }

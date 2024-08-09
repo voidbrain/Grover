@@ -1,5 +1,5 @@
 import "module-alias/register";
-import { CronJobInterface } from "../../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,
@@ -33,7 +33,7 @@ class TemperatureComponent {
 
   serialNumber: { sn: string; found: boolean };
 
-  scheduledCrons: any[] = [];
+  scheduledCrons: ExtendedCronJobInterface[] = [];
   api;
   db;
   settings;
@@ -62,25 +62,18 @@ class TemperatureComponent {
   }
 
   async setup() {
-    const self = this;
-    self.serialNumber = await self.settings.getSerialNumber();
-    if (true) {
-      // if (self.serialNumber.found) {
+    
+    this.serialNumber = await this.settings.getSerialNumber();
       this.setSchedule();
-    } else {
-      console.log(
-        "[TEMPERATURE]: EXIT on --> Raspberry OR i2c Address not found",
-      );
-    }
   }
 
   async setStatus(eventEmitter) {
-    const self = this;
+    
     let scheduledStart;
     const now = moment();
     let status: string;
     let operatingMode: number;
-    self.scheduledCrons.map((cron) => {
+    this.scheduledCrons.map((cron) => {
       const statusStart = moment({
         year: now.year(),
         month: now.month(),
@@ -94,109 +87,115 @@ class TemperatureComponent {
         operatingMode = cron.operatingMode;
       }
     });
-    self.status = status!;
-    if (self.status) {
+    this.status = status!;
+    if (this.status) {
       // status from cron
-      self[self.status]({
+      self[this.status]({
         expectedTime: scheduledStart,
         eventEmitter,
         operatingMode: operatingMode!,
       });
     } else {
       // default off
-      self.status = DevicesStatus.OFF;
+      this.status = DevicesStatus.OFF;
       if (this.debug) {
-        console.log("[TEMPERATURE]: status", self.status);
+        console.log("[TEMPERATURE]: status", this.status);
       }
-      const systemOperatingMode = self.settings.getOperatingMode();
+      const systemOperatingMode = this.settings.getOperatingMode();
       const expectedTime = null;
       const job = {
         eventEmitter,
         action: ServerCommands.SET_STATUS,
-        idProbe: self.id,
-        parentId: self.parentId,
-        parentName: self.parentName,
+        idProbe: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
         type: Peripherals.Probe,
         expectedTime,
         executedTime: new Date(),
         operatingMode: operatingMode!,
         systemOperatingMode: systemOperatingMode,
-        serialNumber: self.serialNumber.sn,
+        serialNumber: this.serialNumber.sn,
       };
-      await self.db.logItem("probes_log", job);
+      await this.db.logItem("probes_log", job);
     }
   }
 
-  public async READ({ expectedTime, eventEmitter, operatingMode }) {
-    console.log("2", expectedTime, eventEmitter, operatingMode);
-    // EXAMPLE: http://151.61.172.169:8084/actuators?action=READ&id=1&type=probe
-    const self = this;
-    return new Promise(async (resolve, reject) => {
-      const systemOperatingMode = self.settings.getOperatingMode();
-      if (operatingMode >= systemOperatingMode) {
-        sensor.get(self.address, async function (err: any, value: any) {
-          if (err) {
-            if (self.debug) {
-              console.log(`[TEMP]: READ ${eventEmitter}, error: ${err}`);
-            }
-            reject(err);
-            // throw err;
-          } else {
-            const job = {
-              eventEmitter,
-              action: ServerCommands.READ,
-              value,
-              idProbe: self.id,
-              parentId: self.parentId,
-              parentName: self.parentName,
-              type: Peripherals.Probe,
-              address: self.address,
-              expectedTime: expectedTime ? new Date(expectedTime) : null,
-              executedTime: new Date(),
-              operatingMode: operatingMode,
-              systemOperatingMode: systemOperatingMode,
-              serialNumber: self.serialNumber.sn,
-            };
-            console.log(eventEmitter);
-            switch (eventEmitter) {
-              case EventEmitter.user: // manual action
-                if (self.debug) {
-                  console.log("[TEMP]: READ manual", job);
-                }
-                if (self.settings.getLogMode() === true) {
-                  await self.db.logItem("probes_log", job);
-                  resolve(job);
-                } else {
-                  console.log("don't log ");
-                }
-                break;
-              case EventEmitter.schedule: // scheduled action
-                if (self.debug) {
-                  console.log("[TEMP]: READ schedule", job);
-                }
-                if (self.settings.getLogMode() === true) {
-                  await self.db.logItem("probes_log", job);
-                  resolve;
-                }
-                break;
-            }
-          }
-        });
-      } else {
-        if (self.debug) {
+  public async READ({ expectedTime, eventEmitter, operatingMode }: { expectedTime?: Date, eventEmitter: EventEmitter, operatingMode: number }): Promise<unknown> {
+    try {
+      console.log("2", expectedTime, eventEmitter, operatingMode);
+  
+      // Check operating mode
+      const systemOperatingMode = this.settings.getOperatingMode();
+      if (operatingMode < systemOperatingMode) {
+        if (this.debug) {
           console.log(
-            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`,
+            `[TEMP]: operatingMode insufficient level (probe: ${operatingMode} system: ${systemOperatingMode})`
           );
         }
+        throw new Error('Operating mode insufficient');
       }
+  
+      // Read from sensor
+      const value = await this.getSensorValue();
+  
+      // Prepare job details
+      const job = {
+        eventEmitter,
+        action: ServerCommands.READ,
+        value,
+        idProbe: this.id,
+        parentId: this.parentId,
+        parentName: this.parentName,
+        type: Peripherals.Probe,
+        address: this.address,
+        expectedTime: expectedTime ? new Date(expectedTime) : null,
+        executedTime: new Date(),
+        operatingMode,
+        systemOperatingMode,
+        serialNumber: this.serialNumber.sn,
+      };
+  
+      console.log(eventEmitter);
+  
+      // Log and return job details
+      if (this.debug) {
+        console.log(`[TEMP]: READ ${eventEmitter}`, job);
+      }
+  
+      if (this.settings.getLogMode()) {
+        await this.db.logItem("probes_log", job);
+      } else {
+        console.log("Don't log");
+      }
+  
+      return job;
+    } catch (error) {
+      if (this.debug) {
+        console.log(`[TEMP]: READ ${eventEmitter}, error: ${error}`);
+      }
+      throw error; // Propagate the error to be handled by the caller
+    }
+  }
+  
+  // Helper method to get sensor value
+  private getSensorValue(): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      sensor.get(this.address, (err, value) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(value);
+        }
+      });
     });
   }
+  
 
   async setSchedule() {
-    const self = this;
-    if (self.id && self.scheduledCrons) {
+    
+    if (this.id && this.scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
-      self.scheduledCrons.map((probeScheduleRow) => {
+      this.scheduledCrons.map((probeScheduleRow) => {
         const scheduleRow: CronJobInterface = {
           action: probeScheduleRow.action,
           cron: `${probeScheduleRow.atMinute} ${probeScheduleRow.atHour} * * ${probeScheduleRow.atDay}`,
@@ -208,7 +207,7 @@ class TemperatureComponent {
       scheduleArr.map((job) => {
         schedule.scheduleJob(job.cron, async (expectedTime) => {
           const eventEmitter = EventEmitter.schedule;
-          const doJob = await eval(
+          await eval(
             `this.${job.action}({
               expectedTime: '${expectedTime}', 
               eventEmitter: '${eventEmitter}', 

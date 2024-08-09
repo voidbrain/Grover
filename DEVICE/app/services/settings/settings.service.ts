@@ -89,7 +89,7 @@ export class SettingsService {
   }
 
   public async getSerialNumber(): Promise<{ found: boolean; sn: string }> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       exec("cat /proc/cpuinfo | grep Serial", (error, stdout, stderr) => {
         if (stderr) {
           resolve({ found: false, sn: "10000000ce6b74fc" });
