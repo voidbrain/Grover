@@ -201,12 +201,12 @@ export class DbService {
 
   public async getItem(
     table: string,
-    value: any,
+    value: string | number,
     column: string = "id",
-  ): Promise<LocationInterface | RoomInterface | PotInterface | any> {
+  ): Promise<LocationInterface | RoomInterface | PotInterface | null> {
     if (value) {
       const query = `SELECT * from ${table} WHERE ${column}=(?)`;
-      return new Promise<LocationInterface | RoomInterface | PotInterface | any>((resolve, reject) => {
+      return new Promise<LocationInterface | RoomInterface | PotInterface>((resolve, reject) => {
         this.db.get(query, [value], (err, row) => {
           if (err) {
             console.log("[DB]: getItem err ", query, err);
@@ -225,10 +225,10 @@ export class DbService {
     table: string,
     value: number | null = null,
     column: string = "id",
-  ): Promise<LocationInterface[] | RoomInterface[] | any[]> {
+  ): Promise<LocationInterface[] | RoomInterface[]> {
     const query = `SELECT * from ${table}` + (value ? ` WHERE ${column}=(?)` : '');
     const where = value ? [value] : [];
-    return new Promise<LocationInterface[] | RoomInterface[] | any[]>((resolve, reject) => {
+    return new Promise<LocationInterface[] | RoomInterface[]>((resolve, reject) => {
       this.db.all(query, where, (err, rows) => {
         if (err) {
           reject(err);
@@ -239,7 +239,7 @@ export class DbService {
     });
   }
 
-  public async findParent(id: number): Promise<RoomInterface | PotInterface | LocationInterface> {
+  public async findParent(id: number): Promise<RoomInterface | PotInterface | LocationInterface | null> {
     if (id) {
       const query = `
         SELECT ROOMS.*, ROOMS.name AS roomName, ROOMS.locationId AS roomLocationId, 

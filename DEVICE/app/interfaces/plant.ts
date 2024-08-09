@@ -1,8 +1,9 @@
  
 
 import { Strain } from "./strain";
-import { Pot } from "./pot";
-import { Calendar, PhaseExtended } from "./calendar";
+import { PotInterface } from "./pot";
+import { Calendar } from "./calendar";
+import { PhaseExtended } from "./phase";
 
 export interface Plant {
   alerts: string;
@@ -29,7 +30,7 @@ export interface Plant {
 export interface PlantExtended extends Plant {
   strain: Strain;
   expanded: boolean;
-  location: Pot;
+  location: PotInterface;
   daysFromGrow?: number;
   daysFromBloom?: number;
   phase?: PhaseExtended;

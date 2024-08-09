@@ -202,7 +202,7 @@ class RefillComponent {
         return;
       }
   
-      const waterMl = this.phase.dose.water;
+      const waterMl = this.phase?.dose?.water ?? 0;
   
       await this.primaryWaterPump.forward();
       await this.primaryWaterPump.delay(duration * waterMl);
@@ -252,10 +252,10 @@ class RefillComponent {
       }
   
       const doses = {
-        gro: this.phase.dose.grow,
-        micro: this.phase.dose.micro,
-        bloom: this.phase.dose.bloom,
-        ripen: this.phase.dose.ripen
+        gro: this.phase?.dose?.grow ?? 0,
+        micro: this.phase?.dose?.micro ?? 0,
+        bloom: this.phase?.dose?.bloom ?? 0,
+        ripen: this.phase?.dose?.ripen ?? 0
       };
   
       for (const [, ml] of Object.entries(doses)) {
@@ -309,7 +309,7 @@ class RefillComponent {
         return;
       }
   
-      const pHDown = this.phase.dose.pHDown;
+      const pHDown = this.phase?.dose?.pHDown ?? 0;
   
       if (pHDown) {
         await this.primaryWaterPump.forward();

@@ -1,5 +1,8 @@
 import { LocationInterface } from "./location";
 import { PotObject } from "./pot";
+import { EcProbeInterface } from "./ec-probe";
+import { PhProbeInterface } from "./ph-probe";
+import { TemperatureInterface } from "./temperature";
 
 export interface RoomInterface {
   id: number;
@@ -8,13 +11,14 @@ export interface RoomInterface {
   serialNumber: string;
   locationId: number;
 
-  probes: object[];
+  probes: (EcProbeInterface | PhProbeInterface | TemperatureInterface)[];
   workers: object[];
   pots: PotObject[];
 
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
+  parent: number;
 
   setup?: () => object;
 }

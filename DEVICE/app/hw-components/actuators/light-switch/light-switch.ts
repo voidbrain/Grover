@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { CronJobInterface } from "../../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,

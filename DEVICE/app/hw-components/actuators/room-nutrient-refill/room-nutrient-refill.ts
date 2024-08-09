@@ -1,6 +1,6 @@
 // import i2cBus from 'i2c-bus';
 
-import { CronJobInterface } from "../../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../../interfaces/cron-job";
 import {
   EventEmitter,
   Peripherals,

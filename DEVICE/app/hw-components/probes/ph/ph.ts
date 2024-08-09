@@ -100,7 +100,7 @@ class PhProbeComponent {
           });
         }
       });
-      resolve(job);
+      resolve(true);
     });
   }
 
