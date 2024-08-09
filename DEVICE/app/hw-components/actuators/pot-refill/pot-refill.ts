@@ -21,10 +21,10 @@ import moment from "moment";
 
 class RefillComponent {
   phase: Phase;
-  id: number | string;
+  id: number | string | undefined;
   parentId: number | string;
   parentName: string;
-  i2cAddress: string;
+  i2cAddress: number | string | undefined;
   pin1: number | undefined;
   pin2: number | undefined;
   primaryWaterPump: RoomWaterRefillComponent;
@@ -52,7 +52,7 @@ class RefillComponent {
     primaryNutrientPump: RoomNutrientRefillComponent,
     parentId: number,
     parentName: string,
-    id: number | string,
+    id: number | string | undefined,
     i2cAddress: number | string | undefined,
     pin1: number | undefined,
     pin2: number | undefined,
@@ -81,7 +81,7 @@ class RefillComponent {
   async setup() {
     import("node-mcp23017").then(({ default: MCP23017 }) => {
       this.secondaryPump = new MCP23017({
-        address: +this.i2cAddress,
+        address: +(this.i2cAddress ?? 0),
         device: 1,
         debug: false,
       });
@@ -97,7 +97,7 @@ class RefillComponent {
         this.secondaryPump.OUTPUT,
       );
     });
-    this.setSchedule(+this.id, this.scheduledCrons);
+    this.setSchedule(this.id, this.scheduledCrons);
   }
 
   async setStatus(eventEmitter) {
@@ -386,7 +386,7 @@ class RefillComponent {
     };
   }
 
-  async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
+  async setSchedule(id: number | string | undefined, scheduledCrons: ExtendedCronJobInterface[]) {
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {

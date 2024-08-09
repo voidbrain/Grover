@@ -1,5 +1,5 @@
 export interface FanMotorInterface {
-  id: number | string;
+  id?: number | string;
 
   setup: () => object;
 }

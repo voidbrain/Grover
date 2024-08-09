@@ -8,4 +8,5 @@ export interface ProbeInterface {
   probeType?: number;
   component?: TemperatureInterface | PhProbeInterface | EcProbeInterface;
   address: string;
+  schedule?: object;
 }

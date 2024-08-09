@@ -19,6 +19,8 @@ import RoomBloomRefillComponent from "../../actuators/room-bloom-refill/room-blo
 import RoomRipenRefillComponent from "../../actuators/room-ripen-refill/room-ripen-refill";
 
 import RoomNutrientRefillComponent from "../../actuators/room-nutrient-refill/room-nutrient-refill";
+import { ProbeInterface } from "../../../interfaces/probe";
+import { WorkerInterface } from "../../../interfaces/worker";
 
 class RoomComponent {
   db;
@@ -26,8 +28,8 @@ class RoomComponent {
   settings;
   room: RoomInterface | null = null;
   location: LocationInterface | null = null;
-  probes: any[] = [];
-  workers: any[] = [];
+  probes: ProbeInterface[] = [];
+  workers: WorkerInterface[] = [];
   pots: PotObject[] = [];
   primaryWaterPump: RoomWaterRefillComponent;
   primaryPhDownPump: RoomPhDownRefillComponent;
@@ -56,30 +58,30 @@ class RoomComponent {
       room.locationId,
       "id",
     )) as LocationInterface;
-    const probesArr: any[] = (await this.db.getItems(
+    const probesArr: ProbeInterface[] = (await this.db.getItems(
       "probes_list",
       room.locationId,
       "locationId",
-    )) as any[];
-    const workersArr: any[] = (await this.db.getItems(
+    ));
+    const workersArr: WorkerInterface[] = (await this.db.getItems(
       "workers_list",
       room.locationId,
       "locationId",
-    )) as any[];
+    ));
 
     probesArr.forEach(async (el) => {
       el.schedule = (await this.db.getItem(
         "probes_schedule",
         el.id,
         "idProbe",
-      )) as any;
+      ));
     });
     workersArr.forEach(async (el) => {
       el.schedule = (await this.db.getItem(
         "workers_schedule",
         el.id,
         "idWorker",
-      )) as any;
+      ));
     });
     this.room = room;
     this.location = location;
@@ -90,13 +92,13 @@ class RoomComponent {
           "probes_type",
           probe.probeType,
           "id",
-        )) as any;
-        // probe.logs = await this.db.getItems('probes_log', probe.id, 'idProbe') as unknown as any[];
-        const schedule: any[] = (await this.db.getItems(
+        ))
+        
+        const schedule: unknown[] = (await this.db.getItems(
           "probes_schedule",
           probe.id,
           "idProbe",
-        )) as unknown as any[];
+        ));
 
         switch (probe.probeType) {
           case ProbesTypes.Air_temperature:
@@ -113,7 +115,7 @@ class RoomComponent {
             await probe.component.setup();
             break;
           case ProbesTypes.Water_level:
-            probe.component = null;
+            probe.component = undefined;
             // await probe.component.setup();
             break;
           case ProbesTypes.Water_temperature:
@@ -139,13 +141,13 @@ class RoomComponent {
           "workers_type",
           worker.workerType,
           "id",
-        )) as any;
-        // worker.logs = await this.db.getItems('workers_log', worker.id, 'idworker') as unknown as any[];
-        const schedule: any[] = (await this.db.getItems(
+        ));
+        
+        const schedule: unknown[] = (await this.db.getItems(
           "workers_schedule",
           worker.id,
           "idworker",
-        )) as unknown as any[];
+        ));
         switch (worker.workerType) {
           case WorkersTypes.Room_Fan:
             worker.component = new FanComponent(

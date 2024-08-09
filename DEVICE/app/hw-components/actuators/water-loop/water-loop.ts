@@ -13,7 +13,7 @@ import {
 } from "../../../services/settings/enums";
 
 class WaterLoopComponent {
-  id: number | string;
+  id: number | string | undefined;
   parentId: number;
   parentName: string;
   serialNumber: { sn: string; found: boolean };
@@ -34,7 +34,7 @@ class WaterLoopComponent {
   constructor(
     parentId: number,
     parentName: string,
-    id: number | string,
+    id: number | string | undefined,
     i2cAddress: number | string | undefined,
     pin: number | undefined,
     scheduleArr,

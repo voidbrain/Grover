@@ -14,12 +14,12 @@ import {
 import schedule from "node-schedule";
 
 class LightSwitchComponent {
-  id: number;
+  id: number | string | undefined;
   parentId: number;
   parentName: string;
   serialNumber: { sn: string; found: boolean };
 
-  i2cAddress: string;
+  i2cAddress: number | string | undefined;
   pin: number;
   status: string;
   defaultStatus: string = DevicesStatus.OFF;
@@ -34,9 +34,9 @@ class LightSwitchComponent {
   constructor(
     parentId: number,
     parentName: string,
-    id: number,
-    i2cAddress: number,
-    pin: number,
+    id: number | string | undefined,
+    i2cAddress: number | string | undefined,
+    pin: number | undefined,
     scheduleArr,
     db,
     api,
@@ -45,8 +45,8 @@ class LightSwitchComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
-    this.i2cAddress = "0x" + parseInt(i2cAddress.toString(10)).toString(16);
-    this.pin = +pin;
+    this.i2cAddress = "0x" + parseInt((i2cAddress ?? '').toString(10)).toString(16);
+    this.pin = +(pin ?? 0);
     this.db = db;
     this.api = api;
     this.settings = settings;
@@ -56,7 +56,7 @@ class LightSwitchComponent {
   async setup() {
     import("node-mcp23017").then(({ default: MCP23017 }) => {
       this.light = new MCP23017({
-        address: +this.i2cAddress,
+        address: +(this.i2cAddress ?? 0),
         device: 1,
         debug: false,
       });

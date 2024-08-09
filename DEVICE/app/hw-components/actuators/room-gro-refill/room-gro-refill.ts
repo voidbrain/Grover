@@ -15,12 +15,12 @@ import schedule from "node-schedule";
 import moment from "moment";
 
 class RoomGroRefillComponent {
-  id: number;
+  id: number | string | undefined;
   parentId: number;
   parentName: string;
-  i2cAddress: string;
-  pin1: number;
-  pin2: number;
+  i2cAddress: number | string | undefined;
+  pin1: number | undefined;
+  pin2: number | undefined;
   primaryGroPump;
 
   serialNumber: { sn: string; found: boolean };
@@ -35,10 +35,10 @@ class RoomGroRefillComponent {
   constructor(
     parentId: number,
     parentName: string,
-    id: number,
-    i2cAddress: number,
-    pin1: number,
-    pin2: number,
+    id: number | string | undefined,
+    i2cAddress: number | string | undefined,
+    pin1: number | undefined,
+    pin2: number | undefined,
     scheduleArr,
     db,
     api,
@@ -47,9 +47,9 @@ class RoomGroRefillComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
-    this.i2cAddress = "0x" + parseInt(i2cAddress.toString(10)).toString(16);
-    this.pin1 = +pin1;
-    this.pin2 = +pin2;
+    this.i2cAddress = "0x" + parseInt((i2cAddress ?? '').toString(10)).toString(16);
+    this.pin1 = +(pin1 ?? 0);
+    this.pin2 = +(pin2 ?? 0);
     this.api = api;
     this.db = db;
     this.settings = settings;
@@ -59,7 +59,7 @@ class RoomGroRefillComponent {
   async setup() {
     import("node-mcp23017").then(({ default: MCP23017 }) => {
       this.primaryGroPump = new MCP23017({
-        address: +this.i2cAddress,
+        address: +(this.i2cAddress ?? ''),
         device: 1,
         debug: false,
       });
@@ -155,7 +155,7 @@ class RoomGroRefillComponent {
     });
   }
 
-  async setSchedule(id: number, scheduledCrons: ExtendedCronJobInterface[]) {
+  async setSchedule(id: number | string | undefined, scheduledCrons: ExtendedCronJobInterface[]) {
     if (id && scheduledCrons) {
       const scheduleArr: CronJobInterface[] = [];
       scheduledCrons.map((probeScheduleRow) => {
