@@ -25,8 +25,9 @@ if (isPi()) {
 
 import schedule from "node-schedule";
 import moment from "moment";
+import { TemperatureInterface } from "../../../interfaces/temperature";
 class TemperatureComponent {
-  id: number;
+  id: number | string;
   parentId: number;
   parentName: string;
   address: string;
@@ -40,11 +41,12 @@ class TemperatureComponent {
 
   status: string;
   debug = false;
+  component: TemperatureInterface;
 
   constructor(
     parentId: number,
     parentName: string,
-    id: number,
+    id: number | string,
     address: string,
     scheduleArr,
     db,

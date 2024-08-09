@@ -1,3 +1,7 @@
 export interface TemperatureInterface {
-  id: string;
+  id: number | string;
+  
+  
+    setup: () => object;
+  
 }

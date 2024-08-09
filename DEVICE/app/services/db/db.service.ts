@@ -1,6 +1,7 @@
 import { LocationInterface } from "../../interfaces/location";
 import { RoomInterface } from "../../interfaces/room";
 import { PotInterface } from "../../interfaces/pot";
+import { ExtendedCronJobInterface } from "../../interfaces/cron-job"
 
 import { LocalStorage } from "node-localstorage";
 import sqlite3 from "sqlite3";
@@ -203,7 +204,7 @@ export class DbService {
     table: string,
     value: string | number,
     column: string = "id",
-  ): Promise<LocationInterface | RoomInterface | PotInterface | null> {
+  ): Promise<LocationInterface | RoomInterface | PotInterface | undefined> {
     if (value) {
       const query = `SELECT * from ${table} WHERE ${column}=(?)`;
       return new Promise<LocationInterface | RoomInterface | PotInterface>((resolve, reject) => {
@@ -225,7 +226,7 @@ export class DbService {
     table: string,
     value: number | null = null,
     column: string = "id",
-  ): Promise<LocationInterface[] | RoomInterface[]> {
+  ): Promise<LocationInterface[] | RoomInterface[] | ExtendedCronJobInterface[]> {
     const query = `SELECT * from ${table}` + (value ? ` WHERE ${column}=(?)` : '');
     const where = value ? [value] : [];
     return new Promise<LocationInterface[] | RoomInterface[]>((resolve, reject) => {
@@ -239,7 +240,7 @@ export class DbService {
     });
   }
 
-  public async findParent(id: number): Promise<RoomInterface | PotInterface | LocationInterface | null> {
+  public async findParent(id: number): Promise<RoomInterface | PotInterface | LocationInterface | undefined> {
     if (id) {
       const query = `
         SELECT ROOMS.*, ROOMS.name AS roomName, ROOMS.locationId AS roomLocationId, 

@@ -1,14 +1,13 @@
 import { LocationInterface } from "./location";
-import { EcProbeInterface } from "./ec-probe";
-import { PhProbeInterface } from "./ph-probe";
-import { TemperatureInterface } from "./temperature";
+import { WorkerInterface } from "./worker";
+import { ProbeInterface } from "./probe";
 export interface PotInterface {
   id: number;
   name: string;
   locationId: number;
 
-  probes: (EcProbeInterface | PhProbeInterface | TemperatureInterface)[];
-  workers: object[];
+  probes: ProbeInterface[];
+  workers: WorkerInterface[];
 
   enabled: boolean;
   deleted: boolean;

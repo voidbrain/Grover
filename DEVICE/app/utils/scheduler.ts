@@ -10,6 +10,8 @@ export class Scheduler {
 
   async setMainSchedule() {
     const scheduledCrons: ExtendedCronJobInterface[] = await this.db.getItems("system_schedule") as  ExtendedCronJobInterface[];
+    
+    console.log(scheduledCrons);
     const scheduleArr: ExtendedCronJobInterface[] = scheduledCrons.map(
       (systemScheduleRow) => ({
         action: systemScheduleRow.action,

@@ -16,6 +16,8 @@ import { PotInterface } from "../../../interfaces/pot";
 import { RoomInterface } from "../../../interfaces/room";
 import { PlantExtended } from "../../../interfaces/plant";
 import { PhaseExtended } from "../../../interfaces/phase";
+import { ProbeInterface } from "../../../interfaces/probe";
+import { WorkerInterface } from "../../../interfaces/worker";
 
 class PotComponent {
   room: RoomInterface;
@@ -26,8 +28,8 @@ class PotComponent {
   api;
   pot: PotInterface | null = null;
   location: LocationInterface | null = null;
-  probes: object[] = [];
-  workers: object[] = [];
+  probes: ProbeInterface[] = [];
+  workers: WorkerInterface[] = [];
   settings;
   locationId: number;
   phase;
@@ -65,12 +67,12 @@ class PotComponent {
       pot.locationId,
       "id",
     )) as LocationInterface;
-    const probesArr: object[] = (await this.db.getItems(
+    const probesArr: ProbeInterface[] = (await this.db.getItems(
       "probes_list",
       pot.locationId,
       "locationId",
     ));
-    const workersArr: object[] = (await this.db.getItems(
+    const workersArr: WorkerInterface[] = (await this.db.getItems(
       "workers_list",
       pot.locationId,
       "locationId",
@@ -104,11 +106,11 @@ class PotComponent {
       new Date().getTime() - new Date(plant.dayStartBloom).getTime();
     plant.daysFromBloom = plant.dayStartBloom
       ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
-      : null;
+      : undefined;
     let countingDays = plant.daysFromBloom
       ? +plant.daysFromBloom
       : +plant.daysFromGrow;
-    let foundPhase: PhaseExtended;
+    let foundPhase: PhaseExtended | undefined;
     phases.map((phase: PhaseExtended) => {
       if (
         +countingDays > 0 &&
@@ -135,14 +137,14 @@ class PotComponent {
     */
 
     await Promise.all(
-      probesArr.map(async (probe) => {
+      probesArr.map(async (probe: ProbeInterface) => {
         probe.type = (await this.db.getItem(
           "probes_type",
           probe.probeType,
           "id",
         ));
         // probe.logs = await this.db.getItems('probes_log', probe.id, 'idProbe') as unknown[];
-        const schedule: any[] = (await this.db.getItems(
+        const schedule: unknown[] = (await this.db.getItems(
           "probes_schedule",
           probe.id,
           "idProbe",
@@ -150,7 +152,7 @@ class PotComponent {
 
         switch (probe.probeType) {
           case ProbesTypes.Water_level:
-            probe.component = null;
+            probe.component = undefined;
             // await probe.component.setup();
             break;
           case ProbesTypes.Water_temperature:
@@ -164,14 +166,14 @@ class PotComponent {
               this.api,
               this.settings,
             );
-            await probe.component.setup();
+            probe.component.setup();
             break;
           case ProbesTypes.pH:
-            probe.component = null;
+            probe.component = undefined;
             // await probe.component.setup();
             break;
           case ProbesTypes.EC:
-            probe.component = null;
+            probe.component = undefined;
             // await probe.component.setup();
             break;
         }

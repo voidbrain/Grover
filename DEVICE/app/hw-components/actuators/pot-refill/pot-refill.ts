@@ -18,12 +18,12 @@ import moment from "moment";
 
 class RefillComponent {
   phase: Phase;
-  id: number;
-  parentId: number;
+  id: number | string;
+  parentId: number | string;
   parentName: string;
   i2cAddress: string;
-  pin1: number;
-  pin2: number;
+  pin1: number | undefined;
+  pin2: number | undefined;
   primaryWaterPump: RoomWaterRefillComponent;
   primaryPhDownPump: RoomPhDownRefillComponent;
   primaryNutrientPump: RoomNutrientRefillComponent;
@@ -49,10 +49,10 @@ class RefillComponent {
     primaryNutrientPump: RoomNutrientRefillComponent,
     parentId: number,
     parentName: string,
-    id: number,
-    i2cAddress: number,
-    pin1: number,
-    pin2: number,
+    id: number | string,
+    i2cAddress: number | string | undefined,
+    pin1: number | undefined,
+    pin2: number | undefined,
     scheduleArr,
     db,
     api,
@@ -62,9 +62,9 @@ class RefillComponent {
     this.id = id;
     this.parentId = parentId;
     this.parentName = parentName;
-    this.i2cAddress = "0x" + parseInt(i2cAddress.toString(10)).toString(16);
-    this.pin1 = +pin1;
-    this.pin2 = +pin2;
+    this.i2cAddress = "0x" + parseInt((i2cAddress ? i2cAddress.toString(10) : '')).toString(16);
+    this.pin1 = +(pin1 ?? 0);
+    this.pin2 = +(pin2 ?? 0);
     this.api = api;
     this.db = db;
     this.settings = settings;
@@ -93,7 +93,7 @@ class RefillComponent {
           this.secondaryPump.OUTPUT,
         );
       });
-      this.setSchedule(this.id, this.scheduledCrons);
+      this.setSchedule(+this.id, this.scheduledCrons);
   }
 
   async setStatus(eventEmitter) {
