@@ -40,6 +40,7 @@ import {
 import { Strain } from '../../../interfaces/strain';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-strains-detail',
@@ -83,9 +84,9 @@ import * as ionIcons from 'ionicons/icons';
 })
 export class StrainsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
-  public id: any;
+  public id: number;
   public page = 'strains';
-  formDefinition: any;
+  formDefinition: FieldConfig;;
 
   constructor(
     public db: DbService,
@@ -112,7 +113,6 @@ export class StrainsDetailComponent implements OnInit {
         label: '% Sativa',
         min: 0,
         max: 100,
-        step: '5',
         icon: 'sunny',
       },
       { name: 'id', type: 'hidden', label: '' },
@@ -125,7 +125,7 @@ export class StrainsDetailComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = +this.route.snapshot.paramMap.get('id');
 
     await this.db.load();
 
@@ -139,13 +139,13 @@ export class StrainsDetailComponent implements OnInit {
     this.router.navigate([this.page]);
   }
 
-  async getItem(id: any) {
+  async getItem(id: number) {
     const strains: Strain[] = await this.db.getItems('strains');
 
-    this.formDefinition.find((el: any) => el.name === 'lineage').options =
+    this.formDefinition.find((el: FieldConfig) => el.name === 'lineage').options =
       strains;
     if (id) {
-      const item: any = await this.db.getItem(this.page, id);
+      const item: Strain = await this.db.getItem(this.page, id);
 
       if (item) {
         this.form.setFormValues(item);
@@ -173,10 +173,10 @@ export class StrainsDetailComponent implements OnInit {
     this.save(value as Strain);
   }
 
-  async save(value: any) {
+  async save(value: Strain) {
     this.form.config
       .filter((el) => el.type === 'date')
-      .map((el: any) => {
+      .map((el: FieldConfig) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     value.lineage = value.lineage.toString();

@@ -5,6 +5,7 @@ import { PhProbeInterface } from "./ph-probe";
 import { EcProbeInterface } from "./ec-probe";
 
 export interface ProbeInterface {
+    locationId: number;
     // id: number | string;
     type?: string;
     probeType?: number;

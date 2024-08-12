@@ -45,6 +45,7 @@ import { Plant } from '../../../interfaces/plant';
 import { Pot } from '../../../interfaces/pot';
 import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
 import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
+import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-plants-detail',
@@ -87,9 +88,9 @@ import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
 })
 export class PlantsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-  public id: string;
+  public id: number;
   public page = 'plants';
-  formDefinition: any;
+  formDefinition: FieldConfig;;
 
   constructor(
     public db: DbService,

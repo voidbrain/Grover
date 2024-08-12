@@ -30,6 +30,7 @@ export interface Plant {
 }
 
 export interface PlantExtended extends Plant {
+  plant: any;
   strain: Strain;
   expanded: boolean;
   pot: Pot;

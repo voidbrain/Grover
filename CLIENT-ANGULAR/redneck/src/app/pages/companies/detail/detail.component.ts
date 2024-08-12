@@ -86,7 +86,7 @@ export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'companies';
-  formDefinition: FieldConfig[];
+  formDefinition: FieldConfig;;
   pots: Pot[] = [];
 
   constructor(

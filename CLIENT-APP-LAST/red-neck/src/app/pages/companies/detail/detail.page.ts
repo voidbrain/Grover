@@ -10,6 +10,7 @@ import { DbService } from '../../../services/db/db.service';
 import { Company } from '../../../interfaces/company';
 import { Strain } from '../../../interfaces/strain';
 import { GrowingMedium } from '../../../interfaces/growing-medium';
+import { FieldConfig } from 'src/app/components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-detail',
@@ -21,7 +22,7 @@ export class CompaniesDetailPage implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   public id: string;
   public page = 'companies';
-	formDefinition: any;
+	formDefinition: FieldConfig;;
 	previousValid = false;
   pots;
 

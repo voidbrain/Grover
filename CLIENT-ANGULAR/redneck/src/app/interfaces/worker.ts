@@ -4,6 +4,7 @@ import { WaterLoopInterface } from "./water-loop";
 import { WaterRefillInterface } from "./water-refill";
 
 export interface WorkerInterface {
+  locationId: number;
   id?: number;
   type?: string;
   workerType?: number;

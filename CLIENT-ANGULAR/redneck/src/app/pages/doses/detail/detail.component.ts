@@ -39,6 +39,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-doses-detail',
@@ -81,9 +82,9 @@ import * as ionIcons from 'ionicons/icons';
 })
 export class DosesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
-  public id: any;
+  public id: number;
   public page = 'doses';
-  formDefinition: any;
+  formDefinition: FieldConfig;;
 
   constructor(
     public db: DbService,

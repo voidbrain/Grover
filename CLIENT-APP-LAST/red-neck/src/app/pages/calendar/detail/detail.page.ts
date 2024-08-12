@@ -8,6 +8,7 @@ import { DynamicFormComponent } from '../../../components/shared/form/containers
 import { DbService } from '../../../services/db/db.service';
 
 import { Calendar } from '../../../interfaces/calendar';
+import { FieldConfig } from 'src/app/components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-detail',
@@ -19,7 +20,7 @@ export class CalendarsDetailPage implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   public id: string;
   public page = 'calendars';
-	formDefinition: any;
+	formDefinition: FieldConfig;;
 	previousValid = false;
 
   constructor(

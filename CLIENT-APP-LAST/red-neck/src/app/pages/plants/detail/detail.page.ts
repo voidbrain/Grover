@@ -13,6 +13,7 @@ import { Company } from '../../../interfaces/company';
 import { GrowingMedium } from '../../../interfaces/growing-medium';
 import { GrowingScenario } from '../../../interfaces/growing-scenario';
 import { Pot } from '../../../interfaces/pot';
+import { FieldConfig } from 'src/app/components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-detail',
@@ -25,7 +26,7 @@ export class PlantsDetailPage implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   public id: string;
   public page = 'plants';
-	formDefinition: any;
+	formDefinition: FieldConfig;;
 	previousValid = false;
 
   constructor(

@@ -16,6 +16,7 @@ import {
   ServerPages,
   Peripherals,
   ProbesTypes,
+  ScheduleTypes,
 } from '../../../../app/services/settings/enum';
 
 import {
@@ -77,6 +78,10 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { FilterBarComponent } from '../../../components/plants/filter-bar/filter-bar.component';
 import { GrowingResultsComponent } from '../../../components/plants/growing-results/growing-results.component';
+import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
+import { ProbeInterface } from '../../../interfaces/probe';
+import { WorkerInterface } from '../../../interfaces/worker';
+import { LocationInterface } from '../../../interfaces/location';
 
 @Component({
   selector: 'app-plants-master',
@@ -137,7 +142,7 @@ export class PlantsMasterComponent implements OnInit {
   items: PlantExtended[] = [];
   page = 'plants';
   debug = false;
-  formDefinition: any;
+  formDefinition: FieldConfig;
 
   remoteAddress = '';
   port: number | undefined;
@@ -181,29 +186,29 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   async getItems() {
-    const settings: any[] = await this.db.getItems('settings');
+    const settings: object[] = await this.db.getItems('settings');
     let plants: PlantExtended[] = await this.db.getItems(this.page);
     const pots: Pot[] = await this.db.getItems('pots');
     const strains: Strain[] = await this.db.getItems('strains');
     const calendar: Calendar[] = await this.db.getItems('calendars');
     const doses: Dose[] = await this.db.getItems('doses');
-    const rooms: any[] = await this.db.getItems('rooms');
-    const locations: any[] = await this.db.getItems('locations');
+    const rooms: RoomExtended[] = await this.db.getItems('rooms');
+    const locations: LocationInterface[] = await this.db.getItems('locations');
 
-    const workersList: any[] = await this.db.getItems('workers_list');
-    const probesList: any[] = await this.db.getItems('probes_list');
-    const workersType: any[] = await this.db.getItems('workers_type');
-    const probesType: any[] = await this.db.getItems('probes_type');
-    const workersSchedule: any[] = await this.db.getItems('workers_schedule');
-    const probesSchedule: any[] = await this.db.getItems('probes_schedule');
+    const workersList: WorkerInterface[] = await this.db.getItems('workers_list');
+    const probesList: ProbeInterface[] = await this.db.getItems('probes_list');
+    const workersType: WorkersTypes[] = await this.db.getItems('workers_type');
+    const probesType: ProbesTypes[] = await this.db.getItems('probes_type');
+    const workersSchedule: ScheduleTypes[] = await this.db.getItems('workers_schedule');
+    const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule');
     const column = 'id';
-    const query: any[] = [];
-    const workersLog: any[] = await this.db.getItems(
+    const query: number[] = [];
+    const workersLog: object[] = await this.db.getItems(
       'workers_log',
       column,
       query,
     );
-    const probesLog: any[] = await this.db.getItems(
+    const probesLog: object[] = await this.db.getItems(
       'probes_log',
       column,
       query,
@@ -212,17 +217,17 @@ export class PlantsMasterComponent implements OnInit {
     this.items = plants;
     this.items.map(async (plant: PlantExtended) => {
       plant.calendar = calendar.find((el) => el.id === plant.idCalendar);
-      plant.strain = (strains as any[]).find((el) => el.id === plant.idStrain);
+      plant.strain = (strains).find((el) => el.id === plant.idStrain);
       if (plant.idPot) {
-        plant.pot = (pots as any[]).find((el) => el.id === plant.idPot);
+        plant.pot = (pots).find((el) => el.id === plant.idPot);
         plant.pot.location = locations.find(
           (el) => el.id === plant?.pot?.locationId,
         );
 
-        plant.workers = (workersList as any[]).filter(
+        plant.workers = (workersList).filter(
           (el) => el.locationId === plant?.pot?.locationId,
         );
-        plant.probes = (probesList as any[]).filter(
+        plant.probes = (probesList).filter(
           (el) => el.locationId === plant?.pot?.locationId,
         );
         plant.probes.map((probe) => {

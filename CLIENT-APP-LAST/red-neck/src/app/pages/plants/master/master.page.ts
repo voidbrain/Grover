@@ -17,6 +17,7 @@ import { Pot } from '../../../interfaces/pot';
 import { Strain } from '../../../interfaces/strain';
 import { DbService } from '../../../services/db/db.service';
 import { ToastController } from '@ionic/angular';
+import { FieldConfig } from 'src/app/components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-master',
@@ -31,7 +32,7 @@ export class PlantsMasterPage implements OnInit {
   items: Array<PlantExtended>;
   page = 'plants';
   debug = false;
-  formDefinition: any;
+  formDefinition: FieldConfig;;
 	previousValid = false;
 
   remoteAddress: string;

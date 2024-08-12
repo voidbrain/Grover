@@ -7,6 +7,7 @@ import { DynamicFormComponent } from '../../../components/shared/form/containers
 import { DbService } from '../../../services/db/db.service';
 
 import { Strain } from '../../../interfaces/strain';
+import { FieldConfig } from 'src/app/components/shared/form/models/field-config.interface';
 
 @Component({
   selector: 'app-detail',
@@ -17,7 +18,7 @@ export class StrainsDetailPage implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   public id: string;
   public page = 'strains';
-	formDefinition: any;
+	formDefinition: FieldConfig;;
 	previousValid = false;
 
   constructor(

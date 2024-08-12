@@ -19,12 +19,12 @@ export class NetworkService {
     this.initializeNetworkEvents();
   }
 
-  watchOnline(): any {
+  watchOnline() {
     console.log(Network.getStatus());
     return Network.getStatus();
   }
 
-  watchOffline(): any {
+  watchOffline() {
     return Network.getStatus();
   }
 
