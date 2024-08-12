@@ -33,7 +33,7 @@ import {
 import { LoadingController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { Company } from '../../../interfaces/company';
+import { CompanyInterface } from '../../../interfaces/company';
 
 @Component({
   selector: 'app-companies-master',
@@ -74,8 +74,8 @@ import { Company } from '../../../interfaces/company';
   styleUrl: './master.component.scss',
 })
 export class CompaniesMasterComponent {
-  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
-  items: Company[];
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[] = [];
+  items: CompanyInterface[] = [];
   page = 'companies';
 
   constructor(
@@ -99,12 +99,12 @@ export class CompaniesMasterComponent {
 
   async getItems() {
     const items = await this.db.getItems(this.page);
-    this.items = items;
+    this.items = items as CompanyInterface[];
     console.log(items);
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item) {
+  async deleteItem(item: CompanyInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
@@ -112,7 +112,7 @@ export class CompaniesMasterComponent {
     this.getItems();
   }
 
-  showDetail(item) {
+  showDetail(item: CompanyInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

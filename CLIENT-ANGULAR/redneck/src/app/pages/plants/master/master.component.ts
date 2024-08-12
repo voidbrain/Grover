@@ -138,11 +138,11 @@ export interface Obj {
   styleUrl: './master.component.scss',
 })
 export class PlantsMasterComponent implements OnInit {
-  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[] = [];
   @ViewChild(CheckboxComponent) form: CheckboxComponent | undefined;
   faTemperatureHalf = faTemperatureHalf;
   faEye = faEye;
-  public id: number;
+  public id?: number;
   items: PlantExtendedInterface[] = [];
   page = 'plants';
   debug = false;

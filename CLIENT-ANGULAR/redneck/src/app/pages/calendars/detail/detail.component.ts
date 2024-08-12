@@ -10,7 +10,7 @@ import { ChartComponent } from '../../../components/shared/chart/chart.component
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
 
-import { Calendar } from '../../../interfaces/calendar';
+import { CalendarInterface } from '../../../interfaces/calendar';
 import {
   IonButton,
   IonButtons,
@@ -137,7 +137,7 @@ export class CalendarsDetailComponent implements OnInit {
 
   async getItem(id: number) {
     if (id) {
-      const item: Calendar = await this.db.getItem(this.page, id) as Calendar;
+      const item: CalendarInterface = await this.db.getItem(this.page, id) as CalendarInterface;
 
       if (item) {
         this.form.setFormValues(item);
@@ -150,11 +150,11 @@ export class CalendarsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Calendar) {
+  formSubmitted(value: CalendarInterface) {
     this.save(value);
   }
 
-  async save(value) {
+  async save(value: CalendarInterface) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el) => {

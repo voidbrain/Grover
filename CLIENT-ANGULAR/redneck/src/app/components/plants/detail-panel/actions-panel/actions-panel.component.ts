@@ -172,7 +172,7 @@ export class ActionsPanelComponent implements OnChanges {
 
   async toggleWaterRecycle(worker: WaterLoopInterface) {
     const action =
-      worker.status === DevicesStatus.ON
+      worker?.status === DevicesStatus.ON
         ? ServerCommands.OFF
         : ServerCommands.ON;
     this.runRemoteCommand(

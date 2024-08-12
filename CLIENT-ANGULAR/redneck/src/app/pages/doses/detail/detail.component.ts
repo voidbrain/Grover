@@ -6,7 +6,7 @@ import {
   RouterLink,
   RouterOutlet,
 } from '@angular/router';
-import { Dose } from '../../../interfaces/dose';
+import { DoseInterface } from '../../../interfaces/dose';
 import { DbService } from '../../../services/db/db.service';
 import { ChartComponent } from '../../../components/shared/chart/chart.component';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -148,7 +148,7 @@ export class DosesDetailComponent implements OnInit {
 
   async getItem(id: number) {
     if (id) {
-      const item: Dose = await this.db.getItem(this.page, id);
+      const item: DoseInterface = await this.db.getItem(this.page, id);
       console.log(item);
       if (item) {
         this.form.setFormValues(item);
@@ -161,11 +161,11 @@ export class DosesDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Dose) {
+  formSubmitted(value: DoseInterface) {
     this.save(value);
   }
 
-  async save(value) {
+  async save(value: DoseInterface) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el) => {

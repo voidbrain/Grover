@@ -37,7 +37,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { Strain } from '../../../interfaces/strain';
+import { StrainInterface } from '../../../interfaces/strain';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
@@ -140,11 +140,11 @@ export class StrainsDetailComponent implements OnInit {
   }
 
   async getItem(id: number) {
-    const strains: Strain[] = await this.db.getItems('strains') as Strain[];
+    const strains: StrainInterface[] = await this.db.getItems('strains') as StrainInterface[];
 
     this.formDefinition.find((el: FieldConfig) => el.name === 'lineage')["options"] = strains;
     if (id) {
-      const item: Strain = await this.db.getItem(this.page, id);
+      const item: StrainInterface = await this.db.getItem(this.page, id) as StrainInterface;
 
       if (item) {
         this.form.setFormValues(item);
@@ -168,11 +168,11 @@ export class StrainsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Strain) {
+  formSubmitted(value: StrainInterface) {
     this.save(value);
   }
 
-  async save(value: Strain) {
+  async save(value: StrainInterface) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el: FieldConfig) => {

@@ -31,7 +31,8 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { CalendarExtended, PhaseExtended } from '../../../interfaces/calendar';
+import { CalendarExtendedInterface, PhaseExtendedInterface } from '../../../interfaces/calendar';
+import { DoseExtendedInterface } from '../../../interfaces/dose';
 
 @Component({
   selector: 'app-calendar-master',
@@ -71,8 +72,8 @@ import { CalendarExtended, PhaseExtended } from '../../../interfaces/calendar';
   styleUrl: './master.component.scss',
 })
 export class CalendarsMasterComponent {
-  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
-  items: CalendarExtended[];
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[] = [];
+  items: CalendarExtendedInterface[] = [];
   page = 'calendars';
 
   constructor(
@@ -95,7 +96,7 @@ export class CalendarsMasterComponent {
     const items = await this.db.getItems(this.page);
     const doses = await this.db.getItems('doses');
 
-    items.map((item: CalendarExtended) => {
+    items.map((item: CalendarExtendedInterface) => {
       if (typeof item.phases == 'string') {
         if (item.phases != '') {
           item.phases = JSON.parse(item.phases);
@@ -104,10 +105,10 @@ export class CalendarsMasterComponent {
         }
       }
       item.doses = item.phases;
-      const valuesArr: PhaseExtended[] = [];
+      const valuesArr: PhaseExtendedInterface[] = [];
       if (item.doses && item.doses != null) {
-        item.doses.forEach((dose: PhaseExtended) => {
-          const phase = (doses as PhaseExtended[]).find((el: PhaseExtended) => el.id == dose.id);
+        item.doses.forEach((dose: PhaseExtendedInterface) => {
+          const phase = (doses as DoseExtendedInterface[]).find((el: DoseExtendedInterface) => el.id == dose.id);
           valuesArr.push({
             data: [Math.floor(dose.duration / 7)], // weeks
             backgroundColor: [phase.color],
@@ -167,11 +168,11 @@ export class CalendarsMasterComponent {
         };
       }
     });
-    this.items = items;
+    this.items = items as CalendarExtendedInterface[];
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item) {
+  async deleteItem(item: CalendarExtendedInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
@@ -179,7 +180,7 @@ export class CalendarsMasterComponent {
     this.getItems();
   }
 
-  showDetail(item: CalendarExtended) {
+  showDetail(item: CalendarExtendedInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

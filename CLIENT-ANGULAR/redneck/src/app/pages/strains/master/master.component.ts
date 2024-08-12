@@ -24,7 +24,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { Strain } from '../../../interfaces/strain';
+import { StrainInterface } from '../../../interfaces/strain';
 
 @Component({
   selector: 'app-strains-master',
@@ -79,7 +79,7 @@ export class StrainsMasterComponent {
   }
 
   async getItems() {
-    const items = await this.db.getItems(this.page);
+    const items: StrainInterface[] = await this.db.getItems(this.page) as StrainInterface[];
     items.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
     items.map((item) => {
       item.chartConfig = {
@@ -147,7 +147,7 @@ export class StrainsMasterComponent {
     this.getItems();
   }
 
-  showDetail(item) {
+  showDetail(item: StrainInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

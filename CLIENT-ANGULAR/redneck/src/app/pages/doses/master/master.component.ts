@@ -34,7 +34,7 @@ import {
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DosesBarHorizontalComponent } from '../../../components/plants/detail-panel/doses-bar-horizontal/doses-bar-horizontal.component';
-import { DoseExtended } from '../../../interfaces/dose';
+import { DoseExtendedInterface } from '../../../interfaces/dose';
 
 @Component({
   selector: 'app-doses-master',
@@ -77,8 +77,8 @@ import { DoseExtended } from '../../../interfaces/dose';
 })
 export class DosesMasterComponent {
   math = Math;
-  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
-  items: DoseExtended[];
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[] = [];
+  items: DoseExtendedInterface[] = [];
   page = 'doses';
 
   constructor(
@@ -101,8 +101,8 @@ export class DosesMasterComponent {
   }
 
   async getItems() {
-    const items = await this.db.getItems(this.page);
-    items.map((item: DoseExtended) => {
+    const items = await this.db.getItems(this.page) as DoseExtendedInterface[];
+    items.map((item: DoseExtendedInterface) => {
       item.chartConfig = {
         id: 'chart',
         type: 'bar',
@@ -158,7 +158,7 @@ export class DosesMasterComponent {
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item) {
+  async deleteItem(item: DoseExtendedInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
@@ -166,7 +166,7 @@ export class DosesMasterComponent {
     this.getItems();
   }
 
-  showDetail(item) {
+  showDetail(item: DoseExtendedInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
