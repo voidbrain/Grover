@@ -86,7 +86,7 @@ export class StrainsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'strains';
-  formDefinition: FieldConfig;;
+  formDefinition: FieldConfig;
 
   constructor(
     public db: DbService,
@@ -140,10 +140,9 @@ export class StrainsDetailComponent implements OnInit {
   }
 
   async getItem(id: number) {
-    const strains: Strain[] = await this.db.getItems('strains');
+    const strains: Strain[] = await this.db.getItems('strains') as Strain[];
 
-    this.formDefinition.find((el: FieldConfig) => el.name === 'lineage').options =
-      strains;
+    this.formDefinition.find((el: FieldConfig) => el.name === 'lineage')["options"] = strains;
     if (id) {
       const item: Strain = await this.db.getItem(this.page, id);
 
@@ -169,8 +168,8 @@ export class StrainsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Record<string, any>) {
-    this.save(value as Strain);
+  formSubmitted(value: Strain) {
+    this.save(value);
   }
 
   async save(value: Strain) {

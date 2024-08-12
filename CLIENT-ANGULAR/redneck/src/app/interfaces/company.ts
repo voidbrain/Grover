@@ -1,4 +1,4 @@
-export interface Company {
+export interface CompanyInterface {
   id: number;
   name: string;
   enabled: boolean;

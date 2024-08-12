@@ -1,4 +1,4 @@
-export interface GrowingMedium {
+export interface GrowingMediumInterface {
   id: number;
   name: string;
   enabled: boolean;

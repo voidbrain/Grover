@@ -32,7 +32,7 @@ import {
 
 export interface weekRow {
   key: string;
-  values: any[];
+  values: unknown[];
 }
 
 @Component({
@@ -64,12 +64,12 @@ export class SchedulePanelComponent implements OnChanges {
   @Input() plant!: PlantExtended;
   @Input() room!: RoomExtended;
 
-  items: any;
+  items: unknown;
 
   todayOfTheWeek!: number;
-  settings!: any;
+  settings!: unknown;
 
-  daysOfWeek: any[] = [
+  daysOfWeek: weekRow[] = [
     { key: 'S', values: [] },
     { key: 'M', values: [] },
     { key: 'T', values: [] },
@@ -80,8 +80,8 @@ export class SchedulePanelComponent implements OnChanges {
   ];
   actualDayIndex!: number;
 
-  chartConfig: any[] = [];
-  hoursOfDay: any[] = [];
+  chartConfig: unknown[] = [];
+  hoursOfDay: unknown[] = [];
 
   ngOnChanges() {
     if (this.room && this.plant) {
@@ -89,7 +89,7 @@ export class SchedulePanelComponent implements OnChanges {
     }
   }
 
-  popuplateDaysArray(item: any, scheduleRow: any) {
+  popuplateDaysArray(item: weekRow, scheduleRow) {
     if (scheduleRow) {
       const stringCron = `${scheduleRow.atMinute} ${scheduleRow.atHour} * * ${scheduleRow.atDay}`;
 
@@ -98,7 +98,7 @@ export class SchedulePanelComponent implements OnChanges {
       const hoursWorkingCron = cronArray[1];
       const minutesWorkingCron = cronArray[0];
 
-      daysWorkingCron.map((day: any) => {
+      daysWorkingCron.map((day) => {
         const el = {
           title: item.type.title,
           key: item.type.type,
@@ -117,7 +117,7 @@ export class SchedulePanelComponent implements OnChanges {
               }
             : {
                 atDay: day,
-                atHour: hoursWorkingCron.map((hour: any) => hour),
+                atHour: hoursWorkingCron.map((hour) => hour),
                 atMinute: minutesWorkingCron[0],
               },
           operatingMode: scheduleRow.operatingMode,
@@ -137,35 +137,35 @@ export class SchedulePanelComponent implements OnChanges {
 
     this.room.workers?.map((item) => {
       if (item.schedule && item.schedule.length) {
-        item.schedule.map((el: any) => {
+        item.schedule.map((el) => {
           this.popuplateDaysArray(item, el);
         });
       }
     });
     this.room.probes?.map((item) => {
       if (item.schedule && item.schedule.length) {
-        item.schedule.map((el: any) => {
+        item.schedule.map((el) => {
           this.popuplateDaysArray(item, el);
         });
       }
     });
     this.plant.workers?.map((item) => {
       if (item.schedule && item.schedule.length) {
-        item.schedule.map((el: any) => {
+        item.schedule.map((el) => {
           this.popuplateDaysArray(item, el);
         });
       }
     });
     this.plant.probes?.map((item) => {
       if (item.schedule && item.schedule.length) {
-        item.schedule.map((el: any) => {
+        item.schedule.map((el) => {
           this.popuplateDaysArray(item, el);
         });
       }
     });
 
     this.daysOfWeek.map((day) => {
-      const data: { labels: any[]; datasets: any[] } = {
+      const data: { labels: string[]; datasets: object[] } = {
         labels: [...day.values.map((el) => el.key)],
         datasets: [],
       };
@@ -213,7 +213,7 @@ export class SchedulePanelComponent implements OnChanges {
     this.daysOfWeek.push(this.daysOfWeek.shift() as weekRow);
   }
 
-  setDayVisualization(index: any) {
+  setDayVisualization(index) {
     this.actualDayIndex = index < 6 ? index + 1 : 0;
   }
 }

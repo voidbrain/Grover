@@ -32,7 +32,7 @@ export class ProgressBarComponent implements OnChanges {
     }
   }
 
-  addAlpha(color: any, opacity: any) {
+  addAlpha(color: string, opacity: number) {
     const _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
     return color + _opacity.toString(16).toUpperCase();
   }
@@ -84,9 +84,9 @@ export class ProgressBarComponent implements OnChanges {
         this.plantdaysFromGrowPerc -= diff;
       }
 
-      (this.plantdaysFromBloomPerc as any) += '%';
-      (this.plantdaysFromFlushPerc as any) += '%';
-      (this.plantdaysFromGrowPerc as any) += '%';
+      this.plantdaysFromBloomPerc += '%';
+      this.plantdaysFromFlushPerc += '%';
+      this.plantdaysFromGrowPerc += '%';
     }
   }
 }

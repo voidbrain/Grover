@@ -1,4 +1,4 @@
-export interface GrowingScenario {
+export interface GrowingScenarioInterface {
   id: number;
   name: string;
   enabled: boolean;

@@ -9,10 +9,10 @@ export interface WaterLoopInterface {
 
   forward?: () => object;
   setup: () => object;
-  setStatus: (a) => object;
+  setStatus: (a: unknown) => object;
 }
 
-export interface Device {
+export interface DeviceInterface {
   dNum: number;
   en: number;
   in1: number;

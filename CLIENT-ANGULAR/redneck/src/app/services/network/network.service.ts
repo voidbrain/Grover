@@ -12,10 +12,10 @@ export enum ConnectionStatus {
   providedIn: 'root',
 })
 export class NetworkService {
-  public status: BehaviorSubject<any>;
+  public status: BehaviorSubject<string>;
 
   constructor(private toastService: ToastService) {
-    this.status = new BehaviorSubject([]);
+    this.status = new BehaviorSubject("");
     this.initializeNetworkEvents();
   }
 
@@ -41,7 +41,7 @@ export class NetworkService {
     });
   }
 
-  private async updateNetworkStatus(status: any) {
+  private async updateNetworkStatus(status) {
     this.toastService.pushMessage(
       'Network status: ' + (status ? 'Online' : 'Offline'),
     );

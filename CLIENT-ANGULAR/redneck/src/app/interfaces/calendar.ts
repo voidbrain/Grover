@@ -1,12 +1,12 @@
-import { Dose } from './dose';
+import { DoseInterface } from './dose';
 
-export interface Phase {
+export interface PhaseInterface {
   id: number;
   name: Text;
   idDose: number;
   pos: number;
   duration: number;
-  dose?: Dose;
+  dose?: DoseInterface;
   isBlooming: boolean;
   isFlushing: boolean;
   minEC: number;
@@ -19,7 +19,7 @@ export interface Phase {
   maxWaterLevel: number;
 }
 
-export interface PhaseExtended extends Phase {
+export interface PhaseExtendedInterface extends PhaseInterface {
   percentDuration: number;
   percentStart: number;
   percentEnd: number;
@@ -32,7 +32,7 @@ export interface PhaseExtended extends Phase {
   boxPercentDuration?: number;
 }
 
-export interface Calendar {
+export interface CalendarInterface {
   id: number;
   // weekN: number;
   name: string;
@@ -40,11 +40,11 @@ export interface Calendar {
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
-  phases: PhaseExtended[];
+  phases: PhaseExtendedInterface[];
   color?: string;
 }
 
-export interface CalendarExtended extends Calendar {
-  doses?: PhaseExtended[];
+export interface CalendarExtendedInterface extends CalendarInterface {
+  doses?: PhaseExtendedInterface[];
   chartConfig: object;
 }

@@ -7,10 +7,10 @@ export interface WaterRefillInterface {
 
   forward?: () => object;
   setup: () => object;
-  setStatus: (a) => object;
+  setStatus: (a: undefined) => object;
 }
 
-export interface Device {
+export interface DeviceInterface {
   dNum: number;
   en: number;
   in1: number;

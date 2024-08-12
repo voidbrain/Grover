@@ -56,8 +56,8 @@ import { Strain } from '../../../interfaces/strain';
   styleUrl: './master.component.scss',
 })
 export class StrainsMasterComponent {
-  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
-  items: Strain[];
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[] = [];
+  items: Strain[] = [];
   page = 'strains';
   debug = true;
 
@@ -139,27 +139,27 @@ export class StrainsMasterComponent {
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  async deleteItem(item: StrainInterface) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
     this.getItems();
   }
 
-  showDetail(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  showDetail(item) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher: any) {
-    this.slidingItem._results.map((el: any) => {
+  async doRefresh(refresher) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     const forceLoading = true;
-    const load: any = await this.db.initService(forceLoading);
+    const load = await this.db.initService(forceLoading);
 
     this.getItems();
     refresher.target.complete();

@@ -1,4 +1,4 @@
-export interface Strain {
+export interface StrainInterface {
   id: number;
   name: string;
   lineage: string;

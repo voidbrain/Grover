@@ -4,6 +4,8 @@ import { NetworkService } from '../network/network.service';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
 
+
+
 @Injectable({
   providedIn: 'root',
 })
@@ -31,7 +33,7 @@ export class ApiService {
     }
   }
 
-  async get<T>(table: string, params?: any): Promise<T> {
+  async get<T>(table: string, params?): Promise<T> {
     try {
       const response = await this.http.get<T>(`${this.url}${table}`, { params }).toPromise();
       return response;
@@ -41,17 +43,17 @@ export class ApiService {
     }
   }
 
-  async post(table: string, items: any, params?: any): Promise<any> {
+  async post(table: string, items, params?): Promise<unknown> {
     return new Promise((resolve) => {
       if (this.networkService.status) {
         console.info('[API]: network available');
         params.items = items;
-        this.http.post(this.url + table, params).subscribe((response: any) => {
+        this.http.post(this.url + table, params).subscribe((response) => {
           resolve(response);
         });
       } else {
         console.warn('[API]: not available');
-        items.map((item: any) => {
+        items.map((item) => {
           item.synced = 0;
         });
 
@@ -61,7 +63,7 @@ export class ApiService {
     });
   }
 
-  async delete(table: string, item: any): Promise<any> {
+  async delete(table: string, item): Promise<unknown> {
     return new Promise((resolve) => {
       if (this.networkService.status) {
         console.info('[API]: network available');
@@ -87,7 +89,7 @@ export class ApiService {
     id: number,
     type: string,
     duration: number,
-  ): Promise<Obj> {
+  ): Promise<unknown> {
     if (!this.networkService.status) {
       const response = '[API]: network not available';
       if (this.debug) {

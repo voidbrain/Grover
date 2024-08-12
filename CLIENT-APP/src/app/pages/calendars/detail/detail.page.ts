@@ -16,7 +16,7 @@ export class DetailPage implements OnInit {
     relatedPhases: any;
     phases: any;
     table = 'calendars';
-    @ViewChildren('slidingItem') private slidingItem;
+    @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
     isOnline = false;
     isReadyToSave = false;
     showForm = true;

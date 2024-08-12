@@ -71,7 +71,7 @@ import { CalendarExtended, PhaseExtended } from '../../../interfaces/calendar';
   styleUrl: './master.component.scss',
 })
 export class CalendarsMasterComponent {
-  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
   items: CalendarExtended[];
   page = 'calendars';
 
@@ -171,8 +171,8 @@ export class CalendarsMasterComponent {
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  async deleteItem(item) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
@@ -180,14 +180,14 @@ export class CalendarsMasterComponent {
   }
 
   showDetail(item: CalendarExtended) {
-    this.slidingItem._results.map((el: any) => {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher: any) {
-    this.slidingItem._results.map((el: any) => {
+  async doRefresh(refresher) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     this.getItems();

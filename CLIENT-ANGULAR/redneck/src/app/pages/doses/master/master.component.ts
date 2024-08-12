@@ -34,7 +34,7 @@ import {
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DosesBarHorizontalComponent } from '../../../components/plants/detail-panel/doses-bar-horizontal/doses-bar-horizontal.component';
-import { Dose } from '../../../interfaces/dose';
+import { DoseExtended } from '../../../interfaces/dose';
 
 @Component({
   selector: 'app-doses-master',
@@ -77,8 +77,8 @@ import { Dose } from '../../../interfaces/dose';
 })
 export class DosesMasterComponent {
   math = Math;
-  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
-  items: Dose[];
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
+  items: DoseExtended[];
   page = 'doses';
 
   constructor(
@@ -102,7 +102,7 @@ export class DosesMasterComponent {
 
   async getItems() {
     const items = await this.db.getItems(this.page);
-    items.map((item: any) => {
+    items.map((item: DoseExtended) => {
       item.chartConfig = {
         id: 'chart',
         type: 'bar',
@@ -158,23 +158,23 @@ export class DosesMasterComponent {
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  async deleteItem(item) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
     this.getItems();
   }
 
-  showDetail(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  showDetail(item) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher: any) {
-    this.slidingItem._results.map((el: any) => {
+  async doRefresh(refresher) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
 

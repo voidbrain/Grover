@@ -71,7 +71,7 @@ export class RangeComponent implements OnChanges {
     );
   }
 
-  normalizeBetweenTwoRanges(val: any) {
+  normalizeBetweenTwoRanges(val: number) {
     const minVal = this.minValue;
     const maxVal = this.maxValue;
     const normalizedMax = 100;

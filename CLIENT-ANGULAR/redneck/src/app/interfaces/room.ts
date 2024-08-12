@@ -1,31 +1,36 @@
-import { PlantExtended } from '../interfaces/plant';
-import { Location } from './location';
+import { PlantExtendedInterface } from '../interfaces/plant';
+import { FanMotorInterface } from './fan-motor';
+import { LightSwitchInterface } from './light-switch';
+import { ProbeInterface } from './probe';
+import { TemperatureInterface } from './temperature';
+import { WaterRefillInterface } from './water-refill';
+import { WorkerInterface } from './worker';
 
-export interface Room {
+export interface RoomInterface {
   id: number;
   name: string;
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
-  plants: PlantExtended[];
+  plants: PlantExtendedInterface[];
 }
 
-export interface RoomExtended extends Room {
+export interface RoomExtendedInterface extends RoomInterface {
   location?: Location;
   locationId?: number;
-  probes?: any[];
-  workers?: any[];
-  settings?: any;
+  probes?: ProbeInterface[];
+  workers?: WorkerInterface[];
+  settings?: unknown;
   operatingMode?: number;
-  operatingModes: any[];
+  operatingModes: number[];
   probesComponents: {
-    airtemp: any;
+    airtemp: TemperatureInterface;
   };
   workersComponents: {
-    light: any;
-    fan: any;
-    nutrientRefill: any;
-    phDown: any;
+    light: LightSwitchInterface;
+    fan: FanMotorInterface;
+    nutrientRefill: WaterRefillInterface;
+    phDown: WaterRefillInterface;
   };
   visible?: boolean;
   isBlooming?: boolean;
@@ -33,6 +38,7 @@ export interface RoomExtended extends Room {
   isNursery?: boolean;
   isHarvested?: boolean;
   serialNumber?: string;
+  
 }
 
 // PH = 5.8 +/- 0.5

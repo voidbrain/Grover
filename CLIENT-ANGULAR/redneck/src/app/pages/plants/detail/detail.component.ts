@@ -90,7 +90,7 @@ export class PlantsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   public id: number;
   public page = 'plants';
-  formDefinition: FieldConfig;;
+  formDefinition: FieldConfig;
 
   constructor(
     public db: DbService,
@@ -169,7 +169,7 @@ export class PlantsDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = +this.route.snapshot.paramMap.get('id');
 
     this.db.load();
 
@@ -232,8 +232,8 @@ export class PlantsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Record<string, any>) {
-    this.save(value as Plant);
+  formSubmitted(value: Plant) {
+    this.save(value);
   }
 
   async save(value: Plant) {

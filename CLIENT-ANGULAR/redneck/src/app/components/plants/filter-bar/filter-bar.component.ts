@@ -25,13 +25,11 @@ import {
   styleUrl: './filter-bar.component.scss',
 })
 export class FilterBarComponent {
-  @Input() config: any;
+  @Input() config;
   @Output() emitChange = new EventEmitter();
 
-  updateSelection(event: any) {
-    this.config.options.find(
-      (el: any) => el.id === event.detail.value,
-    ).isChecked = event.detail.checked;
+  updateSelection(event: CustomEvent) {
+    this.config.options.find((el) => el.id === event.detail.value).isChecked = event.detail.checked;
     this.emitChange.emit(this.config);
   }
 }

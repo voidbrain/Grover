@@ -83,6 +83,11 @@ import { ProbeInterface } from '../../../interfaces/probe';
 import { WorkerInterface } from '../../../interfaces/worker';
 import { LocationInterface } from '../../../interfaces/location';
 
+export interface Obj {
+  name: string,
+  value: number
+}
+
 @Component({
   selector: 'app-plants-master',
   standalone: true,
@@ -134,7 +139,7 @@ import { LocationInterface } from '../../../interfaces/location';
   styleUrl: './master.component.scss',
 })
 export class PlantsMasterComponent implements OnInit {
-  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
   @ViewChild(CheckboxComponent) form: CheckboxComponent | undefined;
   faTemperatureHalf = faTemperatureHalf;
   faEye = faEye;
@@ -265,13 +270,13 @@ export class PlantsMasterComponent implements OnInit {
         const epochDiffBloom: number =
           new Date().getTime() -
           new Date(plant.dayStartBloom as number).getTime();
-        (plant.daysFromBloom as any) = plant.dayStartBloom
+        plant.daysFromBloom = plant.dayStartBloom
           ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
           : null;
         const epochDiffFlush: number =
           new Date().getTime() -
           new Date(plant.dayStartFlush as number).getTime();
-        (plant.daysFromFlush as any) = plant.dayStartFlush
+        plant.daysFromFlush = plant.dayStartFlush
           ? Math.ceil(epochDiffFlush / (1000 * 60 * 60 * 24))
           : null;
 
@@ -283,7 +288,7 @@ export class PlantsMasterComponent implements OnInit {
         let flagBlooming = false;
         let flagFlushing = false;
         plant.calendar?.phases.forEach((plantPhase: PhaseExtended) => {
-          const countingDays: any = plantPhase?.isFlushing
+          const countingDays = plantPhase?.isFlushing
             ? plant.daysFromFlush
             : plantPhase?.isBlooming
               ? plant.daysFromBloom
@@ -316,17 +321,17 @@ export class PlantsMasterComponent implements OnInit {
     });
     plants = plants.filter(
       (el) =>
-        (this.formDefinition.options.find((el: any) => el.id === 0).isChecked
+        (this.formDefinition.options.find((el) => el.id === 0).isChecked
           ? el.dayStartGrow && !el.dayStartBloom
           : 0) ||
-        (this.formDefinition.options.find((el: any) => el.id === 1).isChecked
+        (this.formDefinition.options.find((el) => el.id === 1).isChecked
           ? el.dayStartBloom
           : 0) ||
-        (this.formDefinition.options.find((el: any) => el.id === 2).isChecked
+        (this.formDefinition.options.find((el) => el.id === 2).isChecked
           ? el.dayHarvest
           : 0),
     );
-    plants.sort((a: any, b: any) => {
+    plants.sort((a, b) => {
       if (+a.dayStartBloom === +b.dayStartBloom) {
         return +a.dayStartGrow > +b.dayStartGrow ? 1 : -1;
       } else {
@@ -396,13 +401,13 @@ export class PlantsMasterComponent implements OnInit {
         room.workersComponents.fan.status = DevicesStatus.ON;
       } // TODO
 
-      const modes: any[] = [];
+      const modes: Obj[] = [];
       const enumValues = Object.values(OperatingModes);
       const k = enumValues.slice(0, enumValues.length / 2);
 
-      k.map((el: any) => {
+      k.map((el) => {
         modes.push({
-          name: el,
+          name: el as string,
           value: OperatingModes[el],
         });
       });
@@ -422,7 +427,7 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   async deleteItem(item: PlantExtended) {
-    this.slidingItem._results.map((el: any) => {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
@@ -430,14 +435,14 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   showDetail(item: PlantExtended) {
-    this.slidingItem._results.map((el: any) => {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher: any) {
-    this.slidingItem._results.map((el: any) => {
+  async doRefresh(refresher) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
 
@@ -448,13 +453,13 @@ export class PlantsMasterComponent implements OnInit {
   filterList() {
     this.rooms.map(async (room: RoomExtended) => {
       room.visible =
-        (this.formDefinition.options.find((el: any) => el.id === 0).isChecked &&
+        (this.formDefinition.options.find((el) => el.id === 0).isChecked &&
           room.isVegetative) ||
-        (this.formDefinition.options.find((el: any) => el.id === 1).isChecked &&
+        (this.formDefinition.options.find((el) => el.id === 1).isChecked &&
           room.isBlooming) ||
-        (this.formDefinition.options.find((el: any) => el.id === 2).isChecked &&
+        (this.formDefinition.options.find((el) => el.id === 2).isChecked &&
           room.isHarvested) ||
-        (this.formDefinition.options.find((el: any) => el.id === 3).isChecked &&
+        (this.formDefinition.options.find((el) => el.id === 3).isChecked &&
           room.isNursery);
     });
   }
@@ -470,7 +475,7 @@ export class PlantsMasterComponent implements OnInit {
     });
   }
 
-  async presentToast(header: any, message: any, color: any, duration: any) {
+  async presentToast(header: string, message: string, color: string, duration: number) {
     const toast = await this.toastController.create({
       header,
       message,
@@ -484,26 +489,26 @@ export class PlantsMasterComponent implements OnInit {
     await toast.onDidDismiss();
   }
 
-  async read(probe: any) {
-    const room: any = this.rooms.find(
+  async read(probe) {
+    const room = this.rooms.find(
       (el) => el.locationId === probe.locationId,
     );
     const action = ServerCommands.READ;
-    const response: any = await this.runRemoteCommand(
+    const response = await this.runRemoteCommand(
       room,
       ServerPages.actuators,
       action,
       probe.id,
       Peripherals.Probe,
     );
-    if (response.error) {
+    if (response["error"]) {
       const header = `Error`;
-      const message = response.error;
+      const message = response["error"];
       const color = 'danger';
       const duration = 3000;
       this.presentToast(header, message, color, duration);
     } else {
-      room.probesComponents.airtemp.value = response.value;
+      room.probesComponents.airtemp.value = response["value"];
       const header = `Success`;
       const message = `Action executed`;
       const color = 'success';
@@ -512,8 +517,8 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async toggleLight(worker: any) {
-    const room: any = this.rooms.find(
+  async toggleLight(worker) {
+    const room = this.rooms.find(
       (el) => el.locationId === worker.locationId,
     );
     const action =
@@ -529,22 +534,22 @@ export class PlantsMasterComponent implements OnInit {
     );
   }
 
-  async toggleFan(worker: any) {
-    const room: any = this.rooms.find(
+  async toggleFan(worker) {
+    const room = this.rooms.find(
       (el) => el.locationId === worker.locationId,
     );
     const action =
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
         : ServerCommands.ON;
-    const response: any = await this.runRemoteCommand(
+    const response = await this.runRemoteCommand(
       room,
       ServerPages.actuators,
       action,
       worker.id,
       Peripherals.Worker,
     );
-    if (response.error) {
+    if (response["error"]) {
       const header = `Error`;
       const message = `Error occured`;
       const color = 'danger';
@@ -553,20 +558,20 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async setRoomStatus(event: any, room: RoomExtended) {
-    const response: any = this.runRemoteCommand(
+  async setRoomStatus(event: unknown, room: RoomExtended) {
+    const response = this.runRemoteCommand(
       room,
       ServerPages.system,
       ServerCommands.SET_MODE,
       room.id,
-      event.detail.value,
+      event["detail"]["value"],
     );
-    room.operatingMode = +response.mode;
+    room.operatingMode = +response["mode"];
   }
 
-  async shufflePhDown(worker: any) {
+  async shufflePhDown(worker) {
     if (worker) {
-      const room: any = this.rooms.find(
+      const room = this.rooms.find(
         (el) => el.locationId === worker.locationId,
       );
       const duration = 1000;
@@ -581,9 +586,9 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async shuffleNutrient(worker: any) {
+  async shuffleNutrient(worker) {
     if (worker) {
-      const room: any = this.rooms.find(
+      const room = this.rooms.find(
         (el) => el.locationId === worker.locationId,
       );
       const duration = 1000;
@@ -604,10 +609,10 @@ export class PlantsMasterComponent implements OnInit {
     action: string,
     id: number,
     type: string,
-    duration?: any,
+    duration?: number,
   ) {
     return new Promise(async (resolve, reject) => {
-      const run: any = this.db.api.remoteDeviceExecute(
+      const run = this.db.api.remoteDeviceExecute(
         room?.settings?.address,
         room?.settings?.port,
         page,

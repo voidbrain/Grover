@@ -74,7 +74,7 @@ import { Company } from '../../../interfaces/company';
   styleUrl: './master.component.scss',
 })
 export class CompaniesMasterComponent {
-  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
   items: Company[];
   page = 'companies';
 
@@ -104,24 +104,24 @@ export class CompaniesMasterComponent {
     console.info('[PAGE]: Ready');
   }
 
-  async deleteItem(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  async deleteItem(item) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
     await this.db.deleteItem(this.page, item);
     this.getItems();
   }
 
-  showDetail(item: any) {
-    this.slidingItem._results.map((el: any) => {
+  showDetail(item) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
 
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher: any) {
-    this.slidingItem._results.map((el: any) => {
+  async doRefresh(refresher) {
+    this.slidingItems.map((el) => {
       el.closeOpened();
     });
 

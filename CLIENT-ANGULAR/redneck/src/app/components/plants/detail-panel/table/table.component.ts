@@ -12,5 +12,5 @@ import { RoomExtended } from '../../../../interfaces/room';
 export class PanelTableComponent {
   @Input() plant: PlantExtended;
   @Input() room: RoomExtended;
-  @Input() tableValues: any[] = [];
+  @Input() tableValues: unknown[] = [];
 }

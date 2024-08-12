@@ -128,7 +128,7 @@ export class PanelChartComponent implements OnChanges {
 
     const data = this.dataArray;
     data.labels = [...labels];
-    this.data = data as any;
+    this.data = data;
 
     this.filterData('beginning');
   }
@@ -300,7 +300,7 @@ export class PanelChartComponent implements OnChanges {
   filterDates(fromDate, toDate) {
     const filteredData = JSON.parse(JSON.stringify(this.data));
     filteredData['datasets'].map((dataset) => {
-      dataset.data = dataset['data']?.filter((item: any) => {
+      dataset.data = dataset['data']?.filter((item) => {
         return (
           new Date(item.t).getTime() >= new Date(fromDate).getTime() &&
           new Date(item.t).getTime() <= new Date(toDate).getTime()
@@ -308,7 +308,7 @@ export class PanelChartComponent implements OnChanges {
       });
     });
     filteredData['labels'] = [...filteredData['labels']].filter(
-      (label: any) => {
+      (label) => {
         return (
           new Date(label).getTime() >= new Date(fromDate).getTime() &&
           new Date(label).getTime() <= new Date(toDate).getTime()

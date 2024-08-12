@@ -15,5 +15,7 @@ export interface WorkerInterface {
 
 
   waterLoop: object
+
+  log?: object[];
   
 }

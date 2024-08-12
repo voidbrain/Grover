@@ -1,5 +1,4 @@
-import { Location } from './location';
-export interface Pot {
+export interface PotInterface {
   id: number;
   name: string;
   enabled: boolean;

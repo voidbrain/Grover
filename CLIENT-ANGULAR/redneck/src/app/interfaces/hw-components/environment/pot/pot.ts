@@ -1,4 +1,4 @@
-import { ProbesTypes, WorkersTypes } from "../../../services/settings/enums";
+import { ProbesTypes, WorkersTypes } from "../../../../services/settings/enum";
 
 import TemperatureComponent from "../../probes/temperature/temperature";
 // import PhProbe from '../../probes/ph/ph';
@@ -11,13 +11,17 @@ import RoomWaterRefillComponent from "../../actuators/room-water-refill/room-wat
 import RoomPhDownRefillComponent from "../../actuators/room-phdown-refill/room-phdown-refill";
 import RoomNutrientRefillComponent from "../../actuators/room-nutrient-refill/room-nutrient-refill";
 
-import { LocationInterface } from "../../../interfaces/location";
-import { PotInterface } from "../../../interfaces/pot";
-import { RoomInterface } from "../../../interfaces/room";
-import { PlantExtended } from "../../../interfaces/plant";
-import { PhaseExtended } from "../../../interfaces/phase";
-import { ProbeInterface } from "../../../interfaces/probe";
-import { WorkerInterface } from "../../../interfaces/worker";
+import { LocationInterface } from "../../../location";
+import { PotInterface } from "../../../pot";
+import { RoomInterface } from "../../../room";
+import { PlantExtended } from "../../../plant";
+import { PhaseExtended } from "../../../phase";
+import { ProbeInterface } from "../../../probe";
+import { WorkerInterface } from "../../../worker";
+import { DbService } from "../../../../services/db/db.service";
+import { ApiService } from "../../../../services/api/api.service";
+import { SettingsService } from "../../../../services/settings/settings.service";
+import { PhaseInterface } from "../../../phase";
 
 class PotComponent {
   room: RoomInterface;
@@ -31,16 +35,16 @@ class PotComponent {
   probes: ProbeInterface[] = [];
   workers: WorkerInterface[] = [];
   settings;
-  locationId: number;
-  phase;
+  locationId?: number;
+  phase: PhaseInterface;
 
   constructor(
     primaryWaterPump,
     primaryPhDownPump,
     primaryNutrientPump,
-    db,
-    api,
-    settings,
+    db: DbService,
+    api: ApiService,
+    settings: SettingsService,
   ) {
     // this.phProbe = new PhProbe(phProbeID);
     // this.ecProbe = new EcProbe(ecProbeID);
@@ -54,7 +58,7 @@ class PotComponent {
     this.settings = settings;
   }
 
-  async setup(locationId) {
+  async setup(locationId: number) {
     this.locationId = locationId;
     const pot: PotInterface = (await this.db.getItem(
       "pots",
@@ -70,23 +74,23 @@ class PotComponent {
       "probes_list",
       pot.locationId,
       "locationId",
-    );
+    ) as ProbeInterface[];
     const workersArr: WorkerInterface[] = await this.db.getItems(
       "workers_list",
       pot.locationId,
       "locationId",
-    );
+    ) as WorkerInterface[];
 
     const plant: PlantExtended = await this.db.getItem(
       "plants",
       pot.id,
       "idPot",
-    );
+    ) as PlantExtended;
     const phases: PhaseExtended[] = await this.db.getItems(
       "calendar_phases",
       plant.idCalendar,
       "idCalendar",
-    );
+    ) as PhaseExtended[];
     await Promise.all(
       phases.map(async (phase) => {
         const dose = await this.db.getItem(

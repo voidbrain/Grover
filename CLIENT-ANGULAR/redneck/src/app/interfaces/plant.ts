@@ -1,12 +1,11 @@
-import { Strain } from './strain';
-import { Pot } from './pot';
-import { Location } from './location';
-import { Calendar, PhaseExtended } from './calendar';
+import { StrainInterface } from './strain';
+import { PotInterface } from './pot';
+import { Calendar, PhaseExtendedInterface } from './calendar';
+import { ProbeInterface } from './probe';
+import { WorkerInterface } from './worker';
+import { WaterLoopInterface } from './water-loop';
 
-export interface VoidPlant {
-  idPot: null;
-}
-export interface Plant {
+export interface PlantInterface {
   alerts: string;
   dayHarvest: number | null;
   daySecondTrimming: number | null;
@@ -29,21 +28,21 @@ export interface Plant {
   yeld: number;
 }
 
-export interface PlantExtended extends Plant {
-  plant: any;
-  strain: Strain;
+export interface PlantExtendedInterface extends PlantInterface {
+  plant: PlantInterface;
+  strain: StrainInterface;
   expanded: boolean;
-  pot: Pot;
+  pot: PotInterface;
   daysFromGrow?: number;
   daysFromBloom?: number;
   dayStartFlush?: number;
   daysFromFlush?: number;
-  phase?: PhaseExtended;
+  phase?: PhaseExtendedInterface;
   calendar?: Calendar;
   location?: Location; // Location;
-  probes?: any[];
-  workers?: any[];
+  probes?: ProbeInterface[];
+  workers?: WorkerInterface[];
   workersComponents: {
-    waterLoop: any;
+    waterLoop: WaterLoopInterface;
   };
 }

@@ -85,7 +85,7 @@ import { FieldConfig } from '../../../components/shared/form/models/field-config
 })
 export class CalendarsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
-  public id: number;
+  public id?: number;
   public page = 'calendars';
   formDefinition: FieldConfig;;
 
@@ -120,24 +120,24 @@ export class CalendarsDetailComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = +(this.route.snapshot.paramMap.get('id') ?? '');
 
     await this.db.load();
-
-    this.form.changes.subscribe(() => {
-      this.form.setDisabled('submit', !this.form.valid);
+    
+    this.form?.changes.subscribe(() => {
+      this.form?.setDisabled('submit', !this.form?.valid);
     });
 
-    this.getItem(this.route.snapshot.paramMap.get('id') as string);
+    this.getItem(+(this.route.snapshot.paramMap.get('id') ?? ''));
   }
 
   goBack() {
     this.router.navigate([this.page]);
   }
 
-  async getItem(id: any) {
+  async getItem(id: number) {
     if (id) {
-      const item: Calendar = await this.db.getItem(this.page, id);
+      const item: Calendar = await this.db.getItem(this.page, id) as Calendar;
 
       if (item) {
         this.form.setFormValues(item);
@@ -150,14 +150,14 @@ export class CalendarsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Record<string, any>) {
-    this.save(value as Calendar);
+  formSubmitted(value: Calendar) {
+    this.save(value);
   }
 
-  async save(value: any) {
+  async save(value) {
     this.form.config
       .filter((el) => el.type === 'date')
-      .map((el: any) => {
+      .map((el) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     await this.db.putItem(this.page, value);

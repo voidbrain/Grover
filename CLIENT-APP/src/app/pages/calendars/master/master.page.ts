@@ -9,7 +9,7 @@ import { DbService } from '../../../services/db/db.service';
     styleUrls: ['./master.page.scss'],
 })
 export class MasterPage implements OnInit {
-    @ViewChildren('slidingItem') private slidingItem;
+    @ViewChildren('slidingItems') private slidingItems: IonItemSliding[];
     items: any;
     table = 'calendars';
 

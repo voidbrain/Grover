@@ -132,7 +132,7 @@ export class DosesDetailComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = +this.route.snapshot.paramMap.get('id');
 
     await this.db.load();
 
@@ -146,7 +146,7 @@ export class DosesDetailComponent implements OnInit {
     this.router.navigate([this.page]);
   }
 
-  async getItem(id: any) {
+  async getItem(id: number) {
     if (id) {
       const item: Dose = await this.db.getItem(this.page, id);
       console.log(item);
@@ -161,11 +161,11 @@ export class DosesDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Record<string, any>) {
-    this.save(value as Dose);
+  formSubmitted(value: Dose) {
+    this.save(value);
   }
 
-  async save(value: any) {
+  async save(value) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el) => {

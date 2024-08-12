@@ -56,7 +56,7 @@ import { FieldConfig } from '../../models/field-config.interface';
 })
 export class DynamicFormComponent implements OnChanges, OnInit {
   @Input() config: FieldConfig[] = [];
-  @Output() submitForm: EventEmitter<any> = new EventEmitter<any>();
+  @Output() submitForm: EventEmitter<CustomEvent> = new EventEmitter<CustomEvent>();
 
   form: FormGroup = new FormGroup({});
 
@@ -91,7 +91,7 @@ export class DynamicFormComponent implements OnChanges, OnInit {
       configControls
         .filter((control) => !controls.includes(control))
         .forEach((name) => {
-          const config: any = this.config.find(
+          const config = this.config.find(
             (control) => control.name === name,
           );
           this.form.addControl(name, this.createControl(config));
@@ -132,11 +132,11 @@ export class DynamicFormComponent implements OnChanges, OnInit {
     });
   }
 
-  setValue(name: string, value: any) {
+  setValue(name: string, value) {
     this.form.controls[name].setValue(value, { emitEvent: true });
   }
 
-  setFormValues(form: any) {
+  setFormValues(form) {
     console.log(form, this.form);
     this.form.patchValue(form, { emitEvent: true });
   }

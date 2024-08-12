@@ -14,9 +14,12 @@ export interface FieldConfig {
   placeholder?: string;
   type: string;
   validation?: ValidatorFn[];
-  value?: any;
+  value?: number | string;
   min?: number;
   max?: number;
   icon?: string;
   multiple?: boolean;
+  find(el): () => {
+    options: object
+  };
 }

@@ -4,19 +4,27 @@ import { WaterRefillInterface } from "./water-refill";
 import { PhProbeInterface } from "./ph-probe";
 import { EcProbeInterface } from "./ec-probe";
 
+export interface LogRow {
+  executedTime: string;
+  action: string;
+  value: number;
+}
+
 export interface ProbeInterface {
     locationId: number;
     // id: number | string;
-    type?: string;
+    type?: { minAcceptableValue: number; maxAcceptableValue: number };
     probeType?: number;
     // component?: unknown; // TemperatureComponent | PhProbeComponent | EcProbeComponent;
     // address: string;
-    schedule?: object;
+    schedule?: unknown[];
 
     temp?: TemperatureInterface;
     waterLevel?: WaterLevelInterface;
     WaterRefill?: WaterRefillInterface;
     ph?: PhProbeInterface;
     ec?: EcProbeInterface;
+
+    log?: LogRow[]
   }
   
