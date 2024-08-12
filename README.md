@@ -55,9 +55,12 @@ dtoverlay=w1-gpio
 
 2. Exit Nano, and reboot the Pi with sudo reboot
 
-3. Log in to the Pi again, and at the command prompt enter sudo modprobe w1-gpio
+3. Log in to the Pi again, and at the command prompt then enter 
 
-4. Then enter sudo modprobe w1-therm
+```shell
+sudo modprobe w1-gpio
+sudo modprobe w1-therm
+```
 
 5. Change directories to the /sys/bus/w1/devices directory by entering cd /sys/bus/w1/devices
 
