@@ -27,7 +27,18 @@ import { RangeComponent } from '../../../shared/range/range.component';
 import { DosesBarComponent } from '../doses-bar/doses-bar.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRuler, faEye } from '@fortawesome/free-solid-svg-icons';
+import { WorkerInterface } from '../../../../interfaces/worker';
+import { ProbeInterface } from '../../../../interfaces/probe';
 
+export interface Obj {
+  error: string,
+  value: number
+}
+
+export interface Obj {
+  error: string,
+  value: number
+}
 @Component({
   selector: 'app-phase-details',
   templateUrl: './phase-details.component.html',
@@ -56,8 +67,8 @@ export class PhaseDetailComponent implements OnChanges {
   @Input() plant!: PlantExtended;
   @Input() room!: RoomExtended;
 
-  probes: any;
-  workers: any;
+  probes: ProbeInterface;
+  workers: WorkerInterface;
   debug = false;
 
   constructor(
@@ -71,7 +82,7 @@ export class PhaseDetailComponent implements OnChanges {
     }
   }
 
-  async presentToast(header: any, message: any, color: any, duration: any) {
+  async presentToast(header: string, message: string, color: string, duration: number) {
     const toast = await this.toastController.create({
       header,
       message,
@@ -137,9 +148,9 @@ export class PhaseDetailComponent implements OnChanges {
     this.workers = workers;
   }
 
-  async read(id: any) {
+  async read(id: number) {
     if (id) {
-      const response: any = await this.runRemoteCommand(
+      const response: Obj = await this.runRemoteCommand(
         ServerPages.actuators,
         ServerCommands.READ,
         id,
@@ -168,7 +179,7 @@ export class PhaseDetailComponent implements OnChanges {
     }
   }
 
-  async toggleWaterRecycle(worker: any) {
+  async toggleWaterRecycle(worker: WorkerInterface) {
     const action =
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
@@ -181,7 +192,7 @@ export class PhaseDetailComponent implements OnChanges {
     );
   }
 
-  async fillWaterLevel(id: any) {
+  async fillWaterLevel(id: number) {
     const duration = 1000;
     this.runRemoteCommand(
       ServerPages.actuators,
@@ -192,7 +203,7 @@ export class PhaseDetailComponent implements OnChanges {
     );
   }
 
-  async fillPhDown(id: any) {
+  async fillPhDown(id: number) {
     const duration = 1000;
     this.runRemoteCommand(
       ServerPages.actuators,
@@ -211,7 +222,7 @@ export class PhaseDetailComponent implements OnChanges {
   //     .catch (() => {});
   // }
 
-  async fillNutrient(id: any) {
+  async fillNutrient(id: number) {
     const duration = 1000;
     this.runRemoteCommand(
       ServerPages.actuators,
@@ -235,10 +246,9 @@ export class PhaseDetailComponent implements OnChanges {
     action: string,
     id: number,
     type: string,
-    duration?: any,
-  ) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
+    duration?: number,
+  ): Promise<Obj> {
+    try {
       const run = this.db.api.remoteDeviceExecute(
         this.room?.settings?.address,
         this.room?.settings?.port,
@@ -248,28 +258,27 @@ export class PhaseDetailComponent implements OnChanges {
         type,
         duration,
       );
-
+  
       if (this.debug) {
         console.log(run);
       }
-      const header = `Success`;
-      const message = `Action executed`;
-      const color = 'success';
-      const toastDuration = 3000;
-      this.presentToast(header, message, color, toastDuration);
-      resolve(run);
-
-      run.catch((err) => {
-        if (this.debug) {
-          console.log(err);
-        }
-        const header = `Connection Error`;
-        const message = `Error connecting to the Grover device`;
-        const color = 'danger';
-        const toastDuration = 3000;
-        this.presentToast(header, message, color, toastDuration);
-        reject(err);
-      });
-    });
+  
+      const result = await run; // Wait for the promise to resolve
+  
+      // Display success toast
+      this.presentToast('Success', 'Action executed', 'success', 3000);
+      
+      return result;
+    } catch (err) {
+      if (this.debug) {
+        console.log(err);
+      }
+  
+      // Display error toast
+      this.presentToast('Connection Error', 'Error connecting to the Grover device', 'danger', 3000);
+      
+      throw err; // Rethrow the error after handling it
+    }
   }
+  
 }

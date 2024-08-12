@@ -127,7 +127,7 @@ export class CalendarsDetailComponent implements OnInit {
       this.form.setDisabled('submit', !this.form.valid);
     });
 
-      this.getItem(this.route.snapshot.paramMap.get('id') as string)
+    this.getItem(this.route.snapshot.paramMap.get('id') as string);
   }
 
   goBack() {
@@ -149,8 +149,7 @@ export class CalendarsDetailComponent implements OnInit {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  formSubmitted(value: { [name: string]: any }) {
+  formSubmitted(value: Record<string, any>) {
     this.save(value as Calendar);
   }
 

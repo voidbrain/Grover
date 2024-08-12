@@ -33,6 +33,7 @@ import {
 import { LoadingController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { Company } from '../../../interfaces/company';
 
 @Component({
   selector: 'app-companies-master',
@@ -73,8 +74,8 @@ import * as ionIcons from 'ionicons/icons';
   styleUrl: './master.component.scss',
 })
 export class CompaniesMasterComponent {
-  @ViewChildren('slidingItem') private slidingItem: any;
-  items: any;
+  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  items: Company[];
   page = 'companies';
 
   constructor(

@@ -23,8 +23,7 @@ import { DateComponent } from '../date/date.component';
 import { Field } from '../../models/field.interface';
 import { FieldConfig } from '../../models/field-config.interface';
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-const components: { [type: string]: Type<Field> } = {
+const components: Record<string, Type<Field>> = {
   text: InputTextComponent,
   password: InputTextComponent,
   email: InputTextComponent,
@@ -43,8 +42,7 @@ const components: { [type: string]: Type<Field> } = {
 };
 
 @Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: '[dynamicField]',
+  selector: '[appDynamicField]',
   standalone: true,
 })
 export class DynamicFieldDirective implements Field, OnChanges, OnInit {

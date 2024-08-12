@@ -24,6 +24,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { Strain } from '../../../interfaces/strain';
 
 @Component({
   selector: 'app-strains-master',
@@ -55,8 +56,8 @@ import * as ionIcons from 'ionicons/icons';
   styleUrl: './master.component.scss',
 })
 export class StrainsMasterComponent {
-  @ViewChildren('slidingItem') private slidingItem: any;
-  items: any;
+  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  items: Strain[];
   page = 'strains';
   debug = true;
 

@@ -31,6 +31,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
+import { CalendarExtended, PhaseExtended } from '../../../interfaces/calendar';
 
 @Component({
   selector: 'app-calendar-master',
@@ -70,8 +71,8 @@ import * as ionIcons from 'ionicons/icons';
   styleUrl: './master.component.scss',
 })
 export class CalendarsMasterComponent {
-  @ViewChildren('slidingItem') private slidingItem: any;
-  items: any;
+  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  items: CalendarExtended[];
   page = 'calendars';
 
   constructor(
@@ -94,7 +95,7 @@ export class CalendarsMasterComponent {
     const items = await this.db.getItems(this.page);
     const doses = await this.db.getItems('doses');
 
-    (items as any).map((item: any) => {
+    items.map((item: CalendarExtended) => {
       if (typeof item.phases == 'string') {
         if (item.phases != '') {
           item.phases = JSON.parse(item.phases);
@@ -103,10 +104,10 @@ export class CalendarsMasterComponent {
         }
       }
       item.doses = item.phases;
-      const valuesArr: any[] = [];
+      const valuesArr: PhaseExtended[] = [];
       if (item.doses && item.doses != null) {
-        item.doses.forEach((dose: any) => {
-          const phase = (doses as any).find((el: any) => el.id == dose.id);
+        item.doses.forEach((dose: PhaseExtended) => {
+          const phase = (doses as PhaseExtended[]).find((el: PhaseExtended) => el.id == dose.id);
           valuesArr.push({
             data: [Math.floor(dose.duration / 7)], // weeks
             backgroundColor: [phase.color],
@@ -178,7 +179,7 @@ export class CalendarsMasterComponent {
     this.getItems();
   }
 
-  showDetail(item: any) {
+  showDetail(item: CalendarExtended) {
     this.slidingItem._results.map((el: any) => {
       el.closeOpened();
     });

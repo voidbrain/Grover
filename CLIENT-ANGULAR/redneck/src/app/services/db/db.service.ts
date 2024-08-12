@@ -26,24 +26,38 @@ export class DbService {
     this.api.init();
   }
 
-  async load(): Promise<any> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise<void>(async (resolve) => {
+  async load(): Promise<void> {
+    try {
       const resetDb = false; // DB also forged on resetDb
       const forceLoading = true;
+  
+      // Initialize the database and services
       await this.initDb(resetDb);
-      await this.initService(resetDb ? resetDb : forceLoading);
-      this.api.networkService.status.subscribe(async (networkStatus) => {
-        if (this.debug) {
-          console.info(
-            '[DB]: Network status: ' + (networkStatus ? 'Online' : 'Offline'),
-          );
-        }
-        await this.syncAndClean('Online');
-        resolve();
+      await this.initService(resetDb || forceLoading);
+  
+      // Wait for network status subscription and handle network-based actions
+      await new Promise<void>((resolve, reject) => {
+        const subscription = this.api.networkService.status.subscribe(async (networkStatus) => {
+          if (this.debug) {
+            console.info('[DB]: Network status:', networkStatus ? 'Online' : 'Offline');
+          }
+  
+          try {
+            await this.syncAndClean(networkStatus ? 'Online' : 'Offline');
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            subscription.unsubscribe(); // Ensure to unsubscribe when done
+          }
+        });
       });
-    });
+    } catch (error) {
+      console.error('[DB]: Error loading data:', error);
+      throw error; // Rethrow to propagate the error up the call stack
+    }
   }
+  
 
   async deleteDb(): Promise<any> {
     this.toastService.pushMessage('Database reset');
@@ -125,23 +139,19 @@ export class DbService {
     });
   }
 
-  async initDb(resetDb = false): Promise<any> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise<void>(async (resolve) => {
-      if (resetDb) {
-        if (globalThis.debug) {
-          console.info('[DB]: Delete db');
-        }
-        await this.deleteDb();
-        resolve();
-      } else {
-        if (globalThis.debug) {
-          console.info('[DB]: Delete db not required');
-        }
-        resolve();
+  async initDb(resetDb = false): Promise<void> {
+    if (resetDb) {
+      if (globalThis.debug) {
+        console.info('[DB]: Delete db');
       }
-    });
+      await this.deleteDb();
+    } else {
+      if (globalThis.debug) {
+        console.info('[DB]: Delete db not required');
+      }
+    }
   }
+  
 
   async initService(forceLoading = false): Promise<void> {
     const networkStatus = this.api.networkService.status.getValue();
@@ -209,85 +219,66 @@ export class DbService {
     }
   }
 
-  async loadData(table: any, lastUpdate: any): Promise<any> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      const params = { lastUpdate };
-      const res = await this.api.get(table, params);
-      resolve({ [table]: res });
-    });
+  async loadData(table: string, lastUpdate: string): Promise<Record<string, any>> {
+    const params = { lastUpdate };
+    const res = await this.api.get(table, params);
+    return { [table]: res };
   }
 
-  async syncData(dataValues: any) {
-    return new Promise<void>((resolve) => {
-      dataValues.map((data: any) => {
-        const table = Object.keys(data)[0];
-        const res = data[table];
-        if (globalThis.debug) {
-          console.info('[DB]: Db Sync records ready ', table, res, res.length);
-        }
-        try {
-          const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
-          const store = tx.objectStore(table);
-
-          let lastUpdate: any;
-          if (res.items.length) {
-            res.items.map((row: any) => {
-              if (row.id) {
-                let promise;
-                if (row.deleted) {
-                  promise = store.delete(row.id);
-                } else {
-                  promise = store.put(row);
-                }
-                promise.onsuccess = function (e) {
-                  if (globalThis.debug) {
-                    console.info(
-                      '[DB]: Success syncing db table: "' + table + '", item:',
-                      e,
-                    );
-                  }
-                };
-                promise.onerror = function (e) {
-                  console.error(
-                    '[DB]: Error syncing db table: "' + table + '", item:',
-                    e,
-                  );
-                };
+  async syncData(dataValues: any[]): Promise<void> {
+    for (const data of dataValues) {
+      const table = Object.keys(data)[0];
+      const res = data[table];
+  
+      if (globalThis.debug) {
+        console.info('[DB]: Db Sync records ready ', table, res, res.length);
+      }
+  
+      try {
+        const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
+        const store = tx.objectStore(table);
+  
+        let lastUpdate: string | undefined;
+  
+        for (const row of res.items) {
+          if (row.id) {
+            try {
+              if (row.deleted) {
+                await store.delete(row.id);
+              } else {
+                await store.put(row);
               }
-              lastUpdate =
-                row.lastUpdate !== lastUpdate || !lastUpdate
-                  ? row.lastUpdate
-                  : lastUpdate;
-              tx.oncomplete = () => {
-                if (lastUpdate) {
-                  localStorage.setItem(
-                    this.appSettings.appName + '_' + table,
-                    lastUpdate,
-                  );
-                }
-              };
-            });
-          } else {
-            resolve();
+  
+              if (globalThis.debug) {
+                console.info(`[DB]: Success syncing db table: "${table}", item:`, row.id);
+              }
+            } catch (e) {
+              console.error(`[DB]: Error syncing db table: "${table}", item:`, row.id, e);
+            }
           }
-        } catch (e) {
-          console.log(table, e);
+  
+          lastUpdate = !lastUpdate || row.lastUpdate !== lastUpdate ? row.lastUpdate : lastUpdate;
         }
-      });
-    });
+  
+        await new Promise<void>((resolve, reject) => {
+          tx.oncomplete = () => {
+            if (lastUpdate) {
+              localStorage.setItem(
+                `${this.appSettings.appName}_${table}`,
+                lastUpdate,
+              );
+            }
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        });
+  
+      } catch (e) {
+        console.log(`[DB]: Error syncing table "${table}":`, e);
+      }
+    }
   }
-
-  // hi(): Promise<void> {
-  //   console.log("ji")
-  //   return new Promise<void>((resolve) => {
-  //     console.log('DB Service hi() called');
-  //     setTimeout(() => {
-  //       console.log('DB Service hi() resolved');
-  //       resolve();
-  //     }, 2000); // Simulating async operation
-  //   });
-  // }
+  
 
   hi(): Promise<void> {
     return new Promise((resolve) => {
@@ -305,8 +296,7 @@ export class DbService {
         if (id) {
           const queryExecute = dataIndex.get(+id);
           queryExecute.onsuccess = (e: any) => {
-
-            if(e.target.result === undefined) {
+            if (e.target.result === undefined) {
               const queryExecute = dataIndex.get([+id]);
               queryExecute.onsuccess = (e: any) => {
                 resolve(e.target.result);
@@ -321,7 +311,6 @@ export class DbService {
           queryExecute.onerror = (e: any) => {
             console.log(e);
           };
-
         } else {
           resolve(null);
         }
@@ -362,73 +351,90 @@ export class DbService {
     return promise;
   }
 
-  putItem(
-    objectStore: any,
+  async putItem(
+    objectStore: string,
     item: Partial<Plant> | Strain | Company | Dose | Calendar,
   ): Promise<void> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
+    try {
       if (!item.id) {
         delete item.id;
       }
-      const lastUpdate = localStorage.getItem(
-        this.appSettings.appName + '_' + objectStore,
-      );
+  
+      const lastUpdate = localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
       const params = { lastUpdate };
       const response = await this.api.post(objectStore, item, params);
-      const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
-      const store = tx.objectStore(objectStore);
-      const promise = store.put(response.items[0]);
-      promise.onsuccess = function () {
-        resolve();
-      };
-      promise.onerror = function (e) {
-        console.error('[DB]: Error adding: ' + e);
-      };
-    });
+  
+      if (response && response.items && response.items.length > 0) {
+        const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
+        const store = tx.objectStore(objectStore);
+        const request = store.put(response.items[0]);
+  
+        return new Promise<void>((resolve, reject) => {
+          request.onsuccess = () => resolve();
+          request.onerror = (e) => {
+            console.error(`[DB]: Error adding item to ${objectStore}:`, e);
+            reject(e);
+          };
+        });
+      } else {
+        throw new Error(`[API]: No valid items returned from API for ${objectStore}`);
+      }
+    } catch (error) {
+      console.error(`[DB]: Failed to put item in ${objectStore}:`, error);
+      return Promise.reject(error);
+    }
   }
+  
 
-  deleteItem(objectStore: any, itemToDelete: any): Promise<void> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
+  async deleteItem(objectStore: string, itemToDelete: any): Promise<void> {
+    try {
       const item = await this.api.delete(objectStore, itemToDelete);
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
       const store = tx.objectStore(objectStore);
+  
       if (item.synced !== 0) {
-        const objectStoreRequest = store.delete(item.id);
-        objectStoreRequest.onsuccess = function () {
-          if (globalThis.debug) {
-            console.info(
-              '[DB]: item deleted. Table: "' + objectStore + '" id:' + item.id,
-            );
-          }
-          resolve();
-        };
+        await this.performStoreOperation(store, 'delete', item.id, objectStore);
       } else {
         if (globalThis.debug) {
           console.info(
-            '[DB]: item still not synced, don\'t remove from db but set to deleted:1. Table: "' +
-              objectStore +
-              '" id:' +
-              item.id,
+            `[DB]: Item not synced, marking as deleted: 1. Table: "${objectStore}", ID: ${item.id}`
           );
         }
+  
         item.deleted = 1;
-        const tx1 = (this.db as IDBDatabase).transaction(
-          objectStore,
-          'readwrite',
-        );
-        const store1 = tx1.objectStore(objectStore);
-        const promise = store1.put(item);
-        promise.onsuccess = function () {
-          resolve();
-        };
-        promise.onerror = function (e) {
-          console.error('[DB]: Error adding: ' + e);
-        };
+        await this.performStoreOperation(store, 'put', item, objectStore);
       }
+    } catch (e) {
+      console.error(`[DB]: Error processing item: ${e}`);
+      throw e; // Rethrow error to allow higher-level handling if needed.
+    }
+  }
+  
+  private performStoreOperation(
+    store: IDBObjectStore,
+    operation: 'delete' | 'put',
+    data: any,
+    objectStore: string
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const request = operation === 'delete' ? store.delete(data) : store.put(data);
+  
+      request.onsuccess = () => {
+        if (globalThis.debug) {
+          const action = operation === 'delete' ? 'deleted' : 'updated';
+          console.info(`[DB]: Item ${action}. Table: "${objectStore}", Data: ${data}`);
+        }
+        resolve();
+      };
+  
+      request.onerror = (e) => {
+        console.error(`[DB]: Error during ${operation}: ${e}`);
+        reject(e);
+      };
     });
   }
+  
+  
 
   ////////////////////////////////////////////////
   //                                            //
@@ -436,23 +442,20 @@ export class DbService {
   //                                            //
   ////////////////////////////////////////////////
 
-  syncAndClean(networkStatus: any): Promise<any> {
-    // eslint-disable-next-line no-async-promise-executor
-    const promise = new Promise<void>(async (resolve) => {
-      if (networkStatus) {
-        this.toastService.pushMessage('Database sync and cleaning');
-        await this.syncStoredItems();
-        await this.removeDeletedItem();
-        if (globalThis.debug) {
-          console.info('[DB]: Db cleaned');
-        }
-        resolve();
-      } else {
-        resolve();
+  async syncAndClean(networkStatus: boolean): Promise<void> {
+    if (networkStatus) {
+      this.toastService.pushMessage('Database sync and cleaning');
+      await this.syncStoredItems();
+      await this.removeDeletedItem();
+      
+      if (globalThis.debug) {
+        console.info('[DB]: Db cleaned');
       }
-    });
-    return promise;
+    }
+  
+    // The method automatically resolves the promise when it completes
   }
+  
 
   syncStoredItems(): Promise<any> {
     const promise = new Promise<void>((resolve) => {

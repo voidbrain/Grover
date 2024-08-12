@@ -1,8 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  APP_INITIALIZER,
-  Component,
-} from '@angular/core';
+import { APP_INITIALIZER, Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import {
   IonApp,
@@ -24,7 +21,7 @@ import * as ionIcons from 'ionicons/icons';
 import { DbService } from './services/db/db.service';
 
 export function initializeApp(dbService: DbService): () => Promise<void> {
-  console.log("ooooo")
+  console.log('ooooo');
   return () => dbService.hi();
 }
 

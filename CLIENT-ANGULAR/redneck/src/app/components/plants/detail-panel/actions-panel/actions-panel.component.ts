@@ -21,6 +21,14 @@ import {
 } from '@ionic/angular/standalone';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowsRotate, faFill } from '@fortawesome/free-solid-svg-icons';
+import { ProbeInterface } from '../../../../interfaces/probe';
+import { WorkerInterface } from '../../../../interfaces/worker';
+import { WaterLoopInterface } from '../../../../interfaces/water-loop';
+
+export interface Obj {
+  error: string,
+  value: number
+}
 
 @Component({
   selector: 'app-actions-panel',
@@ -44,8 +52,8 @@ export class ActionsPanelComponent implements OnChanges {
   faArrowsRotate = faArrowsRotate;
   faFill = faFill;
 
-  probes: any;
-  workers: any;
+  probes: ProbeInterface;
+  workers: WorkerInterface;
   debug = false;
 
   constructor(
@@ -59,7 +67,12 @@ export class ActionsPanelComponent implements OnChanges {
     }
   }
 
-  async presentToast(header: string, message: string, color: string, duration: number) {
+  async presentToast(
+    header: string,
+    message: string,
+    color: string,
+    duration: number,
+  ) {
     const toast = await this.toastController.create({
       header,
       message,
@@ -77,7 +90,7 @@ export class ActionsPanelComponent implements OnChanges {
   }
 
   setup() {
-    const probes = {
+    const probes: ProbeInterface = {
       temp: this.plant?.probes?.find(
         (el) => el.type.id === ProbesTypes.Water_temperature,
       ),
@@ -112,7 +125,7 @@ export class ActionsPanelComponent implements OnChanges {
       this.read(probes.ec.id);
     }
 
-    const workers = {
+    const workers: WorkerInterface = {
       waterLoop: this.plant.workers.find(
         (el) => el.type.id === WorkersTypes.Pot_Water_loop,
       ),
@@ -127,7 +140,7 @@ export class ActionsPanelComponent implements OnChanges {
 
   async read(id: number) {
     if (id) {
-      const response: any = await this.runRemoteCommand(
+      const response: Obj = await this.runRemoteCommand(
         ServerPages.actuators,
         ServerCommands.READ,
         id,
@@ -157,7 +170,7 @@ export class ActionsPanelComponent implements OnChanges {
     }
   }
 
-  async toggleWaterRecycle(worker: any) {
+  async toggleWaterRecycle(worker: WaterLoopInterface) {
     const action =
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
@@ -216,10 +229,9 @@ export class ActionsPanelComponent implements OnChanges {
     action: string,
     id: number,
     type: string,
-    duration?: any,
-  ) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
+    duration?: number,
+  ): Promise<Obj> {
+    try {
       const run = this.db.api.remoteDeviceExecute(
         this.room?.settings?.address,
         this.room?.settings?.port,
@@ -229,28 +241,32 @@ export class ActionsPanelComponent implements OnChanges {
         type,
         duration,
       );
-
+  
       if (this.debug) {
         console.log(run);
       }
+  
+      const result = await run; // Wait for the promise to resolve
       const header = `Success`;
       const message = `Action executed`;
       const color = 'success';
       const toastDuration = 3000;
       this.presentToast(header, message, color, toastDuration);
-      resolve(run);
-
-      run.catch((err) => {
-        if (this.debug) {
-          console.log(err);
-        }
-        const header = `Connection Error`;
-        const message = `Error connecting to the Grover device`;
-        const color = 'danger';
-        const toastDuration = 3000;
-        this.presentToast(header, message, color, toastDuration);
-        reject(err);
-      });
-    });
+      
+      return result;
+    } catch (err) {
+      if (this.debug) {
+        console.log(err);
+      }
+  
+      const header = `Connection Error`;
+      const message = `Error connecting to the Grover device`;
+      const color = 'danger';
+      const toastDuration = 3000;
+      this.presentToast(header, message, color, toastDuration);
+      
+      throw err;
+    }
   }
+  
 }

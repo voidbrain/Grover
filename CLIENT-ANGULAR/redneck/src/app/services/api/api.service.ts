@@ -31,15 +31,14 @@ export class ApiService {
     }
   }
 
-  async get(table: string, params?: any): Promise<any> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      const response = await this.http
-        .get(this.url + table, { params: params })
-        .toPromise();
-
-      resolve(response);
-    });
+  async get<T>(table: string, params?: any): Promise<T> {
+    try {
+      const response = await this.http.get<T>(`${this.url}${table}`, { params }).toPromise();
+      return response;
+    } catch (error) {
+      console.error(`[API]: Error fetching data from ${table}:`, error);
+      throw error; // Propagate the error to the caller
+    }
   }
 
   async post(table: string, items: any, params?: any): Promise<any> {
@@ -80,7 +79,7 @@ export class ApiService {
     });
   }
 
-  remoteDeviceExecute(
+  async remoteDeviceExecute(
     ip: string,
     port: string,
     page: string,
@@ -88,47 +87,46 @@ export class ApiService {
     id: number,
     type: string,
     duration: number,
-  ) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      if (this.networkService.status) {
-        if (this.debug) {
-          console.info('[API]: network available');
-        }
-        if (this.loadingFlag === false) {
-          this.loadingFlag = true;
-          const loading = await this.loadingCtrl.create({
-            message: 'Please wait&hellip;',
-            backdropDismiss: true,
-          });
-          await loading.onDidDismiss();
-          this.loadingFlag = false;
-
-          loading.present();
-          this.http
-            .get(
-              `http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}`,
-            )
-            .subscribe(
-              (response) => {
-                loading.dismiss();
-                // this.loadingFlag = false;
-                resolve(response);
-              },
-              (error) => {
-                loading.dismiss();
-                // this.loadingFlag = false;
-                reject(error);
-              },
-            );
-        }
-      } else {
-        const response = '[API]: network not available';
-        if (this.debug) {
-          console.warn(response);
-        }
-        reject(response);
+  ): Promise<Obj> {
+    if (!this.networkService.status) {
+      const response = '[API]: network not available';
+      if (this.debug) {
+        console.warn(response);
       }
+      return Promise.reject(response);
+    }
+  
+    if (this.debug) {
+      console.info('[API]: network available');
+    }
+  
+    if (this.loadingFlag) {
+      return Promise.reject('[API]: Loading in progress, please wait...');
+    }
+  
+    this.loadingFlag = true;
+  
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait&hellip;',
+      backdropDismiss: true,
     });
+  
+    try {
+      await loading.present();
+  
+      const url = `http://${ip}:${port}/${page}?action=${action}&duration=${duration}&id=${id}&type=${type}`;
+      const response = await this.http.get(url).toPromise();
+  
+      return response;
+    } catch (error) {
+      if (this.debug) {
+        console.error('[API]: Error executing remote command:', error);
+      }
+      return Promise.reject(error);
+    } finally {
+      this.loadingFlag = false;
+      await loading.dismiss();
+    }
   }
+  
 }

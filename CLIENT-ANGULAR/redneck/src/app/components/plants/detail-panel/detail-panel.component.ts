@@ -41,7 +41,7 @@ export class DetailPanelComponent {
   hideSchedule = false;
   hideLog = true;
 
-  setViewComponent(event: any) {
+  setViewComponent(event: CustomEvent) {
     switch (event.detail.value) {
       case 'schedule':
         this.hideLog = true;

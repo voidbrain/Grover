@@ -71,7 +71,7 @@ export class DosesBarHorizontalComponent implements OnChanges {
       },
       {
         id: 'Water',
-        data: +(this.dose.water).toFixed(2),
+        data: +this.dose.water.toFixed(2),
         originalValue: +this.dose.water,
         backgroundColor: '#00f',
         label: 'Water',
@@ -135,9 +135,9 @@ export class DosesBarHorizontalComponent implements OnChanges {
       if (el.data > 0) {
         const rowstyle = `
           .${el.id}_${this.dose?.id} {
-            width: ${el.id === 'pHDown' ? 10 :
-              el.id === 'Water' ? '' :
-              3 * el.data}px;
+            width: ${
+              el.id === 'pHDown' ? 10 : el.id === 'Water' ? '' : 3 * el.data
+            }px;
           }
 
           .${el.id}_${this.dose?.id}:after {

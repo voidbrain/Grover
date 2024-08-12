@@ -41,4 +41,10 @@ export interface Calendar {
   deleted: boolean;
   lastUpdate: number;
   phases: PhaseExtended[];
+  color?: string;
+}
+
+export interface CalendarExtended extends Calendar {
+  doses?: PhaseExtended[];
+  chartConfig: object;
 }

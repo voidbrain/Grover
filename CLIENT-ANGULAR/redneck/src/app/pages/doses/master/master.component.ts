@@ -34,6 +34,7 @@ import {
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DosesBarHorizontalComponent } from '../../../components/plants/detail-panel/doses-bar-horizontal/doses-bar-horizontal.component';
+import { Dose } from '../../../interfaces/dose';
 
 @Component({
   selector: 'app-doses-master',
@@ -69,15 +70,15 @@ import { DosesBarHorizontalComponent } from '../../../components/plants/detail-p
     IonSelectOption,
     IonTitle,
     IonToolbar,
-    DosesBarHorizontalComponent
-],
+    DosesBarHorizontalComponent,
+  ],
   templateUrl: './master.component.html',
   styleUrl: './master.component.scss',
 })
 export class DosesMasterComponent {
   math = Math;
-  @ViewChildren('slidingItem') private slidingItem: any;
-  items: any;
+  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
+  items: Dose[];
   page = 'doses';
 
   constructor(
@@ -102,7 +103,6 @@ export class DosesMasterComponent {
   async getItems() {
     const items = await this.db.getItems(this.page);
     items.map((item: any) => {
-
       item.chartConfig = {
         id: 'chart',
         type: 'bar',

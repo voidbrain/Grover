@@ -41,6 +41,7 @@ import * as ionIcons from 'ionicons/icons';
 import { Company } from '../../../interfaces/company';
 import { Pot } from '../../../interfaces/pot';
 import { DatePipe } from '@angular/common';
+import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
 @Component({
   selector: 'app-companies-detail',
   standalone: true,
@@ -83,9 +84,9 @@ import { DatePipe } from '@angular/common';
 })
 export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
-  public id: any;
+  public id: number;
   public page = 'companies';
-  formDefinition: any;
+  formDefinition: FieldConfig[];
   pots: Pot[] = [];
 
   constructor(
@@ -111,7 +112,7 @@ export class CompaniesDetailComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.id = +this.route.snapshot.paramMap.get('id');
     await this.db.load();
     this.form.changes.subscribe(() => {
       this.form.setDisabled('submit', !this.form.valid);
@@ -123,7 +124,7 @@ export class CompaniesDetailComponent implements OnInit {
     this.router.navigate([this.page]);
   }
 
-  async getItem(id: any) {
+  async getItem(id: string) {
     if (id) {
       const item: Company = await this.db.getItem(this.page, id);
 
@@ -138,15 +139,14 @@ export class CompaniesDetailComponent implements OnInit {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  formSubmitted(value: { [name: string]: any }) {
-    this.save(value as Company);
+  formSubmitted(value: Company) {
+    this.save(value);
   }
 
-  async save(value: any) {
+  async save(value: Company) {
     this.form.config
-      .filter((el: any) => el.type === 'date')
-      .map((el: any) => {
+      .filter((el: FieldConfig) => el.type === 'date')
+      .map((el: FieldConfig) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
 

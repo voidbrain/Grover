@@ -129,11 +129,11 @@ import { GrowingResultsComponent } from '../../../components/plants/growing-resu
   styleUrl: './master.component.scss',
 })
 export class PlantsMasterComponent implements OnInit {
-  @ViewChildren('slidingItem') private slidingItem: any;
+  @ViewChildren('slidingItem') private slidingItem: IonItemSliding;
   @ViewChild(CheckboxComponent) form: CheckboxComponent | undefined;
   faTemperatureHalf = faTemperatureHalf;
   faEye = faEye;
-  public id: any;
+  public id: number;
   items: PlantExtended[] = [];
   page = 'plants';
   debug = false;
@@ -168,7 +168,7 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.id = +this.activatedRoute.snapshot.paramMap.get('id');
   }
 
   async ionViewWillEnter() {

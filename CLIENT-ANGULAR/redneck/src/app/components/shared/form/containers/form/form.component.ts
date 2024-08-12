@@ -49,7 +49,7 @@ import { FieldConfig } from '../../models/field-config.interface';
     (submit)="handleSubmit($event)"
   >
     @for (field of config; track field) {
-      <ng-container dynamicField [config]="field" [group]="form">
+      <ng-container appDynamicField [config]="field" [group]="form">
       </ng-container>
     }
   </form>`,

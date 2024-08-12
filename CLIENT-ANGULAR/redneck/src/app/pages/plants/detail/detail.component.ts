@@ -80,7 +80,6 @@ import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
     IonTitle,
     IonToolbar,
     DynamicFormComponent,
-
   ],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
