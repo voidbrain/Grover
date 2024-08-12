@@ -1,9 +1,0 @@
-{
-  "name": "RedNeck",
-  "integrations": {
-    "capacitor": {},
-    "cordova": {}
-  },
-  "type": "angular",
-  "id": "73c0153c"
-}

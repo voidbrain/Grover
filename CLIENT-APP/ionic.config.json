@@ -1,7 +1,0 @@
-{
-  "name": "RedNeck",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "angular"
-}
