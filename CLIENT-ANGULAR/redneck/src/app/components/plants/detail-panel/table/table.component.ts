@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { PlantExtended } from '../../../../interfaces/plant';
-import { RoomExtended } from '../../../../interfaces/room';
+import { PlantExtendedInterface } from '../../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../../interfaces/room';
 
 @Component({
   selector: 'app-detail-table',
@@ -10,7 +10,7 @@ import { RoomExtended } from '../../../../interfaces/room';
   styleUrls: ['./table.component.scss'],
 })
 export class PanelTableComponent {
-  @Input() plant: PlantExtended;
-  @Input() room: RoomExtended;
+  @Input() plant?: PlantExtendedInterface;
+  @Input() room?: RoomExtendedInterface;
   @Input() tableValues: unknown[] = [];
 }

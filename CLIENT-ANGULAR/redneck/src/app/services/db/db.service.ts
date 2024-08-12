@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { SettingsService } from '../settings/settings.service';
 import { ToastService } from '../toast/toast.service';
-import { Plant } from '../../interfaces/plant';
-import { Strain } from '../../interfaces/strain';
-import { Company } from '../../interfaces/company';
-import { Dose } from '../../interfaces/dose';
-import { Calendar } from '../../interfaces/calendar';
+import { PlantInterface } from '../../interfaces/plant';
+import { StrainInterface } from '../../interfaces/strain';
+import { CompanyInterface } from '../../interfaces/company';
+import { DoseInterface } from '../../interfaces/dose';
+import { CalendarInterface } from '../../interfaces/calendar';
 import { LoadingController } from '@ionic/angular';
 
 @Injectable({
@@ -287,11 +287,11 @@ export class DbService {
     });
   }
 
-  getItem(objectStore, id, column = 'id'): Promise<Plant | Dose | Strain | Company > {
+  getItem(objectStore, id, column = 'id'): Promise<PlantInterface | DoseInterface | StrainInterface | CompanyInterface > {
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: IDBIndex = store.index(column);
-    const promise = new Promise<Plant | Strain | Company | Dose | Calendar>(
+    const promise = new Promise<PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface>(
       (resolve) => {
         if (id) {
           const queryExecute:IDBRequest<unknown> = dataIndex.get(+id);
@@ -323,12 +323,12 @@ export class DbService {
     objectStore: string,
     column = 'enabled, deleted',
     query = [1, 0],
-  ): Promise<(Plant | Dose | Strain | Company)[]> {
+  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface)[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index(column);
     const promise = new Promise<
-      Plant | Strain | Company | Dose | Calendar | unknown
+      PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface | unknown
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);
@@ -353,7 +353,7 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: Partial<Plant> | Strain | Company | Dose | Calendar,
+    item: Partial<PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface>,
   ): Promise<void> {
     try {
       if (!item.id) {

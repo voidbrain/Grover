@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
-import { PlantExtended } from '../../../../interfaces/plant';
-import { RoomExtended } from '../../../../interfaces/room';
+import { PlantExtendedInterface } from '../../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../../interfaces/room';
 import { ChartComponent } from '../../../shared/chart/chart.component';
 import { ProbesTypes } from '../../../../services/settings/enum';
 import {
@@ -39,8 +39,8 @@ import {
   imports: [ChartComponent, IonLabel, IonSegment, IonSegmentButton],
 })
 export class PanelChartComponent implements OnChanges {
-  @Input() plant: PlantExtended;
-  @Input() room: RoomExtended;
+  @Input() plant?: PlantExtendedInterface;
+  @Input() room?: RoomExtendedInterface;
 
   settings;
   data;
@@ -54,16 +54,16 @@ export class PanelChartComponent implements OnChanges {
     Chart.register(...registerables, annotationPlugin, zoomPlugin);
   }
 
-  public chartData: ChartConfiguration['data'];
+  public chartData?: ChartConfiguration['data'];
 
   // Sample options for the chart
-  public chartOptions: ChartOptions;
+  public chartOptions?: ChartOptions;
 
   // Chart type
-  public chartType: ChartType;
+  public chartType?: ChartType;
 
   // Complete chart configuration
-  public chartConfig: ChartConfiguration;
+  public chartConfig?: ChartConfiguration;
 
   ngOnChanges() {
     if (this.plant && this.plant !== undefined) {
@@ -74,8 +74,8 @@ export class PanelChartComponent implements OnChanges {
   setup() {
     this.settings = new SettingsService();
     const labels = new Set();
-
-    this.room.workers?.map((item) => {
+    
+    this.room?.workers?.map((item) => {
       if (item.log?.length) {
         const dataset = { borderColor: '#FF00FF', data: [], hidden: true };
         item.log.map((log) => {
@@ -85,7 +85,7 @@ export class PanelChartComponent implements OnChanges {
         this.dataArray.datasets.push(dataset);
       }
     });
-    this.room.probes?.map((item) => {
+    this.room?.probes?.map((item) => {
       if (item.log?.length) {
         const dataset = { borderColor: '#FFFF00', data: [], hidden: false };
         item.log.map((log) => {
@@ -133,7 +133,7 @@ export class PanelChartComponent implements OnChanges {
     this.filterData('beginning');
   }
 
-  normalizeBetweenTwoRanges(val, minVal, maxVal) {
+  normalizeBetweenTwoRanges(val: number, minVal: number, maxVal: number) {
     const normalizedMax = 100;
     const normalizedMin = 0;
     return (
@@ -158,7 +158,7 @@ export class PanelChartComponent implements OnChanges {
     });
 
     const probeConfig = this.plant?.probes?.find(
-      (el) => el.type.id === ProbesTypes.Water_temperature,
+      (el) => el?.type?.id === ProbesTypes.Water_temperature,
     );
 
     this.chartType = 'line';
@@ -242,7 +242,7 @@ export class PanelChartComponent implements OnChanges {
         zoom: {
           limits: {
             x: { min: xMin.getTime(), max: xMax.getTime() },
-            y: { min: null, max: null },
+            y: { min: undefined, max: undefined },
           },
           pan: {
             enabled: true,
@@ -297,7 +297,7 @@ export class PanelChartComponent implements OnChanges {
     };
   }
 
-  filterDates(fromDate, toDate) {
+  filterDates(fromDate: number | string, toDate: number | string) {
     const filteredData = JSON.parse(JSON.stringify(this.data));
     filteredData['datasets'].map((dataset) => {
       dataset.data = dataset['data']?.filter((item) => {
@@ -327,7 +327,7 @@ export class PanelChartComponent implements OnChanges {
     this.drawChart(filteredData);
   }
 
-  filterData(period) {
+  filterData(period: string) {
     const now = setMinutes(new Date(), 0);
     switch (period) {
       case 'day':

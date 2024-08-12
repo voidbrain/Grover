@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { DbService } from '../../../../services/db/db.service';
-import { PlantExtended } from '../../../../interfaces/plant';
-import { RoomExtended } from '../../../../interfaces/room';
+import { PlantExtendedInterface } from '../../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../../interfaces/room';
 import { ToastController } from '@ionic/angular';
 import {
   ProbesTypes,
@@ -64,11 +64,11 @@ export class PhaseDetailComponent implements OnChanges {
   faEye = faEye;
   faRuler = faRuler;
 
-  @Input() plant!: PlantExtended;
-  @Input() room!: RoomExtended;
+  @Input() plant!: PlantExtendedInterface;
+  @Input() room!: RoomExtendedInterface;
 
-  probes: ProbeInterface;
-  workers: WorkerInterface;
+  probes?: ProbeInterface;
+  workers?: WorkerInterface;
   debug = false;
 
   constructor(
@@ -110,25 +110,25 @@ export class PhaseDetailComponent implements OnChanges {
       ec: this.plant.probes?.find((el) => el.type.id === ProbesTypes.EC),
       ph: this.plant.probes?.find((el) => el.type.id === ProbesTypes.pH),
     };
-    if (probes.temp !== undefined) {
+    if (probes?.temp?.type !== undefined) {
       probes.temp.type.maxWarningValue = this.plant.phase?.maxTemp;
       probes.temp.type.minWarningValue = this.plant.phase?.minTemp;
       probes.temp.value = 0;
       this.read(probes.temp.id);
     }
-    if (probes.waterLevel !== undefined) {
+    if (probes?.waterLevel?.type !== undefined) {
       probes.waterLevel.type.maxWarningValue = this.plant.phase?.maxWaterLevel;
       probes.waterLevel.type.minWarningValue = this.plant.phase?.minWaterLevel;
       probes.waterLevel.value = 0;
       this.read(probes.waterLevel.id);
     }
-    if (probes.ph !== undefined) {
+    if (probes?.ph?.type !== undefined) {
       probes.ph.type.maxWarningValue = this.plant.phase?.maxPh;
       probes.ph.type.minWarningValue = this.plant.phase?.minPh;
       probes.ph.value = 0;
       this.read(probes.ph.id);
     }
-    if (probes.ec !== undefined) {
+    if (probes?.ec?.type !== undefined) {
       probes.ec.type.maxWarningValue = this.plant.phase?.maxEC;
       probes.ec.type.minWarningValue = this.plant.phase?.minEC;
       probes.ec.value = 0;
@@ -137,10 +137,10 @@ export class PhaseDetailComponent implements OnChanges {
 
     const workers = {
       waterLoop: this.plant.workers?.find(
-        (el) => el.type.id === WorkersTypes.Pot_Water_loop,
+        (el) => el.type?.id === WorkersTypes.Pot_Water_loop,
       ),
       refill: this.plant.workers?.find(
-        (el) => el.type.id === WorkersTypes.Pot_refill,
+        (el) => el.type?.id === WorkersTypes.Pot_refill,
       ),
     };
 

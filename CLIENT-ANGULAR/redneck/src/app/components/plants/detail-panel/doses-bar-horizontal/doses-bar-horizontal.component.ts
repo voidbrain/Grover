@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IonCol, IonGrid, IonRow } from '@ionic/angular/standalone';
-import { Dose } from '../../../../interfaces/dose';
+import { DoseInterface } from '../../../../interfaces/dose';
 import { SanitizeHtmlPipe } from '../../../../pipes/sanitize-html/sanitize-html.pipe';
 
 @Component({
@@ -12,7 +12,7 @@ import { SanitizeHtmlPipe } from '../../../../pipes/sanitize-html/sanitize-html.
   styleUrls: ['./doses-bar-horizontal.component.scss'],
 })
 export class DosesBarHorizontalComponent implements OnChanges {
-  @Input() dose!: Dose;
+  @Input() dose!: DoseInterface;
   tot!: number;
   styleDoses = {};
   stylePhDown = {};
@@ -87,29 +87,29 @@ export class DosesBarHorizontalComponent implements OnChanges {
     const Water = dosesArray.find((el) => el.id === 'Water');
 
     const doseStyle =
-      Ripen.backgroundColor +
+      Ripen?.backgroundColor +
       ' ' +
       0 +
       '% ' +
-      Ripen.data +
+      Ripen?.data +
       '%,' +
-      Bloom.backgroundColor +
+      Bloom?.backgroundColor +
       ' ' +
       0 +
       '% ' +
-      Bloom.data +
+      Bloom?.data +
       '%,' +
-      Micro.backgroundColor +
+      Micro?.backgroundColor +
       ' ' +
-      Bloom.data +
+      Bloom?.data +
       '% ' +
-      (Micro.data + Bloom.data) +
+      (Micro?.data + Bloom?.data) +
       '%,' +
-      Grow.backgroundColor +
+      Grow?.backgroundColor +
       ' ' +
-      (Micro.data + Bloom.data) +
+      (Micro?.data + Bloom?.data) +
       '% ' +
-      (Grow.data + Micro.data + Bloom.data) +
+      (Grow?.data + Micro?.data + Bloom?.data) +
       '%';
 
     this.styleDoses = {
@@ -121,12 +121,12 @@ export class DosesBarHorizontalComponent implements OnChanges {
       height: '8px',
 
       width: 3 + 'px',
-      'background-color': pHDown.backgroundColor,
+      'background-color': pHDown?.backgroundColor,
     };
     this.styleWater = {
       height: '8px',
-      width: Water.data + 'px',
-      'background-color': Water.backgroundColor,
+      width: Water?.data + 'px',
+      'background-color': Water?.backgroundColor,
     };
 
     const style = document.createElement('style');

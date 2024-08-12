@@ -35,14 +35,14 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 
-import { Company } from '../../../interfaces/company';
-import { Strain } from '../../../interfaces/strain';
-import { GrowingScenario } from '../../../interfaces/growing-scenario';
-import { GrowingMedium } from '../../../interfaces/growing-medium';
+import { CompanyInterface } from '../../../interfaces/company';
+import { StrainInterface } from '../../../interfaces/strain';
+import { GrowingScenarioInterface } from '../../../interfaces/growing-scenario';
+import { GrowingMediumInterface } from '../../../interfaces/growing-medium';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { Plant } from '../../../interfaces/plant';
-import { Pot } from '../../../interfaces/pot';
+import { PlantInterface } from '../../../interfaces/plant';
+import { PotInterface } from '../../../interfaces/pot';
 import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
 import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
 import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
@@ -169,26 +169,26 @@ export class PlantsDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = +this.route.snapshot.paramMap.get('id');
+    this.id = +(this.route?.snapshot?.paramMap?.get('id') ?? 0);
 
     this.db.load();
 
     this.form.changes.subscribe(() => {
       this.form.setDisabled('submit', !this.form.valid);
     });
-    this.getItem(+this.route.snapshot.paramMap.get('id'));
+    this.getItem(this.id);
   }
 
   goBack() {
     this.router.navigate([this.page]);
   }
 
-  async getItem(id) {
-    const companies: Company[] = await this.db.getItems('companies');
-    const pots: Pot[] = await this.db.getItems('pots');
-    const strains: Strain[] = await this.db.getItems('strains');
-    const gMedium: GrowingMedium[] = await this.db.getItems('growing_mediums');
-    const gScenario: GrowingScenario[] =
+  async getItem(id: number) {
+    const companies: CompanyInterface[] = await this.db.getItems('companies');
+    const pots: PotInterface[] = await this.db.getItems('pots');
+    const strains: StrainInterface[] = await this.db.getItems('strains');
+    const gMedium: GrowingMediumInterface[] = await this.db.getItems('growing_mediums');
+    const gScenario: GrowingScenarioInterface[] =
       await this.db.getItems('growing_scenarios');
 
     this.formDefinition.find((el) => el.name === 'idCompany').options =
@@ -203,7 +203,7 @@ export class PlantsDetailComponent implements OnInit {
     this.formDefinition.find((el) => el.name === 'idGrowingScenario').options =
       gScenario;
     if (id) {
-      const item: Plant = await this.db.getItem(this.page, id);
+      const item: PlantInterface = await this.db.getItem(this.page, id);
 
       if (item) {
         this.form.config
@@ -232,11 +232,11 @@ export class PlantsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: Plant) {
+  formSubmitted(value: PlantInterface) {
     this.save(value);
   }
 
-  async save(value: Plant) {
+  async save(value: PlantInterface) {
     this.form.config
       .filter((el) => el.type === 'date')
       .map((el) => {

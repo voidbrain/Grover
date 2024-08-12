@@ -76,7 +76,7 @@
                       (ngModelChange)="
                         toggleLight(room?.workersComponents?.light)
                       "
-                      [(ngModel)]="room?.workersComponents?.light.status"
+                      [(ngModel)]="room?.workersComponents?.light?.status"
                       color="primary"
                     ></ion-toggle>
                   </ion-item>
@@ -92,7 +92,7 @@
                       class="toggle ion-padding"
                       [disabled]="!room?.serialNumber"
                       (ngModelChange)="toggleFan(room?.workersComponents?.fan)"
-                      [(ngModel)]="room?.workersComponents?.fan.status"
+                      [(ngModel)]="room?.workersComponents?.fan?.status"
                       color="primary"
                     ></ion-toggle>
                   </ion-item>
@@ -132,19 +132,19 @@
                     <app-range
                       class="ion-padding"
                       [minValue]="
-                        room?.probesComponents?.airtemp?.type.minAcceptableValue
+                        room?.probesComponents?.airtemp?.type?.minAcceptableValue
                       "
                       [maxValue]="
-                        room?.probesComponents?.airtemp?.type.maxAcceptableValue
+                        room?.probesComponents?.airtemp?.type?.maxAcceptableValue
                       "
                       [minWarningValue]="
-                        room?.probesComponents?.airtemp?.type.minWarningValue
+                        room?.probesComponents?.airtemp?.type?.minWarningValue
                       "
                       [maxWarningValue]="
-                        room?.probesComponents?.airtemp?.type.maxWarningValue
+                        room?.probesComponents?.airtemp?.type?.maxWarningValue
                       "
                       [value]="room?.probesComponents?.airtemp?.value"
-                      [um]="room?.probesComponents?.airtemp?.type.um"
+                      [um]="room?.probesComponents?.airtemp?.type?.um"
                     ></app-range>
                     <ion-button
                       size="small"

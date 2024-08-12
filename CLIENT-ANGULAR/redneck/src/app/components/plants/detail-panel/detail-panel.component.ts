@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { PlantExtended } from '../../../interfaces/plant';
-import { RoomExtended } from '../../../interfaces/room';
+import { PlantExtendedInterface } from '../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../interfaces/room';
 import {
   IonGrid,
   IonRow,
@@ -35,8 +35,8 @@ import { PhaseDetailComponent } from './phase-details/phase-details.component';
   styleUrl: './detail-panel.component.scss',
 })
 export class DetailPanelComponent {
-  @Input() plant!: PlantExtended;
-  @Input() room!: RoomExtended;
+  @Input() plant!: PlantExtendedInterface;
+  @Input() room!: RoomExtendedInterface;
 
   hideSchedule = false;
   hideLog = true;

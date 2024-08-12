@@ -41,7 +41,7 @@
           </ion-row>
         </ion-grid>
         @for (
-          peripheral of day.data.datasets;
+          peripheral of day?.data.datasets;
           track peripheral;
           let index = $index
         ) {

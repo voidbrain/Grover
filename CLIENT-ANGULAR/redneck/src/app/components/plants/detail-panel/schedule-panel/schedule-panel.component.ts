@@ -8,8 +8,8 @@ import {
   Peripherals,
 } from '../../../../../app/services/settings/enum';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
-import { PlantExtended } from '../../../../interfaces/plant';
-import { RoomExtended } from '../../../../interfaces/room';
+import { PlantExtendedInterface } from '../../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../../interfaces/room';
 import {
   IonSegment,
   IonSegmentButton,
@@ -61,8 +61,8 @@ export class SchedulePanelComponent implements OnChanges {
   faFan = faFan;
   faLightbulb = faLightbulb;
 
-  @Input() plant!: PlantExtended;
-  @Input() room!: RoomExtended;
+  @Input() plant!: PlantExtendedInterface;
+  @Input() room!: RoomExtendedInterface;
 
   items: unknown;
 

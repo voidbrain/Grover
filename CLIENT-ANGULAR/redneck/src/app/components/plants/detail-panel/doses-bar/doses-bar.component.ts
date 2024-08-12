@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IonCol, IonGrid, IonRow } from '@ionic/angular/standalone';
-import { Dose } from '../../../../interfaces/dose';
+import { DoseInterface } from '../../../../interfaces/dose';
 import { SanitizeHtmlPipe } from '../../../../pipes/sanitize-html/sanitize-html.pipe';
 
 @Component({
@@ -12,7 +12,7 @@ import { SanitizeHtmlPipe } from '../../../../pipes/sanitize-html/sanitize-html.
   styleUrls: ['./doses-bar.component.scss'],
 })
 export class DosesBarComponent implements OnChanges {
-  @Input() dose!: Dose;
+  @Input() dose!: DoseInterface;
   tot!: number;
   styleDoses = {};
   stylePhDown = {};

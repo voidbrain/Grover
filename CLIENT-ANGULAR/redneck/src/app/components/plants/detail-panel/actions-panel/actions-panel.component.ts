@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { DbService } from '../../../../services/db/db.service';
-import { PlantExtended } from '../../../../interfaces/plant';
-import { RoomExtended } from '../../../../interfaces/room';
+import { PlantExtendedInterface } from '../../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../../interfaces/room';
 import { ToastController } from '@ionic/angular';
 import {
   ProbesTypes,
@@ -46,14 +46,14 @@ export interface Obj {
   styleUrl: './actions-panel.component.scss',
 })
 export class ActionsPanelComponent implements OnChanges {
-  @Input() plant: PlantExtended | undefined;
-  @Input() room: RoomExtended | undefined;
+  @Input() plant: PlantExtendedInterface | undefined;
+  @Input() room: RoomExtendedInterface | undefined;
 
   faArrowsRotate = faArrowsRotate;
   faFill = faFill;
 
-  probes: ProbeInterface;
-  workers: WorkerInterface;
+  probes?: ProbeInterface;
+  workers?: WorkerInterface;
   debug = false;
 
   constructor(

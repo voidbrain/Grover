@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgStyle, DecimalPipe } from '@angular/common';
 
-import { PlantExtended } from '../../../interfaces/plant';
+import { PlantExtendedInterface } from '../../../interfaces/plant';
 import { IonCard, IonCardContent } from '@ionic/angular/standalone';
 
 @Component({
@@ -12,18 +12,18 @@ import { IonCard, IonCardContent } from '@ionic/angular/standalone';
   imports: [IonCardContent, IonCard, NgStyle, DecimalPipe],
 })
 export class ProgressBarComponent implements OnChanges {
-  @Input() plant!: PlantExtended;
+  @Input() plant!: PlantExtendedInterface;
   tot = 0;
   style = {};
 
-  plantdaysFromGrowPerc;
-  plantdaysFromBloomPerc;
-  plantdaysFromFlushPerc;
+  plantdaysFromGrowPerc: string;
+  plantdaysFromBloomPerc: string;
+  plantdaysFromFlushPerc: string;
 
   constructor() {
-    this.plantdaysFromBloomPerc = 0;
-    this.plantdaysFromFlushPerc = 0;
-    this.plantdaysFromGrowPerc = 0;
+    this.plantdaysFromBloomPerc = ''+0;
+    this.plantdaysFromFlushPerc = ''+0;
+    this.plantdaysFromGrowPerc = ''+0;
   }
 
   ngOnChanges() {
@@ -76,12 +76,12 @@ export class ProgressBarComponent implements OnChanges {
       });
 
       const total =
-        this.plantdaysFromBloomPerc +
-        this.plantdaysFromFlushPerc +
-        this.plantdaysFromGrowPerc;
+        +this.plantdaysFromBloomPerc +
+        +this.plantdaysFromFlushPerc +
+        +this.plantdaysFromGrowPerc;
       const diff = total - 100;
       if (diff !== 0) {
-        this.plantdaysFromGrowPerc -= diff;
+        this.plantdaysFromGrowPerc = ''+(+this.plantdaysFromGrowPerc - diff);
       }
 
       this.plantdaysFromBloomPerc += '%';

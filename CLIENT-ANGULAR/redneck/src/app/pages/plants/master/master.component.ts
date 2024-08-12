@@ -1,4 +1,3 @@
-/* eslint-disable no-async-promise-executor */
 import {
   ActivatedRoute,
   Router,
@@ -27,12 +26,12 @@ import { faTemperatureHalf, faEye } from '@fortawesome/free-solid-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
 import { CheckboxComponent } from '../../../components/shared/form/components/checkbox/checkbox.component';
-import { Calendar, PhaseExtended } from '../../../interfaces/calendar';
-import { Dose } from '../../../interfaces/dose';
-import { PlantExtended } from '../../../interfaces/plant';
-import { RoomExtended } from '../../../interfaces/room';
-import { Pot } from '../../../interfaces/pot';
-import { Strain } from '../../../interfaces/strain';
+import { CalendarInterface, PhaseExtendedInterface } from '../../../interfaces/calendar';
+import { DoseInterface } from '../../../interfaces/dose';
+import { PlantExtendedInterface } from '../../../interfaces/plant';
+import { RoomExtendedInterface } from '../../../interfaces/room';
+import { PotInterface } from '../../../interfaces/pot';
+import { StrainInterface } from '../../../interfaces/strain';
 import { DbService } from '../../../services/db/db.service';
 import { ToastController } from '@ionic/angular';
 import { ProgressBarComponent } from '../../../components/plants/progress-bar/progress-bar.component';
@@ -144,7 +143,7 @@ export class PlantsMasterComponent implements OnInit {
   faTemperatureHalf = faTemperatureHalf;
   faEye = faEye;
   public id: number;
-  items: PlantExtended[] = [];
+  items: PlantExtendedInterface[] = [];
   page = 'plants';
   debug = false;
   formDefinition: FieldConfig;
@@ -152,7 +151,7 @@ export class PlantsMasterComponent implements OnInit {
   remoteAddress = '';
   port: number | undefined;
 
-  rooms: RoomExtended[] = [];
+  rooms: RoomExtendedInterface[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -192,12 +191,12 @@ export class PlantsMasterComponent implements OnInit {
 
   async getItems() {
     const settings: object[] = await this.db.getItems('settings');
-    let plants: PlantExtended[] = await this.db.getItems(this.page);
-    const pots: Pot[] = await this.db.getItems('pots');
-    const strains: Strain[] = await this.db.getItems('strains');
-    const calendar: Calendar[] = await this.db.getItems('calendars');
-    const doses: Dose[] = await this.db.getItems('doses');
-    const rooms: RoomExtended[] = await this.db.getItems('rooms');
+    let plants: PlantExtendedInterface[] = await this.db.getItems(this.page);
+    const pots: PotInterface[] = await this.db.getItems('pots');
+    const strains: StrainInterface[] = await this.db.getItems('strains');
+    const calendar: CalendarInterface[] = await this.db.getItems('calendars');
+    const doses: DoseInterface[] = await this.db.getItems('doses');
+    const rooms: RoomExtendedInterface[] = await this.db.getItems('rooms');
     const locations: LocationInterface[] = await this.db.getItems('locations');
 
     const workersList: WorkerInterface[] = await this.db.getItems('workers_list');
@@ -220,7 +219,7 @@ export class PlantsMasterComponent implements OnInit {
     );
 
     this.items = plants;
-    this.items.map(async (plant: PlantExtended) => {
+    this.items.map(async (plant: PlantExtendedInterface) => {
       plant.calendar = calendar.find((el) => el.id === plant.idCalendar);
       plant.strain = (strains).find((el) => el.id === plant.idStrain);
       if (plant.idPot) {
@@ -280,14 +279,14 @@ export class PlantsMasterComponent implements OnInit {
           ? Math.ceil(epochDiffFlush / (1000 * 60 * 60 * 24))
           : null;
 
-        let foundPhase: PhaseExtended | undefined;
+        let foundPhase: PhaseExtendedInterface | undefined;
 
         let endPhaseDay = 0;
         // let counter = countingDays;
         let flagSeedling = false;
         let flagBlooming = false;
         let flagFlushing = false;
-        plant.calendar?.phases.forEach((plantPhase: PhaseExtended) => {
+        plant.calendar?.phases.forEach((plantPhase: PhaseExtendedInterface) => {
           const countingDays = plantPhase?.isFlushing
             ? plant.daysFromFlush
             : plantPhase?.isBlooming
@@ -341,7 +340,7 @@ export class PlantsMasterComponent implements OnInit {
 
     this.rooms = rooms;
 
-    this.rooms.map(async (room: RoomExtended) => {
+    this.rooms.map(async (room: RoomExtendedInterface) => {
       room.settings = settings.find((el) => el.device === room.serialNumber);
       room.plants = [
         ...plants.filter(
@@ -426,7 +425,7 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async deleteItem(item: PlantExtended) {
+  async deleteItem(item: PlantExtendedInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
@@ -434,7 +433,7 @@ export class PlantsMasterComponent implements OnInit {
     this.getItems();
   }
 
-  showDetail(item: PlantExtended) {
+  showDetail(item: PlantExtendedInterface) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
@@ -451,7 +450,7 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   filterList() {
-    this.rooms.map(async (room: RoomExtended) => {
+    this.rooms.map(async (room: RoomExtendedInterface) => {
       room.visible =
         (this.formDefinition.options.find((el) => el.id === 0).isChecked &&
           room.isVegetative) ||
@@ -464,7 +463,7 @@ export class PlantsMasterComponent implements OnInit {
     });
   }
 
-  expandItem(item: PlantExtended) {
+  expandItem(item: PlantExtendedInterface) {
     this.items.map((listItem) => {
       if (item === listItem) {
         listItem.expanded = !listItem.expanded;
@@ -558,7 +557,7 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async setRoomStatus(event: unknown, room: RoomExtended) {
+  async setRoomStatus(event: unknown, room: RoomExtendedInterface) {
     const response = this.runRemoteCommand(
       room,
       ServerPages.system,
@@ -604,7 +603,7 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   async runRemoteCommand(
-    room: RoomExtended,
+    room: RoomExtendedInterface,
     page: string,
     action: string,
     id: number,

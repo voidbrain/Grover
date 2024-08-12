@@ -1,9 +1,10 @@
 import { StrainInterface } from './strain';
 import { PotInterface } from './pot';
-import { Calendar, PhaseExtendedInterface } from './calendar';
+import { CalendarInterface, PhaseExtendedInterface } from './calendar';
 import { ProbeInterface } from './probe';
 import { WorkerInterface } from './worker';
 import { WaterLoopInterface } from './water-loop';
+import { LocationInterface } from './location';
 
 export interface PlantInterface {
   alerts: string;
@@ -38,8 +39,8 @@ export interface PlantExtendedInterface extends PlantInterface {
   dayStartFlush?: number;
   daysFromFlush?: number;
   phase?: PhaseExtendedInterface;
-  calendar?: Calendar;
-  location?: Location; // Location;
+  calendar?: CalendarInterface;
+  location?: LocationInterface;
   probes?: ProbeInterface[];
   workers?: WorkerInterface[];
   workersComponents: {
