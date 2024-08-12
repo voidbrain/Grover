@@ -12,7 +12,7 @@ export interface LogRow {
 
 export interface ProbeInterface {
     locationId: number;
-    // id: number | string;
+    id: number;
     type?: { minAcceptableValue: number; maxAcceptableValue: number };
     probeType?: number;
     // component?: unknown; // TemperatureComponent | PhProbeComponent | EcProbeComponent;

@@ -246,7 +246,7 @@ export class PhaseDetailComponent implements OnChanges {
     action: string,
     id: number,
     type: string,
-    duration?: number,
+    duration: number,
   ): Promise<Obj> {
     try {
       const run = this.db.api.remoteDeviceExecute(

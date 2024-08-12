@@ -221,9 +221,9 @@ export class PlantsMasterComponent implements OnInit {
     this.items = plants;
     this.items.map(async (plant: PlantExtendedInterface) => {
       plant.calendar = calendar.find((el) => el.id === plant.idCalendar);
-      plant.strain = (strains).find((el) => el.id === plant.idStrain);
+      plant.strain = (strains).find((el) => el.id === plant.idStrain) as StrainInterface;
       if (plant.idPot) {
-        plant.pot = (pots).find((el) => el.id === plant.idPot);
+        plant.pot = (pots).find((el) => el.id === plant.idPot) as PotInterface;
         plant.pot.location = locations.find(
           (el) => el.id === plant?.pot?.locationId,
         );

@@ -103,13 +103,13 @@ export class DosesBarHorizontalComponent implements OnChanges {
       ' ' +
       Bloom?.data +
       '% ' +
-      (Micro?.data + Bloom?.data) +
+      ((Micro?.data ?? 0) + (Bloom?.data ?? 0)) +
       '%,' +
       Grow?.backgroundColor +
       ' ' +
-      (Micro?.data + Bloom?.data) +
+      ((Micro?.data ?? 0) + (Bloom?.data ?? 0)) +
       '% ' +
-      (Grow?.data + Micro?.data + Bloom?.data) +
+      ((Grow?.data ?? 0) + (Micro?.data ?? 0) + (Bloom?.data ?? 0)) +
       '%';
 
     this.styleDoses = {

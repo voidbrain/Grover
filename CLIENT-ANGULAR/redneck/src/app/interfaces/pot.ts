@@ -1,3 +1,5 @@
+import { LocationInterface } from "./location";
+
 export interface PotInterface {
   id: number;
   name: string;
@@ -5,5 +7,5 @@ export interface PotInterface {
   deleted: boolean;
   lastUpdate: number;
   locationId: number;
-  location?: Location;
+  location?: LocationInterface;
 }

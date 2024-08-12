@@ -5,6 +5,7 @@ import { ProbeInterface } from './probe';
 import { TemperatureInterface } from './temperature';
 import { WaterRefillInterface } from './water-refill';
 import { WorkerInterface } from './worker';
+import { SettingsInterface } from './settings';
 
 export interface RoomInterface {
   id: number;
@@ -20,7 +21,7 @@ export interface RoomExtendedInterface extends RoomInterface {
   locationId?: number;
   probes?: ProbeInterface[];
   workers?: WorkerInterface[];
-  settings?: unknown;
+  settings?: SettingsInterface;
   operatingMode?: number;
   operatingModes: number[];
   probesComponents: {

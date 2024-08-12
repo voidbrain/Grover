@@ -1,5 +1,5 @@
 export interface DoseInterface {
-  id: number;
+  id?: number;
   name: string;
   grow: number;
   micro: number;
