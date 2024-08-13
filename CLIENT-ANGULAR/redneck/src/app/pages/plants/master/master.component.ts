@@ -1,3 +1,18 @@
+
+export interface FormDefinition {
+  name: string,
+      type: string,
+      label: string,
+      options: [
+        { id: number, isChecked: boolean, name: string },
+        { id: number, isChecked: boolean, name: string },
+        { id: number, isChecked: boolean, name: string },
+        { id: number, isChecked: boolean, name: string },
+      ],
+      multiple: true,
+}
+
+
 import {
   ActivatedRoute,
   Router,
@@ -14,7 +29,7 @@ import {
   ServerCommands,
   ServerPages,
   Peripherals,
-  ProbesTypes,
+  
   ScheduleTypes,
 } from '../../../../app/services/settings/enum';
 
@@ -31,6 +46,7 @@ import { DoseInterface } from '../../../interfaces/dose';
 import { PlantExtendedInterface } from '../../../interfaces/plant';
 import { RoomExtendedInterface } from '../../../interfaces/room';
 import { PotInterface } from '../../../interfaces/pot';
+import { ProbeTypeInterface } from '../../../interfaces/probeType';
 import { StrainInterface } from '../../../interfaces/strain';
 import { DbService } from '../../../services/db/db.service';
 import { ToastController } from '@ionic/angular';
@@ -78,7 +94,6 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { FilterBarComponent } from '../../../components/plants/filter-bar/filter-bar.component';
 import { GrowingResultsComponent } from '../../../components/plants/growing-results/growing-results.component';
-import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
 import { ProbeInterface, ProbeLogRowInterface } from '../../../interfaces/probe';
 import { WorkerInterface, WorkerLogRowInterface } from '../../../interfaces/worker';
 import { LocationInterface } from '../../../interfaces/location';
@@ -148,7 +163,7 @@ export class PlantsMasterComponent implements OnInit {
   items: PlantExtendedInterface[] = [];
   page = 'plants';
   debug = false;
-  formDefinition: FieldConfig;
+  formDefinition!: FormDefinition ;
 
   remoteAddress = '';
   port: number | undefined;
@@ -203,8 +218,8 @@ export class PlantsMasterComponent implements OnInit {
 
     const workersList: WorkerInterface[] = await this.db.getItems('workers_list') as WorkerInterface[];
     const probesList: ProbeInterface[] = await this.db.getItems('probes_list') as ProbeInterface[];
-    const workersType: WorkersTypes[] = await this.db.getItems('workers_type') as WorkersTypes[];
-    const probesType: ProbesTypes[] = await this.db.getItems('probes_type') as ProbesTypes[];
+    const workersType: WorkerTypesInterface[] = await this.db.getItems('workers_type') as WorkerTypesInterface[];
+    const probesType: ProbeTypeInterface[] = await this.db.getItems('probes_type') as ProbeTypeInterface[];
     const workersSchedule: ScheduleTypes[] = await this.db.getItems('workers_schedule') as ScheduleTypes[];
     const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule') as ScheduleTypes[];
     const column = 'id';
@@ -237,14 +252,14 @@ export class PlantsMasterComponent implements OnInit {
           (el) => el.locationId === plant?.pot?.locationId,
         );
         plant.probes.map((probe) => {
-          probe.type = probesType.find((el) => el.id === probe.probeType);
+          probe.probeType = probesType.find((el) => el.id === probe.probeType);
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
           );
         });
         plant.workers.map((worker) => {
-          worker.type = workersType.find((el) => el.id === worker.workerType);
+          worker.workerType = workersType.find((el) => el.id === worker.workerType);
           worker.log = workersLog.filter((el) => el.idWorker === worker.id);
           worker.schedule = workersSchedule.filter(
             (el) => el.idWorker === worker.id,

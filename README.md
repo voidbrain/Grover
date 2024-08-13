@@ -89,6 +89,27 @@ sudo i2cdetect -y 1
 
 ![Logical](./documentation/img/logical map.png)
 
+Locations.id --> Pot.locationId --> Plant.idPot
+Room.locationId --> Plant.pot?.location?.parent
+
+Locations:
+
+- id: 1 Bloom Room
+- id: 2 Veg Room
+- id: 3 Location Bloom 1
+- id: 4 Location Bloom 2
+...
+
+
+
+
+
+
+
+
+
+
+
 ## Phisical high level structure
 
 ## Phisical low level connections

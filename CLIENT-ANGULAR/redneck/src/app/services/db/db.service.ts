@@ -13,7 +13,11 @@ import { WorkerInterface, WorkerLogRowInterface } from '../../interfaces/worker'
 import { WorkersTypes } from '../../services/settings/enum';
 import { ProbesTypes } from '../../services/settings/enum';
 import { ScheduleTypes } from '../../services/settings/enum';
-import { SettingsInterface } from '../../interfaces/settings'
+import { SettingsInterface } from '../../interfaces/settings';
+import { ProbeTypeInterface } from '../../interfaces/probeType';
+import { WorkerTypeInterface } from '../../interfaces/workerType';
+
+
 
 @Injectable({
   providedIn: 'root',
@@ -93,7 +97,7 @@ export class DbService {
       openRequest.onupgradeneeded = (event) => {
         const target = event.target;
         const db = target["result"];
-        const storeObjects = [];
+        const storeObjects: [] = [];
         if (this.debug) {
           console.log('[DB]: ', this.tables);
         }
@@ -213,7 +217,7 @@ export class DbService {
           const lastUpdate = localStorage.getItem(
             `${this.appSettings.appName}_${table}`,
           );
-          return await this.loadData(table, lastUpdate);
+          return await this.loadData(table, lastUpdate as string);
         }),
       );
 
@@ -329,12 +333,12 @@ export class DbService {
     objectStore: string,
     column = 'enabled, deleted',
     query = [1, 0],
-  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface )[]> {
+  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface )[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index(column);
     const promise = new Promise<
-    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface)[]
+    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface)[]
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);
@@ -359,7 +363,7 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: Partial<PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface>,
+    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
   ): Promise<void> {
     try {
       if (!item.id) {
