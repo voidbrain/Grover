@@ -10,6 +10,8 @@ export interface ProbeTypeInterface {
     title: string;
     type: string;
     um: string;
+    maxWarningValue: number,
+    minWarningValue: number
   
 }
 

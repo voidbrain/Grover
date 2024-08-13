@@ -96,10 +96,12 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { FilterBarComponent } from '../../../components/plants/filter-bar/filter-bar.component';
 import { GrowingResultsComponent } from '../../../components/plants/growing-results/growing-results.component';
-import { ProbeInterface, ProbeLogRowInterface } from '../../../interfaces/probe';
-import { WorkerInterface, WorkerLogRowInterface } from '../../../interfaces/worker';
+import { ProbeInterface } from '../../../interfaces/probe';
+import { WorkerInterface } from '../../../interfaces/worker';
 import { LocationInterface } from '../../../interfaces/location';
-import { SettingsInterface } from '../../../interfaces/settings';
+import { RoomSettingsInterface } from '../../../interfaces/settings';
+import { WorkerLogInterface } from '../../../interfaces/workerLog';
+import { ProbeLogInterface } from '../../../interfaces/probeLog';
 
 export interface Obj {
   name: string,
@@ -209,7 +211,7 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   async getItems() {
-    const settings: SettingsInterface[] = await this.db.getItems('settings') as SettingsInterface[];
+    const settings: RoomSettingsInterface[] = await this.db.getItems('settings') as RoomSettingsInterface[];
     let plants: PlantExtendedInterface[] = await this.db.getItems(this.page) as PlantExtendedInterface[];
     const pots: PotInterface[] = await this.db.getItems('pots') as PotInterface[];
     const strains: StrainInterface[] = await this.db.getItems('strains') as StrainInterface[];
@@ -228,16 +230,16 @@ export class PlantsMasterComponent implements OnInit {
     const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule') as ScheduleTypes[];
     const column = 'id';
     const query: number[] = [];
-    const workersLog: WorkerLogRowInterface[] = await this.db.getItems(
+    const workersLog: WorkerLogInterface[] = await this.db.getItems(
       'workers_log',
       column,
       query,
-    ) as WorkerLogRowInterface[];
-    const probesLog: ProbeLogRowInterface[] = await this.db.getItems(
+    ) as WorkerLogInterface[];
+    const probesLog: ProbeLogInterface[] = await this.db.getItems(
       'probes_log',
       column,
       query,
-    ) as ProbeLogRowInterface[];
+    ) as ProbeLogInterface[];
 
     this.items = plants;
     this.items.map(async (plant: PlantExtendedInterface) => {
@@ -331,7 +333,7 @@ export class PlantsMasterComponent implements OnInit {
           }
           endPhaseDay = plantPhase.startPhaseDay + plantPhase?.duration;
 
-          if (countingDays > plantPhase.startPhaseDay) {
+          if (countingDays! > plantPhase.startPhaseDay) {
             foundPhase = plantPhase;
             // counter += plantPhase?.duration;
           }

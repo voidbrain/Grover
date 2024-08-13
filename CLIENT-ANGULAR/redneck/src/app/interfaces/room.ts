@@ -5,25 +5,30 @@ import { ProbeInterface } from './probe';
 import { TemperatureInterface } from './temperature';
 import { WaterRefillInterface } from './water-refill';
 import { WorkerInterface } from './worker';
-import { SettingsInterface } from './settings';
+import { RoomSettingsInterface } from './settings';
 
 export interface RoomInterface {
   id: number;
   name: string;
-  enabled: boolean;
-  deleted: boolean;
+  enabled: number;
+  deleted: number;
   lastUpdate: number;
   plants: PlantExtendedInterface[];
 }
 
+export interface operatingModeRow {
+  name: string,
+  value: number
+}
+
 export interface RoomExtendedInterface extends RoomInterface {
-  location?: Location;
+  // location?: Location;
   locationId?: number;
   probes?: ProbeInterface[];
   workers?: WorkerInterface[];
-  settings?: SettingsInterface;
+  settings?: RoomSettingsInterface;
   operatingMode?: number;
-  operatingModes: number[];
+  operatingModes: operatingModeRow[];
   probesComponents: {
     airtemp: TemperatureInterface;
   };
@@ -33,11 +38,11 @@ export interface RoomExtendedInterface extends RoomInterface {
     nutrientRefill: WaterRefillInterface;
     phDown: WaterRefillInterface;
   };
-  visible?: boolean;
-  isBlooming?: boolean;
-  isVegetative?: boolean;
-  isNursery?: boolean;
-  isHarvested?: boolean;
+  visible?: number;
+  isBlooming?: number;
+  isVegetative?: number;
+  isNursery?: number;
+  isHarvested?: number;
   serialNumber?: string;
   
 }

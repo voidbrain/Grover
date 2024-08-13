@@ -1,13 +1,13 @@
 export interface WorkerTypeInterface {
-    color: string;
-    defaultDuration?: number;
-    deleted: number;
-    enabled: number;
-    icon: string;
-    id: number;
-    lastUpdate: number;
-    title: string;
-    type: string;
+    id: number,
+    type: string,
+    enabled: number,
+    deleted: number,
+    lastUpdate: number,
+    color: string,
+    icon: string,
+    title: string,
+    defaultDuration: number
 }
 
 // PH = 5.8 +/- 0.5

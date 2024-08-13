@@ -1,4 +1,10 @@
-export interface SettingsInterface {
-  address: string;
-  port: string;
+export interface RoomSettingsInterface {
+  id: number,
+  enabled: number,
+  deleted: number,
+  lastUpdate: number,
+  address: string,
+  port: number,
+  device: string,
+  operatingMode: number
 }
