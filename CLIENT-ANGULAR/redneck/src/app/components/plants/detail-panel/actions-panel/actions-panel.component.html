@@ -6,7 +6,7 @@
         class="btn"
         fill="clear"
         size="small"
-        (click)="toggleWaterRecycle(workers.waterLoop)"
+        (click)="toggleWaterRecycle(workers.waterLoop!)"
       >
         H<sub>2</sub>O
         <fa-icon [fixedWidth]="true" icon="arrows-rotate"></fa-icon>
@@ -15,7 +15,7 @@
         class="btn"
         fill="clear"
         size="small"
-        (click)="fillWaterLevel(workers?.refill?.id)"
+        (click)="fillWaterLevel(workers?.refill?.id!)"
       >
         H<sub>2</sub>O <fa-icon [fixedWidth]="true" icon="faFill"></fa-icon>
       </ion-segment-button>
@@ -23,7 +23,7 @@
         class="btn"
         fill="clear"
         size="small"
-        (click)="fillPhDown(workers?.refill?.id)"
+        (click)="fillPhDown(workers?.refill?.id!)"
       >
         pH↓ <fa-icon [fixedWidth]="true" icon="fill"></fa-icon>
       </ion-segment-button>
@@ -31,7 +31,7 @@
         class="btn"
         fill="clear"
         size="small"
-        (click)="fillNutrient(workers?.refill?.id)"
+        (click)="fillNutrient(workers?.refill?.id!)"
       >
         Dose <fa-icon [fixedWidth]="true" icon="fill"></fa-icon>
       </ion-segment-button>
