@@ -29,6 +29,7 @@ import {
   IonSelectOption,
   IonTitle,
   IonToolbar,
+  RefresherCustomEvent
 } from '@ionic/angular/standalone';
 import { LoadingController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -120,7 +121,7 @@ export class CompaniesMasterComponent {
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher) {
+  async doRefresh(refresher: RefresherCustomEvent) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

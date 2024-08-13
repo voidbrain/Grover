@@ -28,6 +28,7 @@ import {
   IonSelectOption,
   IonTitle,
   IonToolbar,
+  RefresherCustomEvent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
@@ -93,7 +94,7 @@ export class CalendarsMasterComponent {
   }
 
   async getItems() {
-    const items = await this.db.getItems(this.page);
+    const items = await this.db.getItems(this.page) as CalendarExtendedInterface[];
     const doses = await this.db.getItems('doses');
 
     items.map((item: CalendarExtendedInterface) => {
@@ -111,7 +112,7 @@ export class CalendarsMasterComponent {
           const phase = (doses as DoseExtendedInterface[]).find((el: DoseExtendedInterface) => el.id == dose.id);
           valuesArr.push({
             data: [Math.floor(dose.duration / 7)], // weeks
-            backgroundColor: [phase.color],
+            backgroundColor: [phase!.color],
           });
           console.log(valuesArr);
         });
@@ -187,7 +188,7 @@ export class CalendarsMasterComponent {
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher) {
+  async doRefresh(refresher: RefresherCustomEvent) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

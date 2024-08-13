@@ -30,11 +30,13 @@ import {
   IonSelectOption,
   IonTitle,
   IonToolbar,
+  RefresherCustomEvent,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DosesBarHorizontalComponent } from '../../../components/plants/detail-panel/doses-bar-horizontal/doses-bar-horizontal.component';
 import { DoseExtendedInterface } from '../../../interfaces/dose';
+
 
 @Component({
   selector: 'app-doses-master',
@@ -173,7 +175,7 @@ export class DosesMasterComponent {
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher) {
+  async doRefresh(refresher: RefresherCustomEvent) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

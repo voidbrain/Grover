@@ -184,12 +184,11 @@ export class PlantsDetailComponent implements OnInit {
   }
 
   async getItem(id: number) {
-    const companies: CompanyInterface[] = await this.db.getItems('companies');
-    const pots: PotInterface[] = await this.db.getItems('pots');
-    const strains: StrainInterface[] = await this.db.getItems('strains');
-    const gMedium: GrowingMediumInterface[] = await this.db.getItems('growing_mediums');
-    const gScenario: GrowingScenarioInterface[] =
-      await this.db.getItems('growing_scenarios');
+    const companies: CompanyInterface[] = await this.db.getItems('companies') as CompanyInterface[];
+    const pots: PotInterface[] = await this.db.getItems('pots') as PotInterface[];
+    const strains: StrainInterface[] = await this.db.getItems('strains') as StrainInterface[];
+    const gMedium: GrowingMediumInterface[] = await this.db.getItems('growing_mediums') as GrowingMediumInterface[];
+    const gScenario: GrowingScenarioInterface[] = await this.db.getItems('growing_scenarios') as GrowingScenarioInterface[];
 
     this.formDefinition.find((el) => el.name === 'idCompany').options =
       companies.sort((a, b) => (a.name > b.name ? 1 : -1));

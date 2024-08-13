@@ -132,19 +132,19 @@
                     <app-range
                       class="ion-padding"
                       [minValue]="
-                        room?.probesComponents?.airtemp?.type?.minAcceptableValue
+                        room?.probesComponents?.airtemp?.type?.minAcceptableValue!
                       "
                       [maxValue]="
-                        room?.probesComponents?.airtemp?.type?.maxAcceptableValue
+                        room?.probesComponents?.airtemp?.type?.maxAcceptableValue!
                       "
                       [minWarningValue]="
-                        room?.probesComponents?.airtemp?.type?.minWarningValue
+                        room?.probesComponents?.airtemp?.type?.minWarningValue!
                       "
                       [maxWarningValue]="
-                        room?.probesComponents?.airtemp?.type?.maxWarningValue
+                        room?.probesComponents?.airtemp?.type?.maxWarningValue!
                       "
-                      [value]="room?.probesComponents?.airtemp?.value"
-                      [um]="room?.probesComponents?.airtemp?.type?.um"
+                      [value]="room?.probesComponents?.airtemp?.value!"
+                      [um]="room?.probesComponents?.airtemp?.type?.um!"
                     ></app-range>
                     <ion-button
                       size="small"

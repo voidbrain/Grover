@@ -19,6 +19,7 @@ import {
   IonRefresherContent,
   IonTitle,
   IonToolbar,
+  RefresherCustomEvent
 } from '@ionic/angular/standalone';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
@@ -57,7 +58,7 @@ import { StrainInterface } from '../../../interfaces/strain';
 })
 export class StrainsMasterComponent {
   @ViewChildren('slidingItems') private slidingItems: IonItemSliding[] = [];
-  items: Strain[] = [];
+  items: StrainInterface[] = [];
   page = 'strains';
   debug = true;
 
@@ -154,7 +155,7 @@ export class StrainsMasterComponent {
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher) {
+  async doRefresh(refresher: RefresherCustomEvent) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });

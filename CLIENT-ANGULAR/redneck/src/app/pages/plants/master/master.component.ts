@@ -69,6 +69,7 @@ import {
   IonCardTitle,
   IonSegment,
   IonSegmentButton,
+  RefresherCustomEvent
 } from '@ionic/angular/standalone';
 
 import { RangeComponent } from '../../../components/shared/range/range.component';
@@ -440,7 +441,7 @@ export class PlantsMasterComponent implements OnInit {
     this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
   }
 
-  async doRefresh(refresher) {
+  async doRefresh(refresher: RefresherCustomEvent) {
     this.slidingItems.map((el) => {
       el.closeOpened();
     });
