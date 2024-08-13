@@ -1,4 +1,4 @@
-import { ProbeTypeInterface } from "./probeType";
+import { ProbeTypeInterface, ConstructorProbeTypeInterface } from "./probeType";
 import { ProbeLogInterface } from "./probeLog";
 import { ProbeScheduleInterface } from "./probeSchedule";
 
@@ -14,7 +14,7 @@ export interface ProbeInterface {
     id: number;
     probeType: number;
     schedule?: ProbeScheduleInterface[];
-    type: ProbeTypeInterface,
+    type: ProbeTypeInterface | ConstructorProbeTypeInterface | undefined,
     log?: ProbeLogInterface[]
   }
   

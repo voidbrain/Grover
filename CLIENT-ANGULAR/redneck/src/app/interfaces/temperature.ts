@@ -1,8 +1,8 @@
 export interface TemperatureInterface {
   id: number;
   type: {
-    maxWarningValue: number;
-    minWarningValue: number;
+    maxWarningValue?: number;
+    minWarningValue?: number;
   },
   value: number;
 

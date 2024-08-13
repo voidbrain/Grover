@@ -8,12 +8,12 @@ import { LocationInterface } from './location';
 
 export interface PlantInterface {
   alerts: string;
-  dayHarvest: number | null;
-  daySecondTrimming: number | null;
-  dayStartBloom: number | null;
-  dayStartGrow: number | null;
-  dayTrimming: number | null;
-  dayPruning: number | null;
+  dayHarvest?: number;
+  daySecondTrimming?: number;
+  dayStartBloom?: number;
+  dayStartGrow?: number;
+  dayTrimming?: number;
+  dayPruning?: number;
   deleted: number;
   enabled: number;
   generation: number;

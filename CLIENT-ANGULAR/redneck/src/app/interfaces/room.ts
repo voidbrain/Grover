@@ -38,7 +38,7 @@ export interface RoomExtendedInterface extends RoomInterface {
     nutrientRefill: WaterRefillInterface;
     phDown: WaterRefillInterface;
   };
-  visible?: number;
+  visible?: number | boolean;
   isBlooming?: number;
   isVegetative?: number;
   isNursery?: number;

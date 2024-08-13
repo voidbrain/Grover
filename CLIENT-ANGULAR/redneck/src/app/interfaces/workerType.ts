@@ -10,4 +10,4 @@ export interface WorkerTypeInterface {
     defaultDuration: number
 }
 
-// PH = 5.8 +/- 0.5
+export interface ConstructorWorkerTypeInterface { key: string; value: number } 

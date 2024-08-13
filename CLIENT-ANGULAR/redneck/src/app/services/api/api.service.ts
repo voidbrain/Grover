@@ -83,12 +83,12 @@ export class ApiService {
 
   async remoteDeviceExecute(
     ip: string,
-    port: string,
+    port: number,
     page: string,
     action: string,
     id: number,
     type: string,
-    duration: number,
+    duration?: number,
   ): Promise<unknown> {
     if (!this.networkService.status) {
       const response = '[API]: network not available';

@@ -29,8 +29,6 @@ import {
   ServerCommands,
   ServerPages,
   Peripherals,
-  
-  ScheduleTypes,
   ProbesTypes,
 } from '../../../../app/services/settings/enum';
 
@@ -49,6 +47,9 @@ import { RoomExtendedInterface } from '../../../interfaces/room';
 import { PotInterface } from '../../../interfaces/pot';
 // import { ProbeTypeInterface } from '../../../interfaces/probeType';
 // import { WorkerTypeInterface } from '../../../interfaces/workerType';
+
+import { ConstructorWorkerTypeInterface } from '../../../interfaces/workerType';
+import { ConstructorProbeTypeInterface } from '../../../interfaces/probeType';
 import { StrainInterface } from '../../../interfaces/strain';
 import { DbService } from '../../../services/db/db.service';
 import { ToastController } from '@ionic/angular';
@@ -102,6 +103,13 @@ import { LocationInterface } from '../../../interfaces/location';
 import { RoomSettingsInterface } from '../../../interfaces/settings';
 import { WorkerLogInterface } from '../../../interfaces/workerLog';
 import { ProbeLogInterface } from '../../../interfaces/probeLog';
+import { ProbeScheduleInterface } from '../../../interfaces/probeSchedule';
+import { WorkerScheduleInterface } from '../../../interfaces/workerSchedule';
+import { WaterLoopInterface } from '../../../interfaces/water-loop';
+import { TemperatureInterface } from '../../../interfaces/temperature';
+import { LightSwitchInterface } from '../../../interfaces/light-switch';
+import { FanMotorInterface } from '../../../interfaces/fan-motor';
+import { WaterRefillInterface } from '../../../interfaces/water-refill';
 
 export interface Obj {
   name: string,
@@ -174,6 +182,9 @@ export class PlantsMasterComponent implements OnInit {
 
   rooms: RoomExtendedInterface[] = [];
 
+  probeType = Object.entries(ProbesTypes).map(([key, value]) => ({key, value}))
+  workerType = Object.entries(WorkersTypes).map(([key, value]) => ({key, value}))
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private db: DbService,
@@ -181,6 +192,9 @@ export class PlantsMasterComponent implements OnInit {
     public toastController: ToastController,
     private library: FaIconLibrary,
   ) {
+
+    
+
     library.addIconPacks(fas);
     addIcons(ionIcons);
     this.formDefinition = {
@@ -224,10 +238,8 @@ export class PlantsMasterComponent implements OnInit {
     const probesList: ProbeInterface[] = await this.db.getItems('probes_list') as ProbeInterface[];
     // const workersType: WorkerTypeInterface[] = await this.db.getItems('workers_type') as WorkerTypeInterface[];
     // const probesType: ProbeTypeInterface[] = await this.db.getItems('probes_type') as ProbeTypeInterface[];
-    const probeType = ProbesTypes;
-    const workerType = WorkersTypes;
-    const workersSchedule: ScheduleTypes[] = await this.db.getItems('workers_schedule') as ScheduleTypes[];
-    const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule') as ScheduleTypes[];
+    const workersSchedule: WorkerScheduleInterface[] = await this.db.getItems('workers_schedule') as WorkerScheduleInterface[];
+    const probesSchedule: ProbeScheduleInterface[] = await this.db.getItems('probes_schedule') as ProbeScheduleInterface[];
     const column = 'id';
     const query: number[] = [];
     const workersLog: WorkerLogInterface[] = await this.db.getItems(
@@ -258,16 +270,15 @@ export class PlantsMasterComponent implements OnInit {
           (el) => el.locationId === plant?.pot?.locationId,
         );
 
-        const pt = Object.entries(ProbesTypes).map(([key, value]) => ({id: key, value: value}))
         plant.probes.map((probe) => {
-          probe.type = pt.find((el) => +el.id === +probe.probeType);
+          probe.type = this.probeType.find((el) => +el.key === +probe.probeType) as ConstructorProbeTypeInterface;
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
           );
         });
         plant.workers.map((worker) => {
-          worker.workerType = workerType.find((el) => el.id === worker.workerType);
+          worker.type = this.workerType.find((el) => +el.key === worker.workerType) as ConstructorWorkerTypeInterface;
           worker.log = workersLog.filter((el) => el.idWorker === worker.id);
           worker.schedule = workersSchedule.filter(
             (el) => el.idWorker === worker.id,
@@ -276,12 +287,12 @@ export class PlantsMasterComponent implements OnInit {
         const waterLoop = plant.workers.find(
           (worker) => +worker.workerType === +WorkersTypes.Pot_Water_loop,
         );
-        plant.workersComponents = { waterLoop };
+        plant.workersComponents = { waterLoop: waterLoop as unknown as WaterLoopInterface } ;
         if (waterLoop) {
           plant.workersComponents.waterLoop.status = plant.workersComponents
             .waterLoop
             ? DevicesStatus.ON
-            : DevicesStatus.OFF; // TODO
+            : DevicesStatus.OFF;
         }
 
         plant.calendar?.phases.forEach((phase) => {
@@ -296,13 +307,13 @@ export class PlantsMasterComponent implements OnInit {
           new Date(plant.dayStartBloom as number).getTime();
         plant.daysFromBloom = plant.dayStartBloom
           ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
-          : null;
+          : undefined;
         const epochDiffFlush: number =
           new Date().getTime() -
           new Date(plant.dayStartFlush as number).getTime();
         plant.daysFromFlush = plant.dayStartFlush
           ? Math.ceil(epochDiffFlush / (1000 * 60 * 60 * 24))
-          : null;
+          : undefined;
 
         let foundPhase: PhaseExtendedInterface | undefined;
 
@@ -356,10 +367,10 @@ export class PlantsMasterComponent implements OnInit {
           : 0),
     );
     plants.sort((a, b) => {
-      if (+a.dayStartBloom === +b.dayStartBloom) {
-        return +a.dayStartGrow > +b.dayStartGrow ? 1 : -1;
+      if (a.dayStartBloom && b.dayStartBloom && +a.dayStartBloom === +b.dayStartBloom) {
+        return a.dayStartGrow && b.dayStartGrow && +a.dayStartGrow > +b.dayStartGrow ? 1 : -1;
       } else {
-        return +a.dayStartBloom > +b.dayStartBloom ? -1 : 1;
+        return a.dayStartBloom && b.dayStartBloom && +a.dayStartBloom > +b.dayStartBloom ? -1 : 1;
       }
     });
 
@@ -382,21 +393,21 @@ export class PlantsMasterComponent implements OnInit {
         (el) => el.locationId === room.locationId,
       );
       room.workers.map((worker) => {
-        worker.type = workersType.find((el) => el.id === worker.workerType);
-        worker.log = workersLog.find((el) => el.idWorker === worker.id);
+        worker.type = this.workerType.find((el) => +el.key === worker.workerType) as ConstructorWorkerTypeInterface;
+        worker.log = workersLog.filter((el) => el.idWorker === worker.id);
         worker.schedule = workersSchedule.filter(
           (el) => el.idWorker === worker.id,
         );
       });
       room.probes.map((probe) => {
-        probe.type = probesType.find((el) => el.id === probe.probeType);
-        probe.log = probesLog.find((el) => el.idWorker === probe.id);
+        probe.type = this.probeType.find((el) => +el.key === +probe.probeType) as ConstructorProbeTypeInterface;
+        probe.log = probesLog.filter((el) => el.idProbe === probe.id);
         probe.schedule = probesSchedule.filter((el) => el.idProbe === probe.id);
       });
       const airtemp = room.probes.find(
         (probe) => +probe.probeType === +ProbesTypes.Air_temperature,
       );
-      room.probesComponents = { airtemp };
+      room.probesComponents = { airtemp: airtemp as unknown as TemperatureInterface };
       if (airtemp) {
         room.probesComponents.airtemp.type.maxWarningValue =
           room?.plants[0]?.phase?.maxTemp;
@@ -417,7 +428,12 @@ export class PlantsMasterComponent implements OnInit {
       const phDown = room?.workers.find(
         (worker) => worker.workerType === WorkersTypes.Room_PhDown_refill,
       );
-      room.workersComponents = { light, fan, nutrientRefill, phDown };
+      // plant.workersComponents = { waterLoop: waterLoop as unknown as WaterLoopInterface } ;
+      room.workersComponents = { 
+        light: light as unknown as LightSwitchInterface, 
+        fan: fan as unknown as FanMotorInterface, 
+        nutrientRefill: nutrientRefill as unknown as WaterRefillInterface, 
+        phDown: phDown as unknown as WaterRefillInterface };
       if (light) {
         room.workersComponents.light.status = DevicesStatus.ON;
       } // TODO
@@ -432,14 +448,14 @@ export class PlantsMasterComponent implements OnInit {
       k.map((el) => {
         modes.push({
           name: el as string,
-          value: OperatingModes[el],
+          value: OperatingModes[el as keyof typeof OperatingModes],
         });
       });
       room.operatingModes = modes;
-      if (room.settings) {
+      if (room?.settings?.operatingMode && room.operatingModes) {
         room.operatingMode = room.operatingModes.find(
-          (el) => +el.value === +room.settings.operatingMode,
-        ).value;
+          (el) => +el.value === +(room.settings?.operatingMode ?? 0),
+        )?.value;
       }
     });
     console.log('[PAGE/PLANTS/MASTER]: ', rooms);
@@ -477,14 +493,10 @@ export class PlantsMasterComponent implements OnInit {
   filterList() {
     this.rooms.map(async (room: RoomExtendedInterface) => {
       room.visible =
-        (this.formDefinition.options.find((el) => el.id === 0).isChecked &&
-          room.isVegetative) ||
-        (this.formDefinition.options.find((el) => el.id === 1).isChecked &&
-          room.isBlooming) ||
-        (this.formDefinition.options.find((el) => el.id === 2).isChecked &&
-          room.isHarvested) ||
-        (this.formDefinition.options.find((el) => el.id === 3).isChecked &&
-          room.isNursery);
+        ((this.formDefinition.options.find((el) => el.id === 0)?.isChecked && room.isVegetative) ||
+        (this.formDefinition.options.find((el) => el.id === 1)?.isChecked && room.isBlooming) ||
+        (this.formDefinition.options.find((el) => el.id === 2)?.isChecked && room.isHarvested) ||
+        (this.formDefinition.options.find((el) => el.id === 3)?.isChecked && room.isNursery));
     });
   }
 
@@ -513,10 +525,10 @@ export class PlantsMasterComponent implements OnInit {
     await toast.onDidDismiss();
   }
 
-  async read(probe) {
+  async read(probe: ProbeInterface) {
     const room = this.rooms.find(
       (el) => el.locationId === probe.locationId,
-    );
+    ) as RoomExtendedInterface;
     const action = ServerCommands.READ;
     const response = await this.runRemoteCommand(
       room,
@@ -541,10 +553,10 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async toggleLight(worker) {
+  async toggleLight(worker: WorkerInterface) {
     const room = this.rooms.find(
       (el) => el.locationId === worker.locationId,
-    );
+    ) as RoomExtendedInterface;
     const action =
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
@@ -558,10 +570,10 @@ export class PlantsMasterComponent implements OnInit {
     );
   }
 
-  async toggleFan(worker) {
+  async toggleFan(worker: WorkerInterface) {
     const room = this.rooms.find(
       (el) => el.locationId === worker.locationId,
-    );
+    ) as RoomExtendedInterface;
     const action =
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
@@ -593,11 +605,11 @@ export class PlantsMasterComponent implements OnInit {
     room.operatingMode = +response["mode"];
   }
 
-  async shufflePhDown(worker) {
+  async shufflePhDown(worker: WorkerInterface) {
     if (worker) {
       const room = this.rooms.find(
         (el) => el.locationId === worker.locationId,
-      );
+      ) as RoomExtendedInterface;
       const duration = 1000;
       this.runRemoteCommand(
         room,
@@ -610,11 +622,11 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async shuffleNutrient(worker) {
+  async shuffleNutrient(worker: WorkerInterface) {
     if (worker) {
       const room = this.rooms.find(
         (el) => el.locationId === worker.locationId,
-      );
+      ) as RoomExtendedInterface;
       const duration = 1000;
       this.runRemoteCommand(
         room,
@@ -635,44 +647,36 @@ export class PlantsMasterComponent implements OnInit {
     type: string,
     duration?: number,
   ) {
-    return new Promise(async (resolve, reject) => {
-      const run = this.db.api.remoteDeviceExecute(
-        room?.settings?.address,
-        room?.settings?.port,
+    return new Promise((resolve, reject) => {
+      this.db.api.remoteDeviceExecute(
+        room?.settings?.address as string,
+        room?.settings?.port as number,
         page,
         action,
         id,
         type,
         duration,
-      );
-
-      let header = ``;
-      let message = ``;
-      let color = '';
-
-      const toastDuration = 3000;
-      if (run.error) {
-        header = `Error`;
-        message = `Error occured`;
-        color = 'danger';
-
-        this.presentToast(header, message, color, toastDuration);
-        reject(run.error);
-      }
-      header = `Success`;
-      message = `Action executed`;
-      color = 'success';
-      this.presentToast(header, message, color, toastDuration);
-      resolve(run);
-
-      run.catch((err) => {
-        console.log(err);
+      )
+      .then((run) => {
+        // If the command was successful
+        const header = `Success`;
+        const message = `Action executed`;
+        const color = 'success';
+  
+        this.presentToast(header, message, color, 3000);
+        resolve(run);
+      })
+      .catch((err) => {
+        // Handle errors
         const header = `Error`;
-        const message = `Error occured`;
+        const message = `Error occurred: ${err.message}`;
         const color = 'danger';
-        this.presentToast(header, message, color, toastDuration);
+  
+        this.presentToast(header, message, color, 3000);
         reject(err);
       });
     });
   }
+  
+  
 }

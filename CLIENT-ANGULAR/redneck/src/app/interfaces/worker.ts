@@ -1,7 +1,7 @@
 // import { FanMotorInterface } from "./fan-motor";
 // import { WaterRefillInterface } from "./water-refill";
 
-import { WorkerTypeInterface } from "./workerType";
+import { WorkerTypeInterface, ConstructorWorkerTypeInterface } from "./workerType";
 import { WorkerLogInterface } from "./workerLog";
 import { WorkerScheduleInterface } from "./workerSchedule";
 
@@ -33,8 +33,8 @@ export interface WorkerInterface {
   pin1: number,
   pin2: number,
   i2cAddress: number,
-  status: number,
-  type: WorkerTypeInterface,
+  status: string | number,
+  type: WorkerTypeInterface | ConstructorWorkerTypeInterface | undefined,
   log: WorkerLogInterface[],
   schedule: WorkerScheduleInterface[]
   

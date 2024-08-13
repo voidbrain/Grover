@@ -12,7 +12,6 @@ export interface ProbeTypeInterface {
     um: string;
     maxWarningValue: number,
     minWarningValue: number
-  
 }
 
-// PH = 5.8 +/- 0.5
+export interface ConstructorProbeTypeInterface { key: string; value: number } 
