@@ -7,4 +7,5 @@ export interface StrainInterface {
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
+  synced?: number;
 }

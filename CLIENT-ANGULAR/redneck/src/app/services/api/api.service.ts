@@ -3,8 +3,18 @@ import { SettingsService } from '../settings/settings.service';
 import { NetworkService } from '../network/network.service';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
-
-
+import { ParamsInterface } from '../../interfaces/utils';
+import { PlantExtendedInterface } from '../../interfaces/plant';
+import { DoseExtendedInterface } from '../../interfaces/dose';
+import { StrainInterface } from '../../interfaces/strain';
+import { CompanyInterface } from '../../interfaces/company';
+import { WorkerInterface } from '../../interfaces/worker';
+import { ProbeInterface } from '../../interfaces/probe';
+import { ProbeLogInterface } from '../../interfaces/probeLog';
+import { WorkerLogInterface } from '../../interfaces/workerLog';
+import { ProbeTypeInterface } from '../../interfaces/probeType';
+import { WorkerTypeInterface } from '../../interfaces/workerType';
+import { RoomSettingsInterface } from '../../interfaces/settings';
 
 @Injectable({
   providedIn: 'root',
@@ -33,9 +43,9 @@ export class ApiService {
     }
   }
 
-  async get<T>(table: string, params?): Promise<T> {
+  async get<T>(table: string, params?: ParamsInterface): Promise<T> {
     try {
-      const response = await this.http.get<T>(`${this.url}${table}`, { params }).toPromise();
+      const response = await this.http.get(`${this.url}${table}`, { params }).toPromise();
       return response;
     } catch (error) {
       console.error(`[API]: Error fetching data from ${table}:`, error);
@@ -43,9 +53,11 @@ export class ApiService {
     }
   }
 
-  async post(table: string, items, params?): Promise<unknown> {
+  async post(table: string, 
+    items: (PlantExtendedInterface | DoseExtendedInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface)[], 
+    params?: ParamsInterface): Promise<unknown> {
     return new Promise((resolve) => {
-      if (this.networkService.status) {
+      if (this.networkService.status && params) {
         console.info('[API]: network available');
         params.items = items;
         this.http.post(this.url + table, params).subscribe((response) => {
@@ -63,7 +75,7 @@ export class ApiService {
     });
   }
 
-  async delete(table: string, item): Promise<unknown> {
+  async delete(table: string, item: Partial<PlantExtendedInterface | DoseExtendedInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface>): Promise<unknown> {
     return new Promise((resolve) => {
       if (this.networkService.status) {
         console.info('[API]: network available');

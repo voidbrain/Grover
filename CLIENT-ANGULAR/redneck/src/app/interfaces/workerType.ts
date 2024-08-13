@@ -7,7 +7,9 @@ export interface WorkerTypeInterface {
     color: string,
     icon: string,
     title: string,
-    defaultDuration: number
+    defaultDuration: number;
+
+    synced?: number;
 }
 
 export interface ConstructorWorkerTypeInterface { key: string; value: number } 

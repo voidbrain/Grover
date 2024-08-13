@@ -13,6 +13,8 @@ export interface ProbeLogInterface {
     lastUpdate: number,
     owner: string,
     type: number,
+    deleted?: number;
+    synced?: number;
 }
 
 // PH = 5.8 +/- 0.5

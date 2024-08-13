@@ -18,4 +18,6 @@ export interface DoseInterface {
 export interface DoseExtendedInterface extends DoseInterface {
   chartConfig: object;
   EC: number;
+
+  synced?: number;
 }

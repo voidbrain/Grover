@@ -7,4 +7,6 @@ export interface RoomSettingsInterface {
   port: number,
   device: string,
   operatingMode: number
+
+  synced?: number;
 }

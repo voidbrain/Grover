@@ -36,6 +36,8 @@ export interface WorkerInterface {
   status: string | number,
   type: WorkerTypeInterface | ConstructorWorkerTypeInterface | undefined,
   log: WorkerLogInterface[],
-  schedule: WorkerScheduleInterface[]
+  schedule: WorkerScheduleInterface[];
+
+  synced?: number;
   
 }

@@ -46,4 +46,5 @@ export interface PlantExtendedInterface extends PlantInterface {
   workersComponents: {
     waterLoop: WaterLoopInterface;
   };
+  synced?: number;
 }

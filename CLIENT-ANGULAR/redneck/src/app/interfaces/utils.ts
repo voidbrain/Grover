@@ -22,3 +22,8 @@ export interface FormDefinition {
     error?: string;
     mode: string
   }
+
+  export interface ParamsInterface { 
+    lastUpdate: number;
+    items?: object
+}

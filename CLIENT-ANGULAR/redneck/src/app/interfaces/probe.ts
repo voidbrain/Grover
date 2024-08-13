@@ -15,6 +15,8 @@ export interface ProbeInterface {
     probeType: number;
     schedule?: ProbeScheduleInterface[];
     type: ProbeTypeInterface | ConstructorProbeTypeInterface | undefined,
-    log?: ProbeLogInterface[]
+    log?: ProbeLogInterface[];
+
+    synced?: number;
   }
   

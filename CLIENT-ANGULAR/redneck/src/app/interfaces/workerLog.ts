@@ -13,7 +13,9 @@ export interface WorkerLogInterface {
     lastUpdate: number,
     owner: string,
     type: number,
-    duration?: number
+    duration?: number;
+    deleted?: number;
+    synced?: number;
 }
 
 // PH = 5.8 +/- 0.5

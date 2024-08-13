@@ -11,7 +11,9 @@ export interface ProbeTypeInterface {
     type: string;
     um: string;
     maxWarningValue: number,
-    minWarningValue: number
+    minWarningValue: number;
+
+    synced?: number;
 }
 
 export interface ConstructorProbeTypeInterface { key: string; value: number } 

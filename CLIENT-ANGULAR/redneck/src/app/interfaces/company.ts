@@ -4,4 +4,6 @@ export interface CompanyInterface {
   enabled: boolean;
   deleted: boolean;
   lastUpdate: number;
+
+  synced?: number;
 }
