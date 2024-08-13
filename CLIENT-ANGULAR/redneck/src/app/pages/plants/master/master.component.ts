@@ -1,24 +1,4 @@
 
-export interface FormDefinition {
-  name: string,
-      type: string,
-      label: string,
-      options: [
-        { id: number, isChecked: boolean, name: string },
-        { id: number, isChecked: boolean, name: string },
-        { id: number, isChecked: boolean, name: string },
-        { id: number, isChecked: boolean, name: string },
-      ],
-      multiple: true,
-}
-
-export interface HTMLResponse {
-  value: string;
-  error?: string;
-  mode: string
-}
-
-
 import {
   ActivatedRoute,
   Router,
@@ -53,6 +33,8 @@ import { RoomExtendedInterface } from '../../../interfaces/room';
 import { PotInterface } from '../../../interfaces/pot';
 // import { ProbeTypeInterface } from '../../../interfaces/probeType';
 // import { WorkerTypeInterface } from '../../../interfaces/workerType';
+
+import { FormDefinition, HTMLResponse } from '../../../interfaces/utils';
 
 import { ConstructorWorkerTypeInterface } from '../../../interfaces/workerType';
 import { ConstructorProbeTypeInterface } from '../../../interfaces/probeType';

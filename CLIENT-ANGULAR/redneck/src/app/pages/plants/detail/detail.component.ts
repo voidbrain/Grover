@@ -87,8 +87,8 @@ import { FieldConfig } from '../../../components/shared/form/models/field-config
   providers: [CommonModule, DatePipe, JsonPipe],
 })
 export class PlantsDetailComponent implements OnInit {
-  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-  public id: number;
+  @ViewChild(DynamicFormComponent) form?: DynamicFormComponent[];
+  public id?: number;
   public page = 'plants';
   formDefinition: FieldConfig;
 

@@ -1,14 +1,4 @@
-interface FilterOption {
-  id: string;
-  label: string;
-  isChecked: boolean;
-  name: string;
-}
-
-// Define the interface for the configuration input
-interface FilterBarConfig {
-  options: FilterOption[];
-}
+import { FormDefinition } from '../../../interfaces/utils';
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
@@ -39,8 +29,8 @@ import {
 
 
 export class FilterBarComponent {
-  @Input() config!: FilterBarConfig;
-  @Output() emitChange = new EventEmitter<FilterBarConfig>();
+  @Input() config!: FormDefinition;
+  @Output() emitChange = new EventEmitter<FormDefinition>();
 
   updateSelection(event: CustomEvent) {
     const { value, checked } = event.detail;
