@@ -31,6 +31,7 @@ import {
   Peripherals,
   
   ScheduleTypes,
+  ProbesTypes,
 } from '../../../../app/services/settings/enum';
 
 import {
@@ -46,7 +47,8 @@ import { DoseInterface } from '../../../interfaces/dose';
 import { PlantExtendedInterface } from '../../../interfaces/plant';
 import { RoomExtendedInterface } from '../../../interfaces/room';
 import { PotInterface } from '../../../interfaces/pot';
-import { ProbeTypeInterface } from '../../../interfaces/probeType';
+// import { ProbeTypeInterface } from '../../../interfaces/probeType';
+// import { WorkerTypeInterface } from '../../../interfaces/workerType';
 import { StrainInterface } from '../../../interfaces/strain';
 import { DbService } from '../../../services/db/db.service';
 import { ToastController } from '@ionic/angular';
@@ -218,8 +220,10 @@ export class PlantsMasterComponent implements OnInit {
 
     const workersList: WorkerInterface[] = await this.db.getItems('workers_list') as WorkerInterface[];
     const probesList: ProbeInterface[] = await this.db.getItems('probes_list') as ProbeInterface[];
-    const workersType: WorkerTypesInterface[] = await this.db.getItems('workers_type') as WorkerTypesInterface[];
-    const probesType: ProbeTypeInterface[] = await this.db.getItems('probes_type') as ProbeTypeInterface[];
+    // const workersType: WorkerTypeInterface[] = await this.db.getItems('workers_type') as WorkerTypeInterface[];
+    // const probesType: ProbeTypeInterface[] = await this.db.getItems('probes_type') as ProbeTypeInterface[];
+    const probeType = ProbesTypes;
+    const workerType = WorkersTypes;
     const workersSchedule: ScheduleTypes[] = await this.db.getItems('workers_schedule') as ScheduleTypes[];
     const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule') as ScheduleTypes[];
     const column = 'id';
@@ -252,14 +256,14 @@ export class PlantsMasterComponent implements OnInit {
           (el) => el.locationId === plant?.pot?.locationId,
         );
         plant.probes.map((probe) => {
-          probe.probeType = probesType.find((el) => el.id === probe.probeType);
+          probe.probeType = probeType.find((el) => el.id === probe.probeType);
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
           );
         });
         plant.workers.map((worker) => {
-          worker.workerType = workersType.find((el) => el.id === worker.workerType);
+          worker.workerType = workerType.find((el) => el.id === worker.workerType);
           worker.log = workersLog.filter((el) => el.idWorker === worker.id);
           worker.schedule = workersSchedule.filter(
             (el) => el.idWorker === worker.id,
