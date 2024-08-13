@@ -33,6 +33,6 @@ import {
   `,
 })
 export class SelectComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }

@@ -36,8 +36,8 @@ import { CommonModule } from '@angular/common';
   `,
 })
 export class DateComponent implements Field {
-  @ViewChild(IonDatetime, { static: true }) datetime: IonDatetime;
-  @Input() config: FieldConfig;
-  @Input() group: FormGroup;
+  @ViewChild(IonDatetime, { static: true }) datetime!: IonDatetime;
+  @Input() config!: FieldConfig;
+  @Input() group!: FormGroup;
   dateValue = '';
 }

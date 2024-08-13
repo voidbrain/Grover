@@ -46,10 +46,10 @@ const components: Record<string, Type<Field>> = {
   standalone: true,
 })
 export class DynamicFieldDirective implements Field, OnChanges, OnInit {
-  @Input() config: FieldConfig;
-  @Input() group: FormGroup;
+  @Input() config!: FieldConfig;
+  @Input() group!: FormGroup;
 
-  component: ComponentRef<Field>;
+  component!: ComponentRef<Field>;
 
   constructor(
     private resolver: ComponentFactoryResolver,

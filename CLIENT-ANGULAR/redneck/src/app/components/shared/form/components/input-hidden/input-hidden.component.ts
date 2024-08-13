@@ -15,6 +15,6 @@ import { CommonModule } from '@angular/common';
   </div>`,
 })
 export class InputHiddenComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }

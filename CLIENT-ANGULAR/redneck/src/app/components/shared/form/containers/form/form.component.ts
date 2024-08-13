@@ -21,6 +21,9 @@ import { InputHiddenComponent } from './../../components/input-hidden/input-hidd
 import { SelectComponent } from './../../components/select/select.component';
 
 import { FieldConfig } from '../../models/field-config.interface';
+import { CompanyInterface } from '../../../../../interfaces/company';
+import { DoseInterface } from '../../../../../interfaces/dose';
+import { PlantInterface } from '../../../../../interfaces/plant';
 
 @Component({
   exportAs: 'dynamicForm',
@@ -94,7 +97,9 @@ export class DynamicFormComponent implements OnChanges, OnInit {
           const config = this.config.find(
             (control) => control.name === name,
           );
-          this.form.addControl(name, this.createControl(config));
+          if(config){
+            this.form.addControl(name, this.createControl(config));
+          }
         });
     }
   }
@@ -109,7 +114,8 @@ export class DynamicFormComponent implements OnChanges, OnInit {
 
   createControl(config: FieldConfig) {
     const { disabled, validation, value } = config;
-    return this.fb.control({ disabled, value }, validation);
+    const disabledBool = disabled as boolean
+    return this.fb.control({ disabledBool, value }, validation);
   }
 
   handleSubmit(event: Event) {
@@ -132,11 +138,11 @@ export class DynamicFormComponent implements OnChanges, OnInit {
     });
   }
 
-  setValue(name: string, value) {
+  setValue(name: string, value: string|number|[]) {
     this.form.controls[name].setValue(value, { emitEvent: true });
   }
 
-  setFormValues(form) {
+  setFormValues(form: PlantInterface | CompanyInterface | DoseInterface) {
     console.log(form, this.form);
     this.form.patchValue(form, { emitEvent: true });
   }

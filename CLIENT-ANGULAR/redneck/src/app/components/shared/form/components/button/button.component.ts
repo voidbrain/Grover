@@ -25,6 +25,6 @@ import { IonButton } from '@ionic/angular/standalone';
   `,
 })
 export class ButtonComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }

@@ -15,8 +15,8 @@ import {
   styleUrl: './expandable.component.scss',
 })
 export class ExpandableComponent implements AfterViewInit {
-  @ViewChild('expandWrapper', { read: ElementRef }) expandWrapper;
-  @Input() expanded;
+  @ViewChild('expandWrapper', { read: ElementRef }) expandWrapper:ElementRef | null = null;
+  @Input() expanded = false;
 
   expandHeight = 900;
 
@@ -24,7 +24,7 @@ export class ExpandableComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.renderer.setStyle(
-      this.expandWrapper.nativeElement,
+      this.expandWrapper?.nativeElement,
       'height',
       this.expandHeight + 'px',
     );

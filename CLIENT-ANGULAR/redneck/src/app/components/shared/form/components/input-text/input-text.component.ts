@@ -23,6 +23,6 @@ import { IonLabel, IonInput, IonItem } from '@ionic/angular/standalone';
   `,
 })
 export class InputTextComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }

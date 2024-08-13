@@ -24,6 +24,6 @@ import { IonItem, IonLabel, IonRadio } from '@ionic/angular/standalone';
   `,
 })
 export class RadioComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }

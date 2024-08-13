@@ -40,6 +40,6 @@ import {
   `,
 })
 export class RangeComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }

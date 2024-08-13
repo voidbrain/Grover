@@ -22,6 +22,6 @@ import { IonItem, IonLabel, IonToggle } from '@ionic/angular/standalone';
   `,
 })
 export class ToggleComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+  config!: FieldConfig;
+  group!: FormGroup;
 }
