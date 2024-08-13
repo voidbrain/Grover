@@ -1,7 +1,7 @@
 import { LocationInterface } from "../../interfaces/location";
 import { RoomInterface } from "../../interfaces/room";
 import { PotInterface } from "../../interfaces/pot";
-import { ExtendedCronJobInterface } from "../../interfaces/cron-job";
+import { CronJobInterface, ExtendedCronJobInterface } from "../../interfaces/cron-job";
 
 import { LocalStorage } from "node-localstorage";
 import sqlite3 from "sqlite3";
@@ -365,52 +365,58 @@ export class DbService {
     });
   }
 
-  public async logItem(table: string, item: undefined): Promise<void> {
+  public async logItem(
+    table: string,
+    item: CronJobInterface | unknown
+  ): Promise<void> {
     const lastUpdate = this.localStorage.getItem(
-      this.settings.getAppName() + "_" + table,
+      `${this.settings.getAppName()}_${table}`
     );
     const endpoint = "endpoint";
     const action = ServerCommands.LOG;
-
-    return new Promise<void>((resolve, reject) => {
-      this.api
-        .post(endpoint, lastUpdate, action, item, this.serialNumber)
-        .then((response: undefined) => {
-          if (response) {
-            if (this.debug) {
-              console.log(
-                endpoint,
-                lastUpdate,
-                action,
-                item,
-                this.serialNumber,
-                response,
-              );
+  
+    try {
+      const response = await this.api.post(
+        endpoint,
+        lastUpdate,
+        action,
+        item,
+        this.serialNumber
+      );
+  
+      if (response) {
+        if (this.debug) {
+          console.log(
+            "Logging Data:",
+            {
+              endpoint,
+              lastUpdate,
+              action,
+              item,
+              serialNumber: this.serialNumber,
+              response,
             }
-            const row = response;
-            const values: undefined[] = [];
-            const cols: string[] = [];
-            if (row) {
-              Object.keys(row).forEach((key) => {
-                cols.push(key);
-                values.push(row[key]);
-              });
-              resolve();
-            } else {
-              console.log("[DB]: logItem API POST response void", response);
-              resolve();
-            }
-          } else {
-            console.log("[DB]: logItem API POST response undefined", response);
-            resolve();
-          }
-        })
-        .catch((err) => {
-          console.log("[DB]: logItem API POST error", err);
-          reject(err);
+          );
+        }
+  
+        const values: any[] = [];
+        const cols: string[] = [];
+  
+        Object.keys(response).forEach((key) => {
+          cols.push(key);
+          values.push(response[key]);
         });
-    });
+  
+        // Process values and cols as needed
+      } else {
+        console.log("[DB]: logItem API POST returned an empty response.");
+      }
+    } catch (err) {
+      console.error("[DB]: logItem API POST error:", err);
+      throw err;
+    }
   }
+  
 
   
 

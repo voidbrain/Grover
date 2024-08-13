@@ -30,7 +30,7 @@ class RoomComponent {
   location: LocationInterface | null = null;
   probes: ProbeInterface[] = [];
   workers: WorkerInterface[] = [];
-  pots: PotObject[] = [];
+  pots: PotComponent[] = [];
   primaryWaterPump: RoomWaterRefillComponent;
   primaryPhDownPump: RoomPhDownRefillComponent;
   primaryGroPump: RoomGroRefillComponent;
@@ -305,7 +305,7 @@ class RoomComponent {
           this.db,
           this.api,
           this.settings,
-        ) as unknown as PotObject;
+        );
         await pot.setup(el.id);
         this.pots.push(pot);
       }),

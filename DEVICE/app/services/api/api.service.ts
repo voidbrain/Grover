@@ -24,7 +24,7 @@ export class ApiService {
     lastUpdate?: string,
     action?: string,
     serialNumber?: string,
-    port?: string,
+    port?: number,
   ): Promise<unknown> {
     const path =
       `${this.settings.getRemoteServerEndpoint()}${endpoint}` +

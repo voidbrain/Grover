@@ -60,7 +60,7 @@ class PotComponent {
       "pots",
       locationId,
       "locationId",
-    )) as PotInterface;
+    ));
     const location: LocationInterface = (await this.db.getItem(
       "locations",
       pot.locationId,
@@ -82,6 +82,7 @@ class PotComponent {
       pot.id,
       "idPot",
     );
+    console.log("[POT]: ", locationId, pot.id, plant)
     const phases: PhaseExtended[] = await this.db.getItems(
       "calendar_phases",
       plant.idCalendar,

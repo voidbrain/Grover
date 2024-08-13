@@ -23,6 +23,9 @@ import {
   ServerCommands,
   ServerPages,
 } from "../../app/services/settings/enums";
+import { TemperatureInterface } from "../interfaces/temperature";
+import { PhProbeInterface } from "../interfaces/ph-probe";
+import { EcProbeInterface } from "../interfaces/ec-probe";
 
 export class WebServer {
   debug = true;
@@ -77,21 +80,33 @@ export class WebServer {
             const duration = q.query.duration ? +q.query.duration : 0;
 
             const terminal:
-              | LocationInterface
+                LocationInterface
               | RoomInterface
               | PotInterface
-              | undefined = await this.db.getItem(
+              | TemperatureInterface
+              | PhProbeInterface
+              | EcProbeInterface
+               = await this.db.getItem(
               terminalType + "s_list",
               +id,
               "id",
-            );
-            const parentLocation: LocationInterface | undefined =
-              await this.db.getItem("locations", +terminal.locationId, "id");
+            ) as unknown as
+              LocationInterface
+            | RoomInterface
+            | PotInterface
+            | TemperatureInterface
+            | PhProbeInterface
+            | EcProbeInterface;
+            const locationId = ("locationId" in terminal ? terminal?.locationId : 0);
+            const parentLocation: LocationInterface =
+              await this.db.getItem("locations", +locationId, "id") as LocationInterface;
             const parent:
-              | LocationInterface
+              LocationInterface
               | RoomInterface
               | PotInterface
-              | undefined = await this.db.findParent(parentLocation.id);
+             = await this.db.findParent(parentLocation.id) as LocationInterface
+             | RoomInterface
+             | PotInterface;
             const environments = +parent.parent > 0 ? this.pots : this.rooms;
             const environmentType = +parent.parent > 0 ? "pot" : "room";
             const environment = environments.find(
