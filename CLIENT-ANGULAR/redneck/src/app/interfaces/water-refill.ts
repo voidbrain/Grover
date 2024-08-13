@@ -4,6 +4,7 @@ export interface WaterRefillInterface {
   enPin: number;
   in1Pin: number;
   in2Pin: number;
+  locationId: number;
 
   forward?: () => object;
   setup: () => object;

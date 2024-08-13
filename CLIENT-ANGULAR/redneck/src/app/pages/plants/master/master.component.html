@@ -45,7 +45,7 @@
                       class="btn"
                       size="small"
                       (click)="
-                        shuffleNutrient(room?.workersComponents?.nutrientRefill)
+                        shuffleNutrient(room.workersComponents.nutrientRefill)
                       "
                     >
                       Doses Shuffle
@@ -57,7 +57,7 @@
                       "
                       class="btn"
                       size="small"
-                      (click)="shufflePhDown(room?.workersComponents?.phDown)"
+                      (click)="shufflePhDown(room.workersComponents.phDown)"
                     >
                       pH↓ Shuffle
                     </ion-segment-button>
@@ -74,9 +74,9 @@
                       name="light-status"
                       [disabled]="!room?.serialNumber"
                       (ngModelChange)="
-                        toggleLight(room?.workersComponents?.light)
+                        toggleLight(room.workersComponents.light)
                       "
-                      [(ngModel)]="room?.workersComponents?.light?.status"
+                      [(ngModel)]="room.workersComponents.light.status"
                       color="primary"
                     ></ion-toggle>
                   </ion-item>
@@ -91,8 +91,8 @@
                       name="help-buoy"
                       class="toggle ion-padding"
                       [disabled]="!room?.serialNumber"
-                      (ngModelChange)="toggleFan(room?.workersComponents?.fan)"
-                      [(ngModel)]="room?.workersComponents?.fan?.status"
+                      (ngModelChange)="toggleFan(room.workersComponents.fan)"
+                      [(ngModel)]="room.workersComponents.fan.status"
                       color="primary"
                     ></ion-toggle>
                   </ion-item>
@@ -148,7 +148,7 @@
                     ></app-range>
                     <ion-button
                       size="small"
-                      (click)="read(room?.probesComponents?.airtemp)"
+                      (click)="read(room.probesComponents.airtemp)"
                     >
                       <fa-icon [fixedWidth]="true" icon="eye"></fa-icon>
                     </ion-button>

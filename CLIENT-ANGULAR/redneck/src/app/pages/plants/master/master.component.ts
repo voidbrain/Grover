@@ -12,6 +12,12 @@ export interface FormDefinition {
       multiple: true,
 }
 
+export interface HTMLResponse {
+  value: string;
+  error?: string;
+  mode: string
+}
+
 
 import {
   ActivatedRoute,
@@ -88,7 +94,8 @@ import {
   IonCardTitle,
   IonSegment,
   IonSegmentButton,
-  RefresherCustomEvent
+  RefresherCustomEvent,
+  SelectCustomEvent
 } from '@ionic/angular/standalone';
 
 import { RangeComponent } from '../../../components/shared/range/range.component';
@@ -413,7 +420,7 @@ export class PlantsMasterComponent implements OnInit {
           room?.plants[0]?.phase?.maxTemp;
         room.probesComponents.airtemp.type.minWarningValue =
           room?.plants[0]?.phase?.minTemp;
-        this.read(room?.probesComponents?.airtemp);
+        this.read(room?.probesComponents?.airtemp as unknown as TemperatureInterface);
       }
 
       const light = room?.workers.find(
@@ -525,26 +532,26 @@ export class PlantsMasterComponent implements OnInit {
     await toast.onDidDismiss();
   }
 
-  async read(probe: ProbeInterface) {
+  async read(probe: TemperatureInterface) {
     const room = this.rooms.find(
       (el) => el.locationId === probe.locationId,
     ) as RoomExtendedInterface;
     const action = ServerCommands.READ;
-    const response = await this.runRemoteCommand(
+    const response: HTMLResponse = await this.runRemoteCommand(
       room,
       ServerPages.actuators,
       action,
       probe.id,
       Peripherals.Probe,
-    );
-    if (response["error"]) {
+    ) as HTMLResponse;
+    if (response.error) {
       const header = `Error`;
-      const message = response["error"];
+      const message = response.error;
       const color = 'danger';
       const duration = 3000;
       this.presentToast(header, message, color, duration);
     } else {
-      room.probesComponents.airtemp.value = response["value"];
+      room.probesComponents.airtemp.value = +response.value;
       const header = `Success`;
       const message = `Action executed`;
       const color = 'success';
@@ -553,7 +560,7 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async toggleLight(worker: WorkerInterface) {
+  async toggleLight(worker: LightSwitchInterface) {
     const room = this.rooms.find(
       (el) => el.locationId === worker.locationId,
     ) as RoomExtendedInterface;
@@ -570,7 +577,7 @@ export class PlantsMasterComponent implements OnInit {
     );
   }
 
-  async toggleFan(worker: WorkerInterface) {
+  async toggleFan(worker: FanMotorInterface) {
     const room = this.rooms.find(
       (el) => el.locationId === worker.locationId,
     ) as RoomExtendedInterface;
@@ -578,14 +585,14 @@ export class PlantsMasterComponent implements OnInit {
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
         : ServerCommands.ON;
-    const response = await this.runRemoteCommand(
+    const response: HTMLResponse = await this.runRemoteCommand(
       room,
       ServerPages.actuators,
       action,
-      worker.id,
+      worker.id as number,
       Peripherals.Worker,
-    );
-    if (response["error"]) {
+    ) as HTMLResponse;
+    if (response.error) {
       const header = `Error`;
       const message = `Error occured`;
       const color = 'danger';
@@ -594,18 +601,18 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async setRoomStatus(event: unknown, room: RoomExtendedInterface) {
-    const response = this.runRemoteCommand(
+  async setRoomStatus(event: SelectCustomEvent, room: RoomExtendedInterface) {
+    const response: HTMLResponse = this.runRemoteCommand(
       room,
       ServerPages.system,
       ServerCommands.SET_MODE,
       room.id,
       event["detail"]["value"],
-    );
-    room.operatingMode = +response["mode"];
+    ) as unknown as HTMLResponse;
+    room.operatingMode = +response.mode;
   }
 
-  async shufflePhDown(worker: WorkerInterface) {
+  async shufflePhDown(worker: WaterRefillInterface) {
     if (worker) {
       const room = this.rooms.find(
         (el) => el.locationId === worker.locationId,
@@ -622,7 +629,7 @@ export class PlantsMasterComponent implements OnInit {
     }
   }
 
-  async shuffleNutrient(worker: WorkerInterface) {
+  async shuffleNutrient(worker: WaterRefillInterface) {
     if (worker) {
       const room = this.rooms.find(
         (el) => el.locationId === worker.locationId,
