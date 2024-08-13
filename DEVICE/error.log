@@ -1951,3 +1951,12 @@ Fri Aug 09 2024 14:33:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 }
+Tue Aug 13 2024 23:38:43 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///home/pi/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/home/pi/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /home/pi/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/home/pi/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:569:17)
+      at process.processTimers (node:internal/timers:512:7)
+}

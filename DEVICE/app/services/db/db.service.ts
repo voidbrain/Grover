@@ -1,6 +1,7 @@
 import { LocationInterface } from "../../interfaces/location";
 import { RoomInterface } from "../../interfaces/room";
 import { PotInterface } from "../../interfaces/pot";
+import { Plant } from "../../interfaces/plant" 
 import { CronJobInterface, ExtendedCronJobInterface } from "../../interfaces/cron-job";
 
 import { LocalStorage } from "node-localstorage";
@@ -223,10 +224,10 @@ export class DbService {
     table: string,
     value: string | number,
     column: string = "id",
-  ): Promise<LocationInterface | RoomInterface | PotInterface | undefined> {
+  ): Promise<LocationInterface | RoomInterface | PotInterface | undefined | Plant> {
     if (value) {
       const query = `SELECT * from ${table} WHERE ${column}=(?)`;
-      return new Promise<LocationInterface | RoomInterface | PotInterface>(
+      return new Promise<LocationInterface | RoomInterface | PotInterface | Plant>(
         (resolve, reject) => {
           this.db.get(query, [value], (err, row) => {
             if (err) {
