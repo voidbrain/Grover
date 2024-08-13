@@ -1,3 +1,16 @@
+interface ScheduleRow {
+  atMinute: string;
+  atHour: string;
+  atDay: string;
+  operatingMode: string;
+}
+
+export interface weekRow {
+  key: string;
+  values: unknown[];
+  type: string;
+}
+
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { stringToArray } from 'cron-converter';
@@ -29,11 +42,7 @@ import {
   faFan,
   faLightbulb,
 } from '@fortawesome/free-solid-svg-icons';
-
-export interface weekRow {
-  key: string;
-  values: unknown[];
-}
+import { WorkerInterface } from '../../../../interfaces/worker';
 
 @Component({
   selector: 'app-schedule-panel',
@@ -89,7 +98,7 @@ export class SchedulePanelComponent implements OnChanges {
     }
   }
 
-  popuplateDaysArray(item: weekRow, scheduleRow) {
+  popuplateDaysArray(item: WorkerInterface, scheduleRow: ScheduleRow) {
     if (scheduleRow) {
       const stringCron = `${scheduleRow.atMinute} ${scheduleRow.atHour} * * ${scheduleRow.atDay}`;
 
@@ -135,7 +144,7 @@ export class SchedulePanelComponent implements OnChanges {
       this.hoursOfDay.push(i.toString().padStart(2, '0'));
     }
 
-    this.room.workers?.map((item) => {
+    this.room.workers?.map((item: WorkerInterface) => {
       if (item.schedule && item.schedule.length) {
         item.schedule.map((el) => {
           this.popuplateDaysArray(item, el);

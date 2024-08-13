@@ -8,6 +8,12 @@ import { CompanyInterface } from '../../interfaces/company';
 import { DoseInterface } from '../../interfaces/dose';
 import { CalendarInterface } from '../../interfaces/calendar';
 import { LoadingController } from '@ionic/angular';
+import { ProbeInterface, ProbeLogRowInterface } from '../../interfaces/probe';
+import { WorkerInterface, WorkerLogRowInterface } from '../../interfaces/worker';
+import { WorkersTypes } from '../../services/settings/enum';
+import { ProbesTypes } from '../../services/settings/enum';
+import { ScheduleTypes } from '../../services/settings/enum';
+import { SettingsInterface } from '../../interfaces/settings'
 
 @Injectable({
   providedIn: 'root',
@@ -323,12 +329,12 @@ export class DbService {
     objectStore: string,
     column = 'enabled, deleted',
     query = [1, 0],
-  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface)[]> {
+  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface )[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index(column);
     const promise = new Promise<
-      PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface | unknown
+    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface)[]
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);

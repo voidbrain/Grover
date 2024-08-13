@@ -231,8 +231,8 @@ export class PlantsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: PlantInterface) {
-    this.save(value);
+  formSubmitted(value: CustomEvent<unknown>) {
+    this.save(value as unknown as PlantInterface);
   }
 
   async save(value: PlantInterface) {

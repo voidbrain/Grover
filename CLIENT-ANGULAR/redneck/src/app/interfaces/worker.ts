@@ -4,7 +4,7 @@ import { WaterLoopInterface } from "./water-loop";
 import { WaterRefillInterface } from "./water-refill";
 
 
-export interface LogRowInterface {
+export interface WorkerLogRowInterface {
   executedTime: string;
   action: string;
   value: number;
@@ -26,6 +26,6 @@ export interface WorkerInterface {
   waterLoop?: WaterLoopInterface; 
   refill?: WaterRefillInterface; 
 
-  log?: LogRowInterface[]
+  log?: WorkerLogRowInterface[]
   
 }

@@ -79,9 +79,10 @@ import * as ionIcons from 'ionicons/icons';
 import { FilterBarComponent } from '../../../components/plants/filter-bar/filter-bar.component';
 import { GrowingResultsComponent } from '../../../components/plants/growing-results/growing-results.component';
 import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
-import { ProbeInterface } from '../../../interfaces/probe';
-import { WorkerInterface } from '../../../interfaces/worker';
+import { ProbeInterface, ProbeLogRowInterface } from '../../../interfaces/probe';
+import { WorkerInterface, WorkerLogRowInterface } from '../../../interfaces/worker';
 import { LocationInterface } from '../../../interfaces/location';
+import { SettingsInterface } from '../../../interfaces/settings';
 
 export interface Obj {
   name: string,
@@ -178,7 +179,7 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = +this.activatedRoute.snapshot.paramMap.get('id');
+    this.id = +(this.activatedRoute?.snapshot?.paramMap?.get('id') ?? 0);
   }
 
   async ionViewWillEnter() {
@@ -191,33 +192,33 @@ export class PlantsMasterComponent implements OnInit {
   }
 
   async getItems() {
-    const settings: object[] = await this.db.getItems('settings');
-    let plants: PlantExtendedInterface[] = await this.db.getItems(this.page);
-    const pots: PotInterface[] = await this.db.getItems('pots');
-    const strains: StrainInterface[] = await this.db.getItems('strains');
-    const calendar: CalendarInterface[] = await this.db.getItems('calendars');
-    const doses: DoseInterface[] = await this.db.getItems('doses');
-    const rooms: RoomExtendedInterface[] = await this.db.getItems('rooms');
-    const locations: LocationInterface[] = await this.db.getItems('locations');
+    const settings: SettingsInterface[] = await this.db.getItems('settings') as SettingsInterface[];
+    let plants: PlantExtendedInterface[] = await this.db.getItems(this.page) as PlantExtendedInterface[];
+    const pots: PotInterface[] = await this.db.getItems('pots') as PotInterface[];
+    const strains: StrainInterface[] = await this.db.getItems('strains') as StrainInterface[];
+    const calendar: CalendarInterface[] = await this.db.getItems('calendars') as CalendarInterface[];
+    const doses: DoseInterface[] = await this.db.getItems('doses') as DoseInterface[];
+    const rooms: RoomExtendedInterface[] = await this.db.getItems('rooms') as RoomExtendedInterface[];
+    const locations: LocationInterface[] = await this.db.getItems('locations') as LocationInterface[];
 
-    const workersList: WorkerInterface[] = await this.db.getItems('workers_list');
-    const probesList: ProbeInterface[] = await this.db.getItems('probes_list');
-    const workersType: WorkersTypes[] = await this.db.getItems('workers_type');
-    const probesType: ProbesTypes[] = await this.db.getItems('probes_type');
-    const workersSchedule: ScheduleTypes[] = await this.db.getItems('workers_schedule');
-    const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule');
+    const workersList: WorkerInterface[] = await this.db.getItems('workers_list') as WorkerInterface[];
+    const probesList: ProbeInterface[] = await this.db.getItems('probes_list') as ProbeInterface[];
+    const workersType: WorkersTypes[] = await this.db.getItems('workers_type') as WorkersTypes[];
+    const probesType: ProbesTypes[] = await this.db.getItems('probes_type') as ProbesTypes[];
+    const workersSchedule: ScheduleTypes[] = await this.db.getItems('workers_schedule') as ScheduleTypes[];
+    const probesSchedule: ScheduleTypes[] = await this.db.getItems('probes_schedule') as ScheduleTypes[];
     const column = 'id';
     const query: number[] = [];
-    const workersLog: object[] = await this.db.getItems(
+    const workersLog: WorkerLogRowInterface[] = await this.db.getItems(
       'workers_log',
       column,
       query,
-    );
-    const probesLog: object[] = await this.db.getItems(
+    ) as WorkerLogRowInterface[];
+    const probesLog: ProbeLogRowInterface[] = await this.db.getItems(
       'probes_log',
       column,
       query,
-    );
+    ) as ProbeLogRowInterface[];
 
     this.items = plants;
     this.items.map(async (plant: PlantExtendedInterface) => {
@@ -321,13 +322,13 @@ export class PlantsMasterComponent implements OnInit {
     });
     plants = plants.filter(
       (el) =>
-        (this.formDefinition.options.find((el) => el.id === 0).isChecked
+        (this.formDefinition.options?.find((el) => el.id === 0)?.isChecked
           ? el.dayStartGrow && !el.dayStartBloom
           : 0) ||
-        (this.formDefinition.options.find((el) => el.id === 1).isChecked
+        (this.formDefinition.options?.find((el) => el.id === 1)?.isChecked
           ? el.dayStartBloom
           : 0) ||
-        (this.formDefinition.options.find((el) => el.id === 2).isChecked
+        (this.formDefinition.options?.find((el) => el.id === 2)?.isChecked
           ? el.dayHarvest
           : 0),
     );

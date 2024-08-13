@@ -4,7 +4,7 @@ import { WaterRefillInterface } from "./water-refill";
 import { PhProbeInterface } from "./ph-probe";
 import { EcProbeInterface } from "./ec-probe";
 
-export interface LogRow {
+export interface ProbeLogRowInterface {
   executedTime: string;
   action: string;
   value: number;
@@ -25,6 +25,6 @@ export interface ProbeInterface {
     ph?: PhProbeInterface;
     ec?: EcProbeInterface;
 
-    log?: LogRow[]
+    log?: ProbeLogRowInterface[]
   }
   
