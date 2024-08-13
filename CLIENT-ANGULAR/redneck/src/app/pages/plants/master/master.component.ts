@@ -257,8 +257,10 @@ export class PlantsMasterComponent implements OnInit {
         plant.probes = (probesList).filter(
           (el) => el.locationId === plant?.pot?.locationId,
         );
+
+        const pt = Object.entries(ProbesTypes).map(([key, value]) => ({id: key, value: value}))
         plant.probes.map((probe) => {
-          probe.probeType = probeType.find((el) => el.id === probe.probeType);
+          probe.type = pt.find((el) => +el.id === +probe.probeType);
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
