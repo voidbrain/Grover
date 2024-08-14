@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { SettingsService } from '../settings/settings.service';
 import { ToastService } from '../toast/toast.service';
-import { PlantInterface } from '../../interfaces/plant';
+import { PlantExtendedInterface, PlantInterface } from '../../interfaces/plant';
 import { StrainInterface } from '../../interfaces/strain';
 import { CompanyInterface } from '../../interfaces/company';
-import { DoseInterface } from '../../interfaces/dose';
+import { DoseExtendedInterface, DoseInterface } from '../../interfaces/dose';
 import { CalendarInterface } from '../../interfaces/calendar';
 import { LoadingController } from '@ionic/angular';
 import { ProbeInterface } from '../../interfaces/probe';
@@ -20,6 +20,8 @@ import { ProbeTypeInterface } from '../../interfaces/probeType';
 import { WorkerTypeInterface } from '../../interfaces/workerType';
 import { ProbeScheduleInterface } from '../../interfaces/probeSchedule';
 import { WorkerScheduleInterface } from '../../interfaces/workerSchedule';
+import { HttpParams } from '@angular/common/http';
+import { ParamsInterface } from '../../interfaces/utils';
 
 
 
@@ -206,7 +208,7 @@ export class DbService {
           const lastUpdate = localStorage.getItem(
             `${this.appSettings.appName}_${table}`,
           );
-          return await this.loadData(table, lastUpdate as string);
+          return await this.loadData(table, +lastUpdate);
         }),
       );
 
@@ -218,8 +220,9 @@ export class DbService {
     }
   }
 
-  async loadData(table: string, lastUpdate: string): Promise<Record<string, unknown>> {
-    const params = { lastUpdate };
+  async loadData(table: string, lastUpdate: number): Promise<Record<string, unknown>> {
+    const lastUpdateString: string = ''+lastUpdate;
+    const params: HttpParams = { lastUpdateString };
     const res = await this.api.get(table, params);
     return { [table]: res };
   }
@@ -357,16 +360,27 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
+    item: 
+      PlantExtendedInterface | 
+      DoseExtendedInterface | 
+      StrainInterface | 
+      CompanyInterface | 
+      WorkerInterface | 
+      ProbeInterface | 
+      ProbeLogInterface | 
+      WorkerLogInterface | 
+      RoomSettingsInterface | 
+      ProbeTypeInterface | 
+      WorkerTypeInterface
   ): Promise<void> {
     try {
       if (!item.id) {
         delete item.id;
       }
   
-      const lastUpdate = localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
-      const params = { lastUpdate };
-      const response = await this.api.post(objectStore, item, params);
+      const lastUpdate = +localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
+      const params: ParamsInterface = { lastUpdate };
+      const response = await this.api.post(objectStore, [item], params);
   
       if (response && response["items"] && response["items"].length > 0) {
         const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
@@ -392,7 +406,7 @@ export class DbService {
 
   async deleteItem(objectStore: string, itemToDelete): Promise<void> {
     try {
-      const item = await this.api.delete(objectStore, itemToDelete);
+      const item: IDBValidKey = await this.api.delete(objectStore, itemToDelete) as IDBValidKey;
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
       const store = tx.objectStore(objectStore);
   
@@ -467,7 +481,32 @@ export class DbService {
         console.info('[DB]: Sync stored items with remote');
       }
       this.tables.map(async (table) => {
-        const items = await this.getItemsToBeSynced(table);
+        const items: (
+          PlantExtendedInterface | 
+          DoseExtendedInterface | 
+          StrainInterface | 
+          CompanyInterface | 
+          WorkerInterface | 
+          ProbeInterface | 
+          ProbeLogInterface | 
+          WorkerLogInterface | 
+          RoomSettingsInterface | 
+          ProbeTypeInterface | 
+          WorkerTypeInterface
+        )[] = await this.getItemsToBeSynced(table) as 
+        (
+          PlantExtendedInterface | 
+          DoseExtendedInterface | 
+          StrainInterface | 
+          CompanyInterface | 
+          WorkerInterface | 
+          ProbeInterface | 
+          ProbeLogInterface | 
+          WorkerLogInterface | 
+          RoomSettingsInterface | 
+          ProbeTypeInterface | 
+          WorkerTypeInterface
+        )[]
         if (items["length"]) {
           if (this.debug) {
             console.info(
@@ -487,7 +526,7 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeSynced(objectStore: string): Promise<(unknown)> {
+  getItemsToBeSynced(objectStore: string): Promise<(unknown[])> {
     try {
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
       const store = tx.objectStore(objectStore);
