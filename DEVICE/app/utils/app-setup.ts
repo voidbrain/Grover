@@ -56,13 +56,14 @@ export class AppSetup {
       await this.db.load();
 
       // Initialize and start the web server (await the promise)
-      this.server = await new WebServer(this.settings, this.db, this.api, this.ai).init();
+      
 
       // Set up the scheduler
       const scheduler = new Scheduler(this.db);
       scheduler.setMainSchedule();
 
-      this.setupRoom();
+      await this.setupRoom();
+      this.server = await new WebServer(this.settings, this.db, this.api, this.ai, this.rooms).init();
 
       console.log("[main] => init done");
     } catch (err) {
