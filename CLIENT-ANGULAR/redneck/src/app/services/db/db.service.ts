@@ -18,6 +18,8 @@ import { ScheduleTypes } from '../../services/settings/enum';
 import { RoomSettingsInterface } from '../../interfaces/settings';
 import { ProbeTypeInterface } from '../../interfaces/probeType';
 import { WorkerTypeInterface } from '../../interfaces/workerType';
+import { ProbeScheduleInterface } from '../../interfaces/probeSchedule';
+import { WorkerScheduleInterface } from '../../interfaces/workerSchedule';
 
 
 
@@ -301,31 +303,34 @@ export class DbService {
   }
 
   getItem(objectStore: string, id: number, column = 'id'): Promise<PlantInterface | DoseInterface | StrainInterface | CompanyInterface > {
-    const tx = this.db.transaction(objectStore, 'readonly');
-    const store = tx.objectStore(objectStore);
-    const dataIndex: IDBIndex = store.index(column);
+    const tx = this.db?.transaction(objectStore, 'readonly');
+    const store = tx?.objectStore(objectStore);
+    const dataIndex: IDBIndex = store?.index(column) as IDBIndex;
     const promise = new Promise<PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface>(
-      (resolve) => {
+      (resolve, reject) => {
         if (id) {
           const queryExecute:IDBRequest<unknown> = dataIndex.get(+id);
           queryExecute.onsuccess = (e) => {
-            if (e["target"]["result"] === undefined) {
+            const request = e.target as IDBRequest;
+            if (request.result === undefined) {
               const queryExecute = dataIndex.get([+id]);
               queryExecute.onsuccess = (e) => {
-                resolve(e["target"]["result"]);
+                const request = e.target as IDBRequest;
+                resolve(request.result);
               };
               queryExecute.onerror = (e) => {
                 console.log(e);
+                reject(e);
               };
             }
 
-            resolve(e["target"]["result"]);
+            resolve(request.result);
           };
           queryExecute.onerror = (e) => {
             console.log(e);
           };
         } else {
-          resolve(null);
+          reject(null);
         }
       },
     );
@@ -336,12 +341,12 @@ export class DbService {
     objectStore: string,
     column = 'enabled, deleted',
     query = [1, 0],
-  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface )[]> {
+  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface | ProbeScheduleInterface | WorkerScheduleInterface )[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index(column);
     const promise = new Promise<
-    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface)[]
+    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface | ProbeScheduleInterface | WorkerScheduleInterface)[]
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);
@@ -368,7 +373,7 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
+    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
   ): Promise<void> {
     try {
       if (!item.id) {
