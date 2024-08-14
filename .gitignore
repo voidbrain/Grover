@@ -1,10 +1,13 @@
 node_modules
+data
 data/scratch
 data/db.sqlite
 package-lock.json
 Documentation/.DS_Store
-DEVICE/data/db.sqlite
+db.sqlite
 DEVICE/data/scratch/Grover%2FRedNeck_lastglobalupdate
 DEVICE/error.log
-DEVICE/data/db.sqlite
+DEVICE/data
+/DEVICE/data/db.sqlite
+Grover%2FRedNeck_lastglobalupdate
 DEVICE/data/scratch/Grover%2FRedNeck_lastglobalupdate
