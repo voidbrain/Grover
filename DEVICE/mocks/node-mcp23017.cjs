@@ -12,6 +12,10 @@ class MCP23017 {
   anotherMethod() {
     return "another mocked result";
   }
+
+  pinMode(pin,  OUTPUT) {
+    return 
+  }
 }
 
 module.exports = MCP23017;

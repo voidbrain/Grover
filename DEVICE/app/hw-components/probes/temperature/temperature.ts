@@ -10,6 +10,10 @@ import {
   DevicesStatus,
 } from "../../../services/settings/enums";
 
+import schedule from "node-schedule";
+import moment from "moment";
+import { TemperatureInterface } from "../../../interfaces/temperature";
+
 import isPi from "detect-rpi";
 let sensor;
 let isMock = false;
@@ -21,11 +25,11 @@ if (isPi()) {
     "../../../../mocks/ds18x20.cjs"
   );
   sensor = ds18x20Mock;
+  isMock = true;
 }
+console.log(sensor, "isMock:" + isMock);
 
-import schedule from "node-schedule";
-import moment from "moment";
-import { TemperatureInterface } from "../../../interfaces/temperature";
+
 class TemperatureComponent {
   id: number | string;
   parentId: number;
