@@ -11,12 +11,21 @@ export interface ProbeInterface {
     pin2?: number,
     i2cAddress?: number,
     locationId: number;
-    id: number;
+    id?: number;
     probeType: number;
     schedule?: ProbeScheduleInterface[];
-    type: ProbeTypeInterface | ConstructorProbeTypeInterface | undefined,
+    type?: ConstructorProbeTypeInterface,
+    probeEl?: ProbeTypeInterface,
     log?: ProbeLogInterface[];
+    value?: number
 
     synced?: number;
+  }
+
+  export interface ProbesListInterface {  
+    temp: ProbeInterface | undefined;
+    waterLevel: ProbeInterface | undefined;
+    ec: ProbeInterface | undefined;
+    ph: ProbeInterface | undefined;
   }
   

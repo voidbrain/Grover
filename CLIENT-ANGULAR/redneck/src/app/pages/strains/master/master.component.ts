@@ -19,7 +19,7 @@ import {
   IonRefresherContent,
   IonTitle,
   IonToolbar,
-  RefresherCustomEvent
+  RefresherCustomEvent,
 } from '@ionic/angular/standalone';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DbService } from '../../../services/db/db.service';
@@ -62,109 +62,95 @@ export class StrainsMasterComponent {
   page = 'strains';
   debug = true;
 
-  constructor(
-    private db: DbService,
-    private router: Router,
-  ) {
+  constructor(private db: DbService, private router: Router) {
     addIcons(ionIcons);
-    this.init();
   }
 
-  async init() {
+  // Using Ionic lifecycle hook to initialize data when the view is about to be presented
+  async ionViewWillEnter() {
     console.info('[PAGE]: Start');
-    await this.db.load();
-
-    const forceLoading = true;
-    await this.db.initService(forceLoading);
-    this.getItems();
+    try {
+      await this.db.load();
+      const forceLoading = true;
+      await this.db.initService(forceLoading);
+      await this.getItems();
+    } catch (err) {
+      console.error('Error during initialization:', err);
+    }
   }
 
   async getItems() {
-    const items: StrainInterface[] = await this.db.getItems(this.page) as StrainInterface[];
-    items.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
-    items.map((item) => {
-      item.chartConfig = {
-        id: 'chart',
-        type: 'doughnut',
-        options: {
-          plugins: {
-            legend: {
-              display: false,
+    try {
+      const items: StrainInterface[] = (await this.db.getItems(this.page)) as StrainInterface[];
+      items.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+      items.forEach((item) => {
+        item.chartConfig = {
+          type: 'doughnut',
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+              },
             },
           },
-        },
-        data: {
-          labels: ['Sativa', 'Indica'],
-          datasets: [
-            {
-              data: [item.percentSativa, 100 - item.percentSativa],
-              backgroundColor: [
-                'rgba(17, 176, 50, 1)',
-                'rgba(125, 17, 176, 1)',
-              ],
-              borderWidth: 1,
-            },
-          ],
-        },
-        xAxes: [
-          {
-            id: 'xAxis1',
-            gridLines: {
-              display: false,
-            },
-            display: false,
+          data: {
+            labels: ['Sativa', 'Indica'],
+            datasets: [
+              {
+                data: [item.percentSativa, 100 - item.percentSativa],
+                backgroundColor: [
+                  'rgba(17, 176, 50, 1)',
+                  'rgba(125, 17, 176, 1)',
+                ],
+                borderWidth: 1,
+              },
+            ],
           },
-        ],
-        yAxes: [
-          {
-            display: false,
-            stacked: false,
-            gridLines: {
-              display: false,
-            },
-          },
-        ],
-        labelsFontSize: 9,
-        showValue: false,
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-          },
-        },
-      };
-    });
-    this.items = items;
-    console.info('[PAGE]: Ready');
+        };
+      });
+      this.items = items;
+      console.info('[PAGE]: Ready');
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
   }
 
   async deleteItem(item: StrainInterface) {
-    this.slidingItems.map((el) => {
-      el.closeOpened();
-    });
-    await this.db.deleteItem(this.page, item);
-    this.getItems();
+    try {
+      this.slidingItems.forEach((el) => {
+        el.closeOpened();
+      });
+      await this.db.deleteItem(this.page, item);
+      await this.getItems(); // Refresh the list after deletion
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
   }
 
   showDetail(item: StrainInterface) {
-    this.slidingItems.map((el) => {
+    this.slidingItems.forEach((el) => {
       el.closeOpened();
     });
-    this.router.navigate([this.page + '/edit', JSON.stringify(item.id)]);
+    this.router.navigate([`${this.page}/edit`, JSON.stringify(item.id)]);
   }
 
   async doRefresh(refresher: RefresherCustomEvent) {
-    this.slidingItems.map((el) => {
-      el.closeOpened();
-    });
-    const forceLoading = true;
-    const load = await this.db.initService(forceLoading);
+    try {
+      this.slidingItems.forEach((el) => {
+        el.closeOpened();
+      });
+      const forceLoading = true;
+      await this.db.initService(forceLoading);
+      await this.getItems();
+      refresher.target.complete();
+    } catch (error) {
+      refresher.target.complete();
+      console.error('Error refreshing items:', error);
+    }
+  }
 
-    this.getItems();
-    refresher.target.complete();
-
-    load.catch((err) => console.error(err));
+  // Optional: Add trackBy to ngFor for better performance in large lists
+  trackById(index: number, item: StrainInterface) {
+    return item.id; // Or another unique identifier for StrainInterface
   }
 }

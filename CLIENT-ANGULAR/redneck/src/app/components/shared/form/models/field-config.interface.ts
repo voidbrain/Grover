@@ -19,7 +19,7 @@ export interface FieldConfig {
   max?: number;
   icon?: string;
   multiple?: boolean;
-  find(el: unknown): () => {
-    options: object
-  };
+  // find(el: unknown): () => {
+  //   options: object
+  // };
 }

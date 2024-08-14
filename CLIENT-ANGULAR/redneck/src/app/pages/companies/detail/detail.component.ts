@@ -42,6 +42,7 @@ import { CompanyInterface } from '../../../interfaces/company';
 import { PotInterface } from '../../../interfaces/pot';
 import { DatePipe } from '@angular/common';
 import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 @Component({
   selector: 'app-companies-detail',
   standalone: true,
@@ -86,7 +87,7 @@ export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'companies';
-  formDefinition: FieldConfig;
+  formDefinition: FormDefinitionRow[];
   pots: PotInterface[] = [];
 
   constructor(
@@ -126,7 +127,7 @@ export class CompaniesDetailComponent implements OnInit {
 
   async getItem(id: string) {
     if (id) {
-      const item: CompanyInterface = await this.db.getItem(this.page, id);
+      const item: CompanyInterface = await this.db.getItem(this.page, +id) as CompanyInterface;
 
       if (item) {
         this.form.setFormValues(item);
@@ -139,8 +140,8 @@ export class CompaniesDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: CompanyInterface) {
-    this.save(value);
+  formSubmitted(value: CustomEvent) {
+    this.save(value as unknown as CompanyInterface);
   }
 
   async save(value: CompanyInterface) {

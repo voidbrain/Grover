@@ -60,7 +60,7 @@ class PotComponent {
       "pots",
       locationId,
       "locationId",
-    )) as PotInterface;
+    ));
     const location: LocationInterface = (await this.db.getItem(
       "locations",
       pot.locationId,
@@ -82,9 +82,10 @@ class PotComponent {
       pot.id,
       "idPot",
     );
+    console.log("[POT]: ", locationId, pot.id, plant)
     const phases: PhaseExtended[] = await this.db.getItems(
       "calendar_phases",
-      plant.idCalendar,
+      plant?.idCalendar,
       "idCalendar",
     );
     await Promise.all(
@@ -98,29 +99,32 @@ class PotComponent {
       }),
     );
 
+    if(plant){
     const epochDiffGrow: number =
-      new Date().getTime() - new Date(plant.dayStartGrow).getTime();
-    plant.daysFromGrow = Math.ceil(epochDiffGrow / (1000 * 60 * 60 * 24));
-    const epochDiffBloom: number =
-      new Date().getTime() - new Date(plant.dayStartBloom).getTime();
-    plant.daysFromBloom = plant.dayStartBloom
-      ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
-      : undefined;
-    let countingDays = plant.daysFromBloom
-      ? +plant.daysFromBloom
-      : +plant.daysFromGrow;
-    let foundPhase: PhaseExtended | undefined;
-    phases.map((phase: PhaseExtended) => {
-      if (
-        +countingDays > 0 &&
-        ((plant.daysFromBloom && phase.isBlooming) ||
-          (!plant.daysFromBloom && !phase.isBlooming))
-      ) {
-        countingDays -= phase.duration;
-        foundPhase = phase;
-      }
-    });
-    this.phase = foundPhase;
+        new Date().getTime() - new Date(plant?.dayStartGrow).getTime();
+      plant.daysFromGrow! = Math.ceil(epochDiffGrow / (1000 * 60 * 60 * 24));
+      const epochDiffBloom: number =
+        new Date().getTime() - new Date(plant?.dayStartBloom).getTime();
+      plant.daysFromBloom = plant?.dayStartBloom
+        ? Math.ceil(epochDiffBloom / (1000 * 60 * 60 * 24))
+        : undefined;
+      let countingDays = plant.daysFromBloom
+        ? +plant?.daysFromBloom
+        : +plant?.daysFromGrow;
+    
+      let foundPhase: PhaseExtended | undefined;
+      phases.map((phase: PhaseExtended) => {
+        if (
+          +countingDays > 0 &&
+          ((plant?.daysFromBloom && phase.isBlooming) ||
+            (!plant.daysFromBloom && !phase.isBlooming))
+        ) {
+          countingDays -= phase.duration;
+          foundPhase = phase;
+        }
+      });
+      this.phase = foundPhase;
+    }
 
     /*
     plant.phase.minEC

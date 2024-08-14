@@ -220,7 +220,7 @@ export class PlantsMasterComponent implements OnInit {
     const strains: StrainInterface[] = await this.db.getItems('strains') as StrainInterface[];
     const calendar: CalendarInterface[] = await this.db.getItems('calendars') as CalendarInterface[];
     const doses: DoseInterface[] = await this.db.getItems('doses') as DoseInterface[];
-    const rooms: RoomExtendedInterface[] = await this.db.getItems('rooms') as RoomExtendedInterface[];
+    const rooms: RoomExtendedInterface[] = await this.db.getItems('rooms') as unknown as RoomExtendedInterface[];
     const locations: LocationInterface[] = await this.db.getItems('locations') as LocationInterface[];
 
     const workersList: WorkerInterface[] = await this.db.getItems('workers_list') as WorkerInterface[];
@@ -261,6 +261,7 @@ export class PlantsMasterComponent implements OnInit {
 
         plant.probes.map((probe) => {
           probe.type = this.probeType.find((el) => +el.key === +probe.probeType) as ConstructorProbeTypeInterface;
+          
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
@@ -591,7 +592,7 @@ export class PlantsMasterComponent implements OnInit {
       room.id,
       event["detail"]["value"],
     ) as unknown as HTMLResponse;
-    room.operatingMode = +response.mode;
+    room.operatingMode = +(response?.mode ?? 0);
   }
 
   async shufflePhDown(worker: WaterRefillInterface) {

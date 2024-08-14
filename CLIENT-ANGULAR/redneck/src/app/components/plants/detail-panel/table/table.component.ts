@@ -13,4 +13,5 @@ export class PanelTableComponent {
   @Input() plant?: PlantExtendedInterface;
   @Input() room?: RoomExtendedInterface;
   @Input() tableValues: unknown[] = [];
+  valuesArr:[] = []
 }

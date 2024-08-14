@@ -41,7 +41,7 @@
           </ion-row>
         </ion-grid>
         @for (
-          peripheral of day?.data.datasets;
+          peripheral of day?.data?.datasets;
           track peripheral;
           let index = $index
         ) {
@@ -72,14 +72,13 @@
                             ? peripheral.data[0].hourValues.includes(+hour!)
                               ? hour + ':' + peripheral.data[0].atMinute
                               : ''
-                            : +peripheral.data[0].hourValues[0] <= +hour! &&
-                                +hour! < +peripheral.data[0].hourValues[1]
+                            : +peripheral.data[0].hourValues[0]! <= +hour! &&
+                                +hour! < +peripheral.data[0].hourValues[1]!
                               ? hour + ':' + peripheral.data[0].atMinute
                               : ''
                         "
                         [ngClass]="
-                          (peripheral.data[0].operatingMode! >=
-                          room.operatingMode!
+                          (+peripheral.data[0].operatingMode! >= +room.operatingMode!
                             ? ''
                             : ' disabled ') +
                           'hour ' +
@@ -92,8 +91,8 @@
                             ? peripheral.data[0].hourValues.includes(+hour!)
                               ? 'onBefore'
                               : ''
-                            : +peripheral.data[0].hourValues[0] <= +hour! &&
-                                +hour! < +peripheral.data[0].hourValues[1]
+                            : +peripheral.data[0].hourValues[0]! <= +hour! &&
+                                +hour! < +peripheral.data[0].hourValues[1]!
                               ? 'on'
                               : '') +
                           (index === 0 ? ' first ' : '')

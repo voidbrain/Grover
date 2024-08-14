@@ -10,10 +10,10 @@ export interface ProbeTypeInterface {
     title: string;
     type: string;
     um: string;
-    maxWarningValue: number,
-    minWarningValue: number;
+    maxWarningValue?: number,
+    minWarningValue?: number;
 
     synced?: number;
 }
 
-export interface ConstructorProbeTypeInterface { key: string; value: number } 
+export interface ConstructorProbeTypeInterface { key: string; value: number; id?: number } 

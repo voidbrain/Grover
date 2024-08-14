@@ -21,9 +21,10 @@ import {
 } from '@ionic/angular/standalone';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowsRotate, faFill } from '@fortawesome/free-solid-svg-icons';
-import { ProbeInterface } from '../../../../interfaces/probe';
-import { WorkerInterface } from '../../../../interfaces/worker';
-import { WaterLoopInterface } from '../../../../interfaces/water-loop';
+import { ProbeInterface, ProbesListInterface } from '../../../../interfaces/probe';
+import { WorkerInterface, WorkersListInterface } from '../../../../interfaces/worker';
+import { ProbeTypeInterface } from '../../../../interfaces/probeType';
+import { HTMLResponse } from '../../../../interfaces/utils';
 
 export interface Obj {
   error: string,
@@ -52,8 +53,8 @@ export class ActionsPanelComponent implements OnChanges {
   faArrowsRotate = faArrowsRotate;
   faFill = faFill;
 
-  probes?: ProbeInterface;
-  workers?: WorkerInterface;
+  probes?: ProbesListInterface;
+  workers?: WorkersListInterface;
   debug = false;
 
   constructor(
@@ -90,47 +91,47 @@ export class ActionsPanelComponent implements OnChanges {
   }
 
   setup() {
-    const probes: ProbeInterface = {
+    const probes = {
       temp: this.plant?.probes?.find(
-        (el) => el.type.id === ProbesTypes.Water_temperature,
+        (el: ProbeInterface) => el?.type?.id === ProbesTypes.Water_temperature,
       ),
       waterLevel: this.plant?.probes?.find(
-        (el) => el.type.id === ProbesTypes.Water_level,
+        (el: ProbeInterface) => el?.type?.id === ProbesTypes.Water_level,
       ),
-      ec: this.plant?.probes?.find((el) => el.type.id === ProbesTypes.EC),
-      ph: this.plant?.probes?.find((el) => el.type.id === ProbesTypes.pH),
+      ec: this.plant?.probes?.find((el) => el?.type?.id === ProbesTypes.EC),
+      ph: this.plant?.probes?.find((el) => el?.type?.id === ProbesTypes.pH),
     };
     if (probes.temp !== undefined) {
-      probes.temp.type.maxWarningValue = this.plant?.phase?.maxTemp;
-      probes.temp.type.minWarningValue = this.plant?.phase?.minTemp;
+      (probes.temp.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxTemp;
+      (probes.temp.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minTemp;
       probes.temp.value = 0;
-      this.read(probes.temp.id);
+      this.read(+(probes.temp.id ?? 0));
     }
     if (probes.waterLevel !== undefined) {
-      probes.waterLevel.type.maxWarningValue = this.plant?.phase?.maxWaterLevel;
-      probes.waterLevel.type.minWarningValue = this.plant?.phase?.minWaterLevel;
+      (probes.waterLevel.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxWaterLevel;
+      (probes.waterLevel.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minWaterLevel;
       probes.waterLevel.value = 0;
-      this.read(probes.waterLevel.id);
+      this.read(+(probes.waterLevel.id ?? 0));
     }
     if (probes.ph !== undefined) {
-      probes.ph.type.maxWarningValue = this.plant?.phase?.maxPh;
-      probes.ph.type.minWarningValue = this.plant?.phase?.minPh;
+      (probes.ph.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxPh;
+      (probes.ph.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minPh;
       probes.ph.value = 0;
-      this.read(probes.ph.id);
+      this.read(+(probes.ph.id ?? 0));
     }
     if (probes.ec !== undefined) {
-      probes.ec.type.maxWarningValue = this.plant?.phase?.maxEC;
-      probes.ec.type.minWarningValue = this.plant?.phase?.minEC;
+      (probes.ec.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxEC;
+      (probes.ec.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minEC;
       probes.ec.value = 0;
-      this.read(probes.ec.id);
+      this.read(+(probes.ec.id ?? 0));
     }
 
-    const workers: WorkerInterface = {
-      waterLoop: this.plant.workers.find(
-        (el) => el.type.id === WorkersTypes.Pot_Water_loop,
+    const workers = {
+      waterLoop: this.plant?.workers?.find(
+        (el: WorkerInterface) => el?.type?.id === WorkersTypes.Pot_Water_loop,
       ),
-      refill: this.plant.workers.find(
-        (el) => el.type.id === WorkersTypes.Pot_refill,
+      refill: this.plant?.workers?.find(
+        (el: WorkerInterface) => el?.type?.id === WorkersTypes.Pot_refill,
       ),
     };
 
@@ -140,7 +141,7 @@ export class ActionsPanelComponent implements OnChanges {
 
   async read(id: number) {
     if (id) {
-      const response: Obj = await this.runRemoteCommand(
+      const response: HTMLResponse = await this.runRemoteCommand(
         ServerPages.actuators,
         ServerCommands.READ,
         id,
@@ -154,12 +155,14 @@ export class ActionsPanelComponent implements OnChanges {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       } else {
-        this.probes.temp.value = response.value;
-        const header = `Success`;
-        const message = `Action executed`;
-        const color = 'success';
-        const duration = 3000;
-        this.presentToast(header, message, color, duration);
+        if(this.probes?.temp){
+          this.probes.temp.value = +response.value;
+          const header = `Success`;
+          const message = `Action executed`;
+          const color = 'success';
+          const duration = 3000;
+          this.presentToast(header, message, color, duration);
+        }
       }
     } else {
       const header = `Error`;
@@ -170,7 +173,7 @@ export class ActionsPanelComponent implements OnChanges {
     }
   }
 
-  async toggleWaterRecycle(worker: WaterLoopInterface) {
+  async toggleWaterRecycle(worker: WorkerInterface) {
     const action =
       worker?.status === DevicesStatus.ON
         ? ServerCommands.OFF
@@ -230,11 +233,11 @@ export class ActionsPanelComponent implements OnChanges {
     id: number,
     type: string,
     duration?: number,
-  ): Promise<Obj> {
+  ): Promise<HTMLResponse> {
     try {
       const run = this.db.api.remoteDeviceExecute(
-        this.room?.settings?.address,
-        this.room?.settings?.port,
+        this.room?.settings?.address as string,
+        this.room?.settings?.port as number,
         page,
         action,
         id,

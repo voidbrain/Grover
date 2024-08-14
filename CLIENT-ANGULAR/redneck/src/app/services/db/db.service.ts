@@ -2,20 +2,26 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { SettingsService } from '../settings/settings.service';
 import { ToastService } from '../toast/toast.service';
-import { PlantInterface } from '../../interfaces/plant';
+import { PlantExtendedInterface, PlantInterface } from '../../interfaces/plant';
 import { StrainInterface } from '../../interfaces/strain';
 import { CompanyInterface } from '../../interfaces/company';
-import { DoseInterface } from '../../interfaces/dose';
+import { DoseExtendedInterface, DoseInterface } from '../../interfaces/dose';
 import { CalendarInterface } from '../../interfaces/calendar';
 import { LoadingController } from '@ionic/angular';
-import { ProbeInterface, ProbeLogRowInterface } from '../../interfaces/probe';
-import { WorkerInterface, WorkerLogRowInterface } from '../../interfaces/worker';
+import { ProbeInterface } from '../../interfaces/probe';
+import { WorkerInterface } from '../../interfaces/worker';
+import { ProbeLogInterface } from '../../interfaces/probeLog';
+import { WorkerLogInterface } from '../../interfaces/workerLog';
 import { WorkersTypes } from '../../services/settings/enum';
 import { ProbesTypes } from '../../services/settings/enum';
 import { ScheduleTypes } from '../../services/settings/enum';
-import { SettingsInterface } from '../../interfaces/settings';
+import { RoomSettingsInterface } from '../../interfaces/settings';
 import { ProbeTypeInterface } from '../../interfaces/probeType';
 import { WorkerTypeInterface } from '../../interfaces/workerType';
+import { ProbeScheduleInterface } from '../../interfaces/probeSchedule';
+import { WorkerScheduleInterface } from '../../interfaces/workerSchedule';
+import { HttpParams } from '@angular/common/http';
+import { ParamsInterface } from '../../interfaces/utils';
 
 
 
@@ -69,17 +75,17 @@ export class DbService {
   }
   
 
-  async deleteDb(): Promise<void> {
+  async deleteDb(): Promise<boolean> {
     this.toastService.pushMessage('Database reset');
     this.toastService.presentToast();
     localStorage.clear();
     const request = indexedDB.deleteDatabase(this.appSettings.appName);
-    return new Promise(function (resolve, reject) {
-      request.onsuccess = function () {
-        if (globalThis.debug) {
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => {
+        if (this.debug) {
           console.info('[DB]: Delete db Ok');
         }
-        resolve(request.result);
+        resolve(true);
       };
       request.onerror = function () {
         console.error('[DB]: Delete db Error');
@@ -95,9 +101,9 @@ export class DbService {
     return new Promise((resolve) => {
       const openRequest = indexedDB.open(this.appSettings.appName);
       openRequest.onupgradeneeded = (event) => {
-        const target = event.target;
-        const db = target["result"];
-        const storeObjects: [] = [];
+        const request = event.target as IDBRequest;
+        const db = request.result;
+        const storeObjects: Record<string, IDBObjectStore> = {};
         if (this.debug) {
           console.log('[DB]: ', this.tables);
         }
@@ -136,8 +142,9 @@ export class DbService {
           console.info('[DB]: Db forged');
         }
       };
-      openRequest.onsuccess = (event: unknown) => {
-        this.db = event["target"].result;
+      openRequest.onsuccess = (event: Event) => {
+        const request = event.target as IDBRequest;
+        this.db = request.result;
         (this.db as IDBDatabase).onerror = (error) => {
           console.error('[DB]: error createDb: ' + error);
         };
@@ -151,12 +158,12 @@ export class DbService {
 
   async initDb(resetDb = false): Promise<void> {
     if (resetDb) {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Delete db');
       }
       await this.deleteDb();
     } else {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Delete db not required');
       }
     }
@@ -177,13 +184,13 @@ export class DbService {
       (Number(now) - Number(lastGlobalUpdate)) / (1000 * 60 * 60);
 
     if (!networkStatus || (hoursWithoutUpdates < 1 && forceLoading === false)) {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Cached data');
       }
       return promise;
     }
 
-    if (globalThis.debug) {
+    if (this.debug) {
       console.info('[DB]: Force data sync');
     }
     localStorage.setItem(
@@ -192,23 +199,7 @@ export class DbService {
     );
     const loading = await this.loadingController.create({ message: 'Loading' });
     loading.present();
-
-    // return promise
-    //   .then(() =>
-    //     Promise.all(
-    //       this.tables.map((table) => {
-    //         lastUpdate[table] = localStorage.getItem(
-    //           this.appSettings.appName + '_' + table,
-    //         );
-    //           return this.loadData(table, lastUpdate[table]);
-    //       }),
-    //     ),
-    //   )
-    //   .then((results) => {
-    //     this.syncData(results)
-    //     loading.dismiss();
-    //     return;
-    //   });
+    
     try {
       await promise;
 
@@ -217,7 +208,7 @@ export class DbService {
           const lastUpdate = localStorage.getItem(
             `${this.appSettings.appName}_${table}`,
           );
-          return await this.loadData(table, lastUpdate as string);
+          return await this.loadData(table, +lastUpdate);
         }),
       );
 
@@ -229,8 +220,9 @@ export class DbService {
     }
   }
 
-  async loadData(table: string, lastUpdate: string): Promise<Record<string, unknown>> {
-    const params = { lastUpdate };
+  async loadData(table: string, lastUpdate: number): Promise<Record<string, unknown>> {
+    const lastUpdateString: string = ''+lastUpdate;
+    const params: HttpParams = { lastUpdateString };
     const res = await this.api.get(table, params);
     return { [table]: res };
   }
@@ -240,7 +232,7 @@ export class DbService {
       const table = Object.keys(data)[0];
       const res = data[table];
   
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Db Sync records ready ', table, res, res.length);
       }
   
@@ -259,7 +251,7 @@ export class DbService {
                 await store.put(row);
               }
   
-              if (globalThis.debug) {
+              if (this.debug) {
                 console.info(`[DB]: Success syncing db table: "${table}", item:`, row.id);
               }
             } catch (e) {
@@ -297,32 +289,35 @@ export class DbService {
     });
   }
 
-  getItem(objectStore, id, column = 'id'): Promise<PlantInterface | DoseInterface | StrainInterface | CompanyInterface > {
-    const tx = this.db.transaction(objectStore, 'readonly');
-    const store = tx.objectStore(objectStore);
-    const dataIndex: IDBIndex = store.index(column);
+  getItem(objectStore: string, id: number, column = 'id'): Promise<PlantInterface | DoseInterface | StrainInterface | CompanyInterface > {
+    const tx = this.db?.transaction(objectStore, 'readonly');
+    const store = tx?.objectStore(objectStore);
+    const dataIndex: IDBIndex = store?.index(column) as IDBIndex;
     const promise = new Promise<PlantInterface | StrainInterface | CompanyInterface | DoseInterface | CalendarInterface>(
-      (resolve) => {
+      (resolve, reject) => {
         if (id) {
           const queryExecute:IDBRequest<unknown> = dataIndex.get(+id);
           queryExecute.onsuccess = (e) => {
-            if (e["target"]["result"] === undefined) {
+            const request = e.target as IDBRequest;
+            if (request.result === undefined) {
               const queryExecute = dataIndex.get([+id]);
               queryExecute.onsuccess = (e) => {
-                resolve(e["target"]["result"]);
+                const request = e.target as IDBRequest;
+                resolve(request.result);
               };
               queryExecute.onerror = (e) => {
                 console.log(e);
+                reject(e);
               };
             }
 
-            resolve(e["target"]["result"]);
+            resolve(request.result);
           };
           queryExecute.onerror = (e) => {
             console.log(e);
           };
         } else {
-          resolve(null);
+          reject(null);
         }
       },
     );
@@ -333,17 +328,18 @@ export class DbService {
     objectStore: string,
     column = 'enabled, deleted',
     query = [1, 0],
-  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface )[]> {
+  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface | ProbeScheduleInterface | WorkerScheduleInterface )[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index(column);
     const promise = new Promise<
-    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface)[]
+    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface | ProbeScheduleInterface | WorkerScheduleInterface)[]
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);
-        queryExecute.onsuccess = (e) => {
-          resolve(e["target"]["result"]);
+        queryExecute.onsuccess = (e: Event) => {
+          const request = e.target as IDBRequest;
+          resolve(request.result);
         };
         queryExecute.onerror = (e) => {
           console.log(e);
@@ -351,7 +347,8 @@ export class DbService {
       } else {
         const queryExecute = dataIndex.getAll();
         queryExecute.onsuccess = (e) => {
-          resolve(e["target"]["result"]);
+          const request = e.target as IDBRequest;
+          resolve(request.result);
         };
         queryExecute.onerror = (e) => {
           console.log(e);
@@ -363,16 +360,27 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
+    item: 
+      PlantExtendedInterface | 
+      DoseExtendedInterface | 
+      StrainInterface | 
+      CompanyInterface | 
+      WorkerInterface | 
+      ProbeInterface | 
+      ProbeLogInterface | 
+      WorkerLogInterface | 
+      RoomSettingsInterface | 
+      ProbeTypeInterface | 
+      WorkerTypeInterface
   ): Promise<void> {
     try {
       if (!item.id) {
         delete item.id;
       }
   
-      const lastUpdate = localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
-      const params = { lastUpdate };
-      const response = await this.api.post(objectStore, item, params);
+      const lastUpdate = +localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
+      const params: ParamsInterface = { lastUpdate };
+      const response = await this.api.post(objectStore, [item], params);
   
       if (response && response["items"] && response["items"].length > 0) {
         const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
@@ -398,14 +406,14 @@ export class DbService {
 
   async deleteItem(objectStore: string, itemToDelete): Promise<void> {
     try {
-      const item = await this.api.delete(objectStore, itemToDelete);
+      const item: IDBValidKey = await this.api.delete(objectStore, itemToDelete) as IDBValidKey;
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
       const store = tx.objectStore(objectStore);
   
       if (item["synced"] !== 0) {
         await this.performStoreOperation(store, 'delete', item["id"], objectStore);
       } else {
-        if (globalThis.debug) {
+        if (this.debug) {
           console.info(
             `[DB]: Item not synced, marking as deleted: 1. Table: "${objectStore}", ID: ${item["id"]}`
           );
@@ -430,7 +438,7 @@ export class DbService {
       const request = operation === 'delete' ? store.delete(data) : store.put(data);
   
       request.onsuccess = () => {
-        if (globalThis.debug) {
+        if (this.debug) {
           const action = operation === 'delete' ? 'deleted' : 'updated';
           console.info(`[DB]: Item ${action}. Table: "${objectStore}", Data: ${data}`);
         }
@@ -458,7 +466,7 @@ export class DbService {
       await this.syncStoredItems();
       await this.removeDeletedItem();
       
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Db cleaned');
       }
     }
@@ -469,13 +477,38 @@ export class DbService {
 
   syncStoredItems(): Promise<unknown> {
     const promise = new Promise<void>((resolve) => {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Sync stored items with remote');
       }
       this.tables.map(async (table) => {
-        const items = await this.getItemsToBeSynced(table);
+        const items: (
+          PlantExtendedInterface | 
+          DoseExtendedInterface | 
+          StrainInterface | 
+          CompanyInterface | 
+          WorkerInterface | 
+          ProbeInterface | 
+          ProbeLogInterface | 
+          WorkerLogInterface | 
+          RoomSettingsInterface | 
+          ProbeTypeInterface | 
+          WorkerTypeInterface
+        )[] = await this.getItemsToBeSynced(table) as 
+        (
+          PlantExtendedInterface | 
+          DoseExtendedInterface | 
+          StrainInterface | 
+          CompanyInterface | 
+          WorkerInterface | 
+          ProbeInterface | 
+          ProbeLogInterface | 
+          WorkerLogInterface | 
+          RoomSettingsInterface | 
+          ProbeTypeInterface | 
+          WorkerTypeInterface
+        )[]
         if (items["length"]) {
-          if (globalThis.debug) {
+          if (this.debug) {
             console.info(
               '[DB]: Items to sync. Table:"' + table + '" items:',
               items,
@@ -493,7 +526,7 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeSynced(objectStore): Promise<(boolean)> {
+  getItemsToBeSynced(objectStore: string): Promise<(unknown[])> {
     try {
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
       const store = tx.objectStore(objectStore);
@@ -502,7 +535,8 @@ export class DbService {
       const promise = new Promise<unknown>((resolve) => {
         const request = dataIndex.getAll(0);
         request.onsuccess = (e) => {
-          resolve(e.target["result"]);
+          const request = e.target as IDBRequest;
+          resolve(request.result);
         };
         request.onerror = (e) => {
           console.error(e);
@@ -541,13 +575,14 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeRemoved(objectStore): Promise<unknown> {
+  getItemsToBeRemoved(objectStore: string): Promise<unknown> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index('deleted');
     const promise = new Promise<unknown>((resolve) => {
       dataIndex.getAll(1).onsuccess = (e) => {
-        resolve(e.target["result"]);
+        const request = e.target as IDBRequest;
+        resolve(request.result);
       };
     });
     return promise;

@@ -27,8 +27,11 @@ import { RangeComponent } from '../../../shared/range/range.component';
 import { DosesBarComponent } from '../doses-bar/doses-bar.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRuler, faEye } from '@fortawesome/free-solid-svg-icons';
-import { WorkerInterface } from '../../../../interfaces/worker';
-import { ProbeInterface } from '../../../../interfaces/probe';
+import { WorkerInterface, WorkersListInterface } from '../../../../interfaces/worker';
+import { ProbesListInterface } from '../../../../interfaces/probe';
+import { WorkerTypeInterface } from '../../../../interfaces/workerType';
+import { HTMLResponse } from '../../../../interfaces/utils';
+
 
 export interface Obj {
   error: string,
@@ -67,8 +70,8 @@ export class PhaseDetailComponent implements OnChanges {
   @Input() plant!: PlantExtendedInterface;
   @Input() room!: RoomExtendedInterface;
 
-  probes?: ProbeInterface;
-  workers?: WorkerInterface;
+  probes?: ProbesListInterface;
+  workers?: WorkersListInterface;
   debug = false;
 
   constructor(
@@ -102,35 +105,38 @@ export class PhaseDetailComponent implements OnChanges {
   setup() {
     const probes = {
       temp: this.plant.probes?.find(
-        (el) => el.type.id === ProbesTypes.Water_temperature,
+        (el) => el?.probeEl?.id === ProbesTypes.Water_temperature,
       ),
       waterLevel: this.plant.probes?.find(
-        (el) => el.type.id === ProbesTypes.Water_level,
+        (el) => el?.probeEl?.id === ProbesTypes.Water_level,
       ),
-      ec: this.plant.probes?.find((el) => el.type.id === ProbesTypes.EC),
-      ph: this.plant.probes?.find((el) => el.type.id === ProbesTypes.pH),
+      ec: this.plant.probes?.find((el) => el?.probeEl?.id === ProbesTypes.EC),
+      ph: this.plant.probes?.find((el) => el?.probeEl?.id === ProbesTypes.pH),
     };
-    if (probes?.temp?.type !== undefined) {
-      probes.temp.type.maxWarningValue = this.plant.phase?.maxTemp;
-      probes.temp.type.minWarningValue = this.plant.phase?.minTemp;
+    if (probes?.temp?.probeEl !== undefined) {
+      
+      probes.temp.probeEl.maxWarningValue = this.plant.phase?.maxTemp;
+      probes.temp.probeEl.minWarningValue = this.plant.phase?.minTemp;
       probes.temp.value = 0;
       this.read(probes.temp.id);
     }
-    if (probes?.waterLevel?.type !== undefined) {
-      probes.waterLevel.type.maxWarningValue = this.plant.phase?.maxWaterLevel;
-      probes.waterLevel.type.minWarningValue = this.plant.phase?.minWaterLevel;
+    if (probes?.waterLevel?.probeEl !== undefined) {
+      
+      probes.waterLevel.probeEl.maxWarningValue = this.plant.phase?.maxWaterLevel;
+      probes.waterLevel.probeEl.minWarningValue = this.plant.phase?.minWaterLevel;
       probes.waterLevel.value = 0;
       this.read(probes.waterLevel.id);
     }
-    if (probes?.ph?.type !== undefined) {
-      probes.ph.type.maxWarningValue = this.plant.phase?.maxPh;
-      probes.ph.type.minWarningValue = this.plant.phase?.minPh;
+    if (probes?.ph?.probeEl !== undefined) {
+      
+      probes.ph.probeEl.maxWarningValue = this.plant.phase?.maxPh;
+      probes.ph.probeEl.minWarningValue = this.plant.phase?.minPh;
       probes.ph.value = 0;
       this.read(probes.ph.id);
     }
-    if (probes?.ec?.type !== undefined) {
-      probes.ec.type.maxWarningValue = this.plant.phase?.maxEC;
-      probes.ec.type.minWarningValue = this.plant.phase?.minEC;
+    if (probes?.ec?.probeEl !== undefined) {
+      probes.ec.probeEl.maxWarningValue = this.plant.phase?.maxEC;
+      probes.ec.probeEl.minWarningValue = this.plant.phase?.minEC;
       probes.ec.value = 0;
       this.read(probes.ec.id);
     }
@@ -143,18 +149,26 @@ export class PhaseDetailComponent implements OnChanges {
         (el) => el.type?.id === WorkersTypes.Pot_refill,
       ),
     };
+    if (workers?.waterLoop?.type !== undefined) {
+      workers.waterLoop.type = workers.waterLoop.type  as WorkerTypeInterface;
+    }
+    if (workers?.refill?.type !== undefined) {
+      workers.refill.type = workers.refill.type  as WorkerTypeInterface;
+    }
 
     this.probes = probes;
     this.workers = workers;
   }
 
-  async read(id: number) {
+  async read(id?: number) {
     if (id) {
-      const response: Obj = await this.runRemoteCommand(
+      const duration = 0;
+      const response: HTMLResponse = await this.runRemoteCommand(
         ServerPages.actuators,
         ServerCommands.READ,
         id,
         Peripherals.Probe,
+        duration
       );
       if (response.error) {
         const header = `Error`;
@@ -163,12 +177,14 @@ export class PhaseDetailComponent implements OnChanges {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       } else {
-        this.probes.temp.value = response.value;
-        const header = `Success`;
-        const message = `Action executed`;
-        const color = 'success';
-        const duration = 3000;
-        this.presentToast(header, message, color, duration);
+        if(this.probes?.temp){
+          this.probes.temp.value = +response.value;
+          const header = `Success`;
+          const message = `Action executed`;
+          const color = 'success';
+          const duration = 3000;
+          this.presentToast(header, message, color, duration);
+        }
       }
     } else {
       const header = `Error`;
@@ -184,11 +200,13 @@ export class PhaseDetailComponent implements OnChanges {
       worker.status === DevicesStatus.ON
         ? ServerCommands.OFF
         : ServerCommands.ON;
+    const duration = 0;
     this.runRemoteCommand(
       ServerPages.actuators,
       action,
       worker.id,
       Peripherals.Worker,
+      duration
     );
   }
 
@@ -247,11 +265,11 @@ export class PhaseDetailComponent implements OnChanges {
     id: number,
     type: string,
     duration: number,
-  ): Promise<Obj> {
+  ): Promise<HTMLResponse> {
     try {
       const run = this.db.api.remoteDeviceExecute(
-        this.room?.settings?.address,
-        this.room?.settings?.port,
+        this.room?.settings?.address as string,
+        this.room?.settings?.port as number,
         page,
         action,
         id,

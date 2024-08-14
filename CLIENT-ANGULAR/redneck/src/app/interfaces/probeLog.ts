@@ -15,6 +15,7 @@ export interface ProbeLogInterface {
     type: number,
     deleted?: number;
     synced?: number;
+    value?: number 
 }
 
 // PH = 5.8 +/- 0.5

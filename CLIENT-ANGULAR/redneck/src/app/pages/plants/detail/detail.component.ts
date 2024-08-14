@@ -45,7 +45,7 @@ import { PlantInterface } from '../../../interfaces/plant';
 import { PotInterface } from '../../../interfaces/pot';
 import { DynamicFormComponent } from '../../../components/shared/form/containers/form/form.component';
 import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
-import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
   selector: 'app-plants-detail',
@@ -87,10 +87,10 @@ import { FieldConfig } from '../../../components/shared/form/models/field-config
   providers: [CommonModule, DatePipe, JsonPipe],
 })
 export class PlantsDetailComponent implements OnInit {
-  @ViewChild(DynamicFormComponent) form?: DynamicFormComponent[];
+  @ViewChild(DynamicFormComponent) form?: DynamicFormComponent;
   public id?: number;
   public page = 'plants';
-  formDefinition: FieldConfig;
+  formDefinition: FormDefinitionRow[];
 
   constructor(
     public db: DbService,
@@ -202,7 +202,7 @@ export class PlantsDetailComponent implements OnInit {
     this.formDefinition.find((el) => el.name === 'idGrowingScenario').options =
       gScenario;
     if (id) {
-      const item: PlantInterface = await this.db.getItem(this.page, id);
+      const item: PlantInterface = await this.db.getItem(this.page, id) as PlantInterface;
 
       if (item) {
         this.form.config
@@ -231,7 +231,7 @@ export class PlantsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: CustomEvent<unknown>) {
+  formSubmitted(value: CustomEvent) {
     this.save(value as unknown as PlantInterface);
   }
 

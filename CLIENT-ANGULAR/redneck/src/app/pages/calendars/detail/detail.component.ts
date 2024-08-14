@@ -41,7 +41,7 @@ import {
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
-import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
   selector: 'app-calendar-detail',
@@ -87,7 +87,7 @@ export class CalendarsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id?: number;
   public page = 'calendars';
-  formDefinition: FieldConfig;;
+  formDefinition: FormDefinitionRow[];
 
   constructor(
     public db: DbService,
@@ -150,8 +150,8 @@ export class CalendarsDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: CalendarInterface) {
-    this.save(value);
+  formSubmitted(value: CustomEvent) {
+    this.save(value as unknown as CalendarInterface);
   }
 
   async save(value: CalendarInterface) {
