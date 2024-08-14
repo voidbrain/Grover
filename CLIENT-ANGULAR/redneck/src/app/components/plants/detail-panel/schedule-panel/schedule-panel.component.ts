@@ -1,13 +1,11 @@
-interface ScheduleRow {
-  atMinute: string;
-  atHour: string;
-  atDay: string;
-  operatingMode: string;
-}
 
+
+export interface rowOptions {
+  key: string
+}
 export interface weekRow {
   key: string;
-  values: unknown[];
+  values: rowOptions| PeripheralInterface[];
   type?: string;
 }
 
@@ -21,6 +19,8 @@ import {
   Peripherals,
 } from '../../../../../app/services/settings/enum';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
+
+import { PeripheralInterface, ScheduleRow } from '../../../../interfaces/peripheral';
 import { PlantExtendedInterface } from '../../../../interfaces/plant';
 import { RoomExtendedInterface } from '../../../../interfaces/room';
 import {
@@ -44,6 +44,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { WorkerInterface } from '../../../../interfaces/worker';
 import { WorkerTypeInterface } from '../../../../interfaces/workerType';
+import { ProbeInterface } from '../../../../interfaces/probe';
+import { WorkerScheduleInterface } from '../../../../interfaces/workerSchedule';
+import { ProbeScheduleInterface } from '../../../../interfaces/probeSchedule';
 
 @Component({
   selector: 'app-schedule-panel',
@@ -99,7 +102,7 @@ export class SchedulePanelComponent implements OnChanges {
     }
   }
 
-  popuplateDaysArray(item: WorkerInterface, scheduleRow: ScheduleRow) {
+  popuplateDaysArray(item: ProbeInterface | WorkerInterface, scheduleRow: ScheduleRow | WorkerScheduleInterface | ProbeScheduleInterface) {
     if (scheduleRow) {
       const stringCron = `${scheduleRow.atMinute} ${scheduleRow.atHour} * * ${scheduleRow.atDay}`;
 
@@ -114,11 +117,11 @@ export class SchedulePanelComponent implements OnChanges {
           key: (item?.type as WorkerTypeInterface)?.type,
           color: (item?.type as WorkerTypeInterface)?.color,
           icon: (item?.type as WorkerTypeInterface)?.icon,
-          itemType: item.workerType ? Peripherals.Worker : Peripherals.Probe,
-          scheduleType: item.workerType
+          itemType: Object.prototype.hasOwnProperty.call(item, "workerType") ? Peripherals.Worker : Peripherals.Probe,
+          scheduleType: Object.prototype.hasOwnProperty.call(item, "workerType")
             ? ScheduleTypes.From_To
             : ScheduleTypes.At,
-          cron: item.workerType
+          cron: Object.prototype.hasOwnProperty.call(item, "workerType")
             ? {
                 atDay: day,
                 from: hoursWorkingCron[0],
@@ -132,7 +135,7 @@ export class SchedulePanelComponent implements OnChanges {
               },
           operatingMode: scheduleRow.operatingMode,
         };
-        this.daysOfWeek[day].values.push(el);
+        (this.daysOfWeek[day].values as PeripheralInterface[]).push(el as unknown as PeripheralInterface);
       });
     }
   }
@@ -176,11 +179,11 @@ export class SchedulePanelComponent implements OnChanges {
 
     this.daysOfWeek.map((day) => {
       const data: { labels: string[]; datasets: object[] } = {
-        labels: [...day.values.map((el) => el.key)],
+        labels: [...(day.values as PeripheralInterface[]).map((el) => el.key)] as string[],
         datasets: [],
       };
 
-      day.values.map((peripheral) => {
+      (day.values as PeripheralInterface[]).map((peripheral: PeripheralInterface) => {
         const peripheralArr = [];
         peripheralArr.push(
           peripheral.scheduleType === ScheduleTypes.From_To
@@ -223,7 +226,7 @@ export class SchedulePanelComponent implements OnChanges {
     this.daysOfWeek.push(this.daysOfWeek.shift() as weekRow);
   }
 
-  setDayVisualization(index) {
+  setDayVisualization(index: number) {
     this.actualDayIndex = index < 6 ? index + 1 : 0;
   }
 }
