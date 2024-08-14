@@ -1,3 +1,7 @@
+export interface dataEl 
+  { t?: Date|number, y: string }
+
+
 import { Component, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../../../app/services/settings/settings.service';
 import { PlantExtendedInterface } from '../../../../interfaces/plant';
@@ -42,8 +46,8 @@ export class PanelChartComponent implements OnChanges {
   @Input() plant?: PlantExtendedInterface;
   @Input() room?: RoomExtendedInterface;
 
-  settings;
-  data;
+  settings: unknown;
+  data: unknown;
 
   dataArray = {
     labels: [],
@@ -79,7 +83,7 @@ export class PanelChartComponent implements OnChanges {
       if (item.log?.length) {
         const dataset = { borderColor: '#FF00FF', data: [], hidden: true };
         item.log.map((log) => {
-          dataset.data.push({ t: new Date(log.executedTime), y: log.action });
+          (dataset.data as dataEl[]).push({ t: new Date(log.executedTime as string), y: log.action });
         });
         item.log.map((log) => labels.add(log.executedTime));
         this.dataArray.datasets.push(dataset);
@@ -87,11 +91,12 @@ export class PanelChartComponent implements OnChanges {
     });
     this.room?.probes?.map((item) => {
       if (item.log?.length) {
-        const dataset = { borderColor: '#FFFF00', data: [], hidden: false };
+        const dataset: { borderColor: string, data: dataEl[], hidden: boolean } = { borderColor: '#FFFF00', data:[], hidden: false };
         item.log.map((log) => {
           if (
-            item.type.minAcceptableValue <= log.value &&
-            log.value <= item.type.maxAcceptableValue
+            item.probeEl && log.value &&
+            item.probeEl.minAcceptableValue <= log.value &&
+            log.value <= item.probeEl.maxAcceptableValue
           ) {
             dataset.data.push({ t: log.executedTime, y: log.value });
           }
@@ -102,7 +107,7 @@ export class PanelChartComponent implements OnChanges {
     });
     this.plant?.workers?.map((item) => {
       if (item.log.length) {
-        const dataset = { borderColor: '#FFFFFF', data: [], hidden: true };
+        const dataset: { borderColor: string, data: dataEl[], hidden: boolean } = { borderColor: '#FFFFFF', data: [], hidden: true };
         item.log.map((log) => {
           dataset.data.push({ t: log.executedTime, y: log.action });
         });
@@ -111,12 +116,12 @@ export class PanelChartComponent implements OnChanges {
       }
     });
     this.plant?.probes?.map((item) => {
-      if (item.log.length) {
+      if (item?.log?.length) {
         const dataset = { borderColor: '#0000cc', data: [], hidden: false };
         item.log.map((log) => {
-          if (
-            item.type.minAcceptableValue <= log.value &&
-            log.value <= item.type.maxAcceptableValue
+          if ( item.probeEl && log.value &&
+            item.probeEl.minAcceptableValue <= log.value &&
+            log.value <= item.probeEl.maxAcceptableValue
           ) {
             dataset.data.push({ t: log.executedTime, y: log.value });
           }
@@ -143,7 +148,7 @@ export class PanelChartComponent implements OnChanges {
   }
 
   drawChart(filteredData) {
-    const xMin = new Date(this.plant?.dayStartGrow);
+    const xMin = new Date(+(this.plant?.dayStartGrow ?? 0));
     const xMax = new Date(setMinutes(new Date(), 0));
 
     const operationsArray = filteredData.datasets?.filter(

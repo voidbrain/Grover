@@ -3,6 +3,32 @@
 export interface rowOptions {
   key: string
 }
+
+export interface rowType {
+  data: dataType
+}
+
+export interface dataType {
+  labels: string[]; 
+  datasets: dataRow[]
+}
+
+export interface dataRow {
+  data: dataEl[],
+  type: null,
+}
+
+export interface dataEl {
+  element: string | undefined;
+  scheduleType: ScheduleTypes;
+  color: string;
+  icon: string;
+  atDay: string;
+  atMinute: string;
+  operatingMode: string;
+  hourValues: (number | undefined)[];
+}
+
 export interface weekRow {
   key: string;
   values: rowOptions| PeripheralInterface[];
@@ -93,8 +119,8 @@ export class SchedulePanelComponent implements OnChanges {
   ];
   actualDayIndex!: number;
 
-  chartConfig: unknown[] = [];
-  hoursOfDay: unknown[] = [];
+  chartConfig: rowType[] = [];
+  hoursOfDay: string[] = [];
 
   ngOnChanges() {
     if (this.room && this.plant) {
@@ -178,7 +204,7 @@ export class SchedulePanelComponent implements OnChanges {
     });
 
     this.daysOfWeek.map((day) => {
-      const data: { labels: string[]; datasets: object[] } = {
+      const data: dataType = {
         labels: [...(day.values as PeripheralInterface[]).map((el) => el.key)] as string[],
         datasets: [],
       };
@@ -209,8 +235,8 @@ export class SchedulePanelComponent implements OnChanges {
               },
         );
 
-        const dataset = {
-          data: peripheralArr,
+        const dataset: dataRow = {
+          data: peripheralArr as dataEl[],
           type: null,
         };
 

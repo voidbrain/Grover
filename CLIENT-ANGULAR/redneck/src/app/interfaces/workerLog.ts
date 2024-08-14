@@ -1,8 +1,8 @@
 export interface WorkerLogInterface {
     id?: number,
     idWorker?: number,
-    expectedTime?: number,
-    executedTime?: number,
+    expectedTime?: string,
+    executedTime?: string,
     operatingMode: number,
     systemOperatingMode: number,
     serialNumber: string,
