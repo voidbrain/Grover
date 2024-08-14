@@ -39,7 +39,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
+import { FomrDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
   selector: 'app-doses-detail',
@@ -84,7 +84,7 @@ export class DosesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'doses';
-  formDefinition: FieldConfig;;
+  formDefinition: FomrDefinitionRow[];
 
   constructor(
     public db: DbService,
@@ -148,7 +148,7 @@ export class DosesDetailComponent implements OnInit {
 
   async getItem(id: number) {
     if (id) {
-      const item: DoseInterface = await this.db.getItem(this.page, id);
+      const item: DoseInterface = await this.db.getItem(this.page, id) as DoseInterface;
       console.log(item);
       if (item) {
         this.form.setFormValues(item);
@@ -161,8 +161,8 @@ export class DosesDetailComponent implements OnInit {
     }
   }
 
-  formSubmitted(value: DoseInterface) {
-    this.save(value);
+  formSubmitted(value: CustomEvent) {
+    this.save(value as unknown as DoseInterface);
   }
 
   async save(value: DoseInterface) {
