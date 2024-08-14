@@ -13,9 +13,7 @@ export interface WorkerInterface {
   pin2?: number;
   schedule?: object;
 
-
-  waterLoop: object
+  waterLoop: object;
 
   log?: object[];
-  
 }

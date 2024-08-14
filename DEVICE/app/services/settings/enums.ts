@@ -13,9 +13,9 @@ export enum OperatingModes {
 }
 
 export enum Owner {
-  schedule = 'schedule',
-  user = 'user',
-  start = 'start'
+  schedule = "schedule",
+  user = "user",
+  start = "start",
 }
 
 export enum EventEmitter {

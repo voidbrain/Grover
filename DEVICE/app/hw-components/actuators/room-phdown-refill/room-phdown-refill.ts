@@ -70,7 +70,6 @@ class RoomPhDownRefillComponent {
   }
 
   async setup() {
-  
     this.primaryPhDownPump = new sensor({
       address: +(this.i2cAddress ?? ""),
       device: 1,
@@ -78,7 +77,7 @@ class RoomPhDownRefillComponent {
     });
     this.primaryPhDownPump.pinMode(this.pin1, this.primaryPhDownPump.OUTPUT);
     this.primaryPhDownPump.pinMode(this.pin2, this.primaryPhDownPump.OUTPUT);
-  
+
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

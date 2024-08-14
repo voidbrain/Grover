@@ -67,14 +67,13 @@ class WaterLoopComponent {
   }
 
   async setup() {
-
     this.mcp = new sensor({
       address: +(this.i2cAddress ?? 0),
       device: 1,
       debug: false,
     });
     this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
- 
+
     this.setSchedule();
   }
 

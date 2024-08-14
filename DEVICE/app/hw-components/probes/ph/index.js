@@ -7,9 +7,7 @@ if (isPi()) {
   const { default: i2c } = await import("i2c-bus");
   sensor = i2c;
 } else {
-  const { default: i2cMock } = await import(
-    "../../../../mocks/i2c-bus.cjs"
-  );
+  const { default: i2cMock } = await import("../../../../mocks/i2c-bus.cjs");
   sensor = i2cMock;
 }
 

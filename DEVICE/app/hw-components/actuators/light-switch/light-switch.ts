@@ -67,14 +67,12 @@ class LightSwitchComponent {
   }
 
   async setup() {
-  
     this.light = new sensor({
       address: +(this.i2cAddress ?? 0),
       device: 1,
       debug: false,
     });
     this.light.pinMode(this.pin, this.light.OUTPUT);
-  
 
     this.setSchedule();
   }

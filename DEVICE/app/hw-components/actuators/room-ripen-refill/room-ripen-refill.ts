@@ -70,7 +70,6 @@ class RoomRipenRefillComponent {
   }
 
   async setup() {
-   
     this.primaryRipenPump = new sensor({
       address: +(this.i2cAddress ?? ""),
       device: 1,
@@ -78,7 +77,7 @@ class RoomRipenRefillComponent {
     });
     this.primaryRipenPump.pinMode(this.pin1, this.primaryRipenPump.OUTPUT);
     this.primaryRipenPump.pinMode(this.pin2, this.primaryRipenPump.OUTPUT);
-    
+
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

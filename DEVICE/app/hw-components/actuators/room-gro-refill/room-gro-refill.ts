@@ -70,7 +70,6 @@ class RoomGroRefillComponent {
   }
 
   async setup() {
-  
     this.primaryGroPump = new sensor({
       address: +(this.i2cAddress ?? ""),
       device: 1,
@@ -78,7 +77,7 @@ class RoomGroRefillComponent {
     });
     this.primaryGroPump.pinMode(this.pin1, this.primaryGroPump.OUTPUT);
     this.primaryGroPump.pinMode(this.pin2, this.primaryGroPump.OUTPUT);
-  
+
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

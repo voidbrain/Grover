@@ -1,7 +1,6 @@
 import net from "net";
 
 export class NetworkService {
-
   constructor() {}
 
   testConnection() {

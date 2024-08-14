@@ -70,7 +70,6 @@ class RoomBloomRefillComponent {
   }
 
   async setup() {
-  
     this.primaryBloomPump = new sensor({
       address: +(this.i2cAddress ?? ""),
       device: 1,

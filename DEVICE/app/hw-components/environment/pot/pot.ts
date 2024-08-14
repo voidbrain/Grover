@@ -56,11 +56,11 @@ class PotComponent {
 
   async setup(locationId) {
     this.locationId = locationId;
-    const pot: PotInterface = (await this.db.getItem(
+    const pot: PotInterface = await this.db.getItem(
       "pots",
       locationId,
       "locationId",
-    ));
+    );
     const location: LocationInterface = (await this.db.getItem(
       "locations",
       pot.locationId,
@@ -82,7 +82,7 @@ class PotComponent {
       pot.id,
       "idPot",
     );
-    console.log("[POT]: ", locationId, pot.id, plant)
+    console.log("[POT]: ", locationId, pot.id, plant);
     const phases: PhaseExtended[] = await this.db.getItems(
       "calendar_phases",
       plant?.idCalendar,
@@ -99,8 +99,8 @@ class PotComponent {
       }),
     );
 
-    if(plant){
-    const epochDiffGrow: number =
+    if (plant) {
+      const epochDiffGrow: number =
         new Date().getTime() - new Date(plant?.dayStartGrow).getTime();
       plant.daysFromGrow! = Math.ceil(epochDiffGrow / (1000 * 60 * 60 * 24));
       const epochDiffBloom: number =
@@ -111,7 +111,7 @@ class PotComponent {
       let countingDays = plant.daysFromBloom
         ? +plant?.daysFromBloom
         : +plant?.daysFromGrow;
-    
+
       let foundPhase: PhaseExtended | undefined;
       phases.map((phase: PhaseExtended) => {
         if (

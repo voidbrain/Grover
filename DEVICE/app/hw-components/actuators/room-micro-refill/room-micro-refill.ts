@@ -68,7 +68,6 @@ class RoomMicroRefillComponent {
   }
 
   async setup() {
-  
     this.primaryMicroPump = new sensor({
       address: +(this.i2cAddress ?? 0),
       device: 1,
@@ -76,7 +75,7 @@ class RoomMicroRefillComponent {
     });
     this.primaryMicroPump.pinMode(this.pin1, this.primaryMicroPump.OUTPUT);
     this.primaryMicroPump.pinMode(this.pin2, this.primaryMicroPump.OUTPUT);
-  
+
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

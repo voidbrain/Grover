@@ -91,7 +91,6 @@ class RefillComponent {
   }
 
   async setup() {
-  
     this.secondaryPump = new sensor({
       address: +(this.i2cAddress ?? 0),
       device: 1,
@@ -108,7 +107,7 @@ class RefillComponent {
       this.primaryWaterPump.pin2,
       this.secondaryPump.OUTPUT,
     );
-  
+
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

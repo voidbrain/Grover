@@ -1,8 +1,11 @@
 import { LocationInterface } from "../../interfaces/location";
 import { RoomInterface } from "../../interfaces/room";
 import { PotInterface } from "../../interfaces/pot";
-import { Plant } from "../../interfaces/plant" 
-import { CronJobInterface, ExtendedCronJobInterface } from "../../interfaces/cron-job";
+import { Plant } from "../../interfaces/plant";
+import {
+  CronJobInterface,
+  ExtendedCronJobInterface,
+} from "../../interfaces/cron-job";
 
 import { LocalStorage } from "node-localstorage";
 import sqlite3 from "sqlite3";
@@ -14,14 +17,13 @@ import { ServerCommands } from "../../../app/services/settings/enums";
 export interface Item {
   id?: number | string;
   synced?: number;
-  deleted?: number; 
+  deleted?: number;
 }
 export interface El {
   name?: string;
   type?: string;
-  primary_key?: string
+  primary_key?: string;
 }
-
 
 export class DbService {
   private settings;
@@ -147,7 +149,7 @@ export class DbService {
       console.info("[DB]: entering sync data");
     }
 
-    const table = Object.keys((data ?? {}))[0];
+    const table = Object.keys(data ?? {})[0];
     const res = (data ?? {})[table];
 
     if (this.debug) {
@@ -224,21 +226,23 @@ export class DbService {
     table: string,
     value: string | number,
     column: string = "id",
-  ): Promise<LocationInterface | RoomInterface | PotInterface | undefined | Plant> {
+  ): Promise<
+    LocationInterface | RoomInterface | PotInterface | undefined | Plant
+  > {
     if (value) {
       const query = `SELECT * from ${table} WHERE ${column}=(?)`;
-      return new Promise<LocationInterface | RoomInterface | PotInterface | Plant>(
-        (resolve, reject) => {
-          this.db.get(query, [value], (err, row) => {
-            if (err) {
-              console.log("[DB]: getItem err ", query, err);
-              reject(err);
-            } else {
-              resolve(row);
-            }
-          });
-        },
-      );
+      return new Promise<
+        LocationInterface | RoomInterface | PotInterface | Plant
+      >((resolve, reject) => {
+        this.db.get(query, [value], (err, row) => {
+          if (err) {
+            console.log("[DB]: getItem err ", query, err);
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        });
+      });
     } else {
       return undefined;
     }
@@ -368,46 +372,43 @@ export class DbService {
 
   public async logItem(
     table: string,
-    item: CronJobInterface | unknown
+    item: CronJobInterface | unknown,
   ): Promise<void> {
     const lastUpdate = this.localStorage.getItem(
-      `${this.settings.getAppName()}_${table}`
+      `${this.settings.getAppName()}_${table}`,
     );
     const endpoint = "endpoint";
     const action = ServerCommands.LOG;
-  
+
     try {
       const response = await this.api.post(
         endpoint,
         lastUpdate,
         action,
         item,
-        this.serialNumber
+        this.serialNumber,
       );
-  
+
       if (response) {
         if (this.debug) {
-          console.log(
-            "Logging Data:",
-            {
-              endpoint,
-              lastUpdate,
-              action,
-              item,
-              serialNumber: this.serialNumber,
-              response,
-            }
-          );
+          console.log("Logging Data:", {
+            endpoint,
+            lastUpdate,
+            action,
+            item,
+            serialNumber: this.serialNumber,
+            response,
+          });
         }
-  
+
         const values: any[] = [];
         const cols: string[] = [];
-  
+
         Object.keys(response).forEach((key) => {
           cols.push(key);
           values.push(response[key]);
         });
-  
+
         // Process values and cols as needed
       } else {
         console.log("[DB]: logItem API POST returned an empty response.");
@@ -417,9 +418,6 @@ export class DbService {
       throw err;
     }
   }
-  
-
-  
 
   public async deleteItem(
     objectStore: string,
@@ -512,7 +510,7 @@ export class DbService {
 
   private getItemsToBeRemoved(objectStore: string): Promise<undefined[]> {
     // Implement the logic to get items to be removed.
-    console.log(objectStore)
+    console.log(objectStore);
     return Promise.resolve([]);
   }
 }

@@ -68,7 +68,6 @@ class RoomWaterRefillComponent {
   }
 
   async setup() {
-
     this.primaryWaterPump = new sensor({
       address: +(this.i2cAddress ?? ""),
       device: 1,
@@ -76,7 +75,7 @@ class RoomWaterRefillComponent {
     });
     this.primaryWaterPump.pinMode(this.pin1, this.primaryWaterPump.OUTPUT);
     this.primaryWaterPump.pinMode(this.pin2, this.primaryWaterPump.OUTPUT);
-  
+
     this.setSchedule(this.id, this.scheduledCrons);
   }
 
