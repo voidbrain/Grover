@@ -102,28 +102,28 @@ export class ActionsPanelComponent implements OnChanges {
       ph: this.plant?.probes?.find((el) => el?.type?.id === ProbesTypes.pH),
     };
     if (probes.temp !== undefined) {
-      (probes.temp.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxTemp;
-      (probes.temp.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minTemp;
+      (probes.temp.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxTemp;
+      (probes.temp.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minTemp;
       probes.temp.value = 0;
-      this.read(probes.temp.id);
+      this.read(+(probes.temp.id ?? 0));
     }
     if (probes.waterLevel !== undefined) {
-      (probes.waterLevel.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxWaterLevel;
-      (probes.waterLevel.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minWaterLevel;
+      (probes.waterLevel.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxWaterLevel;
+      (probes.waterLevel.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minWaterLevel;
       probes.waterLevel.value = 0;
-      this.read(probes.waterLevel.id);
+      this.read(+(probes.waterLevel.id ?? 0));
     }
     if (probes.ph !== undefined) {
-      (probes.ph.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxPh;
-      (probes.ph.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minPh;
+      (probes.ph.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxPh;
+      (probes.ph.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minPh;
       probes.ph.value = 0;
-      this.read(probes.ph.id);
+      this.read(+(probes.ph.id ?? 0));
     }
     if (probes.ec !== undefined) {
-      (probes.ec.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxEC;
-      (probes.ec.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minEC;
+      (probes.ec.probeEl as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxEC;
+      (probes.ec.probeEl as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minEC;
       probes.ec.value = 0;
-      this.read(probes.ec.id);
+      this.read(+(probes.ec.id ?? 0));
     }
 
     const workers = {

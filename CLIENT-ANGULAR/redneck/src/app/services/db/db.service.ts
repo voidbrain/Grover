@@ -197,23 +197,7 @@ export class DbService {
     );
     const loading = await this.loadingController.create({ message: 'Loading' });
     loading.present();
-
-    // return promise
-    //   .then(() =>
-    //     Promise.all(
-    //       this.tables.map((table) => {
-    //         lastUpdate[table] = localStorage.getItem(
-    //           this.appSettings.appName + '_' + table,
-    //         );
-    //           return this.loadData(table, lastUpdate[table]);
-    //       }),
-    //     ),
-    //   )
-    //   .then((results) => {
-    //     this.syncData(results)
-    //     loading.dismiss();
-    //     return;
-    //   });
+    
     try {
       await promise;
 

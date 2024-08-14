@@ -1,3 +1,5 @@
+import { ChartConfiguration } from "chart.js";
+
 export interface StrainInterface {
   id: number;
   name: string;
@@ -8,4 +10,6 @@ export interface StrainInterface {
   deleted: boolean;
   lastUpdate: number;
   synced?: number;
+
+  chartConfig?: ChartConfiguration
 }

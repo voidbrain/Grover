@@ -1,3 +1,4 @@
+import { ChartConfiguration } from 'chart.js';
 import { DoseInterface } from './dose';
 
 export interface PhaseInterface {
@@ -46,5 +47,5 @@ export interface CalendarInterface {
 
 export interface CalendarExtendedInterface extends CalendarInterface {
   doses?: PhaseExtendedInterface[];
-  chartConfig: object;
+  chartConfig: ChartConfiguration;
 }

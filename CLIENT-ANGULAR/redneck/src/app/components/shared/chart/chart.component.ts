@@ -44,7 +44,7 @@ export class ChartComponent implements OnChanges {
   };
   @Input() chartLegend = true;
 
-  @Input() chartConfig: ChartConfiguration | null = null;
+  @Input() chartConfig?: ChartConfiguration;
 
   constructor() {
     Chart.register(...registerables, annotationPlugin, zoomPlugin);
