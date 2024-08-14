@@ -8,7 +8,7 @@ export interface FomrDefinitionRow {
   type: string,
   label: string,
   validation?: Validators[],
-  options?: StrainInterface | CompanyInterface | PotInterface [],
+  options?: (StrainInterface | CompanyInterface | PotInterface)[],
   min?: number,
   max?: number,
   icon?: string,
