@@ -261,6 +261,7 @@ export class PlantsMasterComponent implements OnInit {
 
         plant.probes.map((probe) => {
           probe.type = this.probeType.find((el) => +el.key === +probe.probeType) as ConstructorProbeTypeInterface;
+          
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
@@ -591,7 +592,7 @@ export class PlantsMasterComponent implements OnInit {
       room.id,
       event["detail"]["value"],
     ) as unknown as HTMLResponse;
-    room.operatingMode = +response.mode;
+    room.operatingMode = +(response?.mode ?? 0);
   }
 
   async shufflePhDown(worker: WaterRefillInterface) {

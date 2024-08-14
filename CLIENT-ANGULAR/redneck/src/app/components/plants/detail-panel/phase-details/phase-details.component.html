@@ -19,16 +19,16 @@
                 <ion-col size="6">
                   <app-range
                     [attr.disabled]="probes?.waterLevel ? false : true"
-                    [minValue]="probes?.waterLevel?.type?.minAcceptableValue"
-                    [maxValue]="probes?.waterLevel?.type?.maxAcceptableValue"
+                    [minValue]="+(probes?.waterLevel?.probeEl?.minAcceptableValue ?? 0)"
+                    [maxValue]="+(probes?.waterLevel?.probeEl?.maxAcceptableValue ?? 0)"
                     [minWarningValue]="
-                      probes?.waterLevel?.type?.minWarningValue!
+                      probes?.waterLevel?.probeEl?.minWarningValue!
                     "
                     [maxWarningValue]="
-                      probes?.waterLevel?.type?.maxWarningValue!
+                      probes?.waterLevel?.probeEl?.maxWarningValue!
                     "
                     [value]="probes?.waterLevel?.value!"
-                    [um]="probes?.waterLevel?.type?.um!"
+                    [um]="probes?.waterLevel?.probeEl?.um!"
                   ></app-range>
                 </ion-col>
                 <ion-col size="1">
@@ -76,12 +76,12 @@
                 <ion-col size="6">
                   <app-range
                     [attr.disabled]="probes?.ph ? false : true"
-                    [minValue]="probes?.ph?.type?.minAcceptableValue!"
-                    [maxValue]="probes?.ph?.type?.maxAcceptableValue!"
-                    [minWarningValue]="probes?.ph?.type?.minWarningValue!"
-                    [maxWarningValue]="probes?.ph?.type?.maxWarningValue!"
+                    [minValue]="probes?.ph?.probeEl?.minAcceptableValue!"
+                    [maxValue]="probes?.ph?.probeEl?.maxAcceptableValue!"
+                    [minWarningValue]="probes?.ph?.probeEl?.minWarningValue!"
+                    [maxWarningValue]="probes?.ph?.probeEl?.maxWarningValue!"
                     [value]="probes?.ph?.value!"
-                    [um]="probes?.ph?.type?.um!"
+                    [um]="probes?.ph?.probeEl?.um!"
                   ></app-range>
                 </ion-col>
                 <ion-col size="1">
@@ -129,12 +129,12 @@
                 <ion-col size="6">
                   <app-range
                     [attr.disabled]="probes?.ec ? false : true"
-                    [minValue]="probes?.ec?.type?.minAcceptableValue!"
-                    [maxValue]="probes?.ec?.type?.maxAcceptableValue!"
-                    [minWarningValue]="probes?.ec?.type?.minWarningValue!"
-                    [maxWarningValue]="probes?.ec?.type?.maxWarningValue!"
+                    [minValue]="probes?.ec?.probeEl?.minAcceptableValue!"
+                    [maxValue]="probes?.ec?.probeEl?.maxAcceptableValue!"
+                    [minWarningValue]="probes?.ec?.probeEl?.minWarningValue!"
+                    [maxWarningValue]="probes?.ec?.probeEl?.maxWarningValue!"
                     [value]="probes?.ec?.value!"
-                    [um]="probes?.ec?.type?.um!"
+                    [um]="probes?.ec?.probeEl?.um!"
                   ></app-range>
                 </ion-col>
                 <ion-col size="1">
@@ -192,12 +192,12 @@
                 <ion-col size="6">
                   <app-range
                     [attr.disabled]="probes?.temp ? false : true"
-                    [minValue]="probes?.temp?.type?.minAcceptableValue!"
-                    [maxValue]="probes?.temp?.type?.maxAcceptableValue!"
-                    [minWarningValue]="probes?.temp?.type?.minWarningValue!"
-                    [maxWarningValue]="probes?.temp?.type?.maxWarningValue!"
+                    [minValue]="probes?.temp?.probeEl?.minAcceptableValue!"
+                    [maxValue]="probes?.temp?.probeEl?.maxAcceptableValue!"
+                    [minWarningValue]="probes?.temp?.probeEl?.minWarningValue!"
+                    [maxWarningValue]="probes?.temp?.probeEl?.maxWarningValue!"
                     [value]="probes?.temp?.value!"
-                    [um]="probes?.temp?.type?.um!"
+                    [um]="probes?.temp?.probeEl?.um!"
                   ></app-range>
                 </ion-col>
                 <ion-col size="1">

@@ -11,10 +11,11 @@ export interface ProbeInterface {
     pin2?: number,
     i2cAddress?: number,
     locationId: number;
-    id: number;
+    id?: number;
     probeType: number;
     schedule?: ProbeScheduleInterface[];
-    type?: ProbeTypeInterface | ConstructorProbeTypeInterface,
+    type?: ConstructorProbeTypeInterface,
+    probeEl?: ProbeTypeInterface,
     log?: ProbeLogInterface[];
     value?: number
 

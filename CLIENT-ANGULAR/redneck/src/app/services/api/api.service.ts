@@ -3,7 +3,7 @@ import { SettingsService } from '../settings/settings.service';
 import { NetworkService } from '../network/network.service';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
-import { ParamsInterface } from '../../interfaces/utils';
+import { HTMLResponse, ParamsInterface } from '../../interfaces/utils';
 import { PlantExtendedInterface } from '../../interfaces/plant';
 import { DoseExtendedInterface } from '../../interfaces/dose';
 import { StrainInterface } from '../../interfaces/strain';
@@ -101,7 +101,7 @@ export class ApiService {
     id: number,
     type: string,
     duration?: number,
-  ): Promise<unknown> {
+  ): Promise<HTMLResponse> {
     if (!this.networkService.status) {
       const response = '[API]: network not available';
       if (this.debug) {

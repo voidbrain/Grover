@@ -20,7 +20,7 @@ export interface FormDefinition {
   export interface HTMLResponse {
     value: string;
     error?: string;
-    mode: string
+    mode?: string
   }
 
   export interface ParamsInterface { 

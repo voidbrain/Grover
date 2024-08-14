@@ -24,6 +24,7 @@ import { faArrowsRotate, faFill } from '@fortawesome/free-solid-svg-icons';
 import { ProbeInterface, ProbesListInterface } from '../../../../interfaces/probe';
 import { WorkerInterface, WorkersListInterface } from '../../../../interfaces/worker';
 import { ProbeTypeInterface } from '../../../../interfaces/probeType';
+import { HTMLResponse } from '../../../../interfaces/utils';
 
 export interface Obj {
   error: string,
@@ -140,7 +141,7 @@ export class ActionsPanelComponent implements OnChanges {
 
   async read(id: number) {
     if (id) {
-      const response: Obj = await this.runRemoteCommand(
+      const response: HTMLResponse = await this.runRemoteCommand(
         ServerPages.actuators,
         ServerCommands.READ,
         id,
@@ -155,7 +156,7 @@ export class ActionsPanelComponent implements OnChanges {
         this.presentToast(header, message, color, duration);
       } else {
         if(this.probes?.temp){
-          this.probes.temp.value = response.value;
+          this.probes.temp.value = +response.value;
           const header = `Success`;
           const message = `Action executed`;
           const color = 'success';
@@ -232,7 +233,7 @@ export class ActionsPanelComponent implements OnChanges {
     id: number,
     type: string,
     duration?: number,
-  ): Promise<Obj> {
+  ): Promise<HTMLResponse> {
     try {
       const run = this.db.api.remoteDeviceExecute(
         this.room?.settings?.address as string,

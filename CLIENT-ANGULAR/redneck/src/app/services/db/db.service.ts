@@ -8,12 +8,14 @@ import { CompanyInterface } from '../../interfaces/company';
 import { DoseInterface } from '../../interfaces/dose';
 import { CalendarInterface } from '../../interfaces/calendar';
 import { LoadingController } from '@ionic/angular';
-import { ProbeInterface, ProbeLogRowInterface } from '../../interfaces/probe';
-import { WorkerInterface, WorkerLogRowInterface } from '../../interfaces/worker';
+import { ProbeInterface } from '../../interfaces/probe';
+import { WorkerInterface } from '../../interfaces/worker';
+import { ProbeLogInterface } from '../../interfaces/probeLog';
+import { WorkerLogInterface } from '../../interfaces/workerLog';
 import { WorkersTypes } from '../../services/settings/enum';
 import { ProbesTypes } from '../../services/settings/enum';
 import { ScheduleTypes } from '../../services/settings/enum';
-import { SettingsInterface } from '../../interfaces/settings';
+import { RoomSettingsInterface } from '../../interfaces/settings';
 import { ProbeTypeInterface } from '../../interfaces/probeType';
 import { WorkerTypeInterface } from '../../interfaces/workerType';
 
@@ -74,9 +76,9 @@ export class DbService {
     this.toastService.presentToast();
     localStorage.clear();
     const request = indexedDB.deleteDatabase(this.appSettings.appName);
-    return new Promise(function (resolve, reject) {
-      request.onsuccess = function () {
-        if (globalThis.debug) {
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => {
+        if (this.debug) {
           console.info('[DB]: Delete db Ok');
         }
         resolve(request.result);
@@ -151,12 +153,12 @@ export class DbService {
 
   async initDb(resetDb = false): Promise<void> {
     if (resetDb) {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Delete db');
       }
       await this.deleteDb();
     } else {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Delete db not required');
       }
     }
@@ -177,13 +179,13 @@ export class DbService {
       (Number(now) - Number(lastGlobalUpdate)) / (1000 * 60 * 60);
 
     if (!networkStatus || (hoursWithoutUpdates < 1 && forceLoading === false)) {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Cached data');
       }
       return promise;
     }
 
-    if (globalThis.debug) {
+    if (this.debug) {
       console.info('[DB]: Force data sync');
     }
     localStorage.setItem(
@@ -240,7 +242,7 @@ export class DbService {
       const table = Object.keys(data)[0];
       const res = data[table];
   
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Db Sync records ready ', table, res, res.length);
       }
   
@@ -259,7 +261,7 @@ export class DbService {
                 await store.put(row);
               }
   
-              if (globalThis.debug) {
+              if (this.debug) {
                 console.info(`[DB]: Success syncing db table: "${table}", item:`, row.id);
               }
             } catch (e) {
@@ -333,17 +335,17 @@ export class DbService {
     objectStore: string,
     column = 'enabled, deleted',
     query = [1, 0],
-  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface )[]> {
+  ): Promise<(PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface )[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index(column);
     const promise = new Promise<
-    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface)[]
+    (PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface)[]
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);
         queryExecute.onsuccess = (e) => {
-          resolve(e["target"]["result"]);
+          resolve(e?["target"]["result"]);
         };
         queryExecute.onerror = (e) => {
           console.log(e);
@@ -363,7 +365,7 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogRowInterface | WorkerLogRowInterface | SettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
+    item: Partial<PlantInterface | DoseInterface | StrainInterface | CompanyInterface | WorkerInterface | ProbeInterface | WorkersTypes | ProbesTypes | ScheduleTypes| ProbeLogInterface | WorkerLogInterface | RoomSettingsInterface | ProbeTypeInterface | WorkerTypeInterface>,
   ): Promise<void> {
     try {
       if (!item.id) {
@@ -405,7 +407,7 @@ export class DbService {
       if (item["synced"] !== 0) {
         await this.performStoreOperation(store, 'delete', item["id"], objectStore);
       } else {
-        if (globalThis.debug) {
+        if (this.debug) {
           console.info(
             `[DB]: Item not synced, marking as deleted: 1. Table: "${objectStore}", ID: ${item["id"]}`
           );
@@ -430,7 +432,7 @@ export class DbService {
       const request = operation === 'delete' ? store.delete(data) : store.put(data);
   
       request.onsuccess = () => {
-        if (globalThis.debug) {
+        if (this.debug) {
           const action = operation === 'delete' ? 'deleted' : 'updated';
           console.info(`[DB]: Item ${action}. Table: "${objectStore}", Data: ${data}`);
         }
@@ -458,7 +460,7 @@ export class DbService {
       await this.syncStoredItems();
       await this.removeDeletedItem();
       
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Db cleaned');
       }
     }
@@ -469,13 +471,13 @@ export class DbService {
 
   syncStoredItems(): Promise<unknown> {
     const promise = new Promise<void>((resolve) => {
-      if (globalThis.debug) {
+      if (this.debug) {
         console.info('[DB]: Sync stored items with remote');
       }
       this.tables.map(async (table) => {
         const items = await this.getItemsToBeSynced(table);
         if (items["length"]) {
-          if (globalThis.debug) {
+          if (this.debug) {
             console.info(
               '[DB]: Items to sync. Table:"' + table + '" items:',
               items,
