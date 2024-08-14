@@ -121,7 +121,6 @@ export class WebServer {
                 if (el) {
                   const hasMethod = this.hasMethod(el.component, action);
                   if (hasMethod) {
-                    // console.log("1", now, emitter, operatingMode, duration, action);
                     const doJob = await el.component[action]({
                       now,
                       emitter,
