@@ -3,7 +3,7 @@ import { StrainInterface } from "./strain";
 import { CompanyInterface } from "./company";
 import { PotInterface } from "./pot";
 
-export interface FomrDefinitionRow {
+export interface FormDefinitionRow {
   name: string,
   type: string,
   label: string,
@@ -13,5 +13,6 @@ export interface FomrDefinitionRow {
   max?: number,
   icon?: string,
   multiple?: boolean
+  disabled?: boolean
 
 } 

@@ -41,7 +41,7 @@ import {
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
-import { FomrDefinitionRow } from '../../../interfaces/form-definition';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
   selector: 'app-calendar-detail',
@@ -87,7 +87,7 @@ export class CalendarsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id?: number;
   public page = 'calendars';
-  formDefinition: FomrDefinitionRow[];
+  formDefinition: FormDefinitionRow[];
 
   constructor(
     public db: DbService,

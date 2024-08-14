@@ -43,7 +43,7 @@ import { StrainInterface } from '../../../interfaces/strain';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
 import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
-import { FomrDefinitionRow } from '../../../interfaces/form-definition';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
   selector: 'app-strains-detail',
@@ -89,7 +89,7 @@ export class StrainsDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'strains';
-  formDefinition: FomrDefinitionRow[];
+  formDefinition: FormDefinitionRow[];
 
   constructor(
     public db: DbService,
@@ -145,7 +145,7 @@ export class StrainsDetailComponent implements OnInit {
   async getItem(id: number) {
     const strains: StrainInterface[] = await this.db.getItems('strains') as StrainInterface[];
 
-    this.formDefinition.find((el: FomrDefinitionRow) => el.name === 'lineage')["options"] = strains;
+    this.formDefinition.find((el: FormDefinitionRow) => el.name === 'lineage')["options"] = strains;
     if (id) {
       const item: StrainInterface = await this.db.getItem(this.page, id) as StrainInterface;
 

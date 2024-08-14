@@ -1,3 +1,4 @@
+export interface TypeLog { executedTime: string; value?: number; action?: number }
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { PlantExtendedInterface } from '../../../../interfaces/plant';
 import { RoomExtendedInterface } from '../../../../interfaces/room';
@@ -80,7 +81,7 @@ export class PanelChartComponent implements OnChanges {
     const labels = new Set<string>();
     
     // const processLogs = (logs: { executedTime: string; value?: number; action?: number }[], color: string, minValue?: number, maxValue?: number): Dataset => {
-      const processLogs = (logs: { executedTime: string; value?: number; action?: number }[], color: string, minValue?: number, maxValue?: number): Dataset => {
+      const processLogs = (logs: TypeLog[], color: string, minValue?: number, maxValue?: number): Dataset => {
       const dataset: Dataset = { borderColor: color, data: [], hidden: false };
       logs.forEach(log => {
         const value = log.value ?? log.action;
@@ -100,25 +101,25 @@ export class PanelChartComponent implements OnChanges {
 
     if (this.room?.workers) {
       this.dataArray.datasets.push(
-        ...this.room.workers.map(worker => worker.log?.length ? processLogs(worker.log, '#FF00FF') : { borderColor: '#FF00FF', data: [], hidden: true })
+        ...this.room.workers.map(worker => worker.log?.length ? processLogs(worker.log as unknown as TypeLog[], '#FF00FF') : { borderColor: '#FF00FF', data: [], hidden: true })
       );
     }
 
     if (this.room?.probes) {
       this.dataArray.datasets.push(
-        ...this.room.probes.map(probe => probe.log?.length ? processLogs(probe.log, '#FFFF00', probe.probeEl?.minAcceptableValue, probe.probeEl?.maxAcceptableValue) : { borderColor: '#FFFF00', data: [], hidden: false })
+        ...this.room.probes.map(probe => probe.log?.length ? processLogs(probe.log as unknown as TypeLog[], '#FFFF00', probe.probeEl?.minAcceptableValue, probe.probeEl?.maxAcceptableValue) : { borderColor: '#FFFF00', data: [], hidden: false })
       );
     }
 
     if (this.plant?.workers) {
       this.dataArray.datasets.push(
-        ...this.plant.workers.map(worker => worker.log?.length ? processLogs(worker.log, '#FFFFFF') : { borderColor: '#FFFFFF', data: [], hidden: true })
+        ...this.plant.workers.map(worker => worker.log?.length ? processLogs(worker.log as unknown as TypeLog[], '#FFFFFF') : { borderColor: '#FFFFFF', data: [], hidden: true })
       );
     }
 
     if (this.plant?.probes) {
       this.dataArray.datasets.push(
-        ...this.plant.probes.map(probe => probe.log?.length ? processLogs(probe.log, '#0000cc', probe.probeEl?.minAcceptableValue, probe.probeEl?.maxAcceptableValue) : { borderColor: '#0000cc', data: [], hidden: false })
+        ...this.plant.probes.map(probe => probe.log?.length ? processLogs(probe.log as unknown as TypeLog[], '#0000cc', probe.probeEl?.minAcceptableValue, probe.probeEl?.maxAcceptableValue) : { borderColor: '#0000cc', data: [], hidden: false })
       );
     }
 
@@ -273,7 +274,7 @@ export class PanelChartComponent implements OnChanges {
 
     this.chartConfig = {
       type: this.chartType,
-      data: filteredData,
+      data: filteredData as unknown as ChartConfiguration["data"],
       options: chartOptions,
     };
   }

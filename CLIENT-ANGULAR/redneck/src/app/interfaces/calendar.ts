@@ -31,6 +31,8 @@ export interface PhaseExtendedInterface extends PhaseInterface {
   isActive: boolean;
   startPhaseDay?: number;
   boxPercentDuration?: number;
+  // data?: number[];
+  // backgroundColor?: string[];
 }
 
 export interface CalendarInterface {

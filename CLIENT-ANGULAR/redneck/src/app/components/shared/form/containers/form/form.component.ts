@@ -24,18 +24,17 @@ import { FieldConfig } from '../../models/field-config.interface';
 import { CompanyInterface } from '../../../../../interfaces/company';
 import { DoseInterface } from '../../../../../interfaces/dose';
 import { PlantInterface } from '../../../../../interfaces/plant';
+import { FormDefinitionRow } from '../../../../../interfaces/form-definition'; // Corrected Typo
 
 @Component({
   exportAs: 'dynamicForm',
   standalone: true,
-
   selector: 'app-dynamic-form',
   styleUrls: ['form.component.scss'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     DynamicFieldDirective,
-    DynamicFormComponent,
     ButtonComponent,
     InputTextComponent,
     RadioComponent,
@@ -51,14 +50,16 @@ import { PlantInterface } from '../../../../../interfaces/plant';
     [formGroup]="form"
     (submit)="handleSubmit($event)"
   >
-    @for (field of config; track field) {
-      <ng-container appDynamicField [config]="field" [group]="form">
+  @for (field of config; track field) {
+    <ng-container>
+      <ng-container appDynamicField [config]="transformToFieldConfig(field)" [group]="form">
       </ng-container>
-    }
+    </ng-container>
+  }
   </form>`,
 })
 export class DynamicFormComponent implements OnChanges, OnInit {
-  @Input() config: FieldConfig[] = [];
+  @Input() config: FormDefinitionRow[] = [];
   @Output() submitForm: EventEmitter<CustomEvent> = new EventEmitter<CustomEvent>();
 
   form: FormGroup = new FormGroup({});
@@ -77,6 +78,18 @@ export class DynamicFormComponent implements OnChanges, OnInit {
   }
 
   constructor(private fb: FormBuilder) {}
+
+  transformToFieldConfig(row: FormDefinitionRow): FieldConfig {
+    return {
+      type: row.type,
+      name: row.name,
+      label: row.label,
+      
+      disabled: row.disabled,
+      
+      options: row.options,
+    };
+  }
 
   ngOnInit() {
     this.form = this.createGroup();
@@ -97,8 +110,8 @@ export class DynamicFormComponent implements OnChanges, OnInit {
           const config = this.config.find(
             (control) => control.name === name,
           );
-          if(config){
-            this.form.addControl(name, this.createControl(config));
+          if (config) {
+            this.form.addControl(name, this.createControl(config as unknown as FieldConfig));
           }
         });
     }
@@ -107,21 +120,22 @@ export class DynamicFormComponent implements OnChanges, OnInit {
   createGroup() {
     const group = this.fb.group({});
     this.controls.forEach((control) =>
-      group.addControl(control.name, this.createControl(control)),
+      group.addControl(control.name, this.createControl(control as unknown as FieldConfig)),
     );
     return group;
   }
 
   createControl(config: FieldConfig) {
     const { disabled, validation, value } = config;
-    const disabledBool = disabled as boolean
-    return this.fb.control({ disabledBool, value }, validation);
+    return this.fb.control({ value, disabled }, validation || []);
   }
 
   handleSubmit(event: Event) {
     event.preventDefault();
     event.stopPropagation();
-    this.submitForm.emit(this.value);
+    if (this.valid) {
+      this.submitForm.emit(this.value);
+    }
   }
 
   setDisabled(name: string, disable: boolean) {
@@ -138,12 +152,15 @@ export class DynamicFormComponent implements OnChanges, OnInit {
     });
   }
 
-  setValue(name: string, value: string|number|[]) {
+  setValue(name: string, value: string | number | []) {
     this.form.controls[name].setValue(value, { emitEvent: true });
   }
 
   setFormValues(form: PlantInterface | CompanyInterface | DoseInterface) {
-    console.log(form, this.form);
-    this.form.patchValue(form, { emitEvent: true });
+    if (form && this.form) {
+      this.form.patchValue(form, { emitEvent: true });
+    }
   }
+
+
 }

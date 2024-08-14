@@ -39,7 +39,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { FomrDefinitionRow } from '../../../interfaces/form-definition';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
   selector: 'app-doses-detail',
@@ -84,7 +84,7 @@ export class DosesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'doses';
-  formDefinition: FomrDefinitionRow[];
+  formDefinition: FormDefinitionRow[];
 
   constructor(
     public db: DbService,

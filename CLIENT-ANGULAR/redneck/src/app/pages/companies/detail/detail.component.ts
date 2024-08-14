@@ -42,7 +42,7 @@ import { CompanyInterface } from '../../../interfaces/company';
 import { PotInterface } from '../../../interfaces/pot';
 import { DatePipe } from '@angular/common';
 import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
-import { FomrDefinitionRow } from '../../../interfaces/form-definition';
+import { FormDefinitionRow } from '../../../interfaces/form-definition';
 @Component({
   selector: 'app-companies-detail',
   standalone: true,
@@ -87,7 +87,7 @@ export class CompaniesDetailComponent implements OnInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent | undefined;
   public id: number;
   public page = 'companies';
-  formDefinition: FomrDefinitionRow[];
+  formDefinition: FormDefinitionRow[];
   pots: PotInterface[] = [];
 
   constructor(
