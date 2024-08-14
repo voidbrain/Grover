@@ -12,6 +12,7 @@ import {
 
 import isPi from "detect-rpi";
 let sensor;
+let isMock = false;
 if (isPi()) {
   const { default: ds18x20 } = await import("ds18x20");
   sensor = ds18x20;

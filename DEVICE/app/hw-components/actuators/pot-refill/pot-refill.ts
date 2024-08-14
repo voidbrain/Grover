@@ -21,6 +21,7 @@ import moment from "moment";
 
 import isPi from "detect-rpi";
 let sensor;
+let isMock = false;
 if (isPi()) {
   const { default: mcp } = await import("node-mcp23017");
   sensor = mcp;
@@ -29,7 +30,9 @@ if (isPi()) {
     "../../../../mocks/node-mcp23017.cjs"
   );
   sensor = mcpMock;
+  isMock = true;
 }
+console.log(sensor, "isMock:" + isMock);
 
 class RefillComponent {
   phase: Phase;

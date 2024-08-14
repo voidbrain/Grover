@@ -3,13 +3,17 @@ import params from "./ph-config.json";
 
 import isPi from "detect-rpi";
 let sensor;
+let isMock = false;
 if (isPi()) {
   const { default: i2c } = await import("i2c-bus");
   sensor = i2c;
 } else {
   const { default: i2cMock } = await import("../../../../mocks/i2c-bus.cjs");
   sensor = i2cMock;
+  isMock = true;
 }
+console.log(sensor, "isMock:" + isMock);
+console.log(sensor, isMock)
 
 /* To Do
  * temperature adjustment - calibration, and read of pH
