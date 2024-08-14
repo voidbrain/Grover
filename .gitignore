@@ -5,3 +5,6 @@ package-lock.json
 Documentation/.DS_Store
 DEVICE/data/db.sqlite
 DEVICE/data/scratch/Grover%2FRedNeck_lastglobalupdate
+DEVICE/error.log
+DEVICE/data/db.sqlite
+DEVICE/data/scratch/Grover%2FRedNeck_lastglobalupdate
