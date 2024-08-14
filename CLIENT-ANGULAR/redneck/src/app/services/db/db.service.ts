@@ -71,7 +71,7 @@ export class DbService {
   }
   
 
-  async deleteDb(): Promise<void> {
+  async deleteDb(): Promise<boolean> {
     this.toastService.pushMessage('Database reset');
     this.toastService.presentToast();
     localStorage.clear();
@@ -81,7 +81,7 @@ export class DbService {
         if (this.debug) {
           console.info('[DB]: Delete db Ok');
         }
-        resolve(request.result);
+        resolve(true);
       };
       request.onerror = function () {
         console.error('[DB]: Delete db Error');
@@ -97,9 +97,9 @@ export class DbService {
     return new Promise((resolve) => {
       const openRequest = indexedDB.open(this.appSettings.appName);
       openRequest.onupgradeneeded = (event) => {
-        const target = event.target;
-        const db = target["result"];
-        const storeObjects: [] = [];
+        const request = event.target as IDBRequest;
+        const db = request.result;
+        const storeObjects: Record<string, IDBObjectStore> = {};
         if (this.debug) {
           console.log('[DB]: ', this.tables);
         }
@@ -138,8 +138,9 @@ export class DbService {
           console.info('[DB]: Db forged');
         }
       };
-      openRequest.onsuccess = (event: unknown) => {
-        this.db = event["target"].result;
+      openRequest.onsuccess = (event: Event) => {
+        const request = event.target as IDBRequest;
+        this.db = request.result;
         (this.db as IDBDatabase).onerror = (error) => {
           console.error('[DB]: error createDb: ' + error);
         };
@@ -299,7 +300,7 @@ export class DbService {
     });
   }
 
-  getItem(objectStore, id, column = 'id'): Promise<PlantInterface | DoseInterface | StrainInterface | CompanyInterface > {
+  getItem(objectStore: string, id: number, column = 'id'): Promise<PlantInterface | DoseInterface | StrainInterface | CompanyInterface > {
     const tx = this.db.transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex: IDBIndex = store.index(column);
@@ -344,8 +345,9 @@ export class DbService {
     >((resolve) => {
       if (query.length > 0) {
         const queryExecute = dataIndex.getAll(query);
-        queryExecute.onsuccess = (e) => {
-          resolve(e?["target"]["result"]);
+        queryExecute.onsuccess = (e: Event) => {
+          const request = e.target as IDBRequest;
+          resolve(request.result);
         };
         queryExecute.onerror = (e) => {
           console.log(e);
@@ -353,7 +355,8 @@ export class DbService {
       } else {
         const queryExecute = dataIndex.getAll();
         queryExecute.onsuccess = (e) => {
-          resolve(e["target"]["result"]);
+          const request = e.target as IDBRequest;
+          resolve(request.result);
         };
         queryExecute.onerror = (e) => {
           console.log(e);
@@ -495,7 +498,7 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeSynced(objectStore): Promise<(boolean)> {
+  getItemsToBeSynced(objectStore: string): Promise<(unknown)> {
     try {
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
       const store = tx.objectStore(objectStore);
@@ -504,7 +507,8 @@ export class DbService {
       const promise = new Promise<unknown>((resolve) => {
         const request = dataIndex.getAll(0);
         request.onsuccess = (e) => {
-          resolve(e.target["result"]);
+          const request = e.target as IDBRequest;
+          resolve(request.result);
         };
         request.onerror = (e) => {
           console.error(e);
@@ -543,13 +547,14 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeRemoved(objectStore): Promise<unknown> {
+  getItemsToBeRemoved(objectStore: string): Promise<unknown> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index('deleted');
     const promise = new Promise<unknown>((resolve) => {
       dataIndex.getAll(1).onsuccess = (e) => {
-        resolve(e.target["result"]);
+        const request = e.target as IDBRequest;
+        resolve(request.result);
       };
     });
     return promise;
