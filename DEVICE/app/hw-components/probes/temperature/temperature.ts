@@ -134,8 +134,6 @@ class TemperatureComponent {
     operatingMode: number;
   }): Promise<unknown> {
     try {
-      console.log("2", expectedTime, eventEmitter, operatingMode);
-
       // Check operating mode
       const systemOperatingMode = this.settings.getOperatingMode();
       if (operatingMode < systemOperatingMode) {
