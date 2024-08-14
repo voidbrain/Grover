@@ -14,9 +14,17 @@ export interface ProbeInterface {
     id: number;
     probeType: number;
     schedule?: ProbeScheduleInterface[];
-    type: ProbeTypeInterface | ConstructorProbeTypeInterface | undefined,
+    type?: ProbeTypeInterface | ConstructorProbeTypeInterface,
     log?: ProbeLogInterface[];
+    value?: number
 
     synced?: number;
+  }
+
+  export interface ProbesListInterface {  
+    temp: ProbeInterface | undefined;
+    waterLevel: ProbeInterface | undefined;
+    ec: ProbeInterface | undefined;
+    ph: ProbeInterface | undefined;
   }
   

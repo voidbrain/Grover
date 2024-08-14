@@ -3,7 +3,7 @@ export interface RoomSettingsInterface {
   enabled: number,
   deleted: number,
   lastUpdate: number,
-  address: string,
+  address?: string,
   port: number,
   device: string,
   operatingMode: number

@@ -34,10 +34,15 @@ export interface WorkerInterface {
   pin2: number,
   i2cAddress: number,
   status: string | number,
-  type: WorkerTypeInterface | ConstructorWorkerTypeInterface | undefined,
+  type?: WorkerTypeInterface | ConstructorWorkerTypeInterface,
   log: WorkerLogInterface[],
   schedule: WorkerScheduleInterface[];
 
   synced?: number;
   
+}
+
+export interface WorkersListInterface {  
+  waterLoop: WorkerInterface | undefined;
+  refill: WorkerInterface | undefined;
 }

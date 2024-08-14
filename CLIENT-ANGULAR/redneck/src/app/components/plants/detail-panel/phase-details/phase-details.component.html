@@ -19,8 +19,8 @@
                 <ion-col size="6">
                   <app-range
                     [attr.disabled]="probes?.waterLevel ? false : true"
-                    [minValue]="probes?.waterLevel?.type?.minAcceptableValue!"
-                    [maxValue]="probes?.waterLevel?.type?.maxAcceptableValue!"
+                    [minValue]="probes?.waterLevel?.type?.minAcceptableValue"
+                    [maxValue]="probes?.waterLevel?.type?.maxAcceptableValue"
                     [minWarningValue]="
                       probes?.waterLevel?.type?.minWarningValue!
                     "
@@ -224,7 +224,7 @@
                     <ion-toggle
                       slot="end"
                       (ionChange)="toggleWaterRecycle(workers?.waterLoop!)"
-                      [disabled]="!workers?.waterLoop"
+                      [disabled]="workers?.waterLoop!"
                       [checked]="
                         workers?.waterLoop?.status === 'ON' ? true : false
                       "

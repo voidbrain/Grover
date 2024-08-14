@@ -8,7 +8,7 @@ interface ScheduleRow {
 export interface weekRow {
   key: string;
   values: unknown[];
-  type: string;
+  type?: string;
 }
 
 import { Component, Input, OnChanges } from '@angular/core';
@@ -43,6 +43,7 @@ import {
   faLightbulb,
 } from '@fortawesome/free-solid-svg-icons';
 import { WorkerInterface } from '../../../../interfaces/worker';
+import { WorkerTypeInterface } from '../../../../interfaces/workerType';
 
 @Component({
   selector: 'app-schedule-panel',
@@ -109,10 +110,10 @@ export class SchedulePanelComponent implements OnChanges {
 
       daysWorkingCron.map((day) => {
         const el = {
-          title: item.type.title,
-          key: item.type.type,
-          color: item.type.color,
-          icon: item.type.icon,
+          title: (item?.type as WorkerTypeInterface)?.title,
+          key: (item?.type as WorkerTypeInterface)?.type,
+          color: (item?.type as WorkerTypeInterface)?.color,
+          icon: (item?.type as WorkerTypeInterface)?.icon,
           itemType: item.workerType ? Peripherals.Worker : Peripherals.Probe,
           scheduleType: item.workerType
             ? ScheduleTypes.From_To

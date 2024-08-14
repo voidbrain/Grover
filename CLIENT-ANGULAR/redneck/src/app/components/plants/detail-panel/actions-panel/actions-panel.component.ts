@@ -21,9 +21,9 @@ import {
 } from '@ionic/angular/standalone';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowsRotate, faFill } from '@fortawesome/free-solid-svg-icons';
-import { ProbeInterface } from '../../../../interfaces/probe';
-import { WorkerInterface } from '../../../../interfaces/worker';
-import { WaterLoopInterface } from '../../../../interfaces/water-loop';
+import { ProbeInterface, ProbesListInterface } from '../../../../interfaces/probe';
+import { WorkerInterface, WorkersListInterface } from '../../../../interfaces/worker';
+import { ProbeTypeInterface } from '../../../../interfaces/probeType';
 
 export interface Obj {
   error: string,
@@ -52,8 +52,8 @@ export class ActionsPanelComponent implements OnChanges {
   faArrowsRotate = faArrowsRotate;
   faFill = faFill;
 
-  probes?: ProbeInterface;
-  workers?: WorkerInterface;
+  probes?: ProbesListInterface;
+  workers?: WorkersListInterface;
   debug = false;
 
   constructor(
@@ -90,47 +90,47 @@ export class ActionsPanelComponent implements OnChanges {
   }
 
   setup() {
-    const probes: ProbeInterface = {
+    const probes = {
       temp: this.plant?.probes?.find(
-        (el) => el.type.id === ProbesTypes.Water_temperature,
+        (el: ProbeInterface) => el?.type?.id === ProbesTypes.Water_temperature,
       ),
       waterLevel: this.plant?.probes?.find(
-        (el) => el.type.id === ProbesTypes.Water_level,
+        (el: ProbeInterface) => el?.type?.id === ProbesTypes.Water_level,
       ),
-      ec: this.plant?.probes?.find((el) => el.type.id === ProbesTypes.EC),
-      ph: this.plant?.probes?.find((el) => el.type.id === ProbesTypes.pH),
+      ec: this.plant?.probes?.find((el) => el?.type?.id === ProbesTypes.EC),
+      ph: this.plant?.probes?.find((el) => el?.type?.id === ProbesTypes.pH),
     };
     if (probes.temp !== undefined) {
-      probes.temp.type.maxWarningValue = this.plant?.phase?.maxTemp;
-      probes.temp.type.minWarningValue = this.plant?.phase?.minTemp;
+      (probes.temp.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxTemp;
+      (probes.temp.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minTemp;
       probes.temp.value = 0;
       this.read(probes.temp.id);
     }
     if (probes.waterLevel !== undefined) {
-      probes.waterLevel.type.maxWarningValue = this.plant?.phase?.maxWaterLevel;
-      probes.waterLevel.type.minWarningValue = this.plant?.phase?.minWaterLevel;
+      (probes.waterLevel.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxWaterLevel;
+      (probes.waterLevel.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minWaterLevel;
       probes.waterLevel.value = 0;
       this.read(probes.waterLevel.id);
     }
     if (probes.ph !== undefined) {
-      probes.ph.type.maxWarningValue = this.plant?.phase?.maxPh;
-      probes.ph.type.minWarningValue = this.plant?.phase?.minPh;
+      (probes.ph.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxPh;
+      (probes.ph.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minPh;
       probes.ph.value = 0;
       this.read(probes.ph.id);
     }
     if (probes.ec !== undefined) {
-      probes.ec.type.maxWarningValue = this.plant?.phase?.maxEC;
-      probes.ec.type.minWarningValue = this.plant?.phase?.minEC;
+      (probes.ec.type as ProbeTypeInterface).maxWarningValue = this.plant?.phase?.maxEC;
+      (probes.ec.type as ProbeTypeInterface).minWarningValue = this.plant?.phase?.minEC;
       probes.ec.value = 0;
       this.read(probes.ec.id);
     }
 
-    const workers: WorkerInterface = {
-      waterLoop: this.plant.workers.find(
-        (el) => el.type.id === WorkersTypes.Pot_Water_loop,
+    const workers = {
+      waterLoop: this.plant?.workers?.find(
+        (el: WorkerInterface) => el?.type?.id === WorkersTypes.Pot_Water_loop,
       ),
-      refill: this.plant.workers.find(
-        (el) => el.type.id === WorkersTypes.Pot_refill,
+      refill: this.plant?.workers?.find(
+        (el: WorkerInterface) => el?.type?.id === WorkersTypes.Pot_refill,
       ),
     };
 
@@ -154,12 +154,14 @@ export class ActionsPanelComponent implements OnChanges {
         const duration = 3000;
         this.presentToast(header, message, color, duration);
       } else {
-        this.probes.temp.value = response.value;
-        const header = `Success`;
-        const message = `Action executed`;
-        const color = 'success';
-        const duration = 3000;
-        this.presentToast(header, message, color, duration);
+        if(this.probes?.temp){
+          this.probes.temp.value = response.value;
+          const header = `Success`;
+          const message = `Action executed`;
+          const color = 'success';
+          const duration = 3000;
+          this.presentToast(header, message, color, duration);
+        }
       }
     } else {
       const header = `Error`;
@@ -170,7 +172,7 @@ export class ActionsPanelComponent implements OnChanges {
     }
   }
 
-  async toggleWaterRecycle(worker: WaterLoopInterface) {
+  async toggleWaterRecycle(worker: WorkerInterface) {
     const action =
       worker?.status === DevicesStatus.ON
         ? ServerCommands.OFF
@@ -233,8 +235,8 @@ export class ActionsPanelComponent implements OnChanges {
   ): Promise<Obj> {
     try {
       const run = this.db.api.remoteDeviceExecute(
-        this.room?.settings?.address,
-        this.room?.settings?.port,
+        this.room?.settings?.address as string,
+        this.room?.settings?.port as number,
         page,
         action,
         id,

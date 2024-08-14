@@ -12,4 +12,4 @@ export interface WorkerTypeInterface {
     synced?: number;
 }
 
-export interface ConstructorWorkerTypeInterface { key: string; value: number } 
+export interface ConstructorWorkerTypeInterface { key: string; value: number; id?: number } 
