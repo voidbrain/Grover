@@ -6,7 +6,6 @@ import { AiService } from "../services/ai/ai.service";
 import url from "url";
 import moment from "moment";
 
-import { RoomObject } from "../../app/interfaces/room";
 import { PotObject } from "../../app/interfaces/pot";
 import { LocationInterface } from "../../app/interfaces/location";
 import { RoomInterface } from "../../app/interfaces/room";
@@ -109,10 +108,6 @@ export class WebServer {
             )) as LocationInterface;
             const environments = +parent.parent > 0 ? this.pots : this.rooms;
             const environmentType = +parent.parent > 0 ? "pot" : "room";
-            console.log("environments:", environments);
-            console.log("parent:", parent);
-            console.log("this.pots:", this.pots);
-            console.log("this.rooms:", this.rooms);
             const environment = environments.find(
               (el) =>
                 +el[environmentType].locationId ===
