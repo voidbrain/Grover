@@ -19,6 +19,18 @@ import RoomNutrientRefillComponent from "../room-nutrient-refill/room-nutrient-r
 import schedule from "node-schedule";
 import moment from "moment";
 
+import isPi from "detect-rpi";
+let sensor;
+if (isPi()) {
+  const { default: mcp } = await import("node-mcp23017");
+  sensor = mcp;
+} else {
+  const { default: mcpMock } = await import(
+    "../../../../mocks/node-mcp23017.cjs"
+  );
+  sensor = mcpMock;
+}
+
 class RefillComponent {
   phase: Phase;
   id: number | string | undefined;
@@ -79,24 +91,24 @@ class RefillComponent {
   }
 
   async setup() {
-    import("node-mcp23017").then(({ default: MCP23017 }) => {
-      this.secondaryPump = new MCP23017({
-        address: +(this.i2cAddress ?? 0),
-        device: 1,
-        debug: false,
-      });
-      this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
-      this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
-
-      this.secondaryPump.pinMode(
-        this.primaryWaterPump.pin1,
-        this.secondaryPump.OUTPUT,
-      );
-      this.secondaryPump.pinMode(
-        this.primaryWaterPump.pin2,
-        this.secondaryPump.OUTPUT,
-      );
+  
+    this.secondaryPump = new sensor({
+      address: +(this.i2cAddress ?? 0),
+      device: 1,
+      debug: false,
     });
+    this.secondaryPump.pinMode(this.pin1, this.secondaryPump.OUTPUT);
+    this.secondaryPump.pinMode(this.pin2, this.secondaryPump.OUTPUT);
+
+    this.secondaryPump.pinMode(
+      this.primaryWaterPump.pin1,
+      this.secondaryPump.OUTPUT,
+    );
+    this.secondaryPump.pinMode(
+      this.primaryWaterPump.pin2,
+      this.secondaryPump.OUTPUT,
+    );
+  
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

@@ -10,12 +10,8 @@ import {
   DevicesStatus,
 } from "../../../services/settings/enums";
 
-// import sensor from '../../../../mocks/ds18x20.cjs';
-
 import isPi from "detect-rpi";
-
 let sensor;
-
 if (isPi()) {
   const { default: ds18x20 } = await import("ds18x20");
   sensor = ds18x20;

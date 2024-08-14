@@ -13,6 +13,18 @@ import {
 
 import schedule from "node-schedule";
 
+import isPi from "detect-rpi";
+let sensor;
+if (isPi()) {
+  const { default: mcp } = await import("node-mcp23017");
+  sensor = mcp;
+} else {
+  const { default: mcpMock } = await import(
+    "../../../../mocks/node-mcp23017.cjs"
+  );
+  sensor = mcpMock;
+}
+
 class LightSwitchComponent {
   id: number | string | undefined;
   parentId: number;
@@ -55,14 +67,14 @@ class LightSwitchComponent {
   }
 
   async setup() {
-    import("node-mcp23017").then(({ default: MCP23017 }) => {
-      this.light = new MCP23017({
-        address: +(this.i2cAddress ?? 0),
-        device: 1,
-        debug: false,
-      });
-      this.light.pinMode(this.pin, this.light.OUTPUT);
+  
+    this.light = new sensor({
+      address: +(this.i2cAddress ?? 0),
+      device: 1,
+      debug: false,
     });
+    this.light.pinMode(this.pin, this.light.OUTPUT);
+  
 
     this.setSchedule();
   }

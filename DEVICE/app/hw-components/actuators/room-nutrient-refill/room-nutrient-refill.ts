@@ -14,6 +14,18 @@ import {
 import schedule from "node-schedule";
 import moment from "moment";
 
+import isPi from "detect-rpi";
+let sensor;
+if (isPi()) {
+  const { default: mcp } = await import("node-mcp23017");
+  sensor = mcp;
+} else {
+  const { default: mcpMock } = await import(
+    "../../../../mocks/node-mcp23017.cjs"
+  );
+  sensor = mcpMock;
+}
+
 class RoomNutrientRefillComponent {
   id: number;
   parentId: number;

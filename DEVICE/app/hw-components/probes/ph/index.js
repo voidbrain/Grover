@@ -1,6 +1,17 @@
-import { i2c } from "i2c-bus";
 import { writeFileSync } from "fs";
 import params from "./ph-config.json";
+
+import isPi from "detect-rpi";
+let sensor;
+if (isPi()) {
+  const { default: i2c } = await import("i2c-bus");
+  sensor = i2c;
+} else {
+  const { default: i2cMock } = await import(
+    "../../../../mocks/i2c-bus.cjs"
+  );
+  sensor = i2cMock;
+}
 
 /* To Do
  * temperature adjustment - calibration, and read of pH
@@ -53,7 +64,7 @@ class MiniPh {
   constructor(device, address) {
     this.device = device;
     this.address = address;
-    this.wire = i2c.open(address, function (err, data) {
+    this.wire = sensor.open(address, function (err, data) {
       if (err) console.log("error", err);
       if (data) console.log("error", data);
     });

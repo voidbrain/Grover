@@ -12,6 +12,18 @@ import {
   DevicesStatus,
 } from "../../../services/settings/enums";
 
+import isPi from "detect-rpi";
+let sensor;
+if (isPi()) {
+  const { default: mcp } = await import("node-mcp23017");
+  sensor = mcp;
+} else {
+  const { default: mcpMock } = await import(
+    "../../../../mocks/node-mcp23017.cjs"
+  );
+  sensor = mcpMock;
+}
+
 class WaterLoopComponent {
   id: number | string | undefined;
   parentId: number;
@@ -55,15 +67,14 @@ class WaterLoopComponent {
   }
 
   async setup() {
-    import("node-mcp23017").then(({ default: MCP23017 }) => {
-      this.mcp = new MCP23017({
-        address: +(this.i2cAddress ?? 0),
-        device: 1,
-        debug: false,
-      });
-      this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
-    });
 
+    this.mcp = new sensor({
+      address: +(this.i2cAddress ?? 0),
+      device: 1,
+      debug: false,
+    });
+    this.mcp.pinMode(this.pin, this.mcp.OUTPUT);
+ 
     this.setSchedule();
   }
 

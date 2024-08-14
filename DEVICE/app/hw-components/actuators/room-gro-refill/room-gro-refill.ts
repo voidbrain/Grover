@@ -14,6 +14,18 @@ import {
 import schedule from "node-schedule";
 import moment from "moment";
 
+import isPi from "detect-rpi";
+let sensor;
+if (isPi()) {
+  const { default: mcp } = await import("node-mcp23017");
+  sensor = mcp;
+} else {
+  const { default: mcpMock } = await import(
+    "../../../../mocks/node-mcp23017.cjs"
+  );
+  sensor = mcpMock;
+}
+
 class RoomGroRefillComponent {
   id: number | string | undefined;
   parentId: number;
@@ -58,15 +70,15 @@ class RoomGroRefillComponent {
   }
 
   async setup() {
-    import("node-mcp23017").then(({ default: MCP23017 }) => {
-      this.primaryGroPump = new MCP23017({
-        address: +(this.i2cAddress ?? ""),
-        device: 1,
-        debug: false,
-      });
-      this.primaryGroPump.pinMode(this.pin1, this.primaryGroPump.OUTPUT);
-      this.primaryGroPump.pinMode(this.pin2, this.primaryGroPump.OUTPUT);
+  
+    this.primaryGroPump = new sensor({
+      address: +(this.i2cAddress ?? ""),
+      device: 1,
+      debug: false,
     });
+    this.primaryGroPump.pinMode(this.pin1, this.primaryGroPump.OUTPUT);
+    this.primaryGroPump.pinMode(this.pin2, this.primaryGroPump.OUTPUT);
+  
     this.setSchedule(this.id, this.scheduledCrons);
   }
 

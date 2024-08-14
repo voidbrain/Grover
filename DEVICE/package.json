@@ -42,12 +42,6 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
   },
-  "_moduleAliases": {
-    "node-mcp23017": "./mocks/node-mcp23017.cjs",
-    "i2c-bus": "./mocks/i2c-bus.cjs",
-    "pca9685": "./mocks/pca9685.cjs",
-    "ds18x20": "./mocks/ds18x20.cjs"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node -r esm index.ts",
