@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-// import { BehaviorSubject } from 'rxjs';
-import { signal } from "@angular/core";
+import { BehaviorSubject } from 'rxjs';
 import { Network } from '@capacitor/network';
 import { ToastService } from '../toast/toast.service';
 
@@ -13,10 +12,10 @@ export enum ConnectionStatus {
   providedIn: 'root',
 })
 export class NetworkService {
-  public status = signal("");
+  public status: BehaviorSubject<string>;
 
   constructor(private toastService: ToastService) {
-   
+    this.status = new BehaviorSubject("");
     this.initializeNetworkEvents();
   }
 
@@ -42,12 +41,12 @@ export class NetworkService {
     });
   }
 
-  private async updateNetworkStatus(status: number) {
+  private async updateNetworkStatus(status: ConnectionStatus) {
     this.toastService.pushMessage(
       'Network status: ' + (status ? 'Online' : 'Offline'),
     );
     this.toastService.presentToast();
 
-    this.status.set(ConnectionStatus[status]);
+    this.status.next(''+status);
   }
 }

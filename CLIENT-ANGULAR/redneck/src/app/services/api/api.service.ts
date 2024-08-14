@@ -3,7 +3,7 @@ import { SettingsService } from '../settings/settings.service';
 import { NetworkService } from '../network/network.service';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
-import { HTMLResponse, ParamsInterface } from '../../interfaces/utils';
+import { ParamsInterface } from '../../interfaces/utils';
 import { PlantExtendedInterface } from '../../interfaces/plant';
 import { DoseExtendedInterface } from '../../interfaces/dose';
 import { StrainInterface } from '../../interfaces/strain';
