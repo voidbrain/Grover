@@ -1,0 +1,36 @@
+import { StrainInterface } from "./strain";
+import { PotInterface } from "./pot";
+import { Calendar } from "./calendar";
+import { PhaseExtended } from "./phase";
+
+export interface Plant {
+  alerts: string;
+  dayHarvest: number;
+  daySecondTrimming: number;
+  dayStartBloom: number;
+  dayStartGrow: number;
+  dayTrimming: number;
+  deleted: number;
+  enabled: number;
+  generation: number;
+  id: number;
+  idCompany: number;
+  idGrowingMedium: number;
+  idGrowingScenario: number;
+  idLocation: number;
+  idCalendar: number;
+  idStrain: number;
+  lastUpdate: number;
+  notes: string;
+  yeld: number;
+}
+
+export interface PlantExtended extends Plant {
+  strain: StrainInterface;
+  expanded: boolean;
+  location: PotInterface;
+  daysFromGrow?: number;
+  daysFromBloom?: number;
+  phase?: PhaseExtended;
+  calendar?: Calendar;
+}

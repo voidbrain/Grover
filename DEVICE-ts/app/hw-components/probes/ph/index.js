@@ -1,0 +1,159 @@
+import { writeFileSync } from "fs";
+import params from "./ph-config.json";
+
+import isPi from "detect-rpi";
+let sensor;
+let isMock = false;
+if (isPi()) {
+  const { default: i2c } = await import("i2c-bus");
+  sensor = i2c;
+} else {
+  const { default: i2cMock } = await import("../../../../mocks/i2c-bus.cjs");
+  sensor = i2cMock;
+  isMock = true;
+}
+console.log(sensor, "isMock:" + isMock);
+console.log(sensor, isMock)
+
+/* To Do
+ * temperature adjustment - calibration, and read of pH
+ * Event emitter?
+ * Stream interface?
+ */
+
+// Based on code - https://github.com/SparkysWidgets/MinipHBFW
+
+/*
+This is a simple example showing how to interface our mini I2C pH interface.
+The usage for this design is very simple, as it uses the MCP3221 I2C ADC. Although actual
+pH calculation is done offboard the analogue section is very well laid out giving great results
+at varying input voltages (see vRef for adjusting this from say 5v to 3.3v).
+MinipH can operate from 2.7 to 5.5V to accommodate varying levels of tstetjhis. Power VCC with 3.3v for a raspi!
+
+ADC samples at ~28.8KSPS @12bit (4096 steps) and has 8 I2C address of from A0 to A7 (Default A5)
+simply assemble the 2 BYTE registers from the standard I2C read for the raw reading.
+conversion to pH shown in code.
+
+Note: MinipH has an optional Vref(4.096V) that can be bypassed as well!
+
+Sparky's Widgets 2012
+http://www.sparkyswidgets.com/Projects/MiniPh.aspx
+
+ */
+
+/*
+var MiniPh.params = {
+pHCalHigh : 2048, //assume ideal probe and amp conditions 1/2 of 4096
+pHCalLow : 1286, //using ideal probe slope we end up this many 12bit units away on the 4 scale
+pHStep : 59.16, //ideal probe slope
+pHCalLowSolution : 4,
+pHCalHighSolution : 7,
+vRef : 4.096, //Our vRef into the ADC wont be exact , Since you can run VCC lower than Vref its best to measure and adjust here
+opampGain : 5.25, //what is our Op-Amps gain (stage 1)
+filter_n: 15.0
+}
+
+Actual values 5 jan 14
+"pHCalHigh": 2017,
+"pHCalLow": 1250,
+"pHStep": 51.08225108225108,
+"pHCalLowSolution": 4,
+"pHCalHighSolution": 6.86,
+
+ */
+
+class MiniPh {
+  constructor(device, address) {
+    this.device = device;
+    this.address = address;
+    this.wire = sensor.open(address, function (err, data) {
+      if (err) console.log("error", err);
+      if (data) console.log("error", data);
+    });
+    /*, {
+        device : device
+      });
+      */
+    this.calcpHSlope();
+  }
+  saveConfig() {
+    writeFileSync("./ph-config.json", JSON.stringify(params, null, 4));
+  }
+  // MCP3221 address A5 in Dec 77 A0 = 72 A7 = 79)
+  // A0 = x48, A1 = x49, A2 = x4A, A3 = x4B,
+  // A4 = x4C, A5 = x4D, A6 = x4E, A7 = x4F
+  //Lets read our raw reading while in pH7 calibration fluid and store it
+  //We will store in raw int formats as this math works the same on pH step calcs
+  calibratepHHigh(calnum) {
+    MiniPh.params.pHCalHigh = calnum;
+    this.calcpHSlope();
+  }
+  //Lets read our raw reading while in pH4 calibration fluid and store it
+  //We will store in raw int formats as this math works the same on pH step calcs
+  //Temperature compensation can be added by providing the temp offset per degree
+  //IIRC .009 per degree off 25c (temperature-25*.009 added pH@4calc)
+  calibratepHLow(calnum) {
+    MiniPh.params.pHCalLow = calnum;
+    this.calcpHSlope();
+  }
+  //This is really the heart of the calibration process, we want to capture the
+  //probes "age" and compare it to the Ideal Probe, the easiest way to capture two readings,
+  //at known point(4 and 7 for example) and calculate the slope.
+  //If your slope is drifting too much from Ideal(59.16) its time to clean or replace!
+  calcpHSlope() {
+    //RefVoltage * our deltaRawpH / 12bit steps *mV in V / OP-Amp gain /pH step difference 7-4
+    MiniPh.params.pHStep =
+      (((MiniPh.params.vRef *
+        (MiniPh.params.pHCalHigh - MiniPh.params.pHCalLow)) /
+        4096.0) *
+        1000) /
+      MiniPh.params.opampGain /
+      (MiniPh.params.pHCalHighSolution - MiniPh.params.pHCalLowSolution);
+  }
+  //Now that we know our probe "age" we can calculate the proper pH Its really a matter of applying the math
+  //We will find our millivolts based on ADV vref and reading, then we use the 7 calibration
+  //to find out how many steps that is away from 7, then apply our calibrated slope to calculate real pH
+  calcpH(raw) {
+    var millivolts = (raw / 4096.0) * MiniPh.params.vRef * 1000;
+    var delta =
+      (((MiniPh.params.vRef * MiniPh.params.pHCalHigh) / 4096.0) * 1000 -
+        millivolts) /
+      MiniPh.params.opampGain;
+    var pH = MiniPh.params.pHCalHighSolution - delta / MiniPh.params.pHStep;
+    pH = Math.round(pH * MiniPh.params.scale) / MiniPh.params.scale;
+    //pH = pH.toPrecision(MiniPh.params.scale.toString().length);
+    return pH;
+  }
+  // reset filter when changing solution
+  resetFilter() {
+    this.filter = undefined;
+  }
+  readPh(callback) {
+    this.wire.readWord(0x00, 2, function (err, res) {
+      console.log("[PH]:", "running");
+
+      console.log("[PH]:", res);
+      console.log("[PH]:", res[0]);
+
+      this.raw = res[0] * 256 + res[1];
+      if (this.filter === undefined) {
+        this.filter = this.raw;
+      } else {
+        this.last = this.filter;
+        this.filter = Math.round(
+          (this.filter * (MiniPh.params.filter_n - 1) + this.raw) /
+            MiniPh.params.filter_n,
+        );
+        var delta = Math.abs(this.raw - this.last);
+        if (delta > 600) {
+          // Massive jump so assume new calibration solution, reset filter
+          this.filter = this.raw;
+        }
+      }
+      this.ph = this.calcpH(this.filter);
+      callback(err, this);
+    });
+  }
+}
+
+export default MiniPh;

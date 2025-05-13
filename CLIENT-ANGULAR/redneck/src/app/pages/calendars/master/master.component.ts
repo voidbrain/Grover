@@ -32,7 +32,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { CalendarExtendedInterface, PhaseExtendedInterface } from '../../../interfaces/calendar';
+import { CalendarExtendedInterface, PhaseExtendedInterface, PhaseChunkInterface } from '../../../interfaces/calendar';
 import { DoseExtendedInterface } from '../../../interfaces/dose';
 
 @Component({
@@ -106,7 +106,7 @@ export class CalendarsMasterComponent {
         }
       }
       item.doses = item.phases;
-      const valuesArr: PhaseExtendedInterface[] = [];
+      const valuesArr: PhaseChunkInterface[] = [];
       if (item.doses && item.doses != null) {
         item.doses.forEach((dose: PhaseExtendedInterface) => {
           const phase = (doses as DoseExtendedInterface[]).find((el: DoseExtendedInterface) => el.id == dose.id);
@@ -116,57 +116,57 @@ export class CalendarsMasterComponent {
           });
           console.log(valuesArr);
         });
-        item.chartConfig = {
-          id: 'chart',
-          type: 'bar',
-          legend: false,
-          data: {
-            labels: ['Time'],
-            datasets: valuesArr,
-          },
-          // x: {
-          //     stacked: true,
-          //     show: false,
-          //     gridLines : {
-          //         display : false
-          //     }
-          // },
-          xAxes: [
-            {
-              id: 'xAxis1',
-              stacked: true,
-              gridLines: {
-                display: false,
-              },
-              display: false,
-            },
-          ],
-          // y: {
-          //     stacked: true,
-          //     show: false,
-          // },
-          yAxes: [
-            {
-              display: false,
-              stacked: true,
-              ticks: { beginAtZero: true },
-              gridLines: {
-                display: false,
-              },
-            },
-          ],
-          labelsFontSize: 9,
-          showValue: true,
-          showLineTitle: false,
-          // layout: {
-          //     padding: {
-          //         left: 0,
-          //         right: 0,
-          //         top: 20,
-          //         bottom: 0
-          //     }
-          // }
-        };
+        // item.chartConfig = {
+        //   id: 'chart',
+        //   type: 'bar',
+        //   legend: false,
+        //   data: {
+        //     labels: ['Time'],
+        //     datasets: valuesArr.map(el => el.data),
+        //   },
+        //   // x: {
+        //   //     stacked: true,
+        //   //     show: false,
+        //   //     gridLines : {
+        //   //         display : false
+        //   //     }
+        //   // },
+        //   xAxes: [
+        //     {
+        //       id: 'xAxis1',
+        //       stacked: true,
+        //       gridLines: {
+        //         display: false,
+        //       },
+        //       display: false,
+        //     },
+        //   ],
+        //   // y: {
+        //   //     stacked: true,
+        //   //     show: false,
+        //   // },
+        //   yAxes: [
+        //     {
+        //       display: false,
+        //       stacked: true,
+        //       ticks: { beginAtZero: true },
+        //       gridLines: {
+        //         display: false,
+        //       },
+        //     },
+        //   ],
+        //   labelsFontSize: 9,
+        //   showValue: true,
+        //   showLineTitle: false,
+        //   // layout: {
+        //   //     padding: {
+        //   //         left: 0,
+        //   //         right: 0,
+        //   //         top: 20,
+        //   //         bottom: 0
+        //   //     }
+        //   // }
+        // };
       }
     });
     this.items = items as CalendarExtendedInterface[];

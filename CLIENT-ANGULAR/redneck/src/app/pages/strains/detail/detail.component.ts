@@ -42,7 +42,7 @@ import {
 import { StrainInterface } from '../../../interfaces/strain';
 import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons';
-import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
+
 import { FormDefinitionRow } from '../../../interfaces/form-definition';
 
 @Component({
@@ -178,7 +178,7 @@ export class StrainsDetailComponent implements OnInit {
   async save(value: StrainInterface) {
     this.form.config
       .filter((el) => el.type === 'date')
-      .map((el: FieldConfig) => {
+      .map((el: FormDefinitionRow) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
     value.lineage = value.lineage.toString();

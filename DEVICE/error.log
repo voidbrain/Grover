@@ -2197,3 +2197,1226 @@ Wed Aug 14 2024 18:38:27 GMT+0200 – Unhandled Rejection at Promise: Promise {
     code: 'ERR_HTTP_HEADERS_SENT'
   }
 }
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 14:40:58 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> Error [ERR_HTTP_HEADERS_SENT]: Cannot write headers after they are sent to the client
+      at ServerResponse.writeHead (node:_http_server:342:11)
+      at WebServer.handleRequest (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/http-server.ts:33:17)
+      at Server.emit (node:events:520:28)
+      at parserOnIncoming (node:_http_server:1146:12)
+      at HTTPParser.parserOnHeadersComplete (node:_http_common:118:17) {
+    code: 'ERR_HTTP_HEADERS_SENT'
+  }
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> AxiosError: getaddrinfo ENOTFOUND www.voidbrain.net
+      at AxiosError.from (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/axios/lib/adapters/http.js:620:25)
+      at RedirectableRequest.emit (node:events:520:28)
+      at eventHandlers.<computed> (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/follow-redirects/index.js:38:24)
+      at ClientRequest.emit (node:events:520:28)
+      at emitErrorEvent (node:_http_client:103:11)
+      at TLSSocket.socketErrorListener (node:_http_client:506:5)
+      at TLSSocket.emit (node:events:520:28)
+      at emitErrorNT (node:internal/streams/destroy:170:8)
+      at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+      at Axios.request (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/axios/lib/core/Axios.js:45:41)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+    hostname: 'www.voidbrain.net',
+    syscall: 'getaddrinfo',
+    code: 'ENOTFOUND',
+    errno: -3008,
+    config: {
+      transitional: [Object],
+      adapter: [Array],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: [Object],
+      validateStatus: [Function: validateStatus],
+      headers: [Object [AxiosHeaders]],
+      method: 'post',
+      url: 'https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/endpoint?lastUpdate=null&action=LOG',
+      data: '{"item":{"eventEmitter":"schedule","action":"READ","value":25,"idProbe":1,"parentId":1,"parentName":"Bloom","type":"probe","address":"28-01191380b7f5","expectedTime":"2025-04-30T06:00:00.000Z","executedTime":"2025-04-30T06:14:53.811Z","operatingMode":2,"systemOperatingMode":1,"serialNumber":"10000000ce6b74fc"},"serialNumber":"10000000ce6b74fc"}'
+    },
+    request: Writable {
+      _events: [Object],
+      _writableState: [WritableState],
+      _maxListeners: undefined,
+      _options: [Object],
+      _ended: false,
+      _ending: true,
+      _redirectCount: 0,
+      _redirects: [],
+      _requestBodyLength: 346,
+      _requestBodyBuffers: [Array],
+      _eventsCount: 3,
+      _onNativeResponse: [Function (anonymous)],
+      _currentRequest: [ClientRequest],
+      _currentUrl: 'https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/endpoint?lastUpdate=null&action=LOG',
+      [Symbol(shapeMode)]: true,
+      [Symbol(kCapture)]: false
+    },
+    cause: Error: getaddrinfo ENOTFOUND www.voidbrain.net
+        at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+      errno: -3008,
+      code: 'ENOTFOUND',
+      syscall: 'getaddrinfo',
+      hostname: 'www.voidbrain.net'
+    }
+  }
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> AxiosError: getaddrinfo ENOTFOUND www.voidbrain.net
+      at AxiosError.from (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/axios/lib/core/AxiosError.js:92:14)
+      at RedirectableRequest.handleRequestError (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/axios/lib/adapters/http.js:620:25)
+      at RedirectableRequest.emit (node:events:520:28)
+      at eventHandlers.<computed> (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/follow-redirects/index.js:38:24)
+      at ClientRequest.emit (node:events:520:28)
+      at emitErrorEvent (node:_http_client:103:11)
+      at TLSSocket.socketErrorListener (node:_http_client:506:5)
+      at TLSSocket.emit (node:events:520:28)
+      at emitErrorNT (node:internal/streams/destroy:170:8)
+      at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+      at Axios.request (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/axios/lib/core/Axios.js:45:41)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+    hostname: 'www.voidbrain.net',
+    syscall: 'getaddrinfo',
+    code: 'ENOTFOUND',
+    errno: -3008,
+    config: {
+      transitional: [Object],
+      adapter: [Array],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: [Object],
+      validateStatus: [Function: validateStatus],
+      headers: [Object [AxiosHeaders]],
+      method: 'post',
+      url: 'https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/endpoint?lastUpdate=null&action=LOG',
+      data: '{"item":{"eventEmitter":"schedule","action":"READ","value":25,"idProbe":14,"parentId":6,"parentName":"Pot 6","type":"probe","address":"28-0119140ee870","expectedTime":"2025-04-30T06:00:00.000Z","executedTime":"2025-04-30T06:14:53.828Z","operatingMode":2,"systemOperatingMode":1,"serialNumber":"10000000ce6b74fc"},"serialNumber":"10000000ce6b74fc"}'
+    },
+    request: Writable {
+      _events: [Object],
+      _writableState: [WritableState],
+      _maxListeners: undefined,
+      _options: [Object],
+      _ended: false,
+      _ending: true,
+      _redirectCount: 0,
+      _redirects: [],
+      _requestBodyLength: 347,
+      _requestBodyBuffers: [Array],
+      _eventsCount: 3,
+      _onNativeResponse: [Function (anonymous)],
+      _currentRequest: [ClientRequest],
+      _currentUrl: 'https://www.voidbrain.net/temp/grover/ajax/moduli/api/worker/endpoint?lastUpdate=null&action=LOG',
+      [Symbol(shapeMode)]: true,
+      [Symbol(kCapture)]: false
+    },
+    cause: Error: getaddrinfo ENOTFOUND www.voidbrain.net
+        at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+      errno: -3008,
+      code: 'ENOTFOUND',
+      syscall: 'getaddrinfo',
+      hostname: 'www.voidbrain.net'
+    }
+  }
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at FanComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:55:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/fan-motor/fan-motor.ts:181:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at LightSwitchComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:56:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/light-switch/light-switch.ts:185:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: Cannot read properties of undefined (reading 'sn')
+      at WaterLoopComponent.ON (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:61:49)
+      at eval (eval at <anonymous> (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27), <anonymous>:1:6)
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/hw-components/actuators/water-loop/water-loop.ts:178:27)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}
+Tue Apr 29 2025 15:02:55 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (file:///Users/daniele.bordignon/Projects/Grover/DEVICE/app/utils/scheduler.ts:18:39)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:594:17)
+      at process.processTimers (node:internal/timers:529:7)
+}

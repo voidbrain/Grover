@@ -12,7 +12,7 @@ import sqlite3 from "sqlite3";
 import * as path from "path";
 import moment from "moment";
 
-import { ServerCommands } from "../../../app/services/settings/enums";
+import { ServerCommands } from "../../../app/services/settings/enums.ts";
 
 export interface Item {
   id?: number | string;

@@ -6,17 +6,18 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
+      "@utils/*": ["app/utils/*"], // Fixed path to be relative to baseUrl
       "ds18x20": ["./mocks/ds18x20.cjs"],
       "i2c-bus": ["./mocks/i2c-bus.cjs"],
       "*": ["node_modules/*"]
     }
   },
-  "include": ["src"],
+  "include": ["./"], // Includes all files in the project root and subdirectories
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",
-    "transpileOnly": true
+    "transpileOnly": false
   }
 }

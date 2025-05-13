@@ -22,7 +22,8 @@
     "pigpio": "^3.3.1",
     "pigpio-l298n": "^0.0.3",
     "query-string": "^9.1.0",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -40,12 +41,13 @@
     "mock-fs": "^5.2.0",
     "prettier": "3.3.3",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r esm index.ts",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "sudo node --loader ts-node/esm --experimental-specifier-resolution=node ./index.ts",
     "lint": "npx eslint --fix .",
     "format": "npx prettier . --write"

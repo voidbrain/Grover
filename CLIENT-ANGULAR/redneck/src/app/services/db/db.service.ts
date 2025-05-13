@@ -46,18 +46,18 @@ export class DbService {
     try {
       const resetDb = false; // DB also forged on resetDb
       const forceLoading = true;
-  
+
       // Initialize the database and services
       await this.initDb(resetDb);
       await this.initService(resetDb || forceLoading);
-  
+
       // Wait for network status subscription and handle network-based actions
       await new Promise<void>((resolve, reject) => {
         const subscription = this.api.networkService.status.subscribe(async (networkStatus) => {
           if (this.debug) {
             console.info('[DB]: Network status:', networkStatus ? 'Online' : 'Offline');
           }
-  
+
           try {
             await this.syncAndClean(networkStatus ? 'Online' : 'Offline');
             resolve();
@@ -73,7 +73,7 @@ export class DbService {
       throw error; // Rethrow to propagate the error up the call stack
     }
   }
-  
+
 
   async deleteDb(): Promise<boolean> {
     this.toastService.pushMessage('Database reset');
@@ -168,7 +168,7 @@ export class DbService {
       }
     }
   }
-  
+
 
   async initService(forceLoading = false): Promise<void> {
     const networkStatus = this.api.networkService.status.getValue();
@@ -199,7 +199,7 @@ export class DbService {
     );
     const loading = await this.loadingController.create({ message: 'Loading' });
     loading.present();
-    
+
     try {
       await promise;
 
@@ -222,7 +222,8 @@ export class DbService {
 
   async loadData(table: string, lastUpdate: number): Promise<Record<string, unknown>> {
     const lastUpdateString: string = ''+lastUpdate;
-    const params: HttpParams = { lastUpdateString };
+    let params = new HttpParams();
+    params = params.set('lastUpdateString', lastUpdateString);
     const res = await this.api.get(table, params);
     return { [table]: res };
   }
@@ -231,17 +232,17 @@ export class DbService {
     for (const data of dataValues) {
       const table = Object.keys(data)[0];
       const res = data[table];
-  
+
       if (this.debug) {
         console.info('[DB]: Db Sync records ready ', table, res, res.length);
       }
-  
+
       try {
         const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
         const store = tx.objectStore(table);
-  
+
         let lastUpdate: string | undefined;
-  
+
         for (const row of res.items) {
           if (row.id) {
             try {
@@ -250,7 +251,7 @@ export class DbService {
               } else {
                 await store.put(row);
               }
-  
+
               if (this.debug) {
                 console.info(`[DB]: Success syncing db table: "${table}", item:`, row.id);
               }
@@ -258,10 +259,10 @@ export class DbService {
               console.error(`[DB]: Error syncing db table: "${table}", item:`, row.id, e);
             }
           }
-  
+
           lastUpdate = !lastUpdate || row.lastUpdate !== lastUpdate ? row.lastUpdate : lastUpdate;
         }
-  
+
         await new Promise<void>((resolve, reject) => {
           tx.oncomplete = () => {
             if (lastUpdate) {
@@ -274,13 +275,13 @@ export class DbService {
           };
           tx.onerror = () => reject(tx.error);
         });
-  
+
       } catch (e) {
         console.log(`[DB]: Error syncing table "${table}":`, e);
       }
     }
   }
-  
+
 
   hi(): Promise<void> {
     return new Promise((resolve) => {
@@ -360,33 +361,36 @@ export class DbService {
 
   async putItem(
     objectStore: string,
-    item: 
-      PlantExtendedInterface | 
-      DoseExtendedInterface | 
-      StrainInterface | 
-      CompanyInterface | 
-      WorkerInterface | 
-      ProbeInterface | 
-      ProbeLogInterface | 
-      WorkerLogInterface | 
-      RoomSettingsInterface | 
-      ProbeTypeInterface | 
-      WorkerTypeInterface
+    item:
+      PlantExtendedInterface |
+      DoseInterface |
+      DoseExtendedInterface |
+      StrainInterface |
+      CompanyInterface |
+      WorkerInterface |
+      ProbeInterface |
+      ProbeLogInterface |
+      WorkerLogInterface |
+      RoomSettingsInterface |
+      ProbeTypeInterface |
+      WorkerTypeInterface |
+      PlantInterface |
+      ParamsInterface
   ): Promise<void> {
     try {
       if (!item.id) {
         delete item.id;
       }
-  
+
       const lastUpdate = +localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
       const params: ParamsInterface = { lastUpdate };
       const response = await this.api.post(objectStore, [item], params);
-  
+
       if (response && response["items"] && response["items"].length > 0) {
         const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
         const store = tx.objectStore(objectStore);
         const request = store.put(response["items"][0]);
-  
+
         return new Promise<void>((resolve, reject) => {
           request.onsuccess = () => resolve();
           request.onerror = (e) => {
@@ -402,14 +406,14 @@ export class DbService {
       return Promise.reject(error);
     }
   }
-  
+
 
   async deleteItem(objectStore: string, itemToDelete): Promise<void> {
     try {
       const item: IDBValidKey = await this.api.delete(objectStore, itemToDelete) as IDBValidKey;
       const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
       const store = tx.objectStore(objectStore);
-  
+
       if (item["synced"] !== 0) {
         await this.performStoreOperation(store, 'delete', item["id"], objectStore);
       } else {
@@ -418,7 +422,7 @@ export class DbService {
             `[DB]: Item not synced, marking as deleted: 1. Table: "${objectStore}", ID: ${item["id"]}`
           );
         }
-  
+
         item["deleted"] = 1;
         await this.performStoreOperation(store, 'put', item, objectStore);
       }
@@ -427,7 +431,7 @@ export class DbService {
       throw e; // Rethrow error to allow higher-level handling if needed.
     }
   }
-  
+
   private performStoreOperation(
     store: IDBObjectStore,
     operation: 'delete' | 'put',
@@ -436,7 +440,7 @@ export class DbService {
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const request = operation === 'delete' ? store.delete(data) : store.put(data);
-  
+
       request.onsuccess = () => {
         if (this.debug) {
           const action = operation === 'delete' ? 'deleted' : 'updated';
@@ -444,15 +448,15 @@ export class DbService {
         }
         resolve();
       };
-  
+
       request.onerror = (e) => {
         console.error(`[DB]: Error during ${operation}: ${e}`);
         reject(e);
       };
     });
   }
-  
-  
+
+
 
   ////////////////////////////////////////////////
   //                                            //
@@ -465,15 +469,15 @@ export class DbService {
       this.toastService.pushMessage('Database sync and cleaning');
       await this.syncStoredItems();
       await this.removeDeletedItem();
-      
+
       if (this.debug) {
         console.info('[DB]: Db cleaned');
       }
     }
-  
+
     // The method automatically resolves the promise when it completes
   }
-  
+
 
   syncStoredItems(): Promise<unknown> {
     const promise = new Promise<void>((resolve) => {
@@ -482,29 +486,35 @@ export class DbService {
       }
       this.tables.map(async (table) => {
         const items: (
-          PlantExtendedInterface | 
-          DoseExtendedInterface | 
-          StrainInterface | 
-          CompanyInterface | 
-          WorkerInterface | 
-          ProbeInterface | 
-          ProbeLogInterface | 
-          WorkerLogInterface | 
-          RoomSettingsInterface | 
-          ProbeTypeInterface | 
+          PlantExtendedInterface |
+          DoseExtendedInterface |
+          DoseInterface |
+          PlantInterface |
+          ParamsInterface |
+          StrainInterface |
+          CompanyInterface |
+          WorkerInterface |
+          ProbeInterface |
+          ProbeLogInterface |
+          WorkerLogInterface |
+          RoomSettingsInterface |
+          ProbeTypeInterface |
           WorkerTypeInterface
-        )[] = await this.getItemsToBeSynced(table) as 
+        )[] = await this.getItemsToBeSynced(table) as
         (
-          PlantExtendedInterface | 
-          DoseExtendedInterface | 
-          StrainInterface | 
-          CompanyInterface | 
-          WorkerInterface | 
-          ProbeInterface | 
-          ProbeLogInterface | 
-          WorkerLogInterface | 
-          RoomSettingsInterface | 
-          ProbeTypeInterface | 
+          PlantExtendedInterface |
+          DoseExtendedInterface |
+          DoseInterface |
+          PlantInterface |
+          ParamsInterface |
+          StrainInterface |
+          CompanyInterface |
+          WorkerInterface |
+          ProbeInterface |
+          ProbeLogInterface |
+          WorkerLogInterface |
+          RoomSettingsInterface |
+          ProbeTypeInterface |
           WorkerTypeInterface
         )[]
         if (items["length"]) {

@@ -1,5 +1,4 @@
-import "module-alias/register";
-import { AppSetup } from "./app/utils/app-setup";
+import { AppSetup } from "../app/utils/app-setup";
 
 class Main {
   // Your Main class as previously defined

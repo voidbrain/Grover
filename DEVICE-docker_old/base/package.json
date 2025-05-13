@@ -1,0 +1,22 @@
+{
+  "name": "grover-db-service",
+  "version": "1.0.0",
+  "description": "Database service for the Grover project",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node --import=tsx index.ts  --port 3001",
+    "build": "tsc",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "author": "Daniele Bordignon",
+  "license": "MIT",
+  "dependencies": {
+    "@voidbrain/grover-shared-code": "^1.0.1",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.2.2"
+  }
+}

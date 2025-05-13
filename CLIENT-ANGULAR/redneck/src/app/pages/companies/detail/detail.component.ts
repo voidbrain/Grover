@@ -41,7 +41,6 @@ import * as ionIcons from 'ionicons/icons';
 import { CompanyInterface } from '../../../interfaces/company';
 import { PotInterface } from '../../../interfaces/pot';
 import { DatePipe } from '@angular/common';
-import { FieldConfig } from '../../../components/shared/form/models/field-config.interface';
 import { FormDefinitionRow } from '../../../interfaces/form-definition';
 @Component({
   selector: 'app-companies-detail',
@@ -146,8 +145,8 @@ export class CompaniesDetailComponent implements OnInit {
 
   async save(value: CompanyInterface) {
     this.form.config
-      .filter((el: FieldConfig) => el.type === 'date')
-      .map((el: FieldConfig) => {
+      .filter((el: FormDefinitionRow) => el.type === 'date')
+      .map((el: FormDefinitionRow) => {
         value[el.name] = new Date(value[el.name]).getTime();
       });
 
