@@ -35,7 +35,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: CLIENT-ANGULAR/redneck
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build Angular app for GitHub Pages
         working-directory: CLIENT-ANGULAR/redneck
