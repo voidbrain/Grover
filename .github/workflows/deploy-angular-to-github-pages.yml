@@ -3,7 +3,7 @@ name: Deploy Angular to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'CLIENT-ANGULAR/redneck/**'
   workflow_dispatch:
