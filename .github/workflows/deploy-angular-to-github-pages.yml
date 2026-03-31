@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: CLIENT-ANGULAR/redneck
-        run: npm ci
+        run: npm install
 
       - name: Build Angular app for GitHub Pages
         working-directory: CLIENT-ANGULAR/redneck
