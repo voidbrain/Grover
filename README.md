@@ -381,3 +381,4 @@ Min/max levels for EC, pH, Temp and WaterLevel based on the phase.
 | Ripen             |   14            | 5   |  true      |  true      | 1.6   | 2.6   | 6.0   | 6.4   | 15           | 35           | 10                 | 90                 |
 
 ![Doses](./documentation/img/Doses Flux.png)
+# Trigger deployment
