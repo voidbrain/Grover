@@ -122,20 +122,12 @@ ErrorDocument 404 ./404
     Header append Vary Accept-Encoding
 </IfModule>
 <IfModule mod_rewrite.c>
-    #Options +FollowSymlinks
-	
-	RewriteEngine On
+    RewriteEngine On
     
-    #Escludo le seguenti cartelle
-    RewriteRule ^(style|fonts|img|plugins|files|template|font-awesome|moduli/filemanager|(.*).xml|js|(.*).js)($|/) - [L]
-
-    RewriteRule (.*) index.php?request=$1 [L,QSA]
-
-
-	
-    #RewriteRule ^([A-Za-z0-9-]+.php)?$ template/$1 [L,QSA]
-    
-
+    # API-only mode - all requests go to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?request=$1 [L,QSA]
 </IfModule>
 
 

@@ -79,7 +79,7 @@ export class PanelChartComponent implements OnChanges {
 
   setup() {
     const labels = new Set<string>();
-    
+
     // const processLogs = (logs: { executedTime: string; value?: number; action?: number }[], color: string, minValue?: number, maxValue?: number): Dataset => {
       const processLogs = (logs: TypeLog[], color: string, minValue?: number, maxValue?: number): Dataset => {
       const dataset: Dataset = { borderColor: color, data: [], hidden: false };
@@ -186,8 +186,8 @@ export class PanelChartComponent implements OnChanges {
               yMin: probeConfig?.probeEl?.minAcceptableValue,
               backgroundColor: 'rgba(255, 99, 132, 0.1)',
               borderColor: 'rgba(255, 99, 132, 0.1)',
-              xScaleID: 'x-axis-0',
-              yScaleID: 'y-axis-0',
+              xScaleID: 'x',
+              yScaleID: 'y',
             } as BoxAnnotationOptions,
             {
               type: 'box',
@@ -197,8 +197,8 @@ export class PanelChartComponent implements OnChanges {
               yMin: this.plant?.phase?.minTemp,
               backgroundColor: 'rgba(47,223,117,0.1)',
               borderColor: 'rgba(255, 99, 132, 0.1)',
-              xScaleID: 'x-axis-0',
-              yScaleID: 'y-axis-0',
+              xScaleID: 'x',
+              yScaleID: 'y',
             } as BoxAnnotationOptions,
             {
               type: 'box',
@@ -208,16 +208,16 @@ export class PanelChartComponent implements OnChanges {
               yMax: probeConfig?.probeEl?.maxAcceptableValue,
               backgroundColor: 'rgba(255, 99, 132, 0.1)',
               borderColor: 'rgba(15, 99, 132, 0.1)',
-              xScaleID: 'x-axis-0',
-              yScaleID: 'y-axis-0',
+              xScaleID: 'x',
+              yScaleID: 'y',
             } as BoxAnnotationOptions,
             ...annotationsArray.map(data => ({
               type: 'box',
               borderColor: data.borderColor,
               backgroundColor: data.borderColor,
               borderWidth: 2,
-              xScaleID: 'x-axis-0',
-              yScaleID: 'y-axis-0',
+              xScaleID: 'x',
+              yScaleID: 'y',
               xMin: data.t,
               xMax: data.t,
               yMin: 20,
@@ -295,30 +295,36 @@ export class PanelChartComponent implements OnChanges {
         const date = new Date(label);
         return date.getTime() >= from.getTime() && date.getTime() <= to.getTime();
       });
-      const zonedDateFrom = toZonedTime(fromDate, 'UTC');
-      const zonedDateTo = toZonedTime(toDate, 'UTC');
-      const formattedDateFrom = format(zonedDateFrom, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      const formattedDateTo = format(zonedDateTo, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      filteredData.labels?.unshift(formattedDateFrom);
-      filteredData.labels?.push(formattedDateTo);
+      if(fromDate !== null && toDate !== null) {
+        const zonedDateFrom = toZonedTime(fromDate, 'UTC');
+        const zonedDateTo = toZonedTime(toDate, 'UTC');
+        console.log(zonedDateFrom, fromDate);
+        console.log(zonedDateTo, toDate);
+        const formattedDateFrom = format(zonedDateFrom, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        const formattedDateTo = format(zonedDateTo, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        filteredData.labels?.unshift(formattedDateFrom);
+        filteredData.labels?.push(formattedDateTo);
+      }
       this.drawChart(filteredData);
     }
   }
 
   filterData(period: string) {
     const now = setMinutes(new Date(), 0);
+    console.log(period, now.toISOString());
+
     switch (period) {
       case 'day':
-        this.filterDates(startOfDay(new Date()).toString(), now.toString());
+        this.filterDates(startOfDay(new Date()).toISOString(), now.toISOString());
         break;
       case 'week':
-        this.filterDates(startOfWeek(new Date()).toString(), now.toString());
+        this.filterDates(startOfWeek(new Date()).toISOString(), now.toISOString());
         break;
       case 'month':
-        this.filterDates(startOfMonth(new Date()).toString(), now.toString());
+        this.filterDates(startOfMonth(new Date()).toISOString(), now.toISOString());
         break;
       case 'beginning':
-        this.filterDates(this.plant?.dayStartGrow ?? now.toString(), now.toString());
+        this.filterDates(this.plant?.dayStartGrow ?? now.toISOString(), now.toISOString());
         break;
     }
   }

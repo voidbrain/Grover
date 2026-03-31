@@ -4,7 +4,7 @@ $db['default']['hostname'] = MYSQL_HOST;
 $db['default']['username'] = MYSQL_USER;
 $db['default']['password'] = MYSQL_PASS;
 $db['default']['database'] = MYSQL_DB;
-$db['default']['dbdriver'] = 'mysql';
+$db['default']['dbdriver'] = 'mysqli';
 
 
 /* DOCUMENTOPIA.COM
@@ -32,11 +32,17 @@ define('DB_LOAD_FORGE', TRUE);
 
 // This should be the base path to the database folder
 if ( ! defined('BASEPATH')) {
-	define(BASEPATH, pathinfo(__FILE__, PATHINFO_DIRNAME).'/');
+	define('BASEPATH', pathinfo(__FILE__, PATHINFO_DIRNAME).'/');
 	}
 
 function get_instance() {
     global $db;
+    static $item = NULL;
+    
+    if ($item === NULL) {
+        $item = new stdClass();
+    }
+    
     if (isset($db)) {
         $item->db = $db;
         return ($item);

@@ -1,7 +1,7 @@
 <?php
 
 // Questa variavile definisce lo stato 
-define('ENVIRONMENT', 'testing');
+define('ENVIRONMENT', 'development');
 
 switch (ENVIRONMENT)
 {
@@ -72,62 +72,17 @@ if(isset($config['routing'][$_GET['request']])){
 if ( ! $skip_routing) {
 
 	switch ($requestURI[0]) {
-		case 'admin': // ADMIN
-
-			include PHPPATH . 'admin/index.php';
-			break;
-
-		case 'ajax': // CHIAMATE AJAX
-
-			$requestPAG = "";
-
-			for ($i=1; $i < count($requestURI); $i++) { 
-				$requestPAG .= $requestURI[$i] . '/';
-			}
-
-			if(file_exists(PHPPATH . substr($requestPAG, 0, -1) . '.php')){
-
-				include PHPPATH . substr($requestPAG, 0, -1) . '.php';
-
-			}else{
-				#header('location: ' . PATH . '404');	
-			}
+		case 'client': // API CLIENT ENDPOINTS
+		case 'ajax': // API AJAX ENDPOINTS
+			// Route all /client/* and /ajax/* requests to the API handler
+			include PHPPATH . 'api/index.php';
 			break;
 
 		default: 
-			//verifico se il sistema sta girando in multilingua
-			$requestPAG = $requestURI[0+$offsetURI];
-
-
-			//rieffetuo lo switch del reale parametro (lo switch è per parametri speciali che ora non mi vengono in mente... )
-			switch ($requestPAG) {
-				case 'p':
-					include PHPPATH . 'template/pages.php';
-					break;
-				default:
-
-					if(file_exists(PHPPATH . 'template/' . $requestPAG . '.php')){
-
-						include PHPPATH . 'template/' . $requestPAG . '.php';
-
-					}else if (isset($requestPAG) && $requestPAG !=""){
-
-						header('location: ' . PATHHREF . '404');
-
-					}else if ( ! in_array($requestURI[0], $config ['lng_list']) && $config['multilingua'] && $requestURI[0] != 404 &&  $requestURI[0] != ""){
-
-						header('location: ' . PATH . $config['default_lng'] . '/404');
-
-					}else{
-						if($config['undercostruction']){
-							header('location: ' . PATHHREF . 'under-construction');
-						}else{
-							include PHPPATH . 'template/index.php';
-						}
-
-					}
-				break;
-			}
+			// For API-only mode, return 404 for non-API routes
+			http_response_code(404);
+			header('Content-Type: application/json');
+			echo json_encode(['error' => 'Not found', 'path' => $request]);
 			break;
 	}
 }

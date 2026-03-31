@@ -23,7 +23,7 @@ import { RoomSettingsInterface } from '../../interfaces/settings';
 export class ApiService {
   private url = '';
   public debug = true;
-  public loadingFlag = true;
+  public loadingFlag = false;
 
   constructor(
     private appSettings: SettingsService,
@@ -62,16 +62,16 @@ export class ApiService {
   async post(
     table: string,
     items: (
-      PlantExtendedInterface | 
-      DoseExtendedInterface | 
-      StrainInterface | 
-      CompanyInterface | 
-      WorkerInterface | 
-      ProbeInterface | 
-      ProbeLogInterface | 
-      WorkerLogInterface | 
-      RoomSettingsInterface | 
-      ProbeTypeInterface | 
+      PlantExtendedInterface |
+      DoseExtendedInterface |
+      StrainInterface |
+      CompanyInterface |
+      WorkerInterface |
+      ProbeInterface |
+      ProbeLogInterface |
+      WorkerLogInterface |
+      RoomSettingsInterface |
+      ProbeTypeInterface |
       WorkerTypeInterface
     )[],
     params?: ParamsInterface

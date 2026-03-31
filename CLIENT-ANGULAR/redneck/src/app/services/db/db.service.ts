@@ -228,41 +228,49 @@ export class DbService {
     return { [table]: res };
   }
 
-  async syncData(dataValues: unknown[]): Promise<void> {
+  async syncData(dataValues: Record<string, unknown>[]): Promise<void> {
     for (const data of dataValues) {
       const table = Object.keys(data)[0];
-      const res = data[table];
+      const res = data[table] as { items: Record<string, unknown>[]; length?: number };
 
       if (this.debug) {
-        console.info('[DB]: Db Sync records ready ', table, res, res.length);
+        console.info('[DB]: Db Sync records ready ', table, res, res?.items?.length);
       }
 
       try {
-        const tx = (this.db as IDBDatabase).transaction(table, 'readwrite');
+        // Ensure database is open before creating transaction
+        if (!this.db) {
+          console.error('[DB]: Database is not open');
+          continue;
+        }
+
+        const tx = this.db.transaction(table, 'readwrite');
         const store = tx.objectStore(table);
 
         let lastUpdate: string | undefined;
 
-        for (const row of res.items) {
-          if (row.id) {
+        // Process all items in the transaction
+        for (const row of res?.items ?? []) {
+          if (row['id']) {
             try {
-              if (row.deleted) {
-                await store.delete(row.id);
+              if (row['deleted']) {
+                store.delete(row['id'] as IDBValidKey);
               } else {
-                await store.put(row);
+                store.put(row);
               }
 
               if (this.debug) {
-                console.info(`[DB]: Success syncing db table: "${table}", item:`, row.id);
+                console.info(`[DB]: Syncing db table: "${table}", item:`, row['id']);
               }
             } catch (e) {
-              console.error(`[DB]: Error syncing db table: "${table}", item:`, row.id, e);
+              console.error(`[DB]: Error syncing db table: "${table}", item:`, row['id'], e);
             }
           }
 
-          lastUpdate = !lastUpdate || row.lastUpdate !== lastUpdate ? row.lastUpdate : lastUpdate;
+          lastUpdate = !lastUpdate || row['lastUpdate'] !== lastUpdate ? String(row['lastUpdate']) : lastUpdate;
         }
 
+        // Wait for transaction to complete
         await new Promise<void>((resolve, reject) => {
           tx.oncomplete = () => {
             if (lastUpdate) {
@@ -271,14 +279,28 @@ export class DbService {
                 lastUpdate,
               );
             }
+            if (this.debug) {
+              console.info(`[DB]: Table "${table}" sync completed`);
+            }
             resolve();
           };
-          tx.onerror = () => reject(tx.error);
+          tx.onerror = () => {
+            console.error(`[DB]: Transaction error for table "${table}":`, tx.error);
+            reject(tx.error);
+          };
+          tx.onabort = () => {
+            console.error(`[DB]: Transaction aborted for table "${table}":`, tx.error);
+            reject(tx.error);
+          };
         });
 
       } catch (e) {
-        console.log(`[DB]: Error syncing table "${table}":`, e);
+        console.error(`[DB]: Error syncing table "${table}":`, e);
       }
+    }
+
+    if (this.debug) {
+      console.info('[DB]: All tables synced');
     }
   }
 
@@ -378,13 +400,10 @@ export class DbService {
       ParamsInterface
   ): Promise<void> {
     try {
-      if (!item.id) {
-        delete item.id;
-      }
 
       const lastUpdate = +localStorage.getItem(`${this.appSettings.appName}_${objectStore}`);
       const params: ParamsInterface = { lastUpdate };
-      const response = await this.api.post(objectStore, [item], params);
+      const response = await this.api.post(objectStore, [item as unknown as PlantExtendedInterface], params);
 
       if (response && response["items"] && response["items"].length > 0) {
         const tx = (this.db as IDBDatabase).transaction(objectStore, 'readwrite');
@@ -485,7 +504,7 @@ export class DbService {
         console.info('[DB]: Sync stored items with remote');
       }
       this.tables.map(async (table) => {
-        const items: (
+        const items = (await this.getItemsToBeSynced(table)) as unknown as (
           PlantExtendedInterface |
           DoseExtendedInterface |
           DoseInterface |
@@ -500,24 +519,8 @@ export class DbService {
           RoomSettingsInterface |
           ProbeTypeInterface |
           WorkerTypeInterface
-        )[] = await this.getItemsToBeSynced(table) as
-        (
-          PlantExtendedInterface |
-          DoseExtendedInterface |
-          DoseInterface |
-          PlantInterface |
-          ParamsInterface |
-          StrainInterface |
-          CompanyInterface |
-          WorkerInterface |
-          ProbeInterface |
-          ProbeLogInterface |
-          WorkerLogInterface |
-          RoomSettingsInterface |
-          ProbeTypeInterface |
-          WorkerTypeInterface
-        )[]
-        if (items["length"]) {
+        )[];
+        if (items.length) {
           if (this.debug) {
             console.info(
               '[DB]: Items to sync. Table:"' + table + '" items:',
@@ -542,7 +545,7 @@ export class DbService {
       const store = tx.objectStore(objectStore);
       const dataIndex: IDBIndex = store.index('synced');
 
-      const promise = new Promise<unknown>((resolve) => {
+      const promise = new Promise<unknown[]>((resolve) => {
         const request = dataIndex.getAll(0);
         request.onsuccess = (e) => {
           const request = e.target as IDBRequest;
@@ -555,7 +558,7 @@ export class DbService {
       return promise;
     } catch (e) {
       console.log(objectStore, e);
-      return new Promise((resolve) => resolve(false));
+      return new Promise((resolve) => resolve([false]));
     }
   }
 
@@ -566,7 +569,7 @@ export class DbService {
       }
       this.tables.map(async (table) => {
         const items = await this.getItemsToBeRemoved(table);
-        if (items["length"]) {
+        if (items.length) {
           if (this.debug) {
             console.info(
               '[DB]: items to remove. Table:"' + table + '" items:',
@@ -585,11 +588,11 @@ export class DbService {
     return promise;
   }
 
-  getItemsToBeRemoved(objectStore: string): Promise<unknown> {
+  getItemsToBeRemoved(objectStore: string): Promise<unknown[]> {
     const tx = (this.db as IDBDatabase).transaction(objectStore, 'readonly');
     const store = tx.objectStore(objectStore);
     const dataIndex = store.index('deleted');
-    const promise = new Promise<unknown>((resolve) => {
+    const promise = new Promise<unknown[]>((resolve) => {
       dataIndex.getAll(1).onsuccess = (e) => {
         const request = e.target as IDBRequest;
         resolve(request.result);

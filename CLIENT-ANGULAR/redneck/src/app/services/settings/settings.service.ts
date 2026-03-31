@@ -6,8 +6,8 @@ import { Injectable } from '@angular/core';
 export class SettingsService {
   private locales = ['en', 'it'];
   public appName = 'Grover/RedNeck';
-  public serverAddress =
-    'https://www.voidbrain.net/temp/grover/ajax/moduli/api';
+  // public serverAddress = 'https://www.voidbrain.net/temp/grover/ajax/moduli/api';
+  public serverAddress = 'http://localhost:6400';
   public purposes: string[] = ['client', 'worker'];
   public purpose = 0;
   public datatables = [

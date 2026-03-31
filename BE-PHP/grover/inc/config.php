@@ -49,14 +49,7 @@ $config['analytics'] = '';
 
 //======== MODULI ==
 $config['module_base_path'] = 'moduli/'; //Directory dei moduli
-$config['modules'] = array( //Elenco moduli da caricare
-	'form-address',
-	'pages',
-	'newsletter',
-	'user',
-	'news',
-	'ricerca',
-);
+$config['modules'] = array(); //Moduli disabilitati per API-only
 
 //====================================  ======= = ======  === ==  =
 //======== VARIABILI CHE CAMBIANO IN BASE ALLA FASE DI SVILUPPO ==
@@ -98,10 +91,10 @@ date_default_timezone_set('Europe/Rome');
 // MySQL settings
 switch (ENVIRONMENT){
 	case 'development':
-		/* OFFLINE */
-		define('MYSQL_HOST','localhost');
-		define('MYSQL_USER','root');
-		define('MYSQL_PASS','root');
+		/* OFFLINE - Docker environment */
+		define('MYSQL_HOST','mysql');
+		define('MYSQL_USER','grover_user');
+		define('MYSQL_PASS','grover_pass');
 		define('MYSQL_DB','grover');
 	break;
 

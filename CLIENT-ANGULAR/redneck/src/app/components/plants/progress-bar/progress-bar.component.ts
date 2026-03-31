@@ -42,10 +42,10 @@ export class ProgressBarComponent implements OnChanges {
       let totFromGrow = 0;
       let totFromBloom = 0;
       let totFromFlush = 0;
-      this.plant.calendar?.phases.map((phase) => {
+      this.plant.calendar?.phases?.map((phase) => {
         this.tot += phase.duration;
       });
-      this.plant.calendar?.phases.map((phase, index) => {
+      this.plant.calendar?.phases?.map((phase, index) => {
         phase.startingDay = phase.isFlushing
           ? totFromFlush
           : phase.isBlooming

@@ -182,7 +182,7 @@ export class PlantsMasterComponent implements OnInit {
     private library: FaIconLibrary,
   ) {
 
-    
+
 
     library.addIconPacks(fas);
     addIcons(ionIcons);
@@ -261,7 +261,7 @@ export class PlantsMasterComponent implements OnInit {
 
         plant.probes.map((probe) => {
           probe.type = this.probeType.find((el) => +el.key === +probe.probeType) as ConstructorProbeTypeInterface;
-          
+
           probe.log = probesLog.filter((el) => el.idProbe === probe.id);
           probe.schedule = probesSchedule.filter(
             (el) => el.idProbe === probe.id,
@@ -284,8 +284,8 @@ export class PlantsMasterComponent implements OnInit {
             ? DevicesStatus.ON
             : DevicesStatus.OFF;
         }
-
-        plant.calendar?.phases.forEach((phase) => {
+        console.log(plant)
+        plant.calendar?.phases?.forEach((phase) => {
           phase.dose = doses.find((el) => el.id === phase?.idDose);
         });
         const epochDiffGrow: number =
@@ -312,7 +312,7 @@ export class PlantsMasterComponent implements OnInit {
         let flagSeedling = false;
         let flagBlooming = false;
         let flagFlushing = false;
-        plant.calendar?.phases.forEach((plantPhase: PhaseExtendedInterface) => {
+        plant.calendar?.phases?.forEach((plantPhase: PhaseExtendedInterface) => {
           const countingDays = plantPhase?.isFlushing
             ? plant.daysFromFlush
             : plantPhase?.isBlooming
@@ -419,10 +419,10 @@ export class PlantsMasterComponent implements OnInit {
         (worker) => worker.workerType === WorkersTypes.Room_PhDown_refill,
       );
       // plant.workersComponents = { waterLoop: waterLoop as unknown as WaterLoopInterface } ;
-      room.workersComponents = { 
-        light: light as unknown as LightSwitchInterface, 
-        fan: fan as unknown as FanMotorInterface, 
-        nutrientRefill: nutrientRefill as unknown as WaterRefillInterface, 
+      room.workersComponents = {
+        light: light as unknown as LightSwitchInterface,
+        fan: fan as unknown as FanMotorInterface,
+        nutrientRefill: nutrientRefill as unknown as WaterRefillInterface,
         phDown: phDown as unknown as WaterRefillInterface };
       if (light) {
         room.workersComponents.light.status = DevicesStatus.ON;
@@ -652,7 +652,7 @@ export class PlantsMasterComponent implements OnInit {
         const header = `Success`;
         const message = `Action executed`;
         const color = 'success';
-  
+
         this.presentToast(header, message, color, 3000);
         resolve(run);
       })
@@ -661,12 +661,12 @@ export class PlantsMasterComponent implements OnInit {
         const header = `Error`;
         const message = `Error occurred: ${err.message}`;
         const color = 'danger';
-  
+
         this.presentToast(header, message, color, 3000);
         reject(err);
       });
     });
   }
-  
-  
+
+
 }

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: grover-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: grover
+      MYSQL_USER: grover_user
+      MYSQL_PASSWORD: grover_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../Documentation/MYSQL-DB:/docker-entrypoint-initdb.d
+    networks:
+      - grover-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # PHP Backend Service
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: grover-php
+    ports:
+      - "6400:80"
+    volumes:
+      - ./grover:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - grover-network
+    environment:
+      ENVIRONMENT: development
+
+networks:
+  grover-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
