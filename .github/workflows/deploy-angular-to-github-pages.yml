@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'CLIENT-ANGULAR/redneck/**'
+      - '.github/workflows/deploy-angular-to-github-pages.yml'
   workflow_dispatch:
 
 permissions:
