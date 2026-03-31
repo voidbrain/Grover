@@ -3614,3 +3614,12 @@ Mon Mar 30 2026 15:51:49 GMT+0200 – Unhandled Rejection at Promise: Promise {
       at listOnTimeout (node:internal/timers:608:17)
       at process.processTimers (node:internal/timers:543:7)
 }
+Mon Mar 30 2026 15:51:49 GMT+0200 – Unhandled Rejection at Promise: Promise {
+  <rejected> TypeError: this[job.action] is not a function
+      at Job.job (/Users/daniele.bordignon/Projects/Grover/DEVICE-ai/app/utils/scheduler.ts:26:30)
+      at Job.invoke (/Users/daniele.bordignon/Projects/Grover/DEVICE-ai/node_modules/node-schedule/lib/Job.js:171:15)
+      at /Users/daniele.bordignon/Projects/Grover/DEVICE-ai/node_modules/node-schedule/lib/Invocation.js:268:28
+      at Timeout._onTimeout (/Users/daniele.bordignon/Projects/Grover/DEVICE-ai/node_modules/node-schedule/lib/Invocation.js:228:7)
+      at listOnTimeout (node:internal/timers:608:17)
+      at process.processTimers (node:internal/timers:543:7)
+}
