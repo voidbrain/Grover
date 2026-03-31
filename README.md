@@ -46,6 +46,7 @@ npm build
 ## RPI Hardware setup
 
 ### ONE-WIRE (DS18B20)
+
 ENABLE THE ONE-WIRE INTERFACE
 We’ll need to enable the One-Wire interface before the Pi can receive data from the sensor. Once you’ve connected the DS18B20, power up your Pi and log in, then follow these steps to enable the One-Wire interface:
 
