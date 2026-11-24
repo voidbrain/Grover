@@ -33,7 +33,7 @@ type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calenda
  * so only devices on your tailnet reach it.
  */
 export async function createHttp(hub: Hub): Promise<FastifyInstance> {
-  const { store, agents, commands, feeder, alerts, bus, config, plants } = hub;
+  const { store, agents, commands, feeder, alerts, bus, config, plants, lights } = hub;
   const app = Fastify({ logger: false });
   await app.register(fastifyWebsocket);
 
@@ -103,7 +103,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     agents: agents.views().map((a) => ({ id: a.agentId, online: a.online })),
   }));
   app.get('/api/snapshot', async () => ({
-    rooms: store.listRooms().map((room) => ({ ...room, phase: feeder.phase(room) })),
+    rooms: store.listRooms().map((room) => ({ ...room, phase: feeder.phase(room), light: lights.plan(room) })),
     pots: store.listPots(),
     potPhases: Object.fromEntries(store.listPots().map((p) => [p.id, feeder.potPhase(p)])),
     probes: store.listProbes(),
@@ -150,15 +150,26 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   );
   app.post<{ Params: { id: string } }>('/api/rooms/:id/stop', async (req) => commands.stopAll(req.params.id, 'manual'));
   // ── plant cycle (record changes, no hardware) ───────────────────────────
+  // Plant changes can move a phase, and so the light: re-send configs after each.
+  const thenPublish = <T>(value: T): T => {
+    agents.publishAllConfigs();
+    return value;
+  };
   app.post<{ Params: { id: string } }>('/api/plants/:id/cuttings', async (req) =>
-    plants.takeCuttings(req.params.id, CuttingsRequest.parse(req.body).count),
+    thenPublish(plants.takeCuttings(req.params.id, CuttingsRequest.parse(req.body).count)),
+  );
+  app.post<{ Params: { id: string } }>('/api/plants/:id/bloom', async (req) =>
+    thenPublish(plants.markBloom(req.params.id)),
+  );
+  app.post<{ Params: { id: string } }>('/api/plants/:id/flush', async (req) =>
+    thenPublish(plants.markFlush(req.params.id)),
   );
   app.post<{ Params: { id: string } }>('/api/plants/:id/harvest', async (req) => {
     const body = HarvestRequest.parse(req.body);
-    return plants.harvest(req.params.id, body.date, body.yieldGrams);
+    return thenPublish(plants.harvest(req.params.id, body.date, body.yieldGrams));
   });
   app.post<{ Params: { id: string } }>('/api/pots/:id/place', async (req) =>
-    plants.place(req.params.id, PlaceRequest.parse(req.body).plantId),
+    thenPublish(plants.place(req.params.id, PlaceRequest.parse(req.body).plantId)),
   );
   app.post<{ Params: { id: string } }>('/api/pots/:id/feed', async (req) => feeder.feed(req.params.id, 'manual'));
   app.put<{ Params: { id: string } }>('/api/rooms/:id/mode', async (req) => {

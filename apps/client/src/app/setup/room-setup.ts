@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
-import { FormField, form, max, min, required, submit } from '@angular/forms/signals';
+import { FormField, form, max, min, pattern, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { Room } from '@grover/contracts';
 import { isPump } from '@grover/contracts/kinds';
@@ -73,6 +73,11 @@ export class RoomSetup {
     return this.agents().filter((a) => !used.has(a.agentId));
   });
 
+  /** Plants growing in this tent's pots (the ones the light can follow). */
+  protected readonly tentPlants = computed(() => {
+    const pots = new Set(this.pots().map((p) => p.id));
+    return (this.snapshot()?.plants ?? []).filter((p) => p.potId && pots.has(p.potId) && p.harvestedOn === null);
+  });
   protected readonly pots = computed(() => (this.snapshot()?.pots ?? []).filter((p) => p.roomId === this.id()));
   protected readonly probes = computed(() => (this.snapshot()?.probes ?? []).filter((p) => p.roomId === this.id()));
   protected readonly actuators = computed(() =>
@@ -119,6 +124,7 @@ export class RoomSetup {
     min(p.mixSettleSeconds, 0, { message: 'Not negative' });
     max(p.mixSettleSeconds, 3600, { message: 'At most an hour' });
     min(p.feedCooldownMinutes, 1, { message: 'At least a minute' });
+    pattern(p.lightStart, /^([01]\d|2[0-3]):[0-5]\d$/, { message: 'HH:MM' });
     min(p.waterEc, 0, { message: '0 to 5' });
     max(p.waterEc, 5, { message: '0 to 5' });
     min(p.waterPh, 0, { message: '0 to 14' });

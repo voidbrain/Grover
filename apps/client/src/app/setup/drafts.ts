@@ -46,6 +46,10 @@ export interface RoomDraft {
   feedCooldownMinutes: number;
   waterEc: number;
   waterPh: number;
+  lightFrom: 'schedule' | 'calendar';
+  lightStart: string;
+  /** '' = the most advanced plant */
+  lightPlantId: string;
 }
 
 export const roomDraft = (r?: Room): RoomDraft => ({
@@ -61,6 +65,9 @@ export const roomDraft = (r?: Room): RoomDraft => ({
   feedCooldownMinutes: r?.feedCooldownMinutes ?? 60,
   waterEc: r?.waterEc ?? 0.3,
   waterPh: r?.waterPh ?? 7,
+  lightFrom: r?.lightFrom ?? 'schedule',
+  lightStart: r?.lightStart ?? '06:00',
+  lightPlantId: r?.lightPlantId ?? '',
 });
 
 export const toRoom = (d: RoomDraft): Room => ({
@@ -76,6 +83,9 @@ export const toRoom = (d: RoomDraft): Room => ({
   feedCooldownMinutes: d.feedCooldownMinutes,
   waterEc: d.waterEc,
   waterPh: d.waterPh,
+  lightFrom: d.lightFrom,
+  lightStart: d.lightStart,
+  lightPlantId: orNull(d.lightPlantId),
 });
 
 // ── pot ────────────────────────────────────────────────────────────────────
@@ -262,7 +272,7 @@ export interface ScheduleDraft {
 }
 
 export function scheduleDraft(s?: Schedule): ScheduleDraft {
-  const r = s?.rule;
+  const r = s?.rule?.kind === 'dark' ? undefined : s?.rule;
   return {
     id: s?.id ?? '',
     enabled: s?.enabled ?? true,
@@ -302,6 +312,8 @@ export function describeRule(rule: Schedule['rule']): string {
   switch (rule.kind) {
     case 'window':
       return `on ${rule.from}–${rule.to}`;
+    case 'dark':
+      return 'off all day';
     case 'at':
       return `at ${rule.times.join(', ')}${rule.durationMs ? ` for ${rule.durationMs / 1000} s` : ''}`;
     case 'every':

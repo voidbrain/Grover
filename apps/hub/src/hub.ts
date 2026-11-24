@@ -7,6 +7,7 @@ import { openDb } from './db.ts';
 import { Bus } from './events.ts';
 import { Alerts } from './alerts.ts';
 import { Feeder } from './feeder.ts';
+import { Lights } from './lights.ts';
 import { PlantCycle } from './plant-cycle.ts';
 import { createHttp } from './http.ts';
 import { Store } from './store.ts';
@@ -20,6 +21,7 @@ export interface Hub {
   alerts: Alerts;
   feeder: Feeder;
   plants: PlantCycle;
+  lights: Lights;
 }
 
 export interface RunningHub extends Hub {
@@ -42,13 +44,19 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
     timezone: config.timezone,
   });
   const plants = new PlantCycle(store, config.timezone);
-  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder, plants };
+  const lights = new Lights(store, feeder);
+  agents.setConfigAdjuster((c) => lights.apply(c));
+  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder, plants, lights };
 
   const mqttPort = await agents.listen(config.mqttHost, config.mqttPort);
   const http = await createHttp(hub);
   await http.listen({ host: config.httpHost, port: config.httpPort });
   const address = http.server.address();
   const httpPort = typeof address === 'object' && address ? address.port : config.httpPort;
+  // Phases move with the days: re-send configs now and then, so a light following the calendar changes on its
+  // own. Agents ignore a config whose content is unchanged.
+  const refresh = setInterval(() => agents.publishAllConfigs(), 10 * 60_000);
+  refresh.unref();
 
   return {
     ...hub,
@@ -56,6 +64,7 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
     httpPort,
     mqttPort,
     async close() {
+      clearInterval(refresh);
       feeder.stop();
       alerts.stop();
       await http.close();

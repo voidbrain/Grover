@@ -37,7 +37,18 @@ export type FeedPreview =
   | { ok: false; reason: string; ec: number | null; ph: number | null };
 
 export interface Snapshot {
-  rooms: (Room & { phase: { phase: Phase; day: number } | null })[];
+  rooms: (Room & {
+    phase: { phase: Phase; day: number } | null;
+    /** The light when it follows the grow calendar (null: the tent's own schedules). */
+    light: {
+      hours: number;
+      phaseName: string;
+      plantId: string | null;
+      potId: string | null;
+      picked: boolean;
+      rule: { kind: string; from?: string; to?: string };
+    } | null;
+  })[];
   pots: Pot[];
   probes: Probe[];
   actuators: Actuator[];
@@ -240,6 +251,20 @@ export class Hub {
       );
       await this.refresh();
       if (r.warning) this.lastError.set(`Cuttings recorded. Note: ${r.warning}.`);
+      return r;
+    });
+  }
+  markBloom(plantId: string) {
+    return this.act(`plant:${plantId}`, async () => {
+      const r = await firstValueFrom(this.http.post<Plant>(`/api/plants/${plantId}/bloom`, {}));
+      await this.refresh();
+      return r;
+    });
+  }
+  markFlush(plantId: string) {
+    return this.act(`plant:${plantId}`, async () => {
+      const r = await firstValueFrom(this.http.post<Plant>(`/api/plants/${plantId}/flush`, {}));
+      await this.refresh();
       return r;
     });
   }

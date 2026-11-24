@@ -170,6 +170,9 @@ describe('setup drafts', () => {
       feedCooldownMinutes: 90,
       waterEc: 0.25,
       waterPh: 7.2,
+      lightFrom: 'calendar',
+      lightStart: '07:00',
+      lightPlantId: 'p1',
       calendarId: 'default',
       calendarStart: '2026-11-01',
     };

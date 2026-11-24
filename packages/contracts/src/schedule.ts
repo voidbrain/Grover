@@ -44,6 +44,7 @@ export function windowActive(rule: Extract<ScheduleRule, { kind: 'window' }>, mi
 export function firesAt(rule: ScheduleRule, minuteOfDay: number): boolean {
   switch (rule.kind) {
     case 'window':
+    case 'dark':
       return false;
     case 'at':
       return rule.times.some((t) => parseHHMM(t) === minuteOfDay);
