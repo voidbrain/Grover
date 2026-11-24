@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 24 November 2026 against main `8e5da72`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 25 November 2026 against main `b62a29b`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 18 h agent + 12.75 h owner across 45 open steps of 17 features and 3 other records. Generated from the task files.
+**Remaining effort:** 18 h agent + 12.75 h owner across 44 open steps of 17 features and 2 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -221,52 +221,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-### <a id="b-007"></a>[🐞 B-007](#top)
-
-**A pump whose switch-on fails is not treated as possibly running**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-007-T02 — Failing test, then a failed switch-on is treated as possibly running (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | When a driver's `set(true)` throws, `Actuators` settles the run as not started: the pump is neither on nor stuck, and the watchdog never retries switching it off. If the write reached the chip although it reported an error, and the driver's own roll-back also failed (a dead I²C bus), the pump could keep running with no cap. Found in the second review of #29 (F-018) on 2026-11-24. Changing `actuators.ts` needs the owner's approval (AGENTS.md safety rules). |
-| **Reproduce** | A driver whose `set(true)` writes the pin, then throws, and whose `set(false)` also throws: after `run()`, `isOn` is false and `stuckPump()` is null. |
-| **Check** | With approval: a failed switch-on tries `set(false)`; if that fails too, the pump is marked stuck (no other pump runs, the watchdog retries off). An actuators test shows it, and the existing limits still hold. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Who | PRs |
-|---|---|---|---|---|---|:---:|---|
-| 🟢 Small | <a id="b-007-t02"></a>B-007-T02 — Failing test, then a failed switch-on is treated as possibly running | 1 h | 0 h | 0 h | Implemented; verification pending | 🤖 | [PR #32](https://github.com/voidbrain/Grover/pull/32) failing test, then the change |
-| 🟢 Small | **Total** | 1 h (1 of 2 steps) | 0 h (0 of 2 steps recorded) | 0 h | 1 of 2 completed | | |
-
-<details><summary>Done steps (1)</summary>
-
-| Effort | Step | Estimate | Actual | Status | PRs |
-|---|---|---|---|---|---|
-| — | <a id="b-007-t01"></a>B-007-T01 — Owner decides on changing the safety layer for a failed switch-on | — | 0 h | Completed | — |
-
-</details>
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-007.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: B-007-T02: [PR #32](https://github.com/voidbrain/Grover/pull/32) failing test, then the change. [#30](https://github.com/voidbrain/Grover/pull/30) (steps) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -740,9 +694,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-019-T01: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes · F-019-T02: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes. [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | Steps: F-019-T01: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes · F-019-T02: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes. [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33) |
 | Opened | 2026-11-24 |
-| Verification | Pending |
+| Verification | 2026-11-25: PR CI green on #31 and the main run after merge (1e892b4) green; the owner's install on the phone is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -836,9 +790,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
+| 🔴 Open | 🔹 P3 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | 🧑‍🔧 | — |
 
-🧑 **→** Next: [🤔](work/records/B-002.md) B-002-T01 — Owner agrees the template change and has it recorded in project-harness (Ready).
+🧑 **→** Next: [🧑‍🔧](work/records/B-002.md) B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T03) (Planned).
 
 | | |
 |---|---|
@@ -850,9 +804,17 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="b-002-t01"></a>B-002-T01 — Owner agrees the template change and has it recorded in project-harness | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [B-002-T02](#b-002-t02) | [🤔](work/records/B-002.md) |
-| 🟢 Small | <a id="b-002-t02"></a>B-002-T02 — Adopt the template release whose convention check reads apps/client/src | 0.5 h | 0 h | 0.5 h | Planned | [B-002-T01](#b-002-t01) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.5 h (1 of 2 steps) | 0 h (0 of 2 steps recorded) | 0.5 h agent + 0.25 h owner | 0 of 2 completed | | | |
+| 🟢 Small | <a id="b-002-t03"></a>B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T03) | — | 0 h | 0 h agent + 0.25 h owner | Planned | — | [B-002-T02](#b-002-t02) | [🧑‍🔧](work/records/B-002.md) |
+| 🟢 Small | <a id="b-002-t02"></a>B-002-T02 — Adopt the template release whose convention check reads apps/client/src | 0.5 h | 0 h | 0.5 h | Planned | [B-002-T03](#b-002-t03) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.5 h (1 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.5 h agent + 0.25 h owner | 1 of 3 completed | | | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status |
+|---|---|---|---|---|
+| — | <a id="b-002-t01"></a>B-002-T01 — Owner agrees the template change and has it recorded in project-harness | — | 0 h | Completed |
+
+</details>
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -861,7 +823,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -920,7 +882,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 ---
 ## Other changes
 
-**Reconciliation and step plans, 2026-11-24 (main `8e5da72`).** PRs #18–#22 and #25–#29 merged with green PR CI (main ran green after each merge except #18, whose e2e read test raced scheduled reads until #19 fixed it): B-004 and B-005 closed; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) F-017 (from #28), F-018 and B-007 (from #29) moved to their sources. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`). Review: independent fresh-context review of #30 by the coordinator, 2026-11-24: no blocker; 3 should-fix (external dependencies shown as ready, unverified green-after-merge claims, F-006 PR number checked: #16 is correct) and 4 minor wording points, all fixed in #30; the NERV waits point at nerv:F-122-T02 and nerv:F-123-T02 (NERV PR #730, owner-approved).
+**Reconciliation, 2026-11-25 (main `b62a29b`).** PRs #30, #31 and #32 merged with green PR CI and green main runs after merge: B-007 closed (#32); F-019 stays Implemented until the owner installs the app. B-002-T01 closed on the owner's decision; B-002-T02 waits on project-harness:F-098-T03.
+
+Earlier entries: [reconciliation log](archive/reconciliation-2026.md).
 
 ## How to use this file
 

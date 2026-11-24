@@ -10,7 +10,8 @@
     "The planted problem is removed before merge"
   ],
   "dependsOn": [
-    "B-002-T01"
+    "B-002-T01",
+    "B-002-T03"
   ],
   "resources": [
     "tools/check-conventions.mjs",
@@ -32,7 +33,7 @@
   "effort": {
     "size": "small",
     "estimate": "0.5 h agent",
-    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting. Depends on project-harness: a configurable source root for check-conventions, not yet recorded there.",
+    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting (`conventions.sourceDirs`). Waits on project-harness:F-098-T03 (the release), through B-002-T03.",
     "reviewed": "2026-11-24",
     "agentHours": 0.5,
     "ownerHours": 0,

@@ -4,7 +4,7 @@
   "parent": "B-002",
   "title": "Owner agrees the template change and has it recorded in project-harness",
   "goal": "The template backlog holds a record for a configurable source root in check-conventions",
-  "status": "ready",
+  "status": "closed",
   "acceptance": [
     "A project-harness record exists for a configurable source root in check-conventions, or the owner drops this bug with a reason",
     "Until then B-002-T02 stays waiting: this step stands for the external dependency on project-harness"
@@ -26,11 +26,11 @@
   "ownerLink": "docs/work/records/B-002.md",
   "effort": {
     "size": "small",
-    "estimate": "0.25 h owner",
-    "basis": "Estimated 2026-11-24: 15 minutes to agree and register it. Stands for the dependency on project-harness until cross-repository dependsOn exists.",
-    "reviewed": "2026-11-24",
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-25: owner decision, relayed by the coordinator: agreed, the template makes the convention check's source folder configurable; recorded in project-harness as F-098 (template PR #253). No actual: the decision was not timed.",
+    "reviewed": "2026-11-25",
     "agentHours": 0,
-    "ownerHours": 0.25,
+    "ownerHours": 0,
     "ownerKind": "decision"
   }
 }

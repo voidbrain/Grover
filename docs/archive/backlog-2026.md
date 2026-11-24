@@ -207,3 +207,39 @@ Closed records, in closing-date order. History, not current status: see the [bac
 </details>
 
 ---
+
+## Closed 2026-11-25
+
+### B-007
+
+**A pump whose switch-on fails is not treated as possibly running**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-25: fix merged in #32 with green PR CI and a green main run after merge (b62a29b).
+
+| | |
+|---|---|
+| **Issue** | When a driver's `set(true)` throws, `Actuators` settles the run as not started: the pump is neither on nor stuck, and the watchdog never retries switching it off. If the write reached the chip although it reported an error, and the driver's own roll-back also failed (a dead I²C bus), the pump could keep running with no cap. Found in the second review of #29 (F-018) on 2026-11-24. Changing `actuators.ts` needs the owner's approval (AGENTS.md safety rules). |
+| **Reproduce** | A driver whose `set(true)` writes the pin, then throws, and whose `set(false)` also throws: after `run()`, `isOn` is false and `stuckPump()` is null. |
+| **Check** | With approval: a failed switch-on tries `set(false)`; if that fails too, the pump is marked stuck (no other pump runs, the watchdog retries off). An actuators test shows it, and the existing limits still hold. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-25: fix merged in #32 with green PR CI and a green main run after merge (b62a29b). 2026-11-24: step plan adopted (owner decision, `workItems.featurePlans`): B-007-T01, B-007-T02. Found 2026-11-24. The owner approved the change on 2026-11-24 ("ok"). Fixed in #32: the failing actuators test is committed first; `Actuators.turnOn` now switches off again after a failed switch-on and, if that fails too, marks the actuator on and stuck. The other limits are unchanged (the existing actuators tests pass). The owner asked whether the Pi can tell a failure: it sees writes the expander does not acknowledge; reading the output register back and sensing the pump's current are not done. Review of #32 (no blocker), failing tests committed first: switching on a switch marked stuck answered without a write (now a real switch-on that clears the stuck mark); a light window could be lost while its switch was stuck (the schedule now switches a stuck switch on for real); the off after a failed switch-on reported a run time (now none), and the watchdog's fault now says the switch-off had failed rather than "ran past its cap". Closes when #32 merges on green CI.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) (steps) |
+| Opened | 2026-11-24 |
+| Verification | 2026-11-25: PR CI green on #32 and the main run after merge (b62a29b) green; owner approved the safety change 2026-11-24 |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
