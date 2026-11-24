@@ -75,6 +75,40 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ---
 
+### B-006
+
+**An upgraded agent drops its cached config until the hub answers**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Upgrade a cached config of an older protocol on start, or keep running it, so the tent keeps its schedules.
+
+| | |
+|---|---|
+| **Issue** | `AgentConfig.protocol` must equal `PROTOCOL_VERSION`. After an agent upgrade (each protocol bump: 4 for calibration, 5 for weekdays), the agent fails to parse its own cached `config.json` on start and runs nothing (lights, fans, loops, reads) until the hub reconnects and sends a new config. The agent must keep working without the hub (AGENTS.md). Found in the review of #27 on 2026-11-24. |
+| **Reproduce** | Start an agent with a cached config whose `protocol` is one lower and no hub: no schedule runs. |
+| **Check** | An agent test: a cached config of the previous protocol is used (its new fields at their defaults) and the agent's schedules run with no hub; a config of a newer or unknown protocol is still refused with a fault. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Found 2026-11-24 in the review of #27. Start with the failing agent test.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### B-005
 
 **Run on a pump queued another run on each click while it ran**
@@ -233,7 +267,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24 ("Day-of-week schedules, weekends separately"). Built 2026-11-24 on `feat/f016-weekdays`: `days` on schedules (migration 8; null every day), `isoWeekday` and `scheduleOnDay` in contracts (a window past midnight belongs to the day it started), the agent's tick skips other days (window held off, dark not held, nothing fires), calendar light schedules stay daily, `PROTOCOL_VERSION` 5, the editor's Days fieldset with shortcuts and the days in the schedule list. Checks: 4 contract tests, an agent test (a weekday window does nothing on Saturday), an e2e case (days reach the agent; none refused), drafts and editor specs. Closes when CI passes and the owner has tried it.
+**Next action / closure evidence:** Requested 2026-11-24 ("Day-of-week schedules, weekends separately"). Built 2026-11-24 on `feat/f016-weekdays`: `days` on schedules (migration 8; null every day), `isoWeekday` and `scheduleOnDay` in contracts (a window past midnight belongs to the day it started), the agent's tick skips other days (window held off, dark not held, nothing fires), calendar light schedules stay daily, `PROTOCOL_VERSION` 5, the editor's Days fieldset with shortcuts and the days in the schedule list. Checks: 4 contract tests, an agent test (a weekday window does nothing on Saturday), an e2e case (days reach the agent; none refused), drafts and editor specs. Review of #27 (no blocker): a switch turned on by hand on a day its window does not run held until the next run day (up to a week); each such day now starts with an edge, so it holds until that day ends (agent test, failing first); agent tests for a window past midnight in the tick, `dark` and timed runs on other days; the editor sends nothing with no day ticked. Closes when CI passes and the owner has tried it.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 

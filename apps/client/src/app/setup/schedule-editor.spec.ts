@@ -48,6 +48,10 @@ describe('ScheduleEditor', () => {
     for (const day of [...el.querySelectorAll<HTMLInputElement>('.day input')].filter((i) => i.checked)) day.click();
     await fixture.whenStable();
     expect(el.textContent).toContain('Pick at least one day.');
+    el.querySelector<HTMLFormElement>('form')!.dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    http.expectNone('/api/schedules/light-window');
+    expect(el.querySelectorAll('[role=alert]').length).toBe(1);
 
     button('Weekend').click();
     await fixture.whenStable();

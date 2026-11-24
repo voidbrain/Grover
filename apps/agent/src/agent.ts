@@ -39,7 +39,11 @@ export class Agent {
   private readonly actuators: Actuators;
   private readonly feeds: FeedRunner;
   private readonly outbox: Outbox;
-  private readonly lastWindow = new Map<string, boolean>();
+  /**
+   * The last edge acted on per window schedule: 'on', 'off', or 'off <day>' on a day the schedule does not run, so
+   * each such day starts with an edge and a switch turned on by hand holds until that day ends, not for days.
+   */
+  private readonly lastWindow = new Map<string, string>();
   private lastMinute = '';
   private ticker: NodeJS.Timeout | null = null;
   private flushing = false;
@@ -211,9 +215,13 @@ export class Agent {
             .catch((err) => this.fault(`actuator ${actuator.id}`, err.message));
           continue;
         }
-        // Act on edges only, so a manual switch holds until the next window boundary.
-        if (this.lastWindow.get(s.id) !== want) {
-          this.lastWindow.set(s.id, want);
+        // Dark on a day it does not run: nothing to hold, nothing to switch.
+        if (s.rule.kind === 'dark' && !onDay) continue;
+        // Act on edges only, so a manual switch holds until the next window boundary (or the end of a day the
+        // window does not run).
+        const edge = want ? 'on' : onDay ? 'off' : `off ${day}`;
+        if (this.lastWindow.get(s.id) !== edge) {
+          this.lastWindow.set(s.id, edge);
           if (this.actuators.isOn(actuator.id) !== want)
             await this.actuators.switch(actuator.id, want, 'schedule').catch((err) => {
               // Forget the edge so the next tick tries again (a relay that was busy, a stop in between).
