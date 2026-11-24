@@ -297,3 +297,26 @@ test('feed: a negative level reading (noise, uncalibrated probe) cannot make vol
     JSON.stringify(d.ml),
   );
 });
+
+test('an L298N binding (F-018): pumps only, three distinct pins', () => {
+  const base = {
+    id: 'p',
+    roomId: 'r',
+    potId: null,
+    kind: 'pump_grow',
+    name: 'P',
+    enabled: true,
+    maxRunMs: 30_000,
+    mlPerSecond: null,
+  };
+  const l298n = { driver: 'l298n', i2cBus: 1, i2cAddress: 0x20, in1: 4, in2: 5, enable: 6 };
+  assert.equal(Actuator.safeParse({ ...base, binding: l298n }).success, true);
+  assert.equal(Actuator.safeParse({ ...base, binding: { ...l298n, enable: null } }).success, true);
+  assert.equal(Actuator.safeParse({ ...base, binding: { ...l298n, in2: 4 } }).success, false, 'IN1 and IN2 apart');
+  assert.equal(Actuator.safeParse({ ...base, binding: { ...l298n, enable: 5 } }).success, false, 'enable apart');
+  assert.equal(
+    Actuator.safeParse({ ...base, kind: 'light', maxRunMs: 0, binding: l298n }).success,
+    false,
+    'a light is a relay',
+  );
+});

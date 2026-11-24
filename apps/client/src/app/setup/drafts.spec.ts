@@ -132,6 +132,25 @@ describe('setup drafts', () => {
     expect(uncalibrated.mlPerSecond).toBeNull();
   });
 
+  it('an L298N pump (F-018): IN1, IN2 and an optional EN, described in the list', () => {
+    const pump: Actuator = {
+      id: 'grow',
+      roomId: 'r',
+      potId: null,
+      kind: 'pump_grow',
+      name: 'Grow',
+      enabled: true,
+      binding: { driver: 'l298n', i2cBus: 1, i2cAddress: 0x21, in1: 4, in2: 5, enable: 6 },
+      maxRunMs: 30_000,
+      mlPerSecond: 1.5,
+    };
+    expect(Actuator.parse(toActuator(actuatorDraft(pump), 'r', true))).toEqual(pump);
+    const jumpered = toActuator({ ...actuatorDraft(pump), enable: '' }, 'r', true);
+    expect(jumpered.binding).toEqual({ driver: 'l298n', i2cBus: 1, i2cAddress: 0x21, in1: 4, in2: 5, enable: null });
+    expect(actuatorWiring(pump.binding)).toBe('L298N on MCP23017 0x21: IN1 4, IN2 5, EN 6');
+    expect(actuatorWiring(jumpered.binding)).toBe('L298N on MCP23017 0x21: IN1 4, IN2 5');
+  });
+
   it('round-trips schedules and reads a list of times', () => {
     const schedules: Schedule[] = [
       {

@@ -48,6 +48,18 @@ export const ActuatorBinding = z.discriminatedUnion('driver', [
     pin: z.number().int().min(0).max(15),
     activeLow: z.boolean().default(false),
   }),
+  /**
+   * A pump through an L298N motor bridge whose inputs are MCP23017 pins (F-018). Forward only: on is IN1 high with
+   * IN2 low, off is every pin low; `enable` is the bridge's EN pin, or null when it is jumpered on the board.
+   */
+  z.object({
+    driver: z.literal('l298n'),
+    i2cBus: z.number().int().min(0).default(1),
+    i2cAddress: z.number().int().min(0).max(127),
+    in1: z.number().int().min(0).max(15),
+    in2: z.number().int().min(0).max(15),
+    enable: z.number().int().min(0).max(15).nullable().default(null),
+  }),
 ]);
 export type ActuatorBinding = z.infer<typeof ActuatorBinding>;
 
@@ -140,7 +152,19 @@ export const Actuator = z
   .refine((a) => !isPump(a.kind) || a.maxRunMs > 0, {
     message: 'a pump needs a run cap (maxRunMs above 0)',
     path: ['maxRunMs'],
-  });
+  })
+  .refine((a) => a.binding.driver !== 'l298n' || isPump(a.kind), {
+    message: 'an L298N drives a pump; lights, fans and loops use a relay',
+    path: ['binding'],
+  })
+  .refine(
+    (a) => {
+      if (a.binding.driver !== 'l298n') return true;
+      const pins = [a.binding.in1, a.binding.in2, ...(a.binding.enable === null ? [] : [a.binding.enable])];
+      return new Set(pins).size === pins.length;
+    },
+    { message: 'IN1, IN2 and EN are three different pins', path: ['binding'] },
+  );
 export type Actuator = z.infer<typeof Actuator>;
 
 const HHMM = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'HH:MM');

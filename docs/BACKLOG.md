@@ -322,9 +322,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟢 Small |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Procedure**<br />Confirm the pump wiring (L298N inputs on which MCP23017 pins) and run the device check with the owner's go-ahead.
+🧑 **→ Human action required: Procedure**<br />Wire and check each pump on the Pi: [hardware bring-up](guides/hardware-bring-up.md), step 4b.
 
 | | |
 |---|---|
@@ -335,7 +335,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24. Wiring to confirm on the device.
+**Next action / closure evidence:** Requested 2026-11-24. Built 2026-11-24 on `feat/f018-l298n`: the `l298n` binding (pumps only, IN1/IN2/EN distinct, EN optional), its driver on a shared MCP23017 (all pins claimed low; on: IN2 low, IN1 high, EN high; off: EN, IN1, IN2 low; IN2 never high; the chip's close leaves them low), `PROTOCOL_VERSION` 6, the wiring in the actuator editor and list, bring-up step 4b. Checks: a contract test (pumps only, distinct pins), two hardware tests on a fake I²C bus (levels at claim, on, off and shutdown, IN2 never written high; Stop all through `Actuators` leaves both low), a drafts spec. Not done: the device check (owner's go-ahead per run). Closes when CI passes and each pump has been checked on the Pi.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 

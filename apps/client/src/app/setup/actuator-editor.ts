@@ -43,11 +43,13 @@ import { SetupApi } from './setup-api';
           Wiring
           <select [formField]="f.driver">
             @for (d of drivers; track d.id) {
-              <option [value]="d.id">{{ d.label }}</option>
+              @if (d.id !== 'l298n' || pump()) {
+                <option [value]="d.id">{{ d.label }}</option>
+              }
             }
           </select>
         </label>
-        @if (model().driver === 'mcp23017') {
+        @if (model().driver === 'mcp23017' || model().driver === 'l298n') {
           <label class="field">
             I²C bus
             <input type="number" [formField]="f.i2cBus" />
@@ -58,7 +60,25 @@ import { SetupApi } from './setup-api';
             <gr-field-error [state]="f.i2cAddress()" />
           </label>
         }
-        @if (model().driver !== 'mock') {
+        @if (model().driver === 'l298n') {
+          <label class="field">
+            IN1 pin (0–15)
+            <input type="number" [formField]="f.pin" />
+            <gr-field-error [state]="f.pin()" />
+          </label>
+          <label class="field">
+            IN2 pin (0–15)
+            <input type="number" [formField]="f.in2" />
+            <span class="hint">Held low: the pump only runs forward.</span>
+            <gr-field-error [state]="f.in2()" />
+          </label>
+          <label class="field">
+            EN pin (0–15)
+            <input type="text" inputmode="numeric" [formField]="f.enable" />
+            <span class="hint">Empty when the jumper on the board keeps it enabled.</span>
+            <gr-field-error [state]="f.enable()" />
+          </label>
+        } @else if (model().driver !== 'mock') {
           <label class="field">
             {{ model().driver === 'gpio' ? 'GPIO pin (BCM)' : 'Expander pin (0–15)' }}
             <input type="number" [formField]="f.pin" />
@@ -125,6 +145,9 @@ export class ActuatorEditor {
     min(p.maxRunSeconds, 1, { message: 'At least 1 second' });
     max(p.maxRunSeconds, 600, { message: 'At most 600 seconds' });
     min(p.mlPerSecond, 0, { message: 'Not negative' });
+    min(p.in2, 0, { message: '0 to 15' });
+    max(p.in2, 15, { message: '0 to 15' });
+    pattern(p.enable, /^(\s*|\d{1,2})$/, { message: 'A pin 0 to 15, or empty' });
   });
   protected readonly newId = computed(() => uniqueId(slugify(this.model().name), this.takenIds()));
   protected readonly state = new EditorRun();

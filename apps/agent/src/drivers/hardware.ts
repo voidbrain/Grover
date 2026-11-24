@@ -13,6 +13,7 @@ const run = promisify(execFile);
  *   ads1115   analog probes (pH, EC, level) through an ADS1115 ADC on I²C; returns volts, calibrated on the hub
  *   gpio      a GPIO pin via `pinctrl` (Raspberry Pi OS Bookworm and later, every Pi model)
  *   mcp23017  an MCP23017 I²C expander pin
+ *   l298n     a pump through an L298N bridge, its IN1/IN2 (and EN) on MCP23017 pins; forward only
  *   mock      simulated, so a half-wired rig can still run
  *
  * I²C needs the optional `i2c-bus` package, built on the Pi.
@@ -68,24 +69,56 @@ export class HardwareDrivers implements DriverFactory {
         return { set: async (on) => void (await run('pinctrl', ['set', String(b.pin), 'op', level(on)])) };
       }
       case 'mcp23017': {
-        const key = `${b.i2cBus}:${b.i2cAddress}`;
-        let chip = this.expanders.get(key);
-        if (!chip) {
-          chip = new Mcp23017(await this.bus(b.i2cBus), b.i2cAddress);
-          await chip.init();
-          this.expanders.set(key, chip);
-        }
-        const c = chip;
+        const c = await this.expander(b.i2cBus, b.i2cAddress);
         await c.claim(b.pin, b.activeLow);
         return { set: (on) => c.write(b.pin, on, b.activeLow) };
       }
+      case 'l298n':
+        return l298n(await this.expander(b.i2cBus, b.i2cAddress), b);
     }
+  }
+
+  private async expander(i2cBus: number, address: number): Promise<Mcp23017> {
+    const key = `${i2cBus}:${address}`;
+    let chip = this.expanders.get(key);
+    if (!chip) {
+      chip = new Mcp23017(await this.bus(i2cBus), address);
+      await chip.init();
+      this.expanders.set(key, chip);
+    }
+    return chip;
   }
 
   async close(): Promise<void> {
     for (const chip of this.expanders.values()) await chip.close();
     this.expanders.clear();
   }
+}
+
+/**
+ * A pump through an L298N bridge (F-018), forward only. Every pin is claimed low (the bridge off) before anything
+ * else; IN2 is never driven high, so the pump cannot run backwards. On: IN2 low, then IN1 high, then EN high. Off:
+ * EN low, then IN1 low (IN2 stays low). The chip's close leaves all three low.
+ */
+export async function l298n(
+  chip: Mcp23017,
+  pins: { in1: number; in2: number; enable: number | null },
+): Promise<ActuatorDriver> {
+  const { in1, in2, enable } = pins;
+  for (const pin of [in2, in1, ...(enable === null ? [] : [enable])]) await chip.claim(pin, false);
+  return {
+    set: async (on) => {
+      if (on) {
+        await chip.write(in2, false, false);
+        await chip.write(in1, true, false);
+        if (enable !== null) await chip.write(enable, true, false);
+      } else {
+        if (enable !== null) await chip.write(enable, false, false);
+        await chip.write(in1, false, false);
+        await chip.write(in2, false, false);
+      }
+    },
+  };
 }
 
 /** Single-shot conversion, ±4.096 V range, 128 SPS. Returns volts. */
