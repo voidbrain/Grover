@@ -267,3 +267,60 @@ test('nutrient colours: a damaged stored value keeps the good keys; defaults and
   assert.deepEqual(saved.tankColours, { grow: '#1a7f37' }, 'lower case; a default is not stored');
   assert.deepEqual(store.getRoom('grow-1').tankColours, { grow: '#1a7f37' });
 });
+
+test('an actuator on a pin another one already uses is refused (review of #29)', async () => {
+  const body = (id: string, binding: object, kind = 'pump_grow') => ({
+    roomId: 'grow-1',
+    potId: null,
+    kind,
+    name: id,
+    enabled: true,
+    binding,
+    maxRunMs: kind === 'light' ? 0 : 30_000,
+    mlPerSecond: null,
+  });
+  const bridge = { driver: 'l298n', i2cBus: 1, i2cAddress: 0x22, in1: 4, in2: 5, enable: null };
+  assert.equal((await api('PUT', '/api/actuators/bridge-a', body('bridge-a', bridge))).status, 200);
+  const clash = await api(
+    'PUT',
+    '/api/actuators/relay-x',
+    body('relay-x', { driver: 'mcp23017', i2cBus: 1, i2cAddress: 0x22, pin: 5, activeLow: true }, 'light'),
+  );
+  assert.equal(clash.status, 400);
+  assert.match(clash.json.error, /bridge-a/);
+  assert.equal(
+    (await api('PUT', '/api/actuators/bridge-a', body('bridge-a', { ...bridge, enable: 6 }))).status,
+    200,
+    'its own pins',
+  );
+  await api('DELETE', '/api/actuators/bridge-a');
+});
+
+test('a stored clash (two actuators on one pin, saved before the check) does not break the hub (review of #29)', () => {
+  const light = (id: string) =>
+    hub.store.db
+      .prepare(
+        `INSERT INTO actuators (id, room_id, pot_id, kind, name, enabled, binding, max_run_ms, ml_per_second)
+         VALUES (?, 'grow-1', NULL, 'light', ?, 1, '{"driver":"gpio","pin":17,"activeLow":false}', 0, NULL)`,
+      )
+      .run(id, id);
+  // An earlier test removed agent pi-1: give the tent its agent again.
+  hub.store.issueAgentToken('pi-1');
+  hub.store.putRoom({ ...hub.store.getRoom('grow-1'), agentId: 'pi-1' });
+  light('old-light-1');
+  light('old-light-2');
+  assert.doesNotThrow(() => hub.agents.publishAllConfigs());
+  assert.equal(hub.agents.buildConfig('pi-1'), null, 'no config sent: the agent keeps the one it has');
+  const fault = hub.store.faults(0).find((f) => f.subject === 'config');
+  assert.match(fault!.message, /old-light-2 and old-light-1 use the same pin/);
+  hub.agents.publishAllConfigs();
+  hub.agents.publishAllConfigs();
+  assert.equal(
+    hub.store.faults(0).filter((f) => f.subject === 'config').length,
+    1,
+    'recorded once, not on every publish',
+  );
+  assert.equal(hub.agents.view('pi-1').configCurrent, false, 'the dashboard does not call an unsent config current');
+  hub.store.db.prepare("DELETE FROM actuators WHERE id IN ('old-light-1', 'old-light-2')").run();
+  assert.ok(hub.agents.buildConfig('pi-1'));
+});

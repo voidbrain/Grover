@@ -75,6 +75,40 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ---
 
+### B-007
+
+**A pump whose switch-on fails is not treated as possibly running**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟢 Small |
+
+🧑 **→ Human action required: Decision**<br />Approve changing the agent's safety layer (`actuators.ts`): treat a failed switch-on like a failed switch-off.
+
+| | |
+|---|---|
+| **Issue** | When a driver's `set(true)` throws, `Actuators` settles the run as not started: the pump is neither on nor stuck, and the watchdog never retries switching it off. If the write reached the chip although it reported an error, and the driver's own roll-back also failed (a dead I²C bus), the pump could keep running with no cap. Found in the second review of #29 (F-018) on 2026-11-24. Changing `actuators.ts` needs the owner's approval (AGENTS.md safety rules). |
+| **Reproduce** | A driver whose `set(true)` writes the pin, then throws, and whose `set(false)` also throws: after `run()`, `isOn` is false and `stuckPump()` is null. |
+| **Check** | With approval: a failed switch-on tries `set(false)`; if that fails too, the pump is marked stuck (no other pump runs, the watchdog retries off). An actuators test shows it, and the existing limits still hold. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Found 2026-11-24. Waiting for the owner's decision.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### B-006
 
 **An upgraded agent drops its cached config until the hub answers**
@@ -322,9 +356,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟢 Small |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Procedure**<br />Confirm the pump wiring (L298N inputs on which MCP23017 pins) and run the device check with the owner's go-ahead.
+🧑 **→ Human action required: Procedure**<br />Wire and check each pump on the Pi: [hardware bring-up](guides/hardware-bring-up.md), step 4b.
 
 | | |
 |---|---|
@@ -335,13 +369,13 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24. Wiring to confirm on the device.
+**Next action / closure evidence:** Requested 2026-11-24. Built 2026-11-24 on `feat/f018-l298n`: the `l298n` binding (pumps only, IN1/IN2/EN distinct, EN optional), its driver on a shared MCP23017 (all pins claimed low; on: IN2 low, IN1 high, EN high; off: EN, IN1, IN2 low; IN2 never high; the chip's close leaves them low), `PROTOCOL_VERSION` 6, the wiring in the actuator editor and list, bring-up step 4b. Checks: a contract test (pumps only, distinct pins), two hardware tests on a fake I²C bus (levels at claim, on, off and shutdown, IN2 never written high; Stop all through `Actuators` leaves both low), a drafts spec. Review of #29, failing tests committed first: a failed write while switching on left IN1 (or EN) high in the expander's latch, so a later write of the bank could run the pump untracked (now the driver takes everything back off and a failed write leaves its pin at its off level in the latch); switching off stopped at the first failed write (now every pin is tried); EN is claimed first; two actuators could share an expander pin, e.g. a relay on a bridge's IN2 (now the hub refuses it and the agent refuses such a config). Deviations from the check: no active level (an L298N's inputs are active-high logic, so the binding has none); no watchdog-trip test of its own (the watchdog switches off through the same `set(false)`, tested), and shutdown is tested through the expander's close, not `HardwareDrivers.close`. Second round, blocker: a database with two actuators already on one pin (legal before) made the hub throw while building the config, on every agent connect and every 10 minutes; now the config is not sent, the agent keeps its own and a `config` fault names the clash (failing test committed first). The agent's safety layer (`actuators.ts`) is unchanged; a switch-on that fails on a dead I²C bus is B-007. Not done: the device check (owner's go-ahead per run). Closes when CI passes and each pump has been checked on the Pi.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record) |
+| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#29](https://github.com/voidbrain/Grover/pull/29) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
