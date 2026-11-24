@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-019-T01",
+  "parent": "F-019",
+  "title": "Web app manifest and icons",
+  "goal": "The client can be installed as an app",
+  "status": "ready",
+  "acceptance": [
+    "A manifest (name, short name, icons from the favicon design, theme colours from STYLE-GUIDE tokens, standalone, start URL /)",
+    "The build serves it; a client spec or build check finds it"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/client/src/**",
+    "apps/client/public/**",
+    "apps/client/angular.json",
+    "docs/work/records/F-019.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-24: 1 h agent.",
+    "reviewed": "2026-11-24",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

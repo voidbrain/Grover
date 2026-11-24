@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-008-T01",
+  "parent": "F-008",
+  "title": "Build Grover-side alerts (thresholds, feeds, offline agents)",
+  "goal": "Grover-side alerts (thresholds, feeds, offline agents) is built and merged",
+  "status": "closed",
+  "acceptance": [
+    "Merged in #17 on green CI"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-008.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #17 on green CI before step plans were adopted (2026-11-24). No actual: the step was not timed.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0
+  },
+  "prs": [
+    {
+      "pr": 17,
+      "note": "implementation"
+    }
+  ]
+}

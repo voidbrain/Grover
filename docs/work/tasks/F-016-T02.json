@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "F-016-T02",
+  "parent": "F-016",
+  "title": "Owner tries weekday schedules on the dev stack",
+  "goal": "The owner has tried the weekday editor",
+  "status": "ready",
+  "acceptance": [
+    "The owner reports fine or what felt wrong"
+  ],
+  "dependsOn": [
+    "F-016-T01"
+  ],
+  "resources": [
+    "docs/acceptance/dev-stack.md",
+    "docs/work/records/F-016.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/acceptance/dev-stack.md#weekday-schedules",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-24: about 15 minutes on the dev stack.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

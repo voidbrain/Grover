@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "F-005-T02",
+  "parent": "F-005",
+  "title": "Owner checks NERV lists the Grover tools (waits on nerv:F-123-T02)",
+  "goal": "NERV reaches the deployed hub over MCP",
+  "status": "planned",
+  "acceptance": [
+    "Step 6 of the page gives its expected result",
+    "Waits on nerv:F-123-T02 (NERV's owner check that it lists the Grover tools); done together with it"
+  ],
+  "dependsOn": [
+    "F-005-T01"
+  ],
+  "resources": [
+    "docs/acceptance/pi-deploy.md",
+    "docs/work/records/F-005.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/acceptance/pi-deploy.md#6-nerv-on-the-mac-running-nerv",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-24: 15 minutes, shared with nerv:F-123-T02. Waits on nerv:F-123-T02 (NERV PR #730); the local prerequisite is the deployed hub (F-005-T01).",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "procedure"
+  }
+}

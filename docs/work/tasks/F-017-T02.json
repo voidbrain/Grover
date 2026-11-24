@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "F-017-T02",
+  "parent": "F-017",
+  "title": "Colour editor and colours on tanks, pumps, dose bars and charts",
+  "goal": "Doses read at a glance by colour in both themes",
+  "status": "closed",
+  "acceptance": [
+    "Setup offers a palette of nutrient-like colours and a custom value",
+    "Tank, pump, dose bars and chart series use it; text on a colour keeps STYLE-GUIDE contrast in both themes",
+    "A client spec covers the editor; STYLE-GUIDE names the palette tokens"
+  ],
+  "dependsOn": [
+    "F-017-T01"
+  ],
+  "resources": [
+    "apps/client/src/**",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-017.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular",
+    "accessibility"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #28 on green CI 2026-11-24 (another session), before this plan merged. No actual: the step was not timed here.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  },
+  "prs": [
+    {
+      "pr": 28,
+      "note": "implementation"
+    }
+  ]
+}

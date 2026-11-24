@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "F-019-T02",
+  "parent": "F-019",
+  "title": "Service worker for the app shell",
+  "goal": "The installed app opens and shows the last snapshot while the hub is unreachable",
+  "status": "planned",
+  "acceptance": [
+    "The app shell is cached; API calls are never served from the cache (a test shows it)",
+    "No push notifications"
+  ],
+  "dependsOn": [
+    "F-019-T01"
+  ],
+  "resources": [
+    "apps/client/src/**",
+    "apps/client/angular.json",
+    "apps/hub/src/http.ts",
+    "docs/work/records/F-019.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "Estimated 2026-11-24: 1.5 h agent; the hub must serve the worker with the right headers.",
+    "reviewed": "2026-11-24",
+    "agentHours": 1.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}
