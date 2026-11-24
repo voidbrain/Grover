@@ -320,3 +320,46 @@ test('an L298N binding (F-018): pumps only, three distinct pins', () => {
     'a light is a relay',
   );
 });
+
+test('no two actuators drive the same pin (review of #29)', () => {
+  const pumpOn = (id: string, binding: object) => ({
+    id,
+    roomId: 'r',
+    potId: null,
+    kind: 'pump_grow',
+    name: id,
+    enabled: true,
+    maxRunMs: 30_000,
+    mlPerSecond: null,
+    binding,
+  });
+  const config = (actuators: object[]) => ({
+    protocol: PROTOCOL_VERSION,
+    agentId: 'pi-1',
+    roomId: 'r',
+    mode: 'normal',
+    timezone: 'UTC',
+    issuedAt: 1,
+    probes: [],
+    actuators,
+    schedules: [],
+  });
+  const a = pumpOn('a', { driver: 'l298n', i2cBus: 1, i2cAddress: 0x20, in1: 4, in2: 5, enable: null });
+  const relayOnIn2 = {
+    ...pumpOn('r', { driver: 'mcp23017', i2cBus: 1, i2cAddress: 0x20, pin: 5, activeLow: true }),
+    kind: 'light',
+    maxRunMs: 0,
+  };
+  const otherChip = {
+    ...relayOnIn2,
+    binding: { driver: 'mcp23017', i2cBus: 1, i2cAddress: 0x21, pin: 5, activeLow: true },
+  };
+  assert.equal(AgentConfig.safeParse(config([a, relayOnIn2])).success, false, 'a relay on the bridge IN2');
+  assert.equal(
+    AgentConfig.safeParse(
+      config([a, pumpOn('b', { driver: 'l298n', i2cBus: 1, i2cAddress: 0x20, in1: 5, in2: 6, enable: null })]),
+    ).success,
+    false,
+  );
+  assert.equal(AgentConfig.safeParse(config([a, otherChip])).success, true, 'another expander');
+});
