@@ -2,15 +2,15 @@
 
 ## Project conventions (Grover)
 
-The project is **Grover**: a local-first controller for a home hydroponic grow (probes, pumps, lights, dosing). The repository is `https://github.com/voidbrain/Grover`, default branch `main`, one npm workspace with three parts that share `packages/contracts`: the **hub** (`apps/hub`, Node 24 native TypeScript, SQLite, embedded MQTT broker, HTTP API, MCP), one **agent** per Raspberry Pi (`apps/agent`, drivers and safety) and the **client** (`apps/client`, Angular 22, Angular project `client`). Nothing is hosted: the hub runs on the Pi and is reached over Tailscale (`tailscale serve`), and it serves the built client from `apps/client/dist/client/browser`. [NERV](https://github.com/voidbrain/nerv) may drive Grover through the hub's MCP tools. How it all works: [docs/DESIGN.md](docs/DESIGN.md).
+The project is **Grover**: a local-first controller for a home hydroponic grow (probes, lights, supply tanks, a mixing tank, per-pot feeds). The repository is `https://github.com/voidbrain/Grover`, default branch `main`, one npm workspace with three parts that share `packages/contracts`: the **hub** (`apps/hub`, Node 24 native TypeScript, SQLite, embedded MQTT broker, HTTP API, MCP), one **agent** per Raspberry Pi (`apps/agent`, drivers and safety) and the **client** (`apps/client`, Angular 22, Angular project `client`). Nothing is hosted: the hub runs on the Pi and is reached over Tailscale (`tailscale serve`), and it serves the built client from `apps/client/dist/client/browser`. [NERV](https://github.com/voidbrain/nerv) may drive Grover through the hub's MCP tools. How it all works: [docs/DESIGN.md](docs/DESIGN.md).
 
 ### Architecture
 
-- `packages/contracts` owns every shape that crosses a boundary (domain, MQTT protocol, HTTP bodies) as zod schemas plus pure logic (schedules, dosing). Hub, agent and client import it; it imports nothing of theirs. The browser imports only types and `@grover/contracts/kinds` (zod-free), so zod stays out of the client bundle.
+- `packages/contracts` owns every shape that crosses a boundary (domain, MQTT protocol, HTTP bodies) as zod schemas plus pure logic (schedules, the feed planner, dosing model). Hub, agent and client import it; it imports nothing of theirs. The browser imports only types and `@grover/contracts/kinds` (zod-free), so zod stays out of the client bundle.
 - `packages/`, `apps/hub`, `apps/agent` and `tools/` are framework-free: no `@angular/*` (enforced by `npm run lint`, `no-restricted-imports`). Keep logic in contracts or the hub; components stay thin.
 - Every input is validated with the contracts schema at the edge: HTTP bodies, MQTT payloads, SQLite JSON columns.
-- Hardware moves only through `Commands` on the hub (HTTP, MCP and the dosing loop all call it) and `Actuators` on the agent. The agent re-checks every limit itself: never rely on the hub alone for safety.
-- The agent must keep working without the hub: its config is cached in its state folder, events go through the durable outbox, schedules run locally. Automatic dosing is hub-only.
+- Hardware moves only through `Commands` (single actions) or the `Feeder` (whole feeds) on the hub, and `Actuators` / `FeedRunner` on the agent. The agent re-checks every limit itself: never rely on the hub alone for safety.
+- The agent must keep working without the hub: its config is cached in its state folder, events go through the durable outbox, schedules run locally. Feeds are planned by the hub only; the agent runs a plan and aborts it with everything off on any failed check.
 - Hub inserts of readings, actuations and faults are idempotent (unique keys), so the agent may replay its outbox at any time.
 - MQTT topics are per agent and authorised per client: an agent can publish only its own status/events/acks and subscribe only its own config/commands. A breaking protocol change bumps `PROTOCOL_VERSION`.
 - Database changes are new entries appended to `MIGRATIONS` in `apps/hub/src/db.ts`; never edit a shipped migration.
@@ -21,9 +21,9 @@ The project is **Grover**: a local-first controller for a home hydroponic grow (
 
 ### Adding things
 
-- **A probe or actuator kind**: `packages/contracts/src/kinds.ts` (id, units/limits), the `PROBE_KINDS` entry, mock behaviour in `apps/agent/src/drivers/mock.ts`, any dosing role in `apps/hub/src/control.ts`, a test in `packages/contracts/test` or the e2e test.
+- **A probe or actuator kind**: `packages/contracts/src/kinds.ts` (id, units/limits), the `PROBE_KINDS` entry, mock behaviour in `apps/agent/src/drivers/mock.ts`, any feed role in `packages/contracts/src/feeding.ts` (and `TANK_PUMP` for a supply tank), a test in `packages/contracts/test` or the e2e test.
 - **A hardware driver**: a binding variant in `ProbeBinding`/`ActuatorBinding` (`domain.ts`), its case in `apps/agent/src/drivers/hardware.ts`, a note in docs/DESIGN.md ("Hardware"). Drivers are only checked on the device: record the device check in the backlog.
-- **An API route or MCP tool**: through `Commands` or `Control`, never straight to `AgentLink`; a body schema in `packages/contracts/src/api.ts`; a case in `apps/hub/test/e2e.test.ts`; the MCP tool table in docs/DESIGN.md.
+- **An API route or MCP tool**: through `Commands` or the `Feeder`, never straight to `AgentLink`; a body schema in `packages/contracts/src/api.ts`; a case in `apps/hub/test/e2e.test.ts`; the MCP tool table in docs/DESIGN.md.
 - **A stored entity or column**: a new migration in `db.ts`, the `Store` methods, the contracts schema.
 
 ### Checks before you finish
@@ -110,9 +110,9 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 | Area | Covers |
 |---|---|
-| Contracts | `packages/contracts`: domain, protocol, schedules, dosing model |
-| Hub | `apps/hub`: store, broker and agent link, commands, control loop, HTTP, MCP |
-| Agent | `apps/agent`: drivers, actuator safety, outbox, schedule runner |
+| Contracts | `packages/contracts`: domain, protocol, schedules, feed planner, dosing model |
+| Hub | `apps/hub`: store, broker and agent link, commands, feeder, alerts, HTTP, MCP |
+| Agent | `apps/agent`: drivers and the simulated rig, actuator safety, feed runner, outbox, schedule runner |
 | Client | `apps/client`: Angular dashboard and probe history |
 
 The reviewer subagents in `.claude/agents/` (mechanical, design) cover every area.

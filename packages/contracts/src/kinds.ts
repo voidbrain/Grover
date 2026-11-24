@@ -36,3 +36,30 @@ export const NUTRIENT_PUMPS = ['pump_grow', 'pump_micro', 'pump_bloom', 'pump_ri
 export type NutrientPump = (typeof NUTRIENT_PUMPS)[number];
 
 export const OPERATING_MODES = ['normal', 'silent', 'off'] as const;
+
+/**
+ * What a level probe measures: one of the supply tanks, the mixing tank, or (null) its pot.
+ * Each supply tank feeds the mixing tank through the pump of the same role.
+ */
+export const TANK_ROLES = ['water', 'grow', 'micro', 'bloom', 'ripen', 'ph_down', 'mix'] as const;
+export type TankRoleId = (typeof TANK_ROLES)[number];
+
+export const TANK_TITLES: Record<TankRoleId, string> = {
+  water: 'Water',
+  grow: 'Grow',
+  micro: 'Micro',
+  bloom: 'Bloom',
+  ripen: 'Ripen',
+  ph_down: 'pH down',
+  mix: 'Mixing tank',
+};
+
+/** The supply pump that empties each supply tank into the mixing tank. */
+export const TANK_PUMP: Record<Exclude<TankRoleId, 'mix'>, ActuatorKindId> = {
+  water: 'pump_water',
+  grow: 'pump_grow',
+  micro: 'pump_micro',
+  bloom: 'pump_bloom',
+  ripen: 'pump_ripen',
+  ph_down: 'pump_ph_down',
+};

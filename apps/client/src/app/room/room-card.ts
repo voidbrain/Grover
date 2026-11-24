@@ -1,17 +1,30 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { Actuator, DoseSuggestion, OperatingMode } from '@grover/contracts';
-import { isPump } from '@grover/contracts/kinds';
+import type { Actuator, FeedView, OperatingMode, Pot, Probe } from '@grover/contracts';
+import { TANK_ROLES, TANK_TITLES, isPump } from '@grover/contracts/kinds';
 import { Clock } from '../clock';
-import { ago, health, targetRange } from '../format';
-import { Hub, type Snapshot } from '../hub';
+import { ago, health, targetRange, type Health } from '../format';
+import { Hub, type FeedPreview, type Snapshot } from '../hub';
 
 type RoomView = Snapshot['rooms'][number];
 
+export interface Tile {
+  probe: Probe;
+  title: string;
+  unit: string;
+  value: number | undefined;
+  range: { min: number; max: number } | null;
+  health: Health;
+  ago: string;
+  /** Read from the tent's shared probe, not the pot's own. */
+  shared: boolean;
+}
+
+/** One tent: its own probes, the tanks, each pot with its feed, switches and manual pump runs. */
 @Component({
   selector: 'gr-room-card',
-  imports: [DecimalPipe, RouterLink],
+  imports: [DecimalPipe, NgTemplateOutlet, RouterLink],
   templateUrl: './room-card.html',
   styleUrl: './room-card.scss',
 })
@@ -24,32 +37,80 @@ export class RoomCard {
   protected readonly agent = computed(() => this.hub.agentFor(this.room()));
   protected readonly online = computed(() => this.hub.connected() && !!this.agent()?.online);
   protected readonly phase = computed(() => this.room().phase?.phase ?? null);
+  protected readonly canAct = computed(() => this.online() && this.room().mode === 'normal');
 
-  protected readonly probes = computed(() => {
-    const snap = this.hub.snapshot();
-    const latest = this.hub.latest();
-    const now = this.clock.now();
-    return (snap?.probes ?? [])
-      .filter((p) => p.roomId === this.room().id && p.enabled)
-      .map((p) => {
-        const r = latest.get(p.id);
-        const range = targetRange(p.kind, this.phase());
+  private readonly snap = this.hub.snapshot;
+  private readonly probes = computed(() =>
+    (this.snap()?.probes ?? []).filter((p) => p.roomId === this.room().id && p.enabled),
+  );
+  private readonly actuators = computed(() =>
+    (this.snap()?.actuators ?? []).filter((a) => a.roomId === this.room().id && a.enabled),
+  );
+
+  protected readonly alerts = computed(() => (this.snap()?.alerts ?? []).filter((a) => a.roomId === this.room().id));
+
+  /** Probes of the tent itself: air, and the shared pH/EC pair. */
+  protected readonly tentTiles = computed(() =>
+    this.probes()
+      .filter((p) => p.potId === null && p.tank === null)
+      .map((p) => this.tile(p, false)),
+  );
+
+  protected readonly tankTiles = computed(() => {
+    const byRole = new Map(
+      this.probes()
+        .filter((p) => p.tank)
+        .map((p) => [p.tank, p]),
+    );
+    return TANK_ROLES.flatMap((role) => {
+      const p = byRole.get(role);
+      if (!p) return [];
+      const t = this.tile(p, false);
+      return [
+        {
+          ...t,
+          title: TANK_TITLES[role],
+          low: p.alertBelow !== null && t.value !== undefined && t.value < p.alertBelow,
+        },
+      ];
+    });
+  });
+
+  protected readonly feedRunning = computed(() =>
+    (this.snap()?.feeds ?? []).some(
+      (f) => f.roomId === this.room().id && (f.state === 'planned' || f.state === 'started'),
+    ),
+  );
+
+  protected readonly pots = computed(() => {
+    const all = this.probes();
+    const shared = (kind: Probe['kind']) => all.find((p) => p.potId === null && p.tank === null && p.kind === kind);
+    const feeds = this.snap()?.feeds ?? [];
+    return (this.snap()?.pots ?? [])
+      .filter((p) => p.roomId === this.room().id)
+      .map((pot) => {
+        const own = (kind: Probe['kind']) => all.find((p) => p.potId === pot.id && p.kind === kind);
+        const tiles: Tile[] = [];
+        const level = own('water_level');
+        if (level) tiles.push(this.tile(level, false));
+        for (const kind of ['ph', 'ec'] as const) {
+          const p = own(kind) ?? shared(kind);
+          if (p) tiles.push(this.tile(p, !own(kind)));
+        }
+        const temp = own('water_temperature');
+        if (temp) tiles.push(this.tile(temp, false));
         return {
-          probe: p,
-          unit: snap?.probeKinds[p.kind].unit ?? '',
-          value: r?.value,
-          range,
-          health: health(r?.value, range, r?.at, now),
-          ago: ago(r?.at, now),
+          pot,
+          tiles,
+          lastFeed: feeds.find((f) => f.potId === pot.id) ?? null,
+          loop: this.actuators().find((a) => a.potId === pot.id && a.kind === 'water_loop') ?? null,
+          canFeed: this.actuators().some((a) => a.potId === pot.id && a.kind === 'pump_transfer'),
         };
       });
   });
 
   protected readonly switches = computed(() => this.actuators().filter((a) => !isPump(a.kind)));
   protected readonly pumps = computed(() => this.actuators().filter((a) => isPump(a.kind)));
-  private readonly actuators = computed(() =>
-    (this.hub.snapshot()?.actuators ?? []).filter((a) => a.roomId === this.room().id && a.enabled),
-  );
 
   protected readonly agentLabel = computed(() => {
     const a = this.agent();
@@ -60,11 +121,74 @@ export class RoomCard {
   });
 
   protected readonly pumpAmount = signal<Record<string, number>>({});
-  protected readonly suggestion = signal<DoseSuggestion | null>(null);
-  protected readonly suggestionKeys = computed(() => Object.entries(this.suggestion()?.ml ?? {}) as [string, number][]);
+  protected readonly previews = signal<Record<string, FeedPreview | 'loading'>>({});
+
+  private tile(probe: Probe, shared: boolean): Tile {
+    const snap = this.snap();
+    const r = this.hub.latest().get(probe.id);
+    const now = this.clock.now();
+    // Phase ranges apply to pots (and the shared pair); tank levels have their own alert thresholds.
+    const range = probe.tank ? null : targetRange(probe.kind, this.phase());
+    return {
+      probe,
+      title: probe.name,
+      unit: snap?.probeKinds[probe.kind].unit ?? '',
+      value: r?.value,
+      range,
+      health: health(r?.value, range, r?.at, now),
+      ago: ago(r?.at, now),
+      shared,
+    };
+  }
 
   protected busy(key: string): boolean {
     return this.hub.busy().has(key);
+  }
+
+  protected feedLabel(f: FeedView): string {
+    const when = ago(f.finishedAt ?? f.requestedAt, this.clock.now());
+    switch (f.state) {
+      case 'planned':
+      case 'started':
+        return `Feeding now: ${f.message}`;
+      case 'done':
+        return `Fed ${when}${f.batchLiters ? `, ${f.batchLiters} L` : ''}`;
+      case 'aborted':
+        return `Last feed stopped ${when}: ${f.message}`;
+      case 'refused':
+        return `Last feed refused ${when}: ${f.message}`;
+    }
+  }
+
+  protected async preview(pot: Pot): Promise<void> {
+    this.previews.update((m) => ({ ...m, [pot.id]: 'loading' }));
+    try {
+      const p = await this.hub.feedPreview(pot.id);
+      this.previews.update((m) => ({ ...m, [pot.id]: p }));
+    } catch {
+      this.previews.update((m) => {
+        const { [pot.id]: _drop, ...rest } = m;
+        return rest;
+      });
+    }
+  }
+
+  protected closePreview(pot: Pot): void {
+    this.previews.update((m) => {
+      const { [pot.id]: _drop, ...rest } = m;
+      return rest;
+    });
+  }
+
+  protected previewLines(p: FeedPreview): string[] {
+    if (!p.ok) return [];
+    const order = ['water', 'grow', 'micro', 'bloom', 'ripen', 'phDown'];
+    return order.filter((k) => (p.ml[k] ?? 0) > 0).map((k) => `${k === 'phDown' ? 'pH down' : k}: ${p.ml[k]} mL`);
+  }
+
+  protected async feed(pot: Pot): Promise<void> {
+    this.closePreview(pot);
+    await this.hub.feed(pot.id);
   }
 
   protected amount(a: Actuator): number {
@@ -79,18 +203,5 @@ export class RoomCard {
   protected runPump(a: Actuator): void {
     const n = this.amount(a);
     void this.hub.run(a.id, a.mlPerSecond ? { ml: n } : { durationMs: Math.round(n * 1000) });
-  }
-
-  protected async loadSuggestion(): Promise<void> {
-    try {
-      this.suggestion.set(await this.hub.suggestion(this.room().id));
-    } catch {
-      this.suggestion.set(null);
-    }
-  }
-
-  protected async applyDose(): Promise<void> {
-    await this.hub.applyDose(this.room().id);
-    this.suggestion.set(null);
   }
 }

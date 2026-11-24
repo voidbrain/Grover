@@ -6,7 +6,8 @@ import type { Store } from './store.ts';
 export class Refused extends Error {}
 
 /**
- * Every way of moving hardware goes through here: the HTTP API, MCP tools (NERV) and the control loop.
+ * Every single hardware action goes through here: the HTTP API and MCP tools (NERV). Feeds are planned by the Feeder
+ * and run by the agent as one sequence with the same limits.
  * The hub refuses what the room's mode or the actuator's limits do not allow; the agent enforces the
  * same limits again on its side, so a bad hub cannot run a pump past its cap.
  */

@@ -1,4 +1,5 @@
 import type { Actuator, ActuatorKind, OperatingMode, Pot, Probe, ProbeKind, Room, Schedule } from '@grover/contracts';
+import type { TankRoleId } from '@grover/contracts/kinds';
 
 /**
  * Forms edit flat drafts (strings, numbers, booleans), because a form field cannot change shape when the user
@@ -45,22 +46,26 @@ export interface RoomDraft {
   id: string;
   name: string;
   agentId: string;
-  reservoirLiters: number;
   calendarId: string;
   calendarStart: string;
-  autoDose: boolean;
+  autoFeed: boolean;
   mode: OperatingMode;
+  mixEmptyLevel: number;
+  mixSettleSeconds: number;
+  feedCooldownMinutes: number;
 }
 
 export const roomDraft = (r?: Room): RoomDraft => ({
   id: r?.id ?? '',
   name: r?.name ?? '',
   agentId: r?.agentId ?? '',
-  reservoirLiters: r?.reservoirLiters ?? 20,
   calendarId: r?.calendarId ?? '',
   calendarStart: r?.calendarStart ?? '',
-  autoDose: r?.autoDose ?? false,
+  autoFeed: r?.autoFeed ?? false,
   mode: r?.mode ?? 'normal',
+  mixEmptyLevel: r?.mixEmptyLevel ?? 1,
+  mixSettleSeconds: r?.mixSettleSeconds ?? 60,
+  feedCooldownMinutes: r?.feedCooldownMinutes ?? 60,
 });
 
 export const toRoom = (d: RoomDraft): Room => ({
@@ -68,10 +73,12 @@ export const toRoom = (d: RoomDraft): Room => ({
   name: d.name.trim(),
   agentId: orNull(d.agentId),
   mode: d.mode,
-  autoDose: d.autoDose,
-  reservoirLiters: d.reservoirLiters,
+  autoFeed: d.autoFeed,
   calendarId: orNull(d.calendarId),
   calendarStart: orNull(d.calendarId) ? orNull(d.calendarStart) : null,
+  mixEmptyLevel: d.mixEmptyLevel,
+  mixSettleSeconds: d.mixSettleSeconds,
+  feedCooldownMinutes: d.feedCooldownMinutes,
 });
 
 // ── pot ────────────────────────────────────────────────────────────────────
@@ -79,10 +86,31 @@ export const toRoom = (d: RoomDraft): Room => ({
 export interface PotDraft {
   id: string;
   name: string;
+  liters: number;
+  feedLiters: number;
+  /** 0 = unknown */
+  litersPerCm: number;
 }
 
-export const potDraft = (p?: Pot): PotDraft => ({ id: p?.id ?? '', name: p?.name ?? '' });
-export const toPot = (d: PotDraft, roomId: string): Pot => ({ id: d.id, roomId, name: d.name.trim() });
+export const potDraft = (p?: Pot): PotDraft => ({
+  id: p?.id ?? '',
+  name: p?.name ?? '',
+  liters: p?.liters ?? 10,
+  feedLiters: p?.feedLiters ?? 2,
+  litersPerCm: p?.litersPerCm ?? 0,
+});
+export const toPot = (d: PotDraft, roomId: string): Pot => ({
+  id: d.id,
+  roomId,
+  name: d.name.trim(),
+  liters: d.liters,
+  feedLiters: d.feedLiters,
+  litersPerCm: d.litersPerCm > 0 ? d.litersPerCm : null,
+});
+
+/** "" → null, "12.5" → 12.5; NaN for anything else (the schema then refuses it). */
+export const optionalNumber = (text: string): number | null => (text.trim() === '' ? null : Number(text.trim()));
+export const NUMBER_TEXT = /^\s*(-?\d+(\.\d+)?)?\s*$/;
 
 // ── probe ──────────────────────────────────────────────────────────────────
 
@@ -92,7 +120,7 @@ export interface ProbeDraft {
   id: string;
   name: string;
   kind: ProbeKind;
-  /** '' = the room's reservoir */
+  /** '' = the tent (not a pot) */
   potId: string;
   enabled: boolean;
   driver: ProbeDriver;
@@ -102,6 +130,11 @@ export interface ProbeDraft {
   channel: number;
   triggerPin: number;
   echoPin: number;
+  /** Level probes: '' = the pot (or tent) it belongs to, else a tank role. */
+  tank: '' | TankRoleId;
+  /** '' = no alert */
+  alertBelow: string;
+  alertAbove: string;
 }
 
 export function probeDraft(p?: Probe): ProbeDraft {
@@ -119,6 +152,9 @@ export function probeDraft(p?: Probe): ProbeDraft {
     channel: b?.driver === 'ads1115' ? b.channel : 0,
     triggerPin: b?.driver === 'hcsr04' ? b.triggerPin : 0,
     echoPin: b?.driver === 'hcsr04' ? b.echoPin : 0,
+    tank: p?.tank ?? '',
+    alertBelow: p?.alertBelow == null ? '' : String(p.alertBelow),
+    alertAbove: p?.alertAbove == null ? '' : String(p.alertAbove),
   };
 }
 
@@ -131,7 +167,20 @@ export function toProbe(d: ProbeDraft, roomId: string): Probe {
         : d.driver === 'hcsr04'
           ? { driver: 'hcsr04', triggerPin: d.triggerPin, echoPin: d.echoPin }
           : { driver: 'mock' };
-  return { id: d.id, roomId, potId: orNull(d.potId), kind: d.kind, name: d.name.trim(), enabled: d.enabled, binding };
+  const tank = d.kind === 'water_level' && d.tank !== '' ? d.tank : null;
+  return {
+    id: d.id,
+    roomId,
+    // A tank is the tent's, never a pot's.
+    potId: tank ? null : orNull(d.potId),
+    kind: d.kind,
+    name: d.name.trim(),
+    enabled: d.enabled,
+    binding,
+    tank,
+    alertBelow: optionalNumber(d.alertBelow),
+    alertAbove: optionalNumber(d.alertAbove),
+  };
 }
 
 // ── actuator ───────────────────────────────────────────────────────────────

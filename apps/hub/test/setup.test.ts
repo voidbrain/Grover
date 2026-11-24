@@ -51,8 +51,7 @@ test('an agent runs one room at most', async () => {
     name: 'Second room',
     agentId: 'pi-1',
     mode: 'normal',
-    autoDose: false,
-    reservoirLiters: 10,
+    autoFeed: false,
     calendarId: null,
     calendarStart: null,
   });

@@ -2,7 +2,7 @@
 
 How the product looks and talks, and how this repository's documents are written. Read it before changing UI (templates, component styles, global styles, user-facing text). The values live in code: CSS custom properties in [`apps/client/src/styles.scss`](../apps/client/src/styles.scss) (`:root`, with a dark set under `prefers-color-scheme: dark`). When this guide and the code disagree, the code is what ships: fix whichever is wrong and record the discrepancy in the backlog if it is not fixed in the same change.
 
-Grover is a control panel for one person tending plants, opened on a phone in the grow room or a laptop away from home. It is calm and readable at a glance: numbers first, state second, decoration never. Green carries "in range and running"; red is kept for out-of-range values and the emergency stop.
+Grover is a control panel for one person tending plants, opened on a phone in the grow tent or a laptop away from home. It is calm and readable at a glance: numbers first, state second, decoration never. Green carries "in range and running"; red is kept for out-of-range values and the emergency stop.
 
 ## Documentation ownership
 
@@ -56,7 +56,7 @@ System UI stack (`--font`: Inter if installed, then the platform font); no web f
 
 ## Components
 
-- **Room card** (`apps/client/src/app/room/room-card.*`): header (name, phase and day, agent status, mode, Stop all), probe tiles, switches, pumps, dosing. Actions disable when the hub or the agent is unreachable, or the mode does not allow them.
+- **Room card** (`apps/client/src/app/room/room-card.*`): header (name, phase and day, auto-feed, agent status, mode, Stop all), alerts (left border `--warn`, or `--bad` for a stopped feed or offline agent), tent probe tiles, tank levels (compact tiles; a low tank gets a `--bad` border and "Low: refill"), pot cards (level, pH, EC tiles, shared probes marked "(shared)", last feed line, feed preview, "Feed now"), switches, manual pump runs. Actions disable when the hub or the agent is unreachable, or the mode does not allow them.
 - **Segmented control** (global `.segmented`): a `fieldset` of radio inputs with a hidden legend; used for mode and chart range.
 - **Buttons** (global `button`): primary (accent fill), `.ghost` (outline), `.danger` (red outline, only for Stop all), `.small`.
 - **Switch** (`.toggle` with `role="switch"` and `aria-checked`): lights, fans, water loop.

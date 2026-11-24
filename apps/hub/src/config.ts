@@ -13,8 +13,6 @@ export interface HubConfig {
   timezone: string;
   /** How long a command waits for the agent's ack. */
   commandTimeoutMs: number;
-  /** Minimum time between automatic corrections for one room. */
-  autoDoseCooldownMs: number;
 }
 
 const env = (name: string): string | undefined => process.env[name] || undefined;
@@ -29,7 +27,6 @@ export function loadConfig(overrides: Partial<HubConfig> = {}): HubConfig {
     clientDir: resolve(env('GROVER_CLIENT_DIR') ?? 'apps/client/dist/client/browser'),
     timezone: env('GROVER_TZ') ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     commandTimeoutMs: Number(env('GROVER_COMMAND_TIMEOUT_MS') ?? 10_000),
-    autoDoseCooldownMs: Number(env('GROVER_AUTODOSE_COOLDOWN_MS') ?? 30 * 60_000),
     ...overrides,
   };
 }

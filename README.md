@@ -1,8 +1,8 @@
 # Grover
 
-A local-first controller for a home hydroponic grow: it reads the reservoir (pH, EC, temperature, level), runs lights, fans and dosing pumps on schedule, and suggests or applies nutrient and pH corrections from a model it fits to your own doses. Everything runs at home on a Raspberry Pi; you reach it from anywhere over Tailscale. [NERV](https://github.com/voidbrain/nerv) can drive it through MCP.
+A local-first controller for a home hydroponic grow: it runs a tent's lights and fan on schedule, watches the supply tanks, and feeds each pot: it mixes a batch of water, nutrients and pH down for the pot's grow phase and its EC and pH, then pumps it into the pot, learning from each feed. It raises alerts when a tank runs low or a feed cannot run. Everything runs at home on a Raspberry Pi; you reach it from anywhere over Tailscale. [NERV](https://github.com/voidbrain/nerv) can drive it through MCP.
 
-- **Hub** (`apps/hub`): API, live updates, SQLite history, dosing, MQTT broker, MCP. Serves the client.
+- **Hub** (`apps/hub`): API, live updates, SQLite history, feed planning, alerts, MQTT broker, MCP. Serves the client.
 - **Agent** (`apps/agent`): one per Pi; drives the hardware and keeps it safe, also when the hub is down.
 - **Client** (`apps/client`): Angular dashboard.
 
@@ -14,7 +14,7 @@ Node 24 (`nvm use`).
 
 ```bash
 npm install
-npm run dev        # hub + one agent with simulated hardware, demo room; http://127.0.0.1:8080
+npm run dev        # hub + one agent on a simulated rig (tent, 6 supply tanks, mixing tank, 4 pots); http://127.0.0.1:8080
 npm run client     # optional: Angular dev server on :4200 with live reload, proxying to the hub
 npm test           # backend suites, including hub + agent end to end over MQTT
 npm run test:client
@@ -40,7 +40,7 @@ The hub listens on loopback only; `tailscale serve` is what makes it reachable, 
 
 | Path | What |
 |---|---|
-| `packages/contracts` | Shared schemas, MQTT protocol, schedule rules, dosing model |
+| `packages/contracts` | Shared schemas, MQTT protocol, schedule rules, feed planner, dosing model |
 | `apps/hub` | Hub service and its tests (`test/e2e.test.ts` runs hub + agent together) |
 | `apps/agent` | Agent service, drivers, safety |
 | `apps/client` | Angular client |

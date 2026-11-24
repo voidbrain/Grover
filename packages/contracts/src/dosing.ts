@@ -1,14 +1,14 @@
-import type { Calendar, Dose, Phase } from './domain.ts';
+import type { Calendar, Phase } from './domain.ts';
 
 /**
  * Dosing model. Linear and deliberately simple:
  *
- *   ΔEC = ecPerMlL · (mL nutrient / L reservoir)
- *   ΔpH = −phPerMlL · (mL pH-down / L reservoir)
+ *   ΔEC = ecPerMlL · (mL nutrient / L of pot solution)
+ *   ΔpH = −phPerMlL · (mL pH-down / L of pot solution)
  *
- * Coefficients are fitted per room by least squares through the origin, shrunk towards a prior
- * so a handful of noisy samples cannot swing them. Corrections aim at the middle of the range,
- * are scaled down by `step` so the loop undershoots rather than overshoots, and are capped.
+ * Coefficients are fitted per tent from past feeds (the pot's reading before a feed and the first one after it
+ * mixed), by least squares through the origin, shrunk towards a prior so a handful of noisy samples cannot swing
+ * them. The feed planner (feeding.ts) uses them for pH corrections.
  */
 export interface DoseSample {
   /** mL added */
@@ -59,70 +59,6 @@ export function fitModel(nutrient: readonly DoseSample[], phDown: readonly DoseS
   };
 }
 
-export interface CorrectionInput {
-  phase: Phase;
-  ec: number | null;
-  ph: number | null;
-  liters: number;
-  model: DoseModel;
-  /** Fraction of the computed correction to apply (0..1]. */
-  step?: number;
-  /** Cap per pump per correction, mL. */
-  maxMlPerPump?: number;
-}
-
-export interface Correction {
-  ml: { grow: number; micro: number; bloom: number; ripen: number; phDown: number };
-  reason: string;
-}
-
-const round1 = (n: number) => Math.round(n * 10) / 10;
-
-/**
- * One correction step. Nutrients go first: they move pH as well, so pH is only corrected
- * when EC is already in range (the next reading decides the next step).
- */
-export function computeCorrection(input: CorrectionInput): Correction {
-  const { phase, ec, ph, liters, model } = input;
-  const step = input.step ?? 0.7;
-  const cap = input.maxMlPerPump ?? 50;
-  const none = { grow: 0, micro: 0, bloom: 0, ripen: 0, phDown: 0 };
-
-  if (phase.flushing) return { ml: none, reason: `${phase.name}: flushing, no nutrients` };
-  // Each step changes both values, so never dose on half the picture.
-  if (ec === null || ph === null) return { ml: none, reason: 'needs fresh EC and pH readings' };
-
-  if (ec < phase.ec.min) {
-    const target = (phase.ec.min + phase.ec.max) / 2;
-    const totalMl = ((target - ec) / model.ecPerMlL) * liters * step;
-    const ratio = phase.dose;
-    const sum = ratio.grow + ratio.micro + ratio.bloom + ratio.ripen;
-    if (sum <= 0) return { ml: none, reason: `${phase.name}: EC low (${ec}) but the phase has no nutrient dose` };
-    const part = (n: number) => Math.min(cap, round1((totalMl * n) / sum));
-    return {
-      ml: {
-        ...none,
-        grow: part(ratio.grow),
-        micro: part(ratio.micro),
-        bloom: part(ratio.bloom),
-        ripen: part(ratio.ripen),
-      },
-      reason: `EC ${ec} below ${phase.ec.min}: aiming for ${round1(target)}`,
-    };
-  }
-
-  if (ph > phase.ph.max) {
-    const target = (phase.ph.min + phase.ph.max) / 2;
-    const ml = Math.min(cap, round1(((ph - target) / model.phPerMlL) * liters * step));
-    return { ml: { ...none, phDown: ml }, reason: `pH ${ph} above ${phase.ph.max}: aiming for ${round1(target)}` };
-  }
-
-  const notes: string[] = [];
-  if (ec > phase.ec.max) notes.push(`EC ${ec} above ${phase.ec.max}: add water, nothing to dose`);
-  if (ph < phase.ph.min) notes.push(`pH ${ph} below ${phase.ph.min}: no pH-up pump, check manually`);
-  return { ml: none, reason: notes.join('; ') || 'in range' };
-}
-
 /** Which phase is active `day` days after the calendar start (null before start or after the end). */
 export function phaseForDay(
   calendar: Calendar,
@@ -137,19 +73,7 @@ export function phaseForDay(
   return null;
 }
 
-/** mL for a full fresh mix, per the phase dose (doses are mL per 10 L). */
-export function freshMix(dose: Dose, liters: number): Dose {
-  const f = liters / 10;
-  return {
-    grow: round1(dose.grow * f),
-    micro: round1(dose.micro * f),
-    bloom: round1(dose.bloom * f),
-    ripen: round1(dose.ripen * f),
-    phDown: round1(dose.phDown * f),
-  };
-}
-
-/** The default calendar, from the original Grover tables. */
+/** The default calendar, from the original Grover tables; ripen alone at the end, then plain water. */
 export const DEFAULT_CALENDAR: Calendar = {
   id: 'default',
   name: 'Default photoperiod',
@@ -206,10 +130,22 @@ export const DEFAULT_CALENDAR: Calendar = {
       name: 'Ripen',
       days: 14,
       blooming: true,
-      flushing: true,
+      flushing: false,
       lightHours: 12,
       dose: { grow: 0, micro: 0, bloom: 0, ripen: 50, phDown: 1 },
       ec: { min: 1.6, max: 2.6 },
+      ph: { min: 6.0, max: 6.4 },
+      waterTemp: { min: 15, max: 35 },
+      waterLevel: { min: 10, max: 90 },
+    },
+    {
+      name: 'Flush',
+      days: 7,
+      blooming: true,
+      flushing: true,
+      lightHours: 12,
+      dose: { grow: 0, micro: 0, bloom: 0, ripen: 0, phDown: 0 },
+      ec: { min: 0, max: 0.6 },
       ph: { min: 6.0, max: 6.4 },
       waterTemp: { min: 15, max: 35 },
       waterLevel: { min: 10, max: 90 },

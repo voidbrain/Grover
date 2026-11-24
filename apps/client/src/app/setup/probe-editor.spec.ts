@@ -30,7 +30,7 @@ describe('ProbeEditor', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     type(el, 'input[type=text]', 'Reservoir temperature');
-    // selects: kind, where, wiring
+    // selects: kind, where, wiring (a temperature probe has no tank select)
     const wiring = el.querySelectorAll('select')[2]!;
     wiring.value = 'ds18b20';
     wiring.dispatchEvent(new Event('input'));
@@ -53,6 +53,9 @@ describe('ProbeEditor', () => {
       name: 'Reservoir temperature',
       enabled: true,
       binding: { driver: 'ds18b20', address: '28-0000075a3b1c' },
+      tank: null,
+      alertBelow: null,
+      alertAbove: null,
     });
   });
 

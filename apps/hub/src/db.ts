@@ -40,6 +40,31 @@ const MIGRATIONS: readonly string[] = [
   );
   CREATE INDEX doses_by_room ON doses(room_id, kind, at);
   `,
+  // 2: feed cycle (F-011). Doses go into a mixing tank and reach a pot through a feed; the room reservoir and
+  // its dose log are gone. Tanks are level probes with a role; alerts are kept while their condition lasts.
+  `
+  ALTER TABLE rooms RENAME COLUMN auto_dose TO auto_feed;
+  ALTER TABLE rooms DROP COLUMN reservoir_liters;
+  ALTER TABLE rooms ADD COLUMN mix_empty_level REAL NOT NULL DEFAULT 1;
+  ALTER TABLE rooms ADD COLUMN mix_settle_seconds INTEGER NOT NULL DEFAULT 60;
+  ALTER TABLE rooms ADD COLUMN feed_cooldown_minutes INTEGER NOT NULL DEFAULT 60;
+  ALTER TABLE pots ADD COLUMN liters REAL NOT NULL DEFAULT 10;
+  ALTER TABLE pots ADD COLUMN feed_liters REAL NOT NULL DEFAULT 2;
+  ALTER TABLE pots ADD COLUMN liters_per_cm REAL;
+  ALTER TABLE probes ADD COLUMN tank TEXT;
+  ALTER TABLE probes ADD COLUMN alert_below REAL;
+  ALTER TABLE probes ADD COLUMN alert_above REAL;
+  DROP TABLE doses;
+  CREATE TABLE feeds (
+    id TEXT PRIMARY KEY, room_id TEXT NOT NULL, pot_id TEXT NOT NULL, source TEXT NOT NULL, state TEXT NOT NULL,
+    message TEXT NOT NULL, requested_at INTEGER NOT NULL, finished_at INTEGER, batch_liters REAL, ml TEXT,
+    ec_before REAL, ph_before REAL, ec_after REAL, ph_after REAL
+  );
+  CREATE INDEX feeds_by_pot ON feeds(pot_id, requested_at);
+  CREATE TABLE alerts (
+    key TEXT PRIMARY KEY, room_id TEXT NOT NULL, pot_id TEXT, level TEXT NOT NULL, message TEXT NOT NULL, since INTEGER NOT NULL
+  );
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

@@ -9,16 +9,17 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - Anything the browser needs at runtime goes in `kinds.ts` (no zod); the client imports the rest as types only.
 - A schema change is a protocol change: check that an agent running the previous config still parses (or bump `PROTOCOL_VERSION`), and update docs/DESIGN.md.
 - Lesson: one sample where a dose moved EC the wrong way dragged the fitted coefficient from 0.4 to 0.12; wrong-direction samples are now dropped (`fit: … bad data is ignored`).
-- Lesson: with EC unknown the model suggested pH-down, which the next nutrient step would undo; a correction now needs both readings (`correction: pH down when EC is fine; …`).
+- The feed planner (`feeding.ts`) is pure and owns every dosing decision; the agent never decides amounts. Change it with a case in `contracts.test.ts` ("feed: …").
 
 ## Hub
 
 - Code: `apps/hub/src`; tests in `apps/hub/test`.
 - `Store` is the only SQL. Validate with the contracts schema on write and on read of JSON columns. Telemetry inserts are idempotent.
 - Deletes keep the model whole: a deleted probe or actuator takes its schedules with it (`Store.deleteEntity`); SQLite foreign-key and agent-uniqueness failures map to 409 with a plain reason.
-- `Commands` is the only path to hardware; `Control` calls it too. HTTP errors map from `NotFound` 404, `Refused` 409, `AgentOffline` 503, `CommandTimeout` 504, `ZodError` 400.
+- `Commands` runs single actions; the `Feeder` plans whole feeds and sends them as one `feed` command, one per tent at a time. HTTP errors map from `NotFound` 404, `Refused` 409, `AgentOffline` 503, `CommandTimeout` 504, `ZodError` 400.
 - Any setup write republishes agent configs (`publishAllConfigs`).
 - The HTTP server binds loopback by default; never change the default to a public bind. MCP is stateless (a server per request).
+- Alerts: raised once per key, kept while the condition lasts. A refused manual feed answers with its reason and raises nothing; automatic refusals and aborted feeds raise `feed:<pot>`.
 - Lesson: per-agent sequence numbers were first used to drop replays, which would have dropped every event after an agent reinstall (counter back to 0); idempotent keys replaced them.
 
 ## Agent
@@ -27,6 +28,9 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - `Actuators` owns safety (see DESIGN, "Safety"); the agent ack for `run` means "queued", the actuation events report the real on/off.
 - Drivers must start outputs off and must not throw from `set(false)` past a best effort. A driver that needs the device is in `hardware.ts`; anything for development is in `mock.ts`.
 - State lives in `GROVER_AGENT_STATE`: `config.json` (last config) and `outbox.sqlite`.
+- `FeedRunner` owns feed sequencing: checks before anything runs, a tank re-check before each supply run, transfer in short slices with level checks. A cancel (Stop all, mode change, hardware change, shutdown) must reach it before the pumps go off, or a step would start again.
+- `drivers/mock.ts` simulates the rig (tank volumes, mixing, transfer, plants drinking), so feeds can be tested without hardware; keep it in step with `feeding.ts` semantics.
+- Lesson: a pump run by hand (or a feed that filled the pot early) leaves liquid in the mixing tank, and the next feed rightly refuses to start (seen in the e2e test); the dashboard says so under "Pumps, by hand".
 - Lesson: a pump run stopped early (stop, reload, failure) never resolved its queue slot and blocked every later pump; `release` is now settled on every off (`stop releases the queue…`, `reloading the config…`).
 
 ## Client

@@ -24,7 +24,7 @@ type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calenda
  * so only devices on your tailnet reach it.
  */
 export async function createHttp(hub: Hub): Promise<FastifyInstance> {
-  const { store, agents, commands, control, bus, config } = hub;
+  const { store, agents, commands, feeder, alerts, bus, config } = hub;
   const app = Fastify({ logger: false });
   await app.register(fastifyWebsocket);
 
@@ -53,7 +53,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     agents: agents.views().map((a) => ({ id: a.agentId, online: a.online })),
   }));
   app.get('/api/snapshot', async () => ({
-    rooms: store.listRooms().map((room) => ({ ...room, phase: control.phase(room) })),
+    rooms: store.listRooms().map((room) => ({ ...room, phase: feeder.phase(room) })),
     pots: store.listPots(),
     probes: store.listProbes(),
     actuators: store.listActuators(),
@@ -61,6 +61,8 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     calendars: store.listCalendars(),
     agents: agents.views(),
     latest: store.latestReadings(),
+    alerts: alerts.list(),
+    feeds: store.feeds(Date.now() - 7 * 86_400_000),
     probeKinds: PROBE_KINDS,
   }));
   app.get<{ Params: { id: string }; Querystring: { since?: string; until?: string } }>(
@@ -78,7 +80,11 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   app.get<{ Querystring: { since?: string } }>('/api/faults', async (req) =>
     store.faults(Number(req.query.since ?? Date.now() - 7 * 86_400_000)),
   );
-  app.get<{ Params: { id: string } }>('/api/rooms/:id/dose', async (req) => control.suggest(req.params.id));
+  app.get('/api/alerts', async () => alerts.list());
+  app.get<{ Querystring: { since?: string; potId?: string } }>('/api/feeds', async (req) =>
+    store.feeds(Number(req.query.since ?? Date.now() - 7 * 86_400_000), req.query.potId),
+  );
+  app.get<{ Params: { id: string } }>('/api/pots/:id/feed', async (req) => feeder.preview(req.params.id));
 
   // ── commands ─────────────────────────────────────────────────────────────
   app.post<{ Params: { id: string } }>('/api/probes/:id/read', async (req) => commands.readProbe(req.params.id));
@@ -89,7 +95,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     commands.switch(req.params.id, SwitchRequest.parse(req.body).on, 'manual'),
   );
   app.post<{ Params: { id: string } }>('/api/rooms/:id/stop', async (req) => commands.stopAll(req.params.id, 'manual'));
-  app.post<{ Params: { id: string } }>('/api/rooms/:id/dose', async (req) => control.apply(req.params.id, 'manual'));
+  app.post<{ Params: { id: string } }>('/api/pots/:id/feed', async (req) => feeder.feed(req.params.id, 'manual'));
   app.put<{ Params: { id: string } }>('/api/rooms/:id/mode', async (req) => {
     commands.setMode(req.params.id, ModeRequest.parse(req.body).mode);
     return store.getRoom(req.params.id);

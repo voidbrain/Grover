@@ -31,14 +31,32 @@ export interface AgentView {
   configCurrent: boolean;
 }
 
-export interface DoseSuggestion {
+/** Something that needs the owner: a tank running low, a refused or aborted feed, an agent gone quiet. */
+export interface Alert {
+  /** Stable while the condition lasts, e.g. "probe:tank-water:below" or "feed:pot-2". */
+  key: string;
   roomId: string;
-  reason: string;
-  /** mL per pump kind; empty when nothing is needed. */
-  ml: Partial<Record<'pump_grow' | 'pump_micro' | 'pump_bloom' | 'pump_ripen' | 'pump_ph_down', number>>;
-  target: { ec: { min: number; max: number }; ph: { min: number; max: number } } | null;
-  observed: { ec: number | null; ph: number | null };
-  model: { ecPerMl: number; phPerMl: number; samples: number };
+  potId: string | null;
+  level: 'warn' | 'bad';
+  message: string;
+  since: number;
+}
+
+export interface FeedView {
+  feedId: string;
+  roomId: string;
+  potId: string;
+  source: 'manual' | 'auto' | 'mcp';
+  state: 'planned' | 'started' | 'done' | 'aborted' | 'refused';
+  message: string;
+  requestedAt: number;
+  finishedAt: number | null;
+  batchLiters: number | null;
+  ml: Record<string, number> | null;
+  ecBefore: number | null;
+  phBefore: number | null;
+  ecAfter: number | null;
+  phAfter: number | null;
 }
 
 /** Live events pushed to clients over the hub WebSocket (/api/live). */
@@ -47,4 +65,6 @@ export type LiveEvent =
   | { type: 'actuation'; actuation: Actuation }
   | { type: 'agent'; agent: AgentView }
   | { type: 'room'; roomId: string; mode: OperatingMode }
-  | { type: 'fault'; agentId: string; subject: string; message: string; at: number };
+  | { type: 'fault'; agentId: string; subject: string; message: string; at: number }
+  | { type: 'feed'; feed: FeedView }
+  | { type: 'alert'; alert: Alert; cleared: boolean };

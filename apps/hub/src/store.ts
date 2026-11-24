@@ -11,7 +11,10 @@ import {
   Reading,
   Room,
   Schedule,
+  type Alert,
+  type FeedView,
   type ProbeKind,
+  type TankRoleId,
 } from '@grover/contracts';
 import { z } from 'zod';
 
@@ -69,10 +72,12 @@ export class Store {
       name: String(r['name']),
       agentId: r['agent_id'] == null ? null : String(r['agent_id']),
       mode: r['mode'] as Room['mode'],
-      autoDose: bool(r['auto_dose']),
-      reservoirLiters: Number(r['reservoir_liters']),
+      autoFeed: bool(r['auto_feed']),
       calendarId: r['calendar_id'] == null ? null : String(r['calendar_id']),
       calendarStart: r['calendar_start'] == null ? null : String(r['calendar_start']),
+      mixEmptyLevel: Number(r['mix_empty_level']),
+      mixSettleSeconds: Number(r['mix_settle_seconds']),
+      feedCooldownMinutes: Number(r['feed_cooldown_minutes']),
     };
   }
   listRooms(): Room[] {
@@ -91,11 +96,24 @@ export class Store {
     const r = Room.parse(input);
     this.db
       .prepare(
-        `INSERT INTO rooms (id, name, agent_id, mode, auto_dose, reservoir_liters, calendar_id, calendar_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-         ON CONFLICT(id) DO UPDATE SET name = excluded.name, agent_id = excluded.agent_id, mode = excluded.mode, auto_dose = excluded.auto_dose,
-           reservoir_liters = excluded.reservoir_liters, calendar_id = excluded.calendar_id, calendar_start = excluded.calendar_start`,
+        `INSERT INTO rooms (id, name, agent_id, mode, auto_feed, calendar_id, calendar_start, mix_empty_level, mix_settle_seconds, feed_cooldown_minutes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET name = excluded.name, agent_id = excluded.agent_id, mode = excluded.mode, auto_feed = excluded.auto_feed,
+           calendar_id = excluded.calendar_id, calendar_start = excluded.calendar_start, mix_empty_level = excluded.mix_empty_level,
+           mix_settle_seconds = excluded.mix_settle_seconds, feed_cooldown_minutes = excluded.feed_cooldown_minutes`,
       )
-      .run(r.id, r.name, r.agentId, r.mode, r.autoDose ? 1 : 0, r.reservoirLiters, r.calendarId, r.calendarStart);
+      .run(
+        r.id,
+        r.name,
+        r.agentId,
+        r.mode,
+        r.autoFeed ? 1 : 0,
+        r.calendarId,
+        r.calendarStart,
+        r.mixEmptyLevel,
+        r.mixSettleSeconds,
+        r.feedCooldownMinutes,
+      );
     return r;
   }
 
@@ -106,15 +124,29 @@ export class Store {
         ? this.db.prepare('SELECT * FROM pots WHERE room_id = ? ORDER BY name').all(roomId)
         : this.db.prepare('SELECT * FROM pots ORDER BY name').all()
     ) as Row[];
-    return rows.map((r) => ({ id: String(r['id']), roomId: String(r['room_id']), name: String(r['name']) }));
+    return rows.map((r) => ({
+      id: String(r['id']),
+      roomId: String(r['room_id']),
+      name: String(r['name']),
+      liters: Number(r['liters']),
+      feedLiters: Number(r['feed_liters']),
+      litersPerCm: r['liters_per_cm'] == null ? null : Number(r['liters_per_cm']),
+    }));
+  }
+  getPot(id: string): Pot {
+    const pot = this.listPots().find((p) => p.id === id);
+    if (!pot) throw new NotFound(`pot ${id}`);
+    return pot;
   }
   putPot(input: unknown): Pot {
     const p = Pot.parse(input);
     this.db
       .prepare(
-        'INSERT INTO pots (id, room_id, name) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET room_id = excluded.room_id, name = excluded.name',
+        `INSERT INTO pots (id, room_id, name, liters, feed_liters, liters_per_cm) VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET room_id = excluded.room_id, name = excluded.name, liters = excluded.liters,
+           feed_liters = excluded.feed_liters, liters_per_cm = excluded.liters_per_cm`,
       )
-      .run(p.id, p.roomId, p.name);
+      .run(p.id, p.roomId, p.name, p.liters, p.feedLiters, p.litersPerCm);
     return p;
   }
 
@@ -128,6 +160,9 @@ export class Store {
       name: r['name'],
       enabled: bool(r['enabled']),
       binding: json(r['binding']),
+      tank: r['tank'] ?? null,
+      alertBelow: r['alert_below'] ?? null,
+      alertAbove: r['alert_above'] ?? null,
     });
   }
   listProbes(roomId?: string): Probe[] {
@@ -143,20 +178,43 @@ export class Store {
     if (!r) throw new NotFound(`probe ${id}`);
     return this.probe(r);
   }
-  /** The probe that stands for the room's reservoir: room-level first, then any. */
-  roomProbe(roomId: string, kind: ProbeKind): Probe | null {
-    const all = this.listProbes(roomId).filter((p) => p.kind === kind && p.enabled);
-    return all.find((p) => p.potId === null) ?? all[0] ?? null;
+  /**
+   * The probe that reads `kind` for a pot: the pot's own, else the tent's shared one (no pot, no tank).
+   * Level probes never fall back: a tent-wide level would say nothing about one pot.
+   */
+  potProbe(pot: Pot, kind: ProbeKind): Probe | null {
+    const all = this.listProbes(pot.roomId).filter((p) => p.kind === kind && p.enabled && p.tank === null);
+    const own = all.find((p) => p.potId === pot.id);
+    if (own || kind === 'water_level') return own ?? null;
+    return all.find((p) => p.potId === null) ?? null;
+  }
+  /** Level probes of the tent's tanks, by role. */
+  tankProbes(roomId: string): Partial<Record<TankRoleId, Probe>> {
+    const out: Partial<Record<TankRoleId, Probe>> = {};
+    for (const p of this.listProbes(roomId)) if (p.tank && p.enabled && p.kind === 'water_level') out[p.tank] ??= p;
+    return out;
   }
   putProbe(input: unknown): Probe {
     const p = Probe.parse(input);
     this.db
       .prepare(
-        `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding) VALUES (?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding, tank, alert_below, alert_above) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET room_id = excluded.room_id, pot_id = excluded.pot_id, kind = excluded.kind, name = excluded.name,
-           enabled = excluded.enabled, binding = excluded.binding`,
+           enabled = excluded.enabled, binding = excluded.binding, tank = excluded.tank, alert_below = excluded.alert_below,
+           alert_above = excluded.alert_above`,
       )
-      .run(p.id, p.roomId, p.potId, p.kind, p.name, p.enabled ? 1 : 0, JSON.stringify(p.binding));
+      .run(
+        p.id,
+        p.roomId,
+        p.potId,
+        p.kind,
+        p.name,
+        p.enabled ? 1 : 0,
+        JSON.stringify(p.binding),
+        p.tank,
+        p.alertBelow,
+        p.alertAbove,
+      );
     return p;
   }
 
@@ -378,66 +436,125 @@ export class Store {
     );
   }
 
-  // ── dose log (training data for the dosing model) ─────────────────────────
-  /**
-   * Records mL added. Additions of the same kind close together (within `mergeMs`) and still waiting
-   * for their "after" reading are merged into one sample, so a multi-pump correction counts once.
-   */
-  addDose(
-    d: {
-      roomId: string;
-      at: number;
-      kind: 'nutrient' | 'ph_down';
-      ml: number;
-      liters: number;
-      before: number | null;
-      source: string;
-    },
-    mergeMs: number,
-  ): void {
-    const open = this.db
+  // ── feeds ──────────────────────────────────────────────────────────────────
+  private feed(r: Row): FeedView {
+    const num = (k: string) => (r[k] == null ? null : Number(r[k]));
+    return {
+      feedId: String(r['id']),
+      roomId: String(r['room_id']),
+      potId: String(r['pot_id']),
+      source: r['source'] as FeedView['source'],
+      state: r['state'] as FeedView['state'],
+      message: String(r['message']),
+      requestedAt: Number(r['requested_at']),
+      finishedAt: num('finished_at'),
+      batchLiters: num('batch_liters'),
+      ml: r['ml'] == null ? null : (json(r['ml']) as Record<string, number>),
+      ecBefore: num('ec_before'),
+      phBefore: num('ph_before'),
+      ecAfter: num('ec_after'),
+      phAfter: num('ph_after'),
+    };
+  }
+  addFeed(f: FeedView): void {
+    this.db
       .prepare(
-        'SELECT id FROM doses WHERE room_id = ? AND kind = ? AND after IS NULL AND at >= ? ORDER BY at DESC LIMIT 1',
+        `INSERT INTO feeds (id, room_id, pot_id, source, state, message, requested_at, finished_at, batch_liters, ml, ec_before, ph_before)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .get(d.roomId, d.kind, d.at - mergeMs) as Row | undefined;
-    if (open) this.db.prepare('UPDATE doses SET ml = ml + ? WHERE id = ?').run(d.ml, open['id']!);
-    else
-      this.db
-        .prepare(
-          'INSERT INTO doses (room_id, at, kind, ml, liters, before, after, source) VALUES (?, ?, ?, ?, ?, ?, NULL, ?)',
-        )
-        .run(d.roomId, d.at, d.kind, d.ml, d.liters, d.before, d.source);
+      .run(
+        f.feedId,
+        f.roomId,
+        f.potId,
+        f.source,
+        f.state,
+        f.message,
+        f.requestedAt,
+        f.finishedAt,
+        f.batchLiters,
+        f.ml ? JSON.stringify(f.ml) : null,
+        f.ecBefore,
+        f.phBefore,
+      );
   }
-  /** Closes doses of `kind` older than `mixMs` with the reading that follows them. */
-  closeDoses(roomId: string, kind: 'nutrient' | 'ph_down', value: number, at: number, mixMs: number): number {
-    return Number(
-      this.db
-        .prepare('UPDATE doses SET after = ? WHERE room_id = ? AND kind = ? AND after IS NULL AND at <= ?')
-        .run(value, roomId, kind, at - mixMs).changes,
-    );
+  getFeed(feedId: string): FeedView | null {
+    const r = this.db.prepare('SELECT * FROM feeds WHERE id = ?').get(feedId) as Row | undefined;
+    return r ? this.feed(r) : null;
   }
-  doseSamples(
-    roomId: string,
-    kind: 'nutrient' | 'ph_down',
-    limit = 50,
-  ): { ml: number; liters: number; before: number; after: number }[] {
+  /** Moves a feed on; a finished state is final (a late `step` after `aborted` changes nothing). */
+  updateFeed(feedId: string, state: FeedView['state'], message: string, at: number): FeedView | null {
+    const final = state === 'done' || state === 'aborted' || state === 'refused';
+    this.db
+      .prepare(
+        `UPDATE feeds SET state = ?, message = ?, finished_at = CASE WHEN ? THEN ? ELSE finished_at END
+         WHERE id = ? AND state NOT IN ('done', 'aborted', 'refused')`,
+      )
+      .run(state, message, final ? 1 : 0, at, feedId);
+    return this.getFeed(feedId);
+  }
+  feeds(since: number, potId?: string, limit = 200): FeedView[] {
+    const rows = (
+      potId
+        ? this.db
+            .prepare('SELECT * FROM feeds WHERE requested_at >= ? AND pot_id = ? ORDER BY requested_at DESC LIMIT ?')
+            .all(since, potId, limit)
+        : this.db
+            .prepare('SELECT * FROM feeds WHERE requested_at >= ? ORDER BY requested_at DESC LIMIT ?')
+            .all(since, limit)
+    ) as Row[];
+    return rows.map((r) => this.feed(r));
+  }
+  /** A feed still waiting for its "after" reading, finished at least `mixMs` before `at`. */
+  feedsAwaitingAfter(potId: string, kind: 'ec' | 'ph', at: number, mixMs: number): FeedView[] {
+    const col = kind === 'ec' ? 'ec_after' : 'ph_after';
     return (
       this.db
-        .prepare(
-          'SELECT ml, liters, before, after FROM doses WHERE room_id = ? AND kind = ? AND before IS NOT NULL AND after IS NOT NULL ORDER BY at DESC LIMIT ?',
-        )
-        .all(roomId, kind, limit) as Row[]
-    ).map((r) => ({
-      ml: Number(r['ml']),
-      liters: Number(r['liters']),
-      before: Number(r['before']),
-      after: Number(r['after']),
-    }));
+        .prepare(`SELECT * FROM feeds WHERE pot_id = ? AND state = 'done' AND ${col} IS NULL AND finished_at <= ?`)
+        .all(potId, at - mixMs) as Row[]
+    ).map((r) => this.feed(r));
   }
-  lastDoseAt(roomId: string, source: string): number | null {
+  setFeedAfter(feedId: string, kind: 'ec' | 'ph', value: number): void {
+    this.db.prepare(`UPDATE feeds SET ${kind === 'ec' ? 'ec_after' : 'ph_after'} = ? WHERE id = ?`).run(value, feedId);
+  }
+  /** Finished feeds with readings on both sides, for the dosing model. */
+  feedSamples(roomId: string, limit = 50): FeedView[] {
+    return (
+      this.db
+        .prepare(`SELECT * FROM feeds WHERE room_id = ? AND state = 'done' ORDER BY requested_at DESC LIMIT ?`)
+        .all(roomId, limit) as Row[]
+    ).map((r) => this.feed(r));
+  }
+  lastFeedAt(potId: string): number | null {
     const r = this.db
-      .prepare('SELECT MAX(at) AS at FROM doses WHERE room_id = ? AND source = ?')
-      .get(roomId, source) as Row | undefined;
+      .prepare(`SELECT MAX(requested_at) AS at FROM feeds WHERE pot_id = ? AND state != 'refused'`)
+      .get(potId) as Row | undefined;
     return r?.['at'] == null ? null : Number(r['at']);
+  }
+
+  // ── alerts ─────────────────────────────────────────────────────────────────
+  /** Raises an alert; false when it was already active (nothing new to tell). */
+  raiseAlert(a: Alert): boolean {
+    const res = this.db
+      .prepare('INSERT OR IGNORE INTO alerts (key, room_id, pot_id, level, message, since) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(a.key, a.roomId, a.potId, a.level, a.message, a.since);
+    if (Number(res.changes) > 0) return true;
+    this.db.prepare('UPDATE alerts SET message = ?, level = ? WHERE key = ?').run(a.message, a.level, a.key);
+    return false;
+  }
+  /** Clears an alert; returns it when it was active. */
+  clearAlert(key: string): Alert | null {
+    const found = this.alerts().find((a) => a.key === key) ?? null;
+    if (found) this.db.prepare('DELETE FROM alerts WHERE key = ?').run(key);
+    return found;
+  }
+  alerts(): Alert[] {
+    return (this.db.prepare('SELECT * FROM alerts ORDER BY since DESC').all() as Row[]).map((r) => ({
+      key: String(r['key']),
+      roomId: String(r['room_id']),
+      potId: r['pot_id'] == null ? null : String(r['pot_id']),
+      level: r['level'] as Alert['level'],
+      message: String(r['message']),
+      since: Number(r['since']),
+    }));
   }
 }

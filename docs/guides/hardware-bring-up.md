@@ -18,7 +18,7 @@ For each probe and actuator, `PUT /api/probes/<id>` / `PUT /api/actuators/<id>` 
 
 ```bash
 curl -X PUT localhost:8080/api/probes/water-temp -H 'content-type: application/json' \
-  -d '{"roomId":"grow-1","potId":null,"kind":"water_temperature","name":"Reservoir temperature","enabled":true,"binding":{"driver":"ds18b20","address":"28-0123456789ab"}}'
+  -d '{"roomId":"grow-1","potId":"pot-1","kind":"water_temperature","name":"Pot 1 temperature","enabled":true,"binding":{"driver":"ds18b20","address":"28-0123456789ab"}}'
 ```
 
 Expected: `journalctl -u grover-agent -f` shows no `fault` lines after the config arrives.
@@ -48,7 +48,11 @@ For each pump, run 10 s into a measuring jug:
 curl -X POST localhost:8080/api/actuators/pump-grow/run -H 'content-type: application/json' -d '{"durationMs":10000}'
 ```
 
-Then set `mlPerSecond` = measured mL ÷ 10 and a `maxRunMs` that cannot overdose the reservoir (for 20 L of nutrient, 30000 ms at ~1.5 mL/s is ~45 mL). Expected: a 5 mL run (`{"ml":5}`) delivers 5 mL ± 10 %.
+Then set `mlPerSecond` = measured mL ÷ 10 and a `maxRunMs` that cannot overfill the mixing tank or overdose one batch (30000 ms at ~1.5 mL/s is ~45 mL of nutrient). Expected: a 5 mL run (`{"ml":5}`) delivers 5 mL ± 10 %. Supply pumps pump into the mixing tank: empty it (or run a pot's feed pump) before the first feed.
+
+## 5b. Levels and a first feed
+
+For each tank level probe set its role and a low alert in Setup; for each pot its level probe and litres per cm. Then from the dashboard: **Preview feed** on one pot, check the batch, **Feed now**, and watch the mixing tank fill and empty and the pot level rise.
 
 ## 6. Safety on the device
 

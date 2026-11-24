@@ -16,6 +16,7 @@ import {
   type Probe,
 } from '@grover/contracts';
 import { Actuators } from './actuators.ts';
+import { FeedRunner } from './feed.ts';
 import type { AgentEnv } from './config.ts';
 import type { DriverFactory, ProbeDriver } from './drivers/types.ts';
 import { Outbox } from './outbox.ts';
@@ -33,6 +34,7 @@ export class Agent {
   private hash: string | null = null;
   private probes = new Map<string, { probe: Probe; driver: ProbeDriver }>();
   private readonly actuators: Actuators;
+  private readonly feeds: FeedRunner;
   private readonly outbox: Outbox;
   private readonly lastWindow = new Map<string, boolean>();
   private lastMinute = '';
@@ -50,6 +52,12 @@ export class Agent {
     mkdirSync(env.stateDir, { recursive: true });
     this.outbox = new Outbox(join(env.stateDir, 'outbox.sqlite'));
     this.actuators = new Actuators((actuation) => this.publishEvent({ type: 'actuation', actuation }), now);
+    this.feeds = new FeedRunner({
+      actuators: this.actuators,
+      read: (probeId) => this.read(probeId),
+      report: (feedId, potId, state, message) =>
+        this.publishEvent({ type: 'feed', at: this.now(), feedId, potId, state, message }),
+    });
   }
 
   private get configPath(): string {
@@ -84,6 +92,7 @@ export class Agent {
 
   async stop(): Promise<void> {
     if (this.ticker) clearInterval(this.ticker);
+    this.feeds.cancel('the agent is stopping');
     await this.actuators.allOff('safety');
     if (this.client?.connected) {
       await new Promise<void>((r) =>
@@ -100,8 +109,15 @@ export class Agent {
     this.outbox.close();
   }
 
-  get state(): { config: AgentConfig | null; active: string[]; queued: number; connected: boolean } {
+  get state(): {
+    config: AgentConfig | null;
+    active: string[];
+    queued: number;
+    connected: boolean;
+    feed: string | null;
+  } {
     return {
+      feed: this.feeds.busy,
       config: this.config,
       active: this.actuators.active(),
       queued: this.outbox.size(),
@@ -118,6 +134,9 @@ export class Agent {
   private async doApply(config: AgentConfig, persist: boolean): Promise<void> {
     const hash = configHash(config);
     const modeOnly = this.config !== null && this.hash !== null && sameHardware(this.config, config);
+    // A feed survives a settings change that leaves its hardware alone, but not a mode change away from normal.
+    if (!modeOnly) this.feeds.cancel('the hardware settings changed');
+    else if (config.mode !== 'normal') this.feeds.cancel(`the tent was set to ${config.mode}`);
     this.config = config;
     this.hash = hash;
     if (persist) writeFileSync(this.configPath, JSON.stringify(config));
@@ -266,8 +285,14 @@ export class Agent {
           return ack(true, null, cmd.on ? 1 : 0);
         }
         case 'stop_all':
+          this.feeds.cancel('stopped with Stop all');
           await this.actuators.allOff(cmd.source);
           return ack(true, null);
+        case 'feed': {
+          if (mode !== 'normal') return ack(false, `agent is ${mode}`);
+          void this.feeds.start(cmd.plan);
+          return ack(true, null);
+        }
       }
     } catch (err) {
       return ack(false, (err as Error).message);

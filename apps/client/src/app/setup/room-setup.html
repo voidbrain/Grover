@@ -15,11 +15,6 @@
         <gr-field-error [state]="f.name()" />
       </label>
       <label class="field">
-        Reservoir (litres)
-        <input type="number" step="0.5" [formField]="f.reservoirLiters" />
-        <gr-field-error [state]="f.reservoirLiters()" />
-      </label>
-      <label class="field">
         Agent (Raspberry Pi)
         <select [formField]="f.agentId">
           <option value="">None</option>
@@ -44,15 +39,31 @@
           <gr-field-error [state]="f.calendarStart()" />
         </label>
       }
+      <label class="field">
+        Mixing tank counts as empty at
+        <input type="number" step="0.1" [formField]="f.mixEmptyLevel" />
+        <span class="hint">Level reading (cm) at or below which it is empty.</span>
+        <gr-field-error [state]="f.mixEmptyLevel()" />
+      </label>
+      <label class="field">
+        Let the batch settle (seconds)
+        <input type="number" step="5" [formField]="f.mixSettleSeconds" />
+        <gr-field-error [state]="f.mixSettleSeconds()" />
+      </label>
+      <label class="field">
+        Least time between auto-feeds of a pot (minutes)
+        <input type="number" step="5" [formField]="f.feedCooldownMinutes" />
+        <gr-field-error [state]="f.feedCooldownMinutes()" />
+      </label>
       <label class="field check">
-        <input type="checkbox" [formField]="f.autoDose" />
-        Correct pH and EC automatically
+        <input type="checkbox" [formField]="f.autoFeed" />
+        Feed pots by themselves
       </label>
     </div>
-    @if (model().autoDose) {
+    @if (model().autoFeed) {
       <p class="hint">
-        Automatic dosing runs calibrated pumps after a reading, at most every 30 minutes. Leave it off until the probes
-        are calibrated (backlog F-004).
+        A pot is fed when its level drops below the phase minimum, its EC below or its pH above the phase range, at most
+        once per the time above. Leave it off until the probes are calibrated (backlog F-004).
       </p>
     }
     @if (roomRun.errors().length) {
@@ -117,7 +128,7 @@
           </table>
         </div>
       } @else {
-        <p class="empty">No pots. Probes and actuators can belong to the reservoir instead.</p>
+        <p class="empty">No pots yet. Each pot needs a feed pump from the mixing tank and, ideally, a level probe.</p>
       }
     </section>
 
