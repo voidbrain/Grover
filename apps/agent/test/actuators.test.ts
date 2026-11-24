@@ -197,3 +197,16 @@ test('a pump whose relay will not switch off: its run settles, and no other pump
   assert.equal(pins.get('a'), false);
   assert.equal(await acts.run('b', 40, 'manual').done, true, 'pumps run again once it is off');
 });
+
+// B-005: clicking Run again while the pump ran queued another run (the request ends when the run is queued).
+test('a pump that is running or waiting cannot be queued again; after it ends it can', async () => {
+  const { acts, load } = rig();
+  await load([pump('a', 60), pump('b', 60)]);
+  const first = acts.run('a', 60, 'manual');
+  assert.throws(() => acts.run('a', 60, 'manual'), /already (running|waiting)/);
+  const queued = acts.run('b', 60, 'manual');
+  assert.throws(() => acts.run('b', 60, 'manual'), /already waiting/, 'waiting behind a counts too');
+  assert.equal(await first.done, true);
+  assert.equal(await queued.done, true);
+  assert.equal(await acts.run('a', 30, 'manual').done, true, 'free again');
+});

@@ -67,7 +67,7 @@ Protocol version 3 (2 added feeds, 3 the `dark` rule; hub and agent update toget
 Enforced on the agent ([`actuators.ts`](../apps/agent/src/actuators.ts)) whatever the hub sends, and checked again by the hub ([`commands.ts`](../apps/hub/src/commands.ts)) so refusals come back early with a reason:
 
 - Pumps only run bounded: a run is clamped to `maxRunMs`, which every pump must have (above 0; the schema and the agent both refuse a pump without one); a pump cannot be switched on.
-- One pump at a time (shared supply; a dose must not mix mid-measurement). Runs queue.
+- One pump at a time (shared supply; a dose must not mix mid-measurement). Runs queue, but a pump that is already waiting or running cannot be queued again (B-005).
 - A watchdog on every tick forces off any pump past its cap, even if its timer was lost.
 - Config change, `stop_all`, `off` mode, SIGINT/SIGTERM and uncaught errors turn everything off and drop every queued run, including one whose relay is still switching on: nothing starts after a stop. Drivers start with outputs off; MCP23017 pins stay inputs until claimed and are set to their off level (high for active-low relays) before they become outputs and again at shutdown.
 - A relay that fails to switch off stays reported on, the watchdog retries it on every tick, and no pump runs until it is off.

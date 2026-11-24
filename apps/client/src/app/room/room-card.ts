@@ -303,6 +303,7 @@ export class RoomCard {
 
   protected runPump(a: Actuator): void {
     const n = this.amount(a);
-    void this.hub.run(a.id, a.mlPerSecond ? { ml: n } : { durationMs: Math.round(n * 1000) });
+    // Keep Run disabled at most for the pump's cap plus a margin for the queue, in case the "off" report is lost.
+    void this.hub.run(a.id, a.mlPerSecond ? { ml: n } : { durationMs: Math.round(n * 1000) }, a.maxRunMs + 60_000);
   }
 }

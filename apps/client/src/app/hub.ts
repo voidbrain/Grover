@@ -152,7 +152,10 @@ export class Hub {
       case 'actuation': {
         const next = new Set(this.active());
         if (ev.actuation.state === 'on') next.add(ev.actuation.actuatorId);
-        else next.delete(ev.actuation.actuatorId);
+        else {
+          next.delete(ev.actuation.actuatorId);
+          this.endPending(ev.actuation.actuatorId);
+        }
         this.active.set(next);
         this.recent.update((list) => [ev.actuation, ...list].slice(0, 30));
         break;
@@ -217,10 +220,35 @@ export class Hub {
       firstValueFrom(this.http.post<CommandResult>(`/api/probes/${probeId}/read`, {})),
     );
   }
-  run(actuatorId: string, body: { durationMs: number } | { ml: number }) {
-    return this.act(`act:${actuatorId}`, () =>
+  /**
+   * Pumps asked to run and not yet reported off: their Run stays disabled (B-005). The request itself ends as
+   * soon as the Pi queues the run; the "off" actuation (or a time limit, if that report is lost) ends it here.
+   */
+  readonly pendingRuns = signal<ReadonlySet<string>>(new Set());
+  private readonly pendingTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+  private endPending(actuatorId: string): void {
+    clearTimeout(this.pendingTimers.get(actuatorId));
+    this.pendingTimers.delete(actuatorId);
+    this.pendingRuns.update((s) => {
+      const n = new Set(s);
+      n.delete(actuatorId);
+      return n;
+    });
+  }
+
+  /** Runs a pump; `limitMs` is how long to keep its Run disabled at most (its run cap plus queue time). */
+  async run(actuatorId: string, body: { durationMs: number } | { ml: number }, limitMs = 120_000) {
+    this.pendingRuns.update((s) => new Set(s).add(actuatorId));
+    this.pendingTimers.set(
+      actuatorId,
+      setTimeout(() => this.endPending(actuatorId), limitMs),
+    );
+    const result = await this.act(`act:${actuatorId}`, () =>
       firstValueFrom(this.http.post<CommandResult>(`/api/actuators/${actuatorId}/run`, body)),
     );
+    if (!result?.ok) this.endPending(actuatorId);
+    return result;
   }
   switch(actuatorId: string, on: boolean) {
     return this.act(`act:${actuatorId}`, () =>
