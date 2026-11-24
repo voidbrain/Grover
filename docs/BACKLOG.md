@@ -823,7 +823,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33) |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33); [#34](https://github.com/voidbrain/Grover/pull/34) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
