@@ -313,6 +313,14 @@ test('a stored clash (two actuators on one pin, saved before the check) does not
   assert.equal(hub.agents.buildConfig('pi-1'), null, 'no config sent: the agent keeps the one it has');
   const fault = hub.store.faults(0).find((f) => f.subject === 'config');
   assert.match(fault!.message, /old-light-2 and old-light-1 use the same pin/);
+  hub.agents.publishAllConfigs();
+  hub.agents.publishAllConfigs();
+  assert.equal(
+    hub.store.faults(0).filter((f) => f.subject === 'config').length,
+    1,
+    'recorded once, not on every publish',
+  );
+  assert.equal(hub.agents.view('pi-1').configCurrent, false, 'the dashboard does not call an unsent config current');
   hub.store.db.prepare("DELETE FROM actuators WHERE id IN ('old-light-1', 'old-light-2')").run();
   assert.ok(hub.agents.buildConfig('pi-1'));
 });
