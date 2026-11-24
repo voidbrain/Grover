@@ -31,7 +31,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#15](https://github.com/voidbrain/Grover/pull/15) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -65,7 +65,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#15](https://github.com/voidbrain/Grover/pull/15) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -99,7 +99,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#15](https://github.com/voidbrain/Grover/pull/15) |
 | Opened | 2026-11-24 |
 | Verification | Repository settings checked with `gh` on 2026-11-24; CI pending |
 | Reviewed | 2026-11-24 |
