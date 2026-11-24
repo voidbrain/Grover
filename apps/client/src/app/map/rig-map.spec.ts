@@ -3,71 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Hub } from '../hub';
+import { actuator, now, snapshot } from '../testing/rig-snapshot';
 import { RigMap } from './rig-map';
-
-const now = Date.now();
-const probe = (id: string, kind: string, extra: object = {}) => ({
-  id,
-  roomId: 'grow-1',
-  potId: null,
-  kind,
-  name: id,
-  enabled: true,
-  binding: { driver: 'mock' },
-  tank: null,
-  alertBelow: null,
-  alertAbove: null,
-  calibration: null,
-  ...extra,
-});
-const actuator = (id: string, kind: string, extra: object = {}) => ({
-  id,
-  roomId: 'grow-1',
-  potId: null,
-  kind,
-  name: id,
-  enabled: true,
-  binding: { driver: 'mock' },
-  maxRunMs: 30_000,
-  mlPerSecond: null,
-  ...extra,
-});
-const units = { unit: '', min: 0, max: 100, title: '' };
-
-const snapshot = {
-  rooms: [{ id: 'grow-1', name: 'Tent', mode: 'normal', agentId: 'pi-1', phase: null, autoFeed: false }],
-  agents: [{ agentId: 'pi-1', roomId: 'grow-1', online: true, lastSeen: now, status: null, configCurrent: true }],
-  pots: [{ id: 'pot-1', roomId: 'grow-1', name: 'Pot 1', liters: 15, feedLiters: 2, litersPerCm: 0.5 }],
-  probes: [
-    probe('tank-grow', 'water_level', { tank: 'grow', alertBelow: 3 }),
-    probe('tank-mix', 'water_level', { tank: 'mix' }),
-    probe('pot-1-level', 'water_level', { potId: 'pot-1' }),
-    probe('ph', 'ph'),
-  ],
-  actuators: [
-    actuator('light', 'light', { maxRunMs: 0 }),
-    actuator('pump-grow', 'pump_grow'),
-    actuator('pot-1-feed', 'pump_transfer', { potId: 'pot-1' }),
-    actuator('pot-1-loop', 'water_loop', { potId: 'pot-1', maxRunMs: 0 }),
-  ],
-  latest: [
-    { probeId: 'tank-grow', value: 2, at: now },
-    { probeId: 'pot-1-level', value: 20, at: now },
-  ],
-  alerts: [{ key: 'feed:pot-1', roomId: 'grow-1', potId: 'pot-1', level: 'bad', message: 'feed stopped', since: now }],
-  feeds: [],
-  potPhases: {},
-  plants: [{ id: 'nl', name: 'NL g2', potId: 'pot-1', harvestedOn: null }],
-  strains: [],
-  breeders: [],
-  probeKinds: {
-    water_level: { ...units, unit: 'cm' },
-    ph: { ...units, unit: 'pH' },
-    ec: units,
-    water_temperature: units,
-    air_temperature: units,
-  },
-};
 
 /** The rig map draws the tent from its setup, with live state and the dashboard's controls (F-015). */
 describe('RigMap', () => {
@@ -81,25 +18,34 @@ describe('RigMap', () => {
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
+  });
+
+  async function mount(change: (s: typeof snapshot) => object = (s) => s): Promise<void> {
+    const snap = change(structuredClone(snapshot));
     fixture = TestBed.createComponent(RigMap);
     fixture.componentRef.setInput('id', 'grow-1');
     fixture.detectChanges();
-    for (const r of http.match('/api/snapshot')) r.flush(snapshot);
+    for (const r of http.match('/api/snapshot')) r.flush(snap);
     const hub = TestBed.inject(Hub);
-    hub.snapshot.set(snapshot as never);
+    hub.snapshot.set(snap as never);
     hub.connected.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
     el = fixture.nativeElement as HTMLElement;
-  });
+  }
+  const node = (selector: string, text: string) =>
+    [...el.querySelectorAll(selector)].find((n) => n.textContent!.includes(text))!;
+  const button = (scope: Element, label: string) =>
+    [...scope.querySelectorAll('button')].find((b) => b.textContent!.trim().endsWith(label))!;
 
-  it('draws every supply tank, the mixing tank and each pot from the setup, with state on the parts', () => {
+  it('draws every supply tank, the mixing tank and each pot from the setup, with state on the parts', async () => {
+    await mount();
     const tanks = [...el.querySelectorAll('.node.tank')];
     expect(tanks.length).toBe(6); // water, grow, micro, bloom, ripen, pH down
-    const grow = tanks.find((t) => t.textContent!.includes('Grow'))!;
-    expect(grow.getAttribute('data-low')).toBe('true');
+    const grow = node('.node.tank', 'Grow');
+    expect(grow.getAttribute('data-alert')).toBe('bad');
     expect(grow.textContent).toContain('Low: refill');
-    expect(tanks.find((t) => t.textContent!.includes('Micro'))!.textContent).toContain('No pump');
+    expect(node('.node.tank', 'Micro').textContent).toContain('No pump');
     expect(el.querySelector('.node.mix')!.textContent).toContain('Idle');
     const pot = el.querySelector('.node.pot')!;
     expect(pot.textContent).toContain('NL g2');
@@ -109,9 +55,73 @@ describe('RigMap', () => {
     expect(el.querySelector('.alerts')).toBeNull();
   });
 
+  it('shows the words of an alert on the tank it concerns, and others above', async () => {
+    await mount((s) => ({
+      ...s,
+      alerts: [
+        {
+          key: 'probe:tank-grow:below',
+          roomId: 'grow-1',
+          potId: null,
+          level: 'warn',
+          message: 'Grow tank low: refill it',
+          since: now,
+        },
+        {
+          key: 'probe:tank-mix:above',
+          roomId: 'grow-1',
+          potId: null,
+          level: 'warn',
+          message: 'Mixing tank above 30 cm',
+          since: now,
+        },
+        {
+          key: 'agent:pi-2',
+          roomId: 'grow-1',
+          potId: null,
+          level: 'bad',
+          message: 'Agent pi-2 is offline',
+          since: now,
+        },
+      ],
+    }));
+    expect(node('.node.tank', 'Grow').textContent).toContain('Grow tank low: refill it');
+    expect(el.querySelector('.node.mix')!.textContent).toContain('Mixing tank above 30 cm');
+    const top = el.querySelector('.alerts')!.textContent!;
+    expect(top).toContain('Agent pi-2 is offline');
+    expect(top).not.toContain('refill');
+  });
+
+  it('a running feed: the mixing tank names the pot, Feed now waits', async () => {
+    await mount((s) => ({
+      ...s,
+      feeds: [
+        { feedId: 'f', roomId: 'grow-1', potId: 'pot-1', state: 'started', message: 'grow 4 mL', requestedAt: now },
+      ],
+    }));
+    expect(el.querySelector('.node.mix')!.textContent).toContain('Feeding Pot 1: grow 4 mL');
+    expect(button(el.querySelector('.node.pot')!, 'Feeding…').disabled).toBe(true);
+  });
+
+  it('follows the mode: silent lets lights on but not the loop; off disables Read; Stop all stays', async () => {
+    await mount((s) => ({ ...s, rooms: [{ ...s.rooms[0]!, mode: 'silent' }] }));
+    expect(button(node('.node.switch', 'light'), 'Off').disabled).toBe(false);
+    expect(button(el.querySelector('.node.pot')!, 'Off').disabled).toBe(true);
+    expect(button(node('.node.tank', 'Grow'), 'Run').disabled).toBe(true);
+    fixture.destroy();
+    await mount((s) => ({ ...s, rooms: [{ ...s.rooms[0]!, mode: 'off' }] }));
+    expect(button(el.querySelector('.tile')!, 'Read').disabled).toBe(true);
+    expect(button(el, 'Stop all').disabled).toBe(false);
+  });
+
+  it('lists parts it cannot place in the drawing, so nothing is hidden', async () => {
+    await mount((s) => ({ ...s, actuators: [...s.actuators, actuator('pump-grow-2', 'pump_grow')] }));
+    expect(el.querySelector('.others')!.textContent).toContain('pump-grow-2');
+  });
+
   it('runs a supply pump through the hub, and disables Run while it waits', async () => {
-    const grow = [...el.querySelectorAll('.node.tank')].find((t) => t.textContent!.includes('Grow'))!;
-    const run = [...grow.querySelectorAll('button')].find((b) => b.textContent!.trim() === 'Run')!;
+    await mount();
+    const run = button(node('.node.tank', 'Grow'), 'Run');
     run.click();
     fixture.detectChanges();
     const req = http.expectOne('/api/actuators/pump-grow/run');

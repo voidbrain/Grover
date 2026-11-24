@@ -79,9 +79,6 @@
   align-content: start;
   min-width: 0;
 }
-.node[data-low='true'] {
-  border-color: var(--bad);
-}
 .node[data-alert='warn'] {
   border-left-color: var(--warn);
 }

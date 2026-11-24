@@ -8,11 +8,13 @@
         · {{ ph.phase.name }}, day {{ ph.day }}
       }
     </span>
-    <button type="button" class="danger" [disabled]="!hub.connected()" (click)="stopAll()">Stop all</button>
+    <button type="button" class="danger" [disabled]="!online() || hub.busy().has('room:' + r.id)" (click)="stopAll()">
+      Stop all
+    </button>
   </header>
 
   @if (tentAlerts().length) {
-    <ul class="alerts" role="status">
+    <ul class="alerts" aria-label="Alerts">
       @for (a of tentAlerts(); track a.key) {
         <li [attr.data-level]="a.level">{{ a.message }}</li>
       }
@@ -33,7 +35,7 @@
             [disabled]="!canSwitch(a)"
             (click)="toggle(a)"
           >
-            <span class="sr-only">{{ a.name }}</span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}
+            <span class="sr-only">{{ a.name }}: </span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}
           </button>
         </div>
       }
@@ -47,7 +49,7 @@
     <h2 id="supply-h" class="label">Supply tanks → mixing tank</h2>
     <div class="row supply">
       @for (t of tanks(); track t.role) {
-        <div class="node tank" [attr.data-low]="t.low" [attr.data-alert]="t.alerts.length ? 'warn' : null">
+        <div class="node tank" [attr.data-alert]="t.worst">
           <span class="node-title">{{ t.title }}</span>
           @if (t.tile; as tile) {
             <a class="value-link" [routerLink]="['/probes', tile.probe.id]" [attr.data-health]="tile.health">
@@ -66,11 +68,14 @@
           } @else {
             <span class="hint">No pump</span>
           }
+          @for (a of t.alerts; track a.key) {
+            <span class="alert-line" [attr.data-level]="a.level">{{ a.message }}</span>
+          }
         </div>
       }
     </div>
     <div class="pipe" aria-hidden="true"></div>
-    <div class="node mix" [attr.data-alert]="mix().alerts.length ? 'warn' : null">
+    <div class="node mix" [attr.data-alert]="mix().worst">
       <span class="node-title">Mixing tank</span>
       @if (mix().tile; as tile) {
         <span>
@@ -78,10 +83,16 @@
           <span class="unit">{{ tile.unit }}</span>
         </span>
       }
-      @if (feed(); as f) {
-        <span class="feeding" role="status">Feeding {{ f.potId }}: {{ f.message }}</span>
-      } @else {
-        <span class="hint">Idle</span>
+      <!-- One live region that stays, so a feed starting or ending is announced. -->
+      <span role="status">
+        @if (feed(); as f) {
+          <span class="feeding">Feeding {{ feedingPot() }}: {{ f.message }}</span>
+        } @else {
+          <span class="hint">Idle</span>
+        }
+      </span>
+      @for (a of mix().alerts; track a.key) {
+        <span class="alert-line" [attr.data-level]="a.level">{{ a.message }}</span>
       }
     </div>
     <div class="pipe" aria-hidden="true"></div>
@@ -121,7 +132,7 @@
                 [disabled]="!canSwitch(l)"
                 (click)="toggle(l)"
               >
-                <span class="sr-only">{{ l.name }}</span>{{ hub.active().has(l.id) ? 'On' : 'Off' }}
+                <span class="sr-only">{{ l.name }}: </span>{{ hub.active().has(l.id) ? 'On' : 'Off' }}
               </button>
             </div>
           }
@@ -146,6 +157,36 @@
       }
     </div>
   </section>
+
+  @if (others().length) {
+    <section class="stage others" aria-labelledby="others-h">
+      <h2 id="others-h" class="label">Other parts</h2>
+      <p class="hint">
+        Switches and pumps the drawing has no place for (a second pump of the same kind, a feed pump without a pot).
+      </p>
+      <div class="row">
+        @for (a of others(); track a.id) {
+          <div class="node">
+            <span class="node-title">{{ a.name }}</span>
+            @if (isPump(a.kind)) {
+              <gr-pump-control [pump]="a" [allowed]="canAct()" [showName]="false" idPrefix="map-" />
+            } @else {
+              <button
+                type="button"
+                class="toggle small"
+                role="switch"
+                [attr.aria-checked]="hub.active().has(a.id)"
+                [disabled]="!canSwitch(a)"
+                (click)="toggle(a)"
+              >
+                <span class="sr-only">{{ a.name }}: </span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
 } @else {
   <p>Unknown tent.</p>
 }
@@ -165,7 +206,7 @@
         <span class="health">{{ t.health }}</span>
       }
     </span>
-    <button type="button" class="ghost small" [disabled]="!online() || reading(t)" (click)="read(t)">
+    <button type="button" class="ghost small" [disabled]="!canRead() || reading(t)" (click)="read(t)">
       <span class="sr-only">{{ t.title }}: </span>Read
     </button>
   </div>

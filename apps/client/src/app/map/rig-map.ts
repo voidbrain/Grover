@@ -61,6 +61,9 @@ export class RigMap {
   private probeAlerts(p: Probe): Alert[] {
     return this.alerts().filter((a) => a.key.startsWith(`probe:${p.id}:`));
   }
+  private worst(alerts: readonly Alert[], low = false): 'bad' | 'warn' | null {
+    return low || alerts.some((a) => a.level === 'bad') ? 'bad' : alerts.length ? 'warn' : null;
+  }
 
   /** Lights, fans and the tent's own probes (air, and the shared pH/EC pair). */
   protected readonly tent = computed(() => ({
@@ -74,20 +77,25 @@ export class RigMap {
     TANK_ROLES.filter((r) => r !== 'mix').map((role) => {
       const probe = this.probes().find((p) => p.tank === role) ?? null;
       const tile = probe ? this.tile(probe) : null;
+      const low = !!probe && probe.alertBelow !== null && tile?.value !== undefined && tile.value < probe.alertBelow;
+      const alerts = probe ? this.probeAlerts(probe) : [];
       return {
         role,
         title: TANK_TITLES[role],
         tile,
-        low: !!probe && probe.alertBelow !== null && tile?.value !== undefined && tile.value < probe.alertBelow,
+        low,
+        // One pump per supply tank is drawn; any other of the same kind is listed under "Other parts".
         pump: this.actuators().find((a) => a.kind === TANK_PUMP[role]) ?? null,
-        alerts: probe ? this.probeAlerts(probe) : [],
+        alerts,
+        worst: this.worst(alerts, low),
       };
     }),
   );
 
   protected readonly mix = computed(() => {
     const probe = this.probes().find((p) => p.tank === 'mix') ?? null;
-    return { tile: probe ? this.tile(probe) : null, alerts: probe ? this.probeAlerts(probe) : [] };
+    const alerts = probe ? this.probeAlerts(probe) : [];
+    return { tile: probe ? this.tile(probe) : null, alerts, worst: this.worst(alerts) };
   });
 
   protected readonly pots = computed(() => {
@@ -108,16 +116,39 @@ export class RigMap {
         return {
           pot,
           plant,
-          phase: phase ? `${phase.phase.name}, day ${phase.day}` : null,
+          // Worded as on the room card.
+          phase: phase
+            ? `${phase.phase.name} · day ${phase.day}${phase.source === 'plant' ? '' : ' (tent calendar)'}`
+            : null,
           tiles,
           loop: this.actuators().find((a) => a.potId === pot.id && a.kind === 'water_loop') ?? null,
           feedPump: this.actuators().find((a) => a.potId === pot.id && a.kind === 'pump_transfer') ?? null,
           alerts,
-          worst: alerts.some((a) => a.level === 'bad') ? 'bad' : alerts.length ? 'warn' : null,
+          worst: this.worst(alerts),
           feeding: this.feed()?.potId === pot.id,
         };
       });
   });
+
+  /** Switches and pumps the drawing has no place for (a second pump of a kind, a transfer pump without a pot…). */
+  protected readonly others = computed(() => {
+    const drawn = new Set<string>([
+      ...this.tent().switches.map((a) => a.id),
+      ...this.tanks().flatMap((t) => (t.pump ? [t.pump.id] : [])),
+      ...this.pots().flatMap((p) => [p.loop?.id, p.feedPump?.id].filter((id): id is string => !!id)),
+    ]);
+    return this.actuators().filter((a) => !drawn.has(a.id));
+  });
+
+  /** The pot being fed, by name. */
+  protected readonly feedingPot = computed(() => {
+    const f = this.feed();
+    return f ? (this.snap()?.pots.find((p) => p.id === f.potId)?.name ?? f.potId) : null;
+  });
+
+  protected readonly canRead = computed(() => this.online() && this.room()?.mode !== 'off');
+
+  protected isPump = isPump;
 
   /** Alerts not drawn on a part: agent offline and anything else of the tent. */
   protected readonly tentAlerts = computed(() => {
@@ -154,8 +185,9 @@ export class RigMap {
       void this.hub.feed(potId);
   }
 
+  /** As on the room card: at once, no question (it is the emergency stop). */
   protected stopAll(): void {
     const r = this.room();
-    if (r && confirm(`Stop everything in ${r.name}?`)) void this.hub.stop(r.id);
+    if (r) void this.hub.stop(r.id);
   }
 }
