@@ -1,0 +1,18 @@
+# Grover hub. Adjust User and WorkingDirectory to your checkout.
+[Unit]
+Description=Grover hub (API, MQTT broker, dosing)
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+User=grover
+WorkingDirectory=/opt/grover
+EnvironmentFile=-/etc/grover/hub.env
+Environment=GROVER_DB=/var/lib/grover/hub.sqlite
+ExecStart=/usr/bin/env node apps/hub/src/main.ts
+Restart=always
+RestartSec=5
+StateDirectory=grover
+
+[Install]
+WantedBy=multi-user.target

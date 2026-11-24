@@ -1,0 +1,126 @@
+import { execFile } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { promisify } from 'node:util';
+import type { Actuator, ActuatorBinding, Probe, ProbeBinding } from '@grover/contracts';
+import type { MockDrivers } from './mock.ts';
+import type { ActuatorDriver, DriverFactory, ProbeDriver } from './types.ts';
+
+const run = promisify(execFile);
+
+/**
+ * Raspberry Pi drivers. Each binding maps to one driver:
+ *   ds18b20   1-Wire temperature via the kernel w1-therm driver (/sys/bus/w1/devices/<address>/temperature)
+ *   ads1115   analog probes (pH, EC, level) through an ADS1115 ADC on I²C; returns volts, calibrated on the hub
+ *   gpio      a GPIO pin via `pinctrl` (Raspberry Pi OS Bookworm and later, every Pi model)
+ *   mcp23017  an MCP23017 I²C expander pin
+ *   mock      simulated, so a half-wired rig can still run
+ *
+ * I²C needs the optional `i2c-bus` package, built on the Pi.
+ */
+export class HardwareDrivers implements DriverFactory {
+  private readonly mock: MockDrivers;
+  private readonly expanders = new Map<string, Mcp23017>();
+  private i2c: typeof import('i2c-bus') | null = null;
+
+  constructor(mock: MockDrivers) {
+    this.mock = mock;
+  }
+
+  private async bus(n: number): Promise<import('i2c-bus').PromisifiedBus> {
+    this.i2c ??= await import('i2c-bus').catch(() => {
+      throw new Error('i2c-bus is not installed: run `npm install i2c-bus` on the Pi');
+    });
+    return this.i2c.openPromisified(n);
+  }
+
+  async probe(probe: Probe): Promise<ProbeDriver> {
+    const b: ProbeBinding = probe.binding;
+    switch (b.driver) {
+      case 'mock':
+        return this.mock.probe(probe);
+      case 'ds18b20':
+        return {
+          read: async () => {
+            const raw = await readFile(`/sys/bus/w1/devices/${b.address}/temperature`, 'utf8');
+            const milli = Number(raw.trim());
+            if (!Number.isFinite(milli) || milli === 85000)
+              throw new Error(`ds18b20 ${b.address}: bad reading ${raw.trim()}`);
+            return Math.round(milli / 100) / 10;
+          },
+        };
+      case 'ads1115': {
+        const bus = await this.bus(b.i2cBus);
+        return { read: () => readAds1115(bus, b.i2cAddress, b.channel), close: () => bus.close() };
+      }
+      case 'hcsr04':
+        throw new Error('hcsr04 needs microsecond timing that Node cannot give: use an analog or I²C level sensor');
+    }
+  }
+
+  async actuator(actuator: Actuator): Promise<ActuatorDriver> {
+    const b: ActuatorBinding = actuator.binding;
+    switch (b.driver) {
+      case 'mock':
+        return this.mock.actuator(actuator);
+      case 'gpio': {
+        const level = (on: boolean) => (on !== b.activeLow ? 'dh' : 'dl');
+        await run('pinctrl', ['set', String(b.pin), 'op', level(false)]);
+        return { set: async (on) => void (await run('pinctrl', ['set', String(b.pin), 'op', level(on)])) };
+      }
+      case 'mcp23017': {
+        const key = `${b.i2cBus}:${b.i2cAddress}`;
+        let chip = this.expanders.get(key);
+        if (!chip) {
+          chip = new Mcp23017(await this.bus(b.i2cBus), b.i2cAddress);
+          await chip.init();
+          this.expanders.set(key, chip);
+        }
+        const c = chip;
+        await c.write(b.pin, b.activeLow);
+        return { set: (on) => c.write(b.pin, on !== b.activeLow) };
+      }
+    }
+  }
+
+  async close(): Promise<void> {
+    for (const chip of this.expanders.values()) await chip.close();
+    this.expanders.clear();
+  }
+}
+
+/** Single-shot conversion, ±4.096 V range, 128 SPS. Returns volts. */
+async function readAds1115(bus: import('i2c-bus').PromisifiedBus, address: number, channel: number): Promise<number> {
+  const mux = 0x4 + channel; // AINx vs GND
+  const config = 0x8000 | (mux << 12) | (0x1 << 9) | 0x0100 | (0x4 << 5) | 0x3;
+  await bus.writeI2cBlock(address, 0x01, 2, Buffer.from([config >> 8, config & 0xff]));
+  await new Promise((r) => setTimeout(r, 10));
+  const buf = Buffer.alloc(2);
+  await bus.readI2cBlock(address, 0x00, 2, buf);
+  return Math.round((buf.readInt16BE(0) * 4.096 * 1000) / 32768) / 1000;
+}
+
+/** MCP23017 with every pin as an output (all low at init). */
+class Mcp23017 {
+  private olat = 0;
+  private readonly bus: import('i2c-bus').PromisifiedBus;
+  private readonly address: number;
+  constructor(bus: import('i2c-bus').PromisifiedBus, address: number) {
+    this.bus = bus;
+    this.address = address;
+  }
+  async init(): Promise<void> {
+    await this.bus.writeByte(this.address, 0x14, 0); // OLATA
+    await this.bus.writeByte(this.address, 0x15, 0); // OLATB
+    await this.bus.writeByte(this.address, 0x00, 0); // IODIRA: outputs
+    await this.bus.writeByte(this.address, 0x01, 0); // IODIRB: outputs
+  }
+  async write(pin: number, high: boolean): Promise<void> {
+    this.olat = high ? this.olat | (1 << pin) : this.olat & ~(1 << pin);
+    await this.bus.writeByte(this.address, pin < 8 ? 0x14 : 0x15, pin < 8 ? this.olat & 0xff : this.olat >> 8);
+  }
+  async close(): Promise<void> {
+    await this.bus.writeByte(this.address, 0x14, 0).catch(() => {});
+    await this.bus.writeByte(this.address, 0x15, 0).catch(() => {});
+    await this.bus.close();
+  }
+}

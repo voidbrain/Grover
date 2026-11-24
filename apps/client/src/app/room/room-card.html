@@ -1,0 +1,171 @@
+@let r = room();
+<section class="room" [attr.aria-labelledby]="'room-' + r.id">
+  <header class="room-head">
+    <div>
+      <h2 [id]="'room-' + r.id">{{ r.name }}</h2>
+      <p class="meta">
+        @if (r.phase) {
+          {{ r.phase.phase.name }} · day {{ r.phase.day }} · {{ r.reservoirLiters }} L reservoir
+        } @else {
+          No active grow calendar · {{ r.reservoirLiters }} L reservoir
+        }
+      </p>
+      <p class="agent" [class.offline]="!online()" role="status">
+        <span class="dot" aria-hidden="true"></span>{{ agentLabel() }}
+      </p>
+    </div>
+    <div class="room-actions">
+      <fieldset class="segmented" [disabled]="!online() || busy('room:' + r.id)">
+        <legend class="sr-only">Operating mode</legend>
+        @for (m of modes; track m) {
+          <label [class.selected]="r.mode === m">
+            <input
+              type="radio"
+              [name]="'mode-' + r.id"
+              [value]="m"
+              [checked]="r.mode === m"
+              (change)="hub.setMode(r.id, m)"
+            />
+            {{ m }}
+          </label>
+        }
+      </fieldset>
+      <button type="button" class="danger" [disabled]="!online() || busy('room:' + r.id)" (click)="hub.stop(r.id)">
+        Stop all
+      </button>
+    </div>
+  </header>
+
+  <ul class="probes" aria-label="Probes">
+    @for (p of probes(); track p.probe.id) {
+      <li class="probe" [attr.data-health]="p.health">
+        <a [routerLink]="['/probes', p.probe.id]" class="probe-link">
+          <span class="probe-name">{{ p.probe.name }}</span>
+          <span class="probe-value">
+            @if (p.value !== undefined) {
+              {{ p.value | number: '1.0-2' }}<small>{{ p.unit }}</small>
+            } @else {
+              —
+            }
+          </span>
+          <span class="probe-meta">
+            @if (p.range) {
+              target {{ p.range.min }}–{{ p.range.max }} ·
+            }
+            {{ p.ago }}
+            @if (p.health === 'low' || p.health === 'high' || p.health === 'stale') {
+              · <strong>{{ p.health }}</strong>
+            }
+          </span>
+        </a>
+        <button
+          type="button"
+          class="ghost small"
+          [disabled]="!online() || r.mode === 'off' || busy('probe:' + p.probe.id)"
+          (click)="hub.read(p.probe.id)"
+          [attr.aria-label]="'Read ' + p.probe.name + ' now'"
+        >
+          Read
+        </button>
+      </li>
+    } @empty {
+      <li class="empty">No probes configured.</li>
+    }
+  </ul>
+
+  <div class="controls">
+    <section aria-label="Switches">
+      <h3>Switches</h3>
+      <ul class="list">
+        @for (a of switches(); track a.id) {
+          <li>
+            <span>{{ a.name }}</span>
+            <button
+              type="button"
+              role="switch"
+              class="toggle"
+              [attr.aria-checked]="hub.active().has(a.id)"
+              [disabled]="!online() || busy('act:' + a.id)"
+              (click)="hub.switch(a.id, !hub.active().has(a.id))"
+            >
+              <span class="sr-only">{{ a.name }}</span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}
+            </button>
+          </li>
+        } @empty {
+          <li class="empty">None.</li>
+        }
+      </ul>
+    </section>
+
+    <section aria-label="Pumps">
+      <h3>Pumps</h3>
+      <ul class="list">
+        @for (a of pumps(); track a.id) {
+          <li>
+            <span>
+              {{ a.name }}
+              @if (hub.active().has(a.id)) {
+                <span class="running">running</span>
+              }
+            </span>
+            <span class="pump-run">
+              <label class="sr-only" [for]="'amt-' + a.id"
+                >{{ a.name }} amount in {{ a.mlPerSecond ? 'millilitres' : 'seconds' }}</label
+              >
+              <input
+                [id]="'amt-' + a.id"
+                type="number"
+                min="0.1"
+                step="0.5"
+                [value]="amount(a)"
+                (change)="setAmount(a, $any($event.target).value)"
+              />
+              <span class="unit">{{ a.mlPerSecond ? 'mL' : 's' }}</span>
+              <button
+                type="button"
+                [disabled]="!online() || r.mode !== 'normal' || busy('act:' + a.id)"
+                (click)="runPump(a)"
+              >
+                Run
+              </button>
+            </span>
+          </li>
+        } @empty {
+          <li class="empty">None.</li>
+        }
+      </ul>
+    </section>
+
+    <section aria-label="Dosing" class="dosing">
+      <h3>Dosing</h3>
+      <p class="meta">Automatic correction is {{ r.autoDose ? 'on' : 'off' }}.</p>
+      @if (suggestion(); as s) {
+        <p>{{ s.reason }}</p>
+        @if (suggestionKeys().length) {
+          <ul class="list compact">
+            @for (k of suggestionKeys(); track k[0]) {
+              <li>
+                <span>{{ k[0].replace('pump_', '').replace('_', ' ') }}</span><span>{{ k[1] }} mL</span>
+              </li>
+            }
+          </ul>
+          <button
+            type="button"
+            [disabled]="!online() || r.mode !== 'normal' || busy('dose:' + r.id)"
+            (click)="applyDose()"
+          >
+            Apply this dose
+          </button>
+        }
+        <p class="meta">
+          Model: EC +{{ s.model.ecPerMl | number: '1.2-2' }} per mL/L · pH −{{ s.model.phPerMl | number: '1.2-2' }} per
+          mL/L · {{ s.model.samples }} samples
+        </p>
+      } @else {
+        <button type="button" class="ghost" [disabled]="!hub.connected()" (click)="loadSuggestion()">
+          Suggest a correction
+        </button>
+      }
+    </section>
+  </div>
+</section>

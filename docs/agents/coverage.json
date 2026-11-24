@@ -1,0 +1,26 @@
+{
+ "packages/contracts/src/": {
+  "lines": 100,
+  "statements": 100,
+  "branches": 95.8,
+  "functions": 100
+ },
+ "apps/hub/src/": {
+  "lines": 91.8,
+  "statements": 91.8,
+  "branches": 75,
+  "functions": 80.8
+ },
+ "apps/agent/src/": {
+  "lines": 73.6,
+  "statements": 73.6,
+  "branches": 77.8,
+  "functions": 82.8
+ },
+ "all": {
+  "lines": 88.6,
+  "statements": 88.6,
+  "branches": 78.5,
+  "functions": 83.4
+ }
+}
