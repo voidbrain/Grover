@@ -3,6 +3,9 @@ import {
   feedReason,
   fitModel,
   phaseForDay,
+  phaseForPlant,
+  daysBetween,
+  localTime,
   planFeed,
   type ActuatorKind,
   type AgentView,
@@ -24,7 +27,6 @@ import { Refused } from './commands.ts';
 import type { Bus } from './events.ts';
 import type { Store } from './store.ts';
 
-const DAY = 86_400_000;
 const NUTRIENTS = ['grow', 'micro', 'bloom', 'ripen'] as const;
 
 export interface FeederOptions {
@@ -32,6 +34,8 @@ export interface FeederOptions {
   mixMs: number;
   /** A reading older than this is not used to plan a feed. */
   freshMs: number;
+  /** The grow's time zone: plant and calendar days start at local midnight. Defaults to the host's. */
+  timezone?: string;
   now?: () => number;
 }
 
@@ -110,13 +114,34 @@ export class Feeder {
     this.off();
   }
 
+  /** Today's calendar date in the grow's time zone. */
+  private today(): string {
+    return localTime(new Date(this.now()), this.opts.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone).day;
+  }
+
   phase(room: Room): { phase: Phase; day: number } | null {
     if (!room.calendarId || !room.calendarStart) return null;
     const calendar = this.store.getCalendar(room.calendarId);
     if (!calendar) return null;
-    const day = Math.floor((this.now() - Date.parse(room.calendarStart)) / DAY);
+    const day = daysBetween(room.calendarStart.slice(0, 10), this.today());
     const found = phaseForDay(calendar, day);
     return found ? { phase: found.phase, day } : null;
+  }
+
+  /**
+   * The phase a pot is fed for: its growing plant's own (from the plant's start, bloom and flush dates), else the
+   * tent's calendar (F-013: pots can be staggered).
+   */
+  potPhase(pot: Pot): { phase: Phase; day: number; source: 'plant' | 'tent'; plantId: string | null } | null {
+    const room = this.store.getRoom(pot.roomId);
+    const plant = this.store.plantInPot(pot.id);
+    const calendar = room.calendarId ? this.store.getCalendar(room.calendarId) : null;
+    if (plant && calendar) {
+      const found = phaseForPlant(calendar, plant, this.today());
+      if (found) return { phase: found.phase, day: found.day, source: 'plant', plantId: plant.id };
+    }
+    const tent = this.phase(room);
+    return tent ? { ...tent, source: 'tent', plantId: plant?.id ?? null } : null;
   }
 
   /** Fitted from finished feeds: the pot's EC and pH before, what went in, and the first readings after it mixed. */
@@ -145,10 +170,16 @@ export class Feeder {
   preview(potId: string, feedId = 'preview'): FeedDecision & { ec: number | null; ph: number | null } {
     const pot = this.store.getPot(potId);
     const room = this.store.getRoom(pot.roomId);
-    const current = this.phase(room);
+    const current = this.potPhase(pot);
     const ec = this.fresh(pot, 'ec');
     const ph = this.fresh(pot, 'ph');
-    if (!current) return { ok: false, reason: 'the tent has no active grow calendar', ec, ph };
+    if (!current)
+      return {
+        ok: false,
+        reason: 'no phase: the tent has no active grow calendar (or the plant in this pot has no start date)',
+        ec,
+        ph,
+      };
     const pumps: Partial<Record<ActuatorKind, FeedPump>> = {};
     let transfer: FeedPump | null = null;
     for (const a of this.store.listActuators(room.id)) {
@@ -352,10 +383,10 @@ export class Feeder {
 
     const room = this.store.getRoom(probe.roomId);
     if (!room.autoFeed || room.mode !== 'normal') return;
-    const current = this.phase(room);
-    if (!current) return;
     for (const pot of pots) {
       if (this.running.has(room.id)) return;
+      const current = this.potPhase(pot);
+      if (!current) continue;
       const cooldown = room.feedCooldownMinutes * 60_000;
       const last = Math.max(this.store.lastFeedAt(pot.id) ?? 0, this.lastAuto.get(pot.id) ?? 0);
       if (this.now() - last < cooldown) continue;

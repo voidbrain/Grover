@@ -9,12 +9,9 @@
       <h2 id="plants-title">Plants</h2>
       <button type="button" class="ghost" (click)="edit('plant', null)">Add plant</button>
     </div>
-    @if (harvestedCount()) {
-      <label class="show">
-        <input type="checkbox" [checked]="showHarvested()" (change)="showHarvested.set($any($event.target).checked)" />
-        Show harvested plants ({{ harvestedCount() }})
-      </label>
-    }
+    <p class="muted">
+      Plants start elsewhere (from seed or a cutting), then go into a free pot. A pot holds one growing plant.
+    </p>
     @if (isEditing('plant', null)) {
       <gr-plant-editor
         [plants]="plants()"
@@ -24,70 +21,126 @@
         (done)="editing.set(null)"
       />
     }
-    @if (plantRows().length) {
-      <div class="table-wrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Plant</th>
-              <th scope="col">Strain</th>
-              <th scope="col">Origin</th>
-              <th scope="col">Seed from</th>
-              <th scope="col">Pot</th>
-              <th scope="col">Started</th>
-              <th scope="col"><span class="sr-only">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (row of plantRows(); track row.plant.id) {
-              <tr [class.off]="row.plant.harvestedOn">
-                <td>
-                  {{ row.plant.name }}
-                  @if (row.plant.harvestedOn) {
-                    (harvested {{ row.plant.harvestedOn }})
-                  }
-                </td>
-                <td>{{ row.strain }}</td>
-                <td>
-                  {{ row.origin }}
-                  @if (row.mother) {
-                    <span class="muted"> of {{ row.mother }}</span>
-                  }
-                </td>
-                <td>{{ row.breeder }}</td>
-                <td>{{ row.pot ?? '—' }}</td>
-                <td>{{ row.plant.startedOn ?? '—' }}</td>
-                <td class="actions">
-                  <button
-                    type="button"
-                    class="ghost small"
-                    (click)="edit('plant', row.plant.id)"
-                    [attr.aria-label]="'Edit ' + row.plant.name"
-                  >
-                    Edit
-                  </button>
-                </td>
-              </tr>
-              @if (isEditing('plant', row.plant.id)) {
+    @for (
+      group of [
+      { title: 'In the tent', rows: inTent(), empty: 'No plant in the tent.' },
+      { title: 'Growing elsewhere', rows: elsewhere(), empty: 'None: take cuttings from a plant in the tent, or add one from seed.' },
+      { title: 'Harvested', rows: harvested(), empty: '' }
+    ];
+      track group.title
+    ) {
+      @if (group.title !== 'Harvested' || showHarvested()) {
+        <h3>{{ group.title }}</h3>
+        @if (group.rows.length) {
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td colspan="7">
-                    <gr-plant-editor
-                      [plant]="editingPlant()"
-                      [plants]="plants()"
-                      [strains]="strains()"
-                      [breeders]="breeders()"
-                      [pots]="pots()"
-                      (done)="editing.set(null)"
-                    />
-                  </td>
+                  <th scope="col">Plant</th>
+                  <th scope="col">Strain</th>
+                  <th scope="col">Origin</th>
+                  <th scope="col">Seed from</th>
+                  <th scope="col">
+                    {{ group.title === 'In the tent' ? 'Pot' : group.title === 'Harvested' ? 'Harvested' : 'Age' }}
+                  </th>
+                  <th scope="col"><span class="sr-only">Actions</span></th>
                 </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
-    } @else {
-      <p class="empty">No plants yet.</p>
+              </thead>
+              <tbody>
+                @for (row of group.rows; track row.plant.id) {
+                  <tr [class.off]="row.plant.harvestedOn">
+                    <td>{{ row.plant.name }}</td>
+                    <td>{{ row.strain }}</td>
+                    <td>
+                      {{ row.origin }}
+                      @if (row.mother) {
+                        <span class="muted"> of {{ row.mother }}</span>
+                      }
+                    </td>
+                    <td>{{ row.breeder }}</td>
+                    <td>
+                      @switch (row.where) {
+                        @case ('tent') {
+                          {{ row.pot }}
+                        }
+                        @case ('harvested') {
+                          {{ row.plant.harvestedOn }}
+                        }
+                        @default {
+                          {{ row.age === null ? '—' : row.age + ' days' }}
+                        }
+                      }
+                    </td>
+                    <td class="actions">
+                      @if (row.where === 'tent') {
+                        <button
+                          type="button"
+                          class="ghost small"
+                          [disabled]="busy('plant:' + row.plant.id)"
+                          (click)="cuttings(row.plant.id, row.plant.name)"
+                        >
+                          Take cuttings
+                        </button>
+                        <button
+                          type="button"
+                          class="ghost small"
+                          [disabled]="busy('plant:' + row.plant.id)"
+                          (click)="harvest(row.plant.id, row.plant.name)"
+                        >
+                          Harvest
+                        </button>
+                      }
+                      @if (row.where === 'elsewhere' && freePots().length) {
+                        <label class="sr-only" [for]="'pot-for-' + row.plant.id">Pot for {{ row.plant.name }}</label>
+                        <select
+                          [id]="'pot-for-' + row.plant.id"
+                          class="inline-select"
+                          (change)="choosePot(row.plant.id, $any($event.target).value)"
+                        >
+                          @for (pot of freePots(); track pot.id) {
+                            <option [value]="pot.id">{{ pot.name }}</option>
+                          }
+                        </select>
+                        <button type="button" class="ghost small" (click)="place(row.plant.id)">Place in pot</button>
+                      }
+                      <button
+                        type="button"
+                        class="ghost small"
+                        (click)="edit('plant', row.plant.id)"
+                        [attr.aria-label]="'Edit ' + row.plant.name"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                  @if (isEditing('plant', row.plant.id)) {
+                    <tr>
+                      <td colspan="6">
+                        <gr-plant-editor
+                          [plant]="editingPlant()"
+                          [plants]="plants()"
+                          [strains]="strains()"
+                          [breeders]="breeders()"
+                          [pots]="pots()"
+                          (done)="editing.set(null)"
+                        />
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else if (group.empty) {
+          <p class="empty">{{ group.empty }}</p>
+        }
+      }
+    }
+    @if (harvestedCount()) {
+      <label class="show">
+        <input type="checkbox" [checked]="showHarvested()" (change)="showHarvested.set($any($event.target).checked)" />
+        Show harvested plants ({{ harvestedCount() }})
+      </label>
     }
   </section>
 

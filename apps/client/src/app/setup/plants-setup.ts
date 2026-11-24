@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { generationLabel, geneticsLabel } from '@grover/contracts/kinds';
+import { Clock } from '../clock';
 import { Hub } from '../hub';
 import { BreederEditor, PlantEditor, StrainEditor } from './plant-editors';
 
@@ -39,6 +40,18 @@ type Editing = { kind: 'breeder' | 'strain' | 'plant'; id: string | null } | nul
       font-size: 0.8125rem;
       margin: 0;
     }
+    h3 {
+      margin: var(--space-2) 0 0;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .inline-select {
+      width: auto;
+      min-height: 1.75rem;
+      font-size: 0.75rem;
+    }
     .show {
       display: flex;
       gap: var(--space-2);
@@ -48,7 +61,7 @@ type Editing = { kind: 'breeder' | 'strain' | 'plant'; id: string | null } | nul
   `,
 })
 export class PlantsSetup {
-  private readonly hub = inject(Hub);
+  protected readonly hub = inject(Hub);
   protected readonly snapshot = this.hub.snapshot;
   protected readonly breeders = computed(() => this.snapshot()?.breeders ?? []);
   protected readonly strains = computed(() => this.snapshot()?.strains ?? []);
@@ -63,10 +76,15 @@ export class PlantsSetup {
     pot: new Map(this.pots().map((p) => [p.id, p.name])),
   }));
 
+  private readonly clock = inject(Clock);
   protected readonly plantRows = computed(() =>
     this.plants()
       .filter((p) => this.showHarvested() || p.harvestedOn === null)
       .map((p) => ({
+        where: p.harvestedOn ? ('harvested' as const) : p.potId ? ('tent' as const) : ('elsewhere' as const),
+        age: p.startedOn
+          ? Math.max(0, Math.floor((this.clock.now() - Date.parse(`${p.startedOn}T00:00:00Z`)) / 86_400_000))
+          : null,
         plant: p,
         strain: p.strainId ? (this.names().strain.get(p.strainId) ?? p.strainId) : '—',
         breeder: p.breederId ? (this.names().breeder.get(p.breederId) ?? p.breederId) : '—',
@@ -75,6 +93,44 @@ export class PlantsSetup {
         pot: p.potId ? (this.names().pot.get(p.potId) ?? p.potId) : null,
       })),
   );
+  protected readonly inTent = computed(() => this.plantRows().filter((r) => r.where === 'tent'));
+  protected readonly elsewhere = computed(() => this.plantRows().filter((r) => r.where === 'elsewhere'));
+  protected readonly harvested = computed(() => this.plantRows().filter((r) => r.where === 'harvested'));
+  /** Pots with no growing plant. */
+  protected readonly freePots = computed(() =>
+    this.pots().filter((pot) => !this.plants().some((p) => p.potId === pot.id && p.harvestedOn === null)),
+  );
+  protected readonly placeChoice = signal<Record<string, string>>({});
+
+  protected async cuttings(plantId: string, name: string): Promise<void> {
+    const answer = prompt(`How many cuttings from ${name}?`, '4');
+    if (answer === null) return;
+    const count = Number(answer);
+    if (!Number.isInteger(count) || count < 1 || count > 20) {
+      this.hub.lastError.set('Cuttings: give a whole number from 1 to 20.');
+      return;
+    }
+    await this.hub.takeCuttings(plantId, count);
+  }
+  protected async harvest(plantId: string, name: string): Promise<void> {
+    if (confirm(`Record ${name} as harvested today? Its pot becomes free.`)) await this.hub.harvest(plantId);
+  }
+  protected async place(plantId: string): Promise<void> {
+    const wanted = this.placeChoice()[plantId];
+    const potId = this.freePots().some((p) => p.id === wanted) ? wanted : this.freePots()[0]?.id;
+    if (potId) await this.hub.place(potId, plantId);
+    this.placeChoice.update((m) => {
+      const { [plantId]: _drop, ...rest } = m;
+      return rest;
+    });
+  }
+  protected choosePot(plantId: string, potId: string): void {
+    this.placeChoice.update((m) => ({ ...m, [plantId]: potId }));
+  }
+  protected busy(key: string): boolean {
+    return this.hub.busy().has(key);
+  }
+
   protected readonly harvestedCount = computed(() => this.plants().filter((p) => p.harvestedOn !== null).length);
 
   protected readonly strainRows = computed(() =>

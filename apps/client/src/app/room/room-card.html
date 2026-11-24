@@ -103,8 +103,48 @@
                 }
                 <br /><span class="muted">{{ pl.facts }}</span>
               </p>
+              <div class="pot-actions">
+                <button
+                  type="button"
+                  class="ghost small"
+                  [disabled]="!hub.connected() || busy('plant:' + pl.id)"
+                  (click)="cuttings(pl.id, pl.name)"
+                >
+                  Take cuttings
+                </button>
+                <button
+                  type="button"
+                  class="ghost small"
+                  [disabled]="!hub.connected() || busy('plant:' + pl.id)"
+                  (click)="harvest(pl.id, pl.name)"
+                >
+                  Harvest
+                </button>
+              </div>
             } @empty {
-              <p class="muted">No plant recorded.</p>
+              @if (nursery().length) {
+                <div class="pot-actions">
+                  <label class="sr-only" [for]="'place-' + p.pot.id">Plant to place in {{ p.pot.name }}</label>
+                  <select [id]="'place-' + p.pot.id" (change)="choose(p.pot.id, $any($event.target).value)">
+                    @for (n of nursery(); track n.id) {
+                      <option [value]="n.id">{{ n.name }}</option>
+                    }
+                  </select>
+                  <button
+                    type="button"
+                    class="small"
+                    [disabled]="!hub.connected() || busy('pot:' + p.pot.id)"
+                    (click)="place(p.pot)"
+                  >
+                    Place in pot
+                  </button>
+                </div>
+              } @else {
+                <p class="muted">Empty. No plant is growing elsewhere to place here.</p>
+              }
+            }
+            @if (p.phaseLabel) {
+              <p class="muted">{{ p.phaseLabel }}</p>
             }
             <ul class="tiles compact">
               @for (t of p.tiles; track t.probe.id) {

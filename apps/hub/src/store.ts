@@ -460,6 +460,10 @@ export class Store {
       }),
     );
   }
+  /** The plant growing in a pot now (not harvested), if any. */
+  plantInPot(potId: string): Plant | null {
+    return this.listPlants().find((p) => p.potId === potId && p.harvestedOn === null) ?? null;
+  }
   putPlant(input: unknown): Plant {
     const p = Plant.parse(input);
     if (p.strainId && !this.listStrains().some((x) => x.id === p.strainId))
@@ -469,6 +473,11 @@ export class Store {
     if (p.motherId && !this.listPlants().some((x) => x.id === p.motherId))
       throw new BadReference(`unknown mother plant ${p.motherId}`);
     if (p.potId && !this.listPots().some((x) => x.id === p.potId)) throw new BadReference(`unknown pot ${p.potId}`);
+    // A pot holds one growing plant (F-013); a harvested plant keeps its pot as history.
+    if (p.potId && p.harvestedOn === null) {
+      const other = this.listPlants().find((x) => x.potId === p.potId && x.harvestedOn === null && x.id !== p.id);
+      if (other) throw new BadReference(`${p.potId} already holds ${other.name}: harvest it or move it first`);
+    }
     this.db
       .prepare(
         `INSERT INTO plants (id, name, strain_id, breeder_id, generation, mother_id, pot_id, medium, started_on, trimmed_on, bloom_on,

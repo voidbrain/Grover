@@ -129,6 +129,58 @@ export function phaseForDay(
   return null;
 }
 
+/**
+ * Whole days between two calendar dates (YYYY-MM-DD), negative when `to` is before `from`. Callers pass today's
+ * date in the grow's time zone (`localTime`), so a day starts at local midnight and DST changes do not matter.
+ */
+export function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+}
+
+export interface PlantDates {
+  startedOn: string | null;
+  bloomOn: string | null;
+  flushOn: string | null;
+}
+
+/**
+ * The phase a plant is in, from its own dates (F-013: pots can be staggered):
+ * - before its bloom date: the non-flowering phases counted from its start, holding in the last one until the
+ *   switch to flowering is recorded (the grower decides when);
+ * - from its bloom date: the flowering phases counted from that date, then on into the flushing ones;
+ * - from its flush date: the flushing phases counted from that date.
+ * Null without a start date, or before it.
+ */
+export function phaseForPlant(
+  calendar: Calendar,
+  dates: PlantDates,
+  today: string,
+): { phase: Phase; index: number; dayInPhase: number; day: number } | null {
+  if (!dates.startedOn) return null;
+  const day = daysBetween(dates.startedOn, today);
+  if (day < 0) return null;
+  const indexed = calendar.phases.map((phase, index) => ({ phase, index }));
+  const walk = (group: typeof indexed, elapsed: number) => {
+    if (group.length === 0) return null;
+    let start = 0;
+    for (const g of group) {
+      if (elapsed < start + g.phase.days) return { ...g, dayInPhase: elapsed - start, day };
+      start += g.phase.days;
+    }
+    const last = group.at(-1)!;
+    return { ...last, dayInPhase: elapsed - (start - last.phase.days), day };
+  };
+  const veg = indexed.filter((g) => !g.phase.blooming && !g.phase.flushing);
+  const bloom = indexed.filter((g) => g.phase.blooming && !g.phase.flushing);
+  const flush = indexed.filter((g) => g.phase.flushing);
+  if (dates.flushOn && daysBetween(dates.flushOn, today) >= 0)
+    // No flush phase in this calendar: hold in the last flowering phase, never back to the first.
+    return walk(flush, daysBetween(dates.flushOn, today)) ?? walk(bloom, Number.MAX_SAFE_INTEGER);
+  if (dates.bloomOn && daysBetween(dates.bloomOn, today) >= 0)
+    return walk([...bloom, ...flush], daysBetween(dates.bloomOn, today));
+  return walk(veg, day) ?? walk(indexed, day);
+}
+
 /** The default calendar, from the original Grover tables; ripen alone at the end, then plain water. */
 export const DEFAULT_CALENDAR: Calendar = {
   id: 'default',

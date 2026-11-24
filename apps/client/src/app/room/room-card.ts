@@ -1,7 +1,7 @@
 import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { Actuator, FeedView, OperatingMode, Pot, Probe } from '@grover/contracts';
+import type { Actuator, FeedView, OperatingMode, Phase, Pot, Probe } from '@grover/contracts';
 import { TANK_ROLES, TANK_TITLES, generationLabel, geneticsLabel, isPump } from '@grover/contracts/kinds';
 import { Clock } from '../clock';
 import { ago, health, targetRange, type Health } from '../format';
@@ -90,15 +90,18 @@ export class RoomCard {
       .filter((p) => p.roomId === this.room().id)
       .map((pot) => {
         const own = (kind: Probe['kind']) => all.find((p) => p.potId === pot.id && p.kind === kind);
+        // Each pot is fed for its own plant's phase (F-013), so its readings are judged against it.
+        const potPhase = this.snap()?.potPhases?.[pot.id] ?? null;
+        const phase = potPhase?.phase ?? this.phase();
         const tiles: Tile[] = [];
         const level = own('water_level');
-        if (level) tiles.push(this.tile(level, false));
+        if (level) tiles.push(this.tile(level, false, phase));
         for (const kind of ['ph', 'ec'] as const) {
           const p = own(kind) ?? shared(kind);
-          if (p) tiles.push(this.tile(p, !own(kind)));
+          if (p) tiles.push(this.tile(p, !own(kind), phase));
         }
         const temp = own('water_temperature');
-        if (temp) tiles.push(this.tile(temp, false));
+        if (temp) tiles.push(this.tile(temp, false, phase));
         const strains = this.snap()?.strains ?? [];
         const breeders = this.snap()?.breeders ?? [];
         const plants = (this.snap()?.plants ?? [])
@@ -112,11 +115,26 @@ export class RoomCard {
               strain ? geneticsLabel(strain.sativaPercent) : null,
               strain?.thcPercent != null ? `THC ${strain.thcPercent} %` : null,
             ].filter(Boolean);
-            return { id: p.id, name: p.name, strain: strain?.name ?? null, facts: facts.join(' · ') };
+            return {
+              id: p.id,
+              name: p.name,
+              strain: strain?.name ?? null,
+              facts: facts.join(' · '),
+              generation: p.generation,
+            };
           });
         return {
           pot,
           plants,
+          phaseLabel: potPhase
+            ? `${potPhase.phase.name} · day ${potPhase.day}${
+                potPhase.source === 'plant'
+                  ? ''
+                  : potPhase.plantId
+                    ? ' (tent calendar: its plant has no start date yet)'
+                    : ' (tent calendar)'
+              }`
+            : null,
           tiles,
           lastFeed: feeds.find((f) => f.potId === pot.id) ?? null,
           loop: this.actuators().find((a) => a.potId === pot.id && a.kind === 'water_loop') ?? null,
@@ -139,12 +157,12 @@ export class RoomCard {
   protected readonly pumpAmount = signal<Record<string, number>>({});
   protected readonly previews = signal<Record<string, FeedPreview | 'loading'>>({});
 
-  private tile(probe: Probe, shared: boolean): Tile {
+  private tile(probe: Probe, shared: boolean, phase: Phase | null = this.phase()): Tile {
     const snap = this.snap();
     const r = this.hub.latest().get(probe.id);
     const now = this.clock.now();
     // Phase ranges apply to pots (and the shared pair); tank levels have their own alert thresholds.
-    const range = probe.tank ? null : targetRange(probe.kind, this.phase());
+    const range = probe.tank ? null : targetRange(probe.kind, phase);
     return {
       probe,
       title: probe.name,
@@ -161,6 +179,42 @@ export class RoomCard {
   protected canSwitchOn(a: Actuator): boolean {
     const mode = this.room().mode;
     return mode === 'normal' || (mode === 'silent' && a.kind === 'light');
+  }
+
+  /** Plants growing elsewhere, ready to go into a free pot. */
+  protected readonly nursery = computed(() =>
+    (this.snap()?.plants ?? []).filter((p) => p.potId === null && p.harvestedOn === null),
+  );
+  protected readonly placeChoice = signal<Record<string, string>>({});
+
+  protected async cuttings(plantId: string, name: string): Promise<void> {
+    const answer = prompt(`How many cuttings from ${name}?`, '4');
+    if (answer === null) return;
+    const count = Number(answer);
+    if (!Number.isInteger(count) || count < 1 || count > 20) {
+      this.hub.lastError.set('Cuttings: give a whole number from 1 to 20.');
+      return;
+    }
+    await this.hub.takeCuttings(plantId, count);
+  }
+
+  protected async harvest(plantId: string, name: string): Promise<void> {
+    if (confirm(`Record ${name} as harvested today? Its pot becomes free.`)) await this.hub.harvest(plantId);
+  }
+
+  protected async place(pot: Pot): Promise<void> {
+    // A remembered choice may be stale (the plant was placed elsewhere): fall back to the first one available.
+    const wanted = this.placeChoice()[pot.id];
+    const plantId = this.nursery().some((p) => p.id === wanted) ? wanted : this.nursery()[0]?.id;
+    if (plantId) await this.hub.place(pot.id, plantId);
+    this.placeChoice.update((m) => {
+      const { [pot.id]: _drop, ...rest } = m;
+      return rest;
+    });
+  }
+
+  protected choose(potId: string, plantId: string): void {
+    this.placeChoice.update((m) => ({ ...m, [potId]: plantId }));
   }
 
   protected busy(key: string): boolean {

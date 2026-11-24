@@ -7,6 +7,7 @@ import { openDb } from './db.ts';
 import { Bus } from './events.ts';
 import { Alerts } from './alerts.ts';
 import { Feeder } from './feeder.ts';
+import { PlantCycle } from './plant-cycle.ts';
 import { createHttp } from './http.ts';
 import { Store } from './store.ts';
 
@@ -18,6 +19,7 @@ export interface Hub {
   commands: Commands;
   alerts: Alerts;
   feeder: Feeder;
+  plants: PlantCycle;
 }
 
 export interface RunningHub extends Hub {
@@ -34,8 +36,13 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
   const agents = new AgentLink(store, bus, { timezone: config.timezone, commandTimeoutMs: config.commandTimeoutMs });
   const commands = new Commands(store, agents, bus);
   const alerts = new Alerts(store, bus);
-  const feeder = new Feeder(store, bus, agents, alerts, { mixMs: 10 * 60_000, freshMs: 60 * 60_000 });
-  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder };
+  const feeder = new Feeder(store, bus, agents, alerts, {
+    mixMs: 10 * 60_000,
+    freshMs: 60 * 60_000,
+    timezone: config.timezone,
+  });
+  const plants = new PlantCycle(store, config.timezone);
+  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder, plants };
 
   const mqttPort = await agents.listen(config.mqttHost, config.mqttPort);
   const http = await createHttp(hub);

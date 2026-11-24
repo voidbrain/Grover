@@ -1,6 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { Plant, Strain, ancestry, generationLabel, geneticsLabel, lineage } from '../src/index.ts';
+import {
+  DEFAULT_CALENDAR,
+  daysBetween,
+  Plant,
+  Strain,
+  ancestry,
+  generationLabel,
+  geneticsLabel,
+  lineage,
+  phaseForPlant,
+} from '../src/index.ts';
 import { slugify } from '../src/kinds.ts';
 
 const strain = (id: string, parentIds: string[] = []) => Strain.parse({ id, name: id, parentIds });
@@ -64,4 +74,55 @@ test('lineage: the line of mothers, newest first, safe against loops', () => {
     lineage('x', looped).map((p) => p.id),
     ['y'],
   );
+});
+
+test('phase per plant: veg from its start (holding until bloom), bloom from its bloom date, then flush', () => {
+  // phaseForPlant takes today's calendar date in the grow's time zone.
+  const at = (iso: string) => iso;
+  const p = (startedOn: string, bloomOn: string | null = null, flushOn: string | null = null) => ({
+    startedOn,
+    bloomOn,
+    flushOn,
+  });
+  const name = (r: ReturnType<typeof phaseForPlant>) => r?.phase.name ?? null;
+  // Default calendar: Seedling 14, Veg 28 | Early bloom 14, Late bloom 42, Ripen 14 | Flush 7.
+  assert.equal(name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01'), at('2026-11-05'))), 'Seedling');
+  assert.equal(name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01'), at('2026-11-20'))), 'Veg growth');
+  const waiting = phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01'), at('2027-01-30'));
+  assert.equal(name(waiting), 'Veg growth', 'holds in veg until the switch to bloom is recorded');
+  assert.equal(waiting!.day, 90);
+  assert.equal(name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01', '2026-12-20'), at('2026-12-25'))), 'Early bloom');
+  assert.equal(name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01', '2026-12-20'), at('2027-01-10'))), 'Late bloom');
+  assert.equal(name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01', '2026-12-20'), at('2027-02-25'))), 'Ripen');
+  assert.equal(
+    name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01', '2026-12-20'), at('2027-03-12'))),
+    'Flush',
+    'on into flush',
+  );
+  assert.equal(
+    name(phaseForPlant(DEFAULT_CALENDAR, p('2026-11-01', '2026-12-20', '2027-01-15'), at('2027-01-16'))),
+    'Flush',
+  );
+  assert.equal(
+    phaseForPlant(DEFAULT_CALENDAR, { startedOn: null, bloomOn: null, flushOn: null }, at('2026-11-05')),
+    null,
+  );
+  assert.equal(phaseForPlant(DEFAULT_CALENDAR, p('2026-12-01'), at('2026-11-05')), null, 'not started yet');
+});
+
+test('flushing on a calendar without a flush phase holds in the last flowering phase', () => {
+  const noFlush = { ...DEFAULT_CALENDAR, phases: DEFAULT_CALENDAR.phases.filter((ph) => !ph.flushing) };
+  const r = phaseForPlant(
+    noFlush,
+    { startedOn: '2026-01-01', bloomOn: '2026-02-01', flushOn: '2026-03-01' },
+    '2026-03-05',
+  );
+  assert.equal(r?.phase.name, 'Ripen');
+});
+
+test("days are counted on calendar dates in the grow's time zone", () => {
+  assert.equal(daysBetween('2026-11-24', '2026-11-24'), 0);
+  assert.equal(daysBetween('2026-11-24', '2026-11-25'), 1);
+  assert.equal(daysBetween('2026-03-28', '2026-03-30'), 2, 'across a DST change');
+  assert.equal(daysBetween('2026-11-25', '2026-11-24'), -1);
 });
