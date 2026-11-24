@@ -133,23 +133,33 @@ export class AgentLink {
     this.adjust = fn;
   }
 
-  /** Builds the config an agent runs on. Null when the agent is not attached to a room. */
+  /**
+   * Builds the config an agent runs on. Null when the agent is not attached to a room, or when the stored setup does
+   * not make a valid config (two actuators on one pin, saved before that was checked): that is recorded as a fault and
+   * nothing is sent, so the agent keeps the config it has. Never throws: it runs on connect and on a timer.
+   */
   buildConfig(agentId: string): AgentConfig | null {
     const room = this.store.roomForAgent(agentId);
     if (!room) return null;
-    return this.adjust(
-      AgentConfig.parse({
-        protocol: PROTOCOL_VERSION,
-        agentId,
-        roomId: room.id,
-        mode: room.mode,
-        probes: this.store.listProbes(room.id),
-        actuators: this.store.listActuators(room.id),
-        schedules: this.store.roomSchedules(room.id),
-        timezone: this.opts.timezone,
-        issuedAt: Date.now(),
-      }),
-    );
+    const parsed = AgentConfig.safeParse({
+      protocol: PROTOCOL_VERSION,
+      agentId,
+      roomId: room.id,
+      mode: room.mode,
+      probes: this.store.listProbes(room.id),
+      actuators: this.store.listActuators(room.id),
+      schedules: this.store.roomSchedules(room.id),
+      timezone: this.opts.timezone,
+      issuedAt: Date.now(),
+    });
+    if (!parsed.success) {
+      const at = Date.now();
+      const message = `not sent: ${parsed.error.issues.map((i) => i.message).join('; ')}`;
+      if (this.store.addFault(agentId, at, 'config', message))
+        this.bus.emit({ type: 'fault', agentId, subject: 'config', message, at });
+      return null;
+    }
+    return this.adjust(parsed.data);
   }
 
   /** Publishes (retained) the current config. Call after anything an agent runs on changes. */
