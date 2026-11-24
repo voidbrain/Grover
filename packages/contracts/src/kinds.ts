@@ -56,6 +56,43 @@ export const TANK_TITLES: Record<TankRoleId, string> = {
   mix: 'Mixing tank',
 };
 
+/** The supply tanks (every tank but the mixing one). */
+export const SUPPLY_TANKS = ['water', 'grow', 'micro', 'bloom', 'ripen', 'ph_down'] as const;
+export type SupplyTankId = (typeof SUPPLY_TANKS)[number];
+
+/**
+ * Nutrient colours (F-017): owner data, like the real bottles, shown as swatches and bars next to their name (never
+ * behind text). Not UI tokens; the defaults below are what a tent starts with.
+ */
+export const NUTRIENT_PALETTE: readonly { name: string; hex: string }[] = [
+  { name: 'Blue', hex: '#5b9bd5' },
+  { name: 'Green', hex: '#3a8f3e' },
+  { name: 'Lime', hex: '#8bbf3c' },
+  { name: 'Brown', hex: '#8a5a2b' },
+  { name: 'Red', hex: '#b03a2e' },
+  { name: 'Purple', hex: '#8e3b8f' },
+  { name: 'Pink', hex: '#d16ba5' },
+  { name: 'Amber', hex: '#c9871f' },
+  { name: 'Yellow', hex: '#d9c22e' },
+  { name: 'Grey', hex: '#9aa0a6' },
+  { name: 'Black', hex: '#2b2b2b' },
+];
+export const DEFAULT_TANK_COLOURS: Record<SupplyTankId, string> = {
+  water: '#5b9bd5',
+  grow: '#3a8f3e',
+  micro: '#8a5a2b',
+  bloom: '#8e3b8f',
+  ripen: '#c9871f',
+  ph_down: '#9aa0a6',
+};
+/** A supply tank's colour in a tent: the owner's, else the default. */
+export function tankColour(room: { tankColours?: Partial<Record<SupplyTankId, string>> }, tank: SupplyTankId): string {
+  return room.tankColours?.[tank] ?? DEFAULT_TANK_COLOURS[tank];
+}
+/** The tank a feed's mL key (`grow`, `phDown`…) came from. */
+export const doseTank = (key: string): SupplyTankId | null =>
+  key === 'phDown' ? 'ph_down' : (SUPPLY_TANKS as readonly string[]).includes(key) ? (key as SupplyTankId) : null;
+
 /** The supply pump that empties each supply tank into the mixing tank. */
 export const TANK_PUMP: Record<Exclude<TankRoleId, 'mix'>, ActuatorKindId> = {
   water: 'pump_water',

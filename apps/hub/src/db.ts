@@ -111,6 +111,10 @@ export const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE schedules ADD COLUMN days TEXT;
   `,
+  // 9: each supply tank's colour, like its real nutrient (F-017); JSON, validated by the contracts schema.
+  `
+  ALTER TABLE rooms ADD COLUMN tank_colours TEXT;
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

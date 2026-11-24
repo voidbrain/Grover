@@ -10,7 +10,12 @@ import { Hub } from '../hub';
   selector: 'gr-pump-control',
   template: `
     @if (showName()) {
-      <span class="name">{{ pump().name }}</span>
+      <span class="name">
+        @if (colour(); as c) {
+          <span class="swatch" [style.background]="c"></span>
+        }
+        {{ pump().name }}</span
+      >
     }
     <span class="state" [attr.data-state]="state()">{{ state() }}</span>
     <span class="run">
@@ -67,6 +72,8 @@ export class PumpControl {
   /** The tent allows runs now (agent online, normal mode). */
   readonly allowed = input(true);
   readonly showName = input(true);
+  /** A supply pump's nutrient colour (F-017), shown beside its name. */
+  readonly colour = input<string | null>(null);
   /** Keeps input ids unique when the same pump appears twice on a page. */
   readonly idPrefix = input('');
 

@@ -74,8 +74,15 @@
         <ul class="doses" aria-label="Nutrients given">
           @for (d of doses(); track d.tank) {
             <li>
-              <span class="tank">{{ d.tank }}</span>
-              <span class="bar"><span [style.width.%]="d.share * 100"></span></span>
+              <span class="tank">
+                @if (d.colour) {
+                  <span class="swatch" [style.background]="d.colour"></span>
+                }
+                {{ d.tank }}</span
+              >
+              <span class="bar"
+                ><span [style.width.%]="d.share * 100" [style.background]="d.colour ?? undefined"></span
+              ></span>
               <span class="ml">{{ d.ml | number: '1.0-1' }} mL</span>
             </li>
           }
