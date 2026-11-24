@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-006-T01",
+  "parent": "F-006",
+  "title": "Build the Setup pages",
+  "goal": "the Setup pages is built and merged",
+  "status": "closed",
+  "acceptance": [
+    "Merged in #16 on green CI"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-006.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #16 on green CI before step plans were adopted (2026-11-24). No actual: the step was not timed.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0
+  },
+  "prs": [
+    {
+      "pr": 16,
+      "note": "implementation"
+    }
+  ]
+}

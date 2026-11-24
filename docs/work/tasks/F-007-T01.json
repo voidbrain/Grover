@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-007-T01",
+  "parent": "F-007",
+  "title": "Build lights that follow the grow calendar",
+  "goal": "lights that follow the grow calendar is built and merged",
+  "status": "closed",
+  "acceptance": [
+    "Merged in #20 on green CI"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-007.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #20 on green CI before step plans were adopted (2026-11-24). No actual: the step was not timed.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0
+  },
+  "prs": [
+    {
+      "pr": 20,
+      "note": "implementation"
+    }
+  ]
+}

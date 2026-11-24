@@ -55,6 +55,9 @@ jobs:
       - name: Backlog records and layout
         run: npm run check:backlog
 
+      - name: Source-owned records, steps and model profiles
+        run: npm run check:work
+
       - name: Harness template, for the release check below
         run: |
           repo=$(node -p "require('./.harness.json').template?.repo ?? ''")

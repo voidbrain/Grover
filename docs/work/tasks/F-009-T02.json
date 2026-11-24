@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "F-009-T02",
+  "parent": "F-009",
+  "title": "Browser scenarios: run a pump, switch the mode, axe scan",
+  "goal": "The main controls work in a real browser and pass an accessibility scan",
+  "status": "planned",
+  "acceptance": [
+    "A pump run shows waiting/running and ends off",
+    "A mode switch reaches the agent",
+    "An axe scan of the dashboard, map and setup pages finds no serious or critical issue"
+  ],
+  "dependsOn": [
+    "F-009-T01"
+  ],
+  "resources": [
+    "e2e/**",
+    "apps/client/src/**",
+    "docs/work/records/F-009.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "browser-testing",
+    "accessibility"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h agent",
+    "basis": "Estimated 2026-11-24: 2 h agent; axe findings that need UI fixes may add time and are proposed first.",
+    "reviewed": "2026-11-24",
+    "agentHours": 2,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  }
+}

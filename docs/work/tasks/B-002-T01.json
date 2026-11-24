@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "B-002-T01",
+  "parent": "B-002",
+  "title": "Adopt the template release whose convention check reads apps/client/src",
+  "goal": "check:conventions checks the Angular client in this monorepo",
+  "status": "planned",
+  "acceptance": [
+    "A planted `standalone: true` in an apps/client/src component makes `npm run check:conventions` fail",
+    "The planted problem is removed before merge"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "tools/check-conventions.mjs",
+    ".harness.json",
+    "docs/work/records/B-002.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting. Depends on project-harness: a configurable source root for check-conventions, not yet recorded there.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  }
+}

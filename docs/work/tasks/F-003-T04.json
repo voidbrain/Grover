@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-003-T04",
+  "parent": "F-003",
+  "title": "Owner runs bring-up steps 5–6 on the Pi (pump calibration, levels, a first feed, safety)",
+  "goal": "Each pump delivers its calibrated volume ± 10 % and stopping the agent or hub stops a running pump",
+  "status": "planned",
+  "acceptance": [
+    "Steps 5, 5b and 6 of the hardware bring-up pass, or each failure is reported",
+    "Owner go-ahead for every run on the real rig (AGENTS.md, Hardware); the agent never switches hardware itself."
+  ],
+  "dependsOn": [
+    "F-003-T02",
+    "F-003-T03",
+    "F-018-T02"
+  ],
+  "resources": [
+    "docs/guides/hardware-bring-up.md",
+    "docs/work/records/F-003.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/guides/hardware-bring-up.md#5-pump-calibration-and-caps",
+  "effort": {
+    "size": "small",
+    "estimate": "2 h owner",
+    "basis": "Estimated 2026-11-24: about 2 h at the rig with a measuring jug.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 2,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

@@ -47,6 +47,7 @@
     "check:queue": "node tools/backlog-queue.mjs --check",
     "verification:plan": "node tools/verification.mjs",
     "work:build": "node tools/work-items.mjs build",
+    "work:close": "node tools/work-items.mjs close",
     "check:work": "node tools/work-items.mjs check",
     "work:tasks": "node tools/work-items.mjs tasks",
     "work:next": "node tools/work-items.mjs next",
@@ -58,7 +59,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:fast": "npm run format:check && npm run lint && npm run typecheck && npm run check:backlog && npm run check:rules"
+    "check:fast": "npm run format:check && npm run lint && npm run typecheck && npm run check:backlog && npm run check:work && npm run check:rules"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-004-T02",
+  "parent": "F-004",
+  "title": "Owner calibrates the real pH and EC probes on the Pi",
+  "goal": "pH reads within ± 0.1 of buffers 4 and 7 and EC within ± 0.1 mS/cm",
+  "status": "planned",
+  "acceptance": [
+    "Hardware bring-up step 3b done with real buffers; read-back values reported"
+  ],
+  "dependsOn": [
+    "F-004-T01",
+    "F-003-T02"
+  ],
+  "resources": [
+    "docs/guides/hardware-bring-up.md",
+    "docs/work/records/F-004.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/guides/hardware-bring-up.md#3b-calibrate-ph-and-ec",
+  "effort": {
+    "size": "small",
+    "estimate": "1 h owner",
+    "basis": "Estimated 2026-11-24: about 1 h with buffer solutions.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 1,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

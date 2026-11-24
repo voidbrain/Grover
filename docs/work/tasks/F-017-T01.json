@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-017-T01",
+  "parent": "F-017",
+  "title": "A colour per supply tank, stored with the tent",
+  "goal": "Each supply tank has a colour with a default per role",
+  "status": "ready",
+  "acceptance": [
+    "A migration and contracts field for the colour, defaults per role",
+    "Hub test: stored and returned"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "packages/contracts/src/domain.ts",
+    "apps/hub/src/db.ts",
+    "apps/hub/src/store.ts",
+    "apps/hub/test/**",
+    "docs/work/records/F-017.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "sqlite-transactions"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-24: 1 h agent.",
+    "reviewed": "2026-11-24",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

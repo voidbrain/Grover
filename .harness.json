@@ -124,6 +124,19 @@
       "after": [
         "backend"
       ]
+    },
+    {
+      "id": "work-items",
+      "when": [
+        "docs/work/**",
+        "docs/agents/model-profiles.json",
+        "tools/work-items.mjs",
+        "tools/task-claims.mjs"
+      ],
+      "then": "Regenerate the source-owned ledger (npm run work:build), then the dependency and queue views; review task resources and owner pages.",
+      "run": "npm run work:build && npm run check:work",
+      "checked": "check:work, check:backlog, check:dependencies and check:queue in CI",
+      "after": []
     }
   ],
   "couplings": [
@@ -293,8 +306,17 @@
     "enabled": false
   },
   "workItems": {
-    "enabled": false,
-    "featurePlans": false
+    "enabled": true,
+    "layout": "docs/work/layout.json",
+    "records": "docs/work/records",
+    "tasks": "docs/work/tasks",
+    "profiles": "docs/agents/model-profiles.json",
+    "featurePlans": true,
+    "order": "queue",
+    "estimation": {
+      "since": "2026-11-24"
+    },
+    "repository": "voidbrain/Grover"
   },
   "workUsage": {
     "enabled": false,

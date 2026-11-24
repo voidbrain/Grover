@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "id": "F-016-T01",
+  "parent": "F-016",
+  "title": "Weekdays on schedule rules: contracts, agent and editor",
+  "goal": "A schedule rule runs only on the weekdays it names, also offline",
+  "status": "ready",
+  "acceptance": [
+    "Contracts: a rule names its weekdays (default every day), due-day logic tested, PROTOCOL_VERSION bumped",
+    "The agent applies it in the tent's time zone without the hub; e2e case",
+    "The schedule editor picks days with a weekdays/weekend shortcut and shows weekends apart; light rules from the calendar stay daily"
+  ],
+  "dependsOn": [
+    "F-014-T01"
+  ],
+  "resources": [
+    "packages/contracts/src/schedule.ts",
+    "packages/contracts/src/mqtt.ts",
+    "apps/agent/src/**",
+    "apps/client/src/app/setup/**",
+    "apps/hub/test/e2e.test.ts",
+    "docs/DESIGN.md",
+    "docs/work/records/F-016.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "distributed-contracts",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h agent",
+    "basis": "Estimated 2026-11-24: 3 h agent; PR #27 (open, another session) carries it.",
+    "reviewed": "2026-11-24",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  },
+  "prs": [
+    {
+      "pr": 27,
+      "note": "implementation, open"
+    }
+  ]
+}

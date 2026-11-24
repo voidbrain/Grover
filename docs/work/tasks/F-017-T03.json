@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "F-017-T03",
+  "parent": "F-017",
+  "title": "Owner looks at the nutrient colours",
+  "goal": "The owner has seen the colours on the dashboard and map",
+  "status": "planned",
+  "acceptance": [
+    "The owner reports fine or what felt wrong"
+  ],
+  "dependsOn": [
+    "F-017-T02"
+  ],
+  "resources": [
+    "docs/acceptance/dev-stack.md",
+    "docs/work/records/F-017.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-24: 15 minutes; its section of the dev-stack page is written with the code.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}
