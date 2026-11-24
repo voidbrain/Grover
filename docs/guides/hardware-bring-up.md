@@ -48,7 +48,7 @@ Expected: the relay clicks on and off. If it is inverted, set `"activeLow": true
 
 ## 4b. Pumps on an L298N (F-018)
 
-A pump driven by an L298N motor bridge gets the wiring **L298N motor driver (pumps)** in Setup: the MCP23017's address, the expander pins wired to the bridge's IN1 and IN2, and EN (empty when the jumper on the board keeps it enabled). With the owner's go-ahead for this run, start each pump for 2 s (`{"durationMs":2000}`, as in step 5). Expected: it pumps forward (into the mixing tank, or from it into the pot) and stops; Stop all stops it at once. If it pumps backwards, swap its IN1 and IN2 pins in Setup (never the motor wires while powered). Record each pump in backlog F-018.
+A pump driven by an L298N motor bridge gets the wiring **L298N motor driver (pumps)** in Setup: the MCP23017's address, the expander pins wired to the bridge's IN1 and IN2, and EN (empty when the jumper on the board keeps it enabled). With the owner's go-ahead for this run, start each pump for 2 s (`{"durationMs":2000}`, as in step 5). Expected: it pumps forward (into the mixing tank, or from it into the pot) and stops; Stop all stops it at once. If it pumps backwards, swap its IN1 and IN2 pins in Setup (never the motor wires while powered). Record each pump in backlog F-018. Pull-down resistors (10 kΩ to ground) on IN1, IN2 and EN keep the bridge off while the Pi boots, before the agent claims the pins.
 
 ## 5. Pump calibration and caps
 

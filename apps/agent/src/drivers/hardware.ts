@@ -105,17 +105,26 @@ export async function l298n(
   pins: { in1: number; in2: number; enable: number | null },
 ): Promise<ActuatorDriver> {
   const { in1, in2, enable } = pins;
-  for (const pin of [in2, in1, ...(enable === null ? [] : [enable])]) await chip.claim(pin, false);
+  // EN first: the bridge is disabled before its inputs become outputs.
+  for (const pin of [...(enable === null ? [] : [enable]), in2, in1]) await chip.claim(pin, false);
+  /** Every pin low, each tried even if another fails; the first failure is rethrown. */
+  const allOff = async () => {
+    let first: unknown = null;
+    for (const pin of [...(enable === null ? [] : [enable]), in1, in2])
+      await chip.write(pin, false, false).catch((err: unknown) => void (first ??= err));
+    if (first) throw first;
+  };
   return {
     set: async (on) => {
-      if (on) {
+      if (!on) return allOff();
+      try {
         await chip.write(in2, false, false);
         await chip.write(in1, true, false);
         if (enable !== null) await chip.write(enable, true, false);
-      } else {
-        if (enable !== null) await chip.write(enable, false, false);
-        await chip.write(in1, false, false);
-        await chip.write(in2, false, false);
+      } catch (err) {
+        // Half switched on: take it all back before reporting the failure.
+        await allOff().catch(() => {});
+        throw err;
       }
     },
   };
@@ -163,8 +172,17 @@ export class Mcp23017 {
   }
   async write(pin: number, on: boolean, activeLow: boolean): Promise<void> {
     const high = on !== activeLow;
-    this.olat = high ? this.olat | (1 << pin) : this.olat & ~(1 << pin);
-    await this.bus.writeByte(this.address, pin < 8 ? 0x14 : 0x15, pin < 8 ? this.olat & 0xff : this.olat >> 8);
+    const next = high ? this.olat | (1 << pin) : this.olat & ~(1 << pin);
+    try {
+      await this.bus.writeByte(this.address, pin < 8 ? 0x14 : 0x15, pin < 8 ? next & 0xff : next >> 8);
+      this.olat = next;
+    } catch (err) {
+      // The chip's latch is unknown now: remember this pin at its off level, so the next write of the bank drives it
+      // off rather than pushing out an "on" that never took effect (or should not have).
+      const off = activeLow ? this.olat | (1 << pin) : this.olat & ~(1 << pin);
+      this.olat = off;
+      throw err;
+    }
   }
   async close(): Promise<void> {
     // Every claimed pin to its off level: high for active-low relays, low for the others.

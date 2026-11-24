@@ -22,7 +22,7 @@ import { SetupApi } from './setup-api';
         </label>
         <label class="field">
           Kind
-          <select [formField]="f.kind">
+          <select [formField]="f.kind" (change)="syncDriver()">
             @for (k of kinds; track k.id) {
               <option [value]="k.id">{{ k.label }}</option>
             }
@@ -136,6 +136,11 @@ export class ActuatorEditor {
   protected readonly isNew = computed(() => !this.actuator());
   protected readonly model = linkedSignal(() => actuatorDraft(this.actuator() ?? undefined));
   protected readonly pump = computed(() => isPump(this.model().kind));
+  /** An L298N drives pumps only: a pump changed to a switch goes back to a relay pin on the same expander. */
+  protected syncDriver(): void {
+    if (!isPump(this.model().kind) && this.model().driver === 'l298n')
+      this.model.update((d) => ({ ...d, driver: 'mcp23017' }));
+  }
   protected readonly f = form(this.model, (p) => {
     required(p.name, { message: 'Give it a name' });
     pattern(p.i2cAddress, /^(0x[0-9a-fA-F]{1,2}|\d{1,3})$/, { message: 'Like 0x20' });
@@ -147,7 +152,7 @@ export class ActuatorEditor {
     min(p.mlPerSecond, 0, { message: 'Not negative' });
     min(p.in2, 0, { message: '0 to 15' });
     max(p.in2, 15, { message: '0 to 15' });
-    pattern(p.enable, /^(\s*|\d{1,2})$/, { message: 'A pin 0 to 15, or empty' });
+    pattern(p.enable, /^(\s*|[0-9]|1[0-5])$/, { message: 'A pin 0 to 15, or empty' });
   });
   protected readonly newId = computed(() => uniqueId(slugify(this.model().name), this.takenIds()));
   protected readonly state = new EditorRun();

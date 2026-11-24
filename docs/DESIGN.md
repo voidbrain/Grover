@@ -61,7 +61,7 @@ The rig (confirmed by the owner, F-011):
 | `grover/agents/<id>/commands` | hub → agent | `read`, `run` (bounded), `switch`, `stop_all`, `feed` (a whole plan). |
 | `grover/agents/<id>/acks` | agent → hub | one per command; the hub waits up to `GROVER_COMMAND_TIMEOUT_MS`. |
 
-Protocol version 5 (2 added feeds, 3 the `dark` rule, 4 probe calibration: the hub treats analog pH/EC probes of an agent reporting an older protocol as uncalibrated; 5 schedule weekdays, which an older agent would run every day; 6 the `l298n` binding; hub and agent update together: an older agent refuses a newer config and keeps its previous one). The hub stores each event once (readings keyed by probe and time, actuations by actuator, time and state), so the agent can replay its outbox safely after an outage. `configHash` lets the client show whether the agent runs the current settings.
+Protocol version 6 (2 added feeds, 3 the `dark` rule, 4 probe calibration: the hub treats analog pH/EC probes of an agent reporting an older protocol as uncalibrated; 5 schedule weekdays, which an older agent would run every day; 6 the `l298n` binding; hub and agent update together: an older agent refuses a newer config and keeps its previous one). The hub stores each event once (readings keyed by probe and time, actuations by actuator, time and state), so the agent can replay its outbox safely after an outage. `configHash` lets the client show whether the agent runs the current settings.
 
 ## Safety
 

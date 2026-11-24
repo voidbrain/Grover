@@ -71,6 +71,22 @@ export const ActuatorBinding = z.discriminatedUnion('driver', [
 ]);
 export type ActuatorBinding = z.infer<typeof ActuatorBinding>;
 
+/** The pins a binding drives, as keys comparable across actuators of one agent (no two may share one). */
+export function actuatorPins(b: ActuatorBinding): string[] {
+  switch (b.driver) {
+    case 'gpio':
+      return [`GPIO ${b.pin}`];
+    case 'mcp23017':
+      return [`MCP23017 ${b.i2cBus}/0x${b.i2cAddress.toString(16)} pin ${b.pin}`];
+    case 'l298n':
+      return [b.in1, b.in2, ...(b.enable === null ? [] : [b.enable])].map(
+        (p) => `MCP23017 ${b.i2cBus}/0x${b.i2cAddress.toString(16)} pin ${p}`,
+      );
+    case 'mock':
+      return [];
+  }
+}
+
 /** A room is one controlled space with one reservoir and one agent (Raspberry Pi). */
 export const Room = z.object({
   id: Id,

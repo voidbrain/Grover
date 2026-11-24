@@ -1,5 +1,15 @@
 import { z } from 'zod';
-import { Actuation, Actuator, ActuationSource, Id, OperatingMode, Probe, Reading, Schedule } from './domain.ts';
+import {
+  Actuation,
+  Actuator,
+  ActuationSource,
+  Id,
+  OperatingMode,
+  Probe,
+  Reading,
+  Schedule,
+  actuatorPins,
+} from './domain.ts';
 import { FeedPlan } from './feeding.ts';
 
 /**
@@ -88,18 +98,36 @@ export const AgentEvent = z.discriminatedUnion('type', [
 export type AgentEvent = z.infer<typeof AgentEvent>;
 
 /** Everything an agent needs to keep running without the hub. */
-export const AgentConfig = z.object({
-  protocol: z.literal(PROTOCOL_VERSION),
-  agentId: Id,
-  roomId: Id,
-  mode: OperatingMode,
-  probes: z.array(Probe),
-  actuators: z.array(Actuator),
-  schedules: z.array(Schedule),
-  /** IANA zone for schedule times. */
-  timezone: z.string(),
-  issuedAt: z.number().int(),
-});
+export const AgentConfig = z
+  .object({
+    protocol: z.literal(PROTOCOL_VERSION),
+    agentId: Id,
+    roomId: Id,
+    mode: OperatingMode,
+    probes: z.array(Probe),
+    actuators: z.array(Actuator),
+    schedules: z.array(Schedule),
+    /** IANA zone for schedule times. */
+    timezone: z.string(),
+    issuedAt: z.number().int(),
+  })
+  .superRefine((c, ctx) => {
+    // No two actuators drive the same pin (a relay on a bridge's IN2 would run its pump backwards).
+    const seen = new Map<string, string>();
+    for (const a of c.actuators) {
+      const pins = actuatorPins(a.binding);
+      for (const pin of pins) {
+        const other = seen.get(pin);
+        if (other)
+          ctx.addIssue({
+            code: 'custom',
+            message: `${a.id} and ${other} use the same pin (${pin})`,
+            path: ['actuators'],
+          });
+        seen.set(pin, a.id);
+      }
+    }
+  });
 export type AgentConfig = z.infer<typeof AgentConfig>;
 
 export const AgentCommand = z.discriminatedUnion('kind', [
