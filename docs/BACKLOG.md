@@ -288,9 +288,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟢 Small |
+| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Build after F-014; the colours feed F-014's doses and F-015's map.
+🧑 **→ Human action required: Procedure**<br />Pick the colours of your nutrients: Setup → the tent → Nutrient colours.
 
 | | |
 |---|---|
@@ -301,7 +301,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24.
+**Next action / closure evidence:** Requested 2026-11-24. Built 2026-11-24 on `feat/f017-nutrient-colours` (stacked on F-016 for the migration order): `tankColours` on rooms (migration 9, validated on read; only colours that differ from the default are stored), `NUTRIENT_PALETTE`, `DEFAULT_TANK_COLOURS`, `tankColour` and `doseTank` in `kinds.ts`, a colour picker per supply tank with the palette as suggestions, swatches beside the tanks (dashboard, map) and supply pumps, coloured dose bars on the plant page. Deviation from the check: there are no per-tank chart series yet, so no chart uses the colours. Checks: 2 contract tests, a hub test (stored with the tent, bad values refused), drafts and map specs. Closes when CI passes and the owner has chosen the colours.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 

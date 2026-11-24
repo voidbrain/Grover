@@ -37,6 +37,8 @@ This guide governs the application UI and repository writing; [Backlog rules](BA
 - Change fill and foreground as a pair, and check contrast (WCAG AA: 4.5:1 for text, 3:1 for large text and UI parts).
 - Probe health is shown by a left border colour **and** a word ("low", "high", "stale"), never colour alone.
 
+- **Nutrient colours** (F-017) are owner data, not tokens: each supply tank's colour like its real bottle (defaults and a palette in `packages/contracts/src/kinds.ts`, chosen in Setup → the tent → Nutrient colours). They appear only as a `.swatch` (a 0.75 rem dot with a `--line` border) beside the tank's or pump's name, and as the fill of a dose bar, never behind text, so contrast never depends on them.
+
 ### Type
 
 System UI stack (`--font`: Inter if installed, then the platform font); no web fonts are loaded. Base 16 px, line height 1.45. Probe values 1.75 rem semibold with tabular numbers; room titles 1.375 rem; section labels 0.8125 rem uppercase with 0.06 em tracking in `--muted`.
