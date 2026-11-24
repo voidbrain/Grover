@@ -33,8 +33,8 @@
   "effort": {
     "size": "small",
     "estimate": "0.5 h agent",
-    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting (`conventions.sourceDirs`). Waits on project-harness:F-098-T03 (the release), through B-002-T03.",
-    "reviewed": "2026-11-24",
+    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting (`conventions.sourceDirs`). Waits on project-harness:F-098-T01 (released), through B-002-T03. Corrected 2026-11-25 from F-098-T03 (coordinator).",
+    "reviewed": "2026-11-25",
     "agentHours": 0.5,
     "ownerHours": 0,
     "baselineAgentHours": 0.5,
