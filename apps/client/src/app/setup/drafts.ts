@@ -262,7 +262,7 @@ export interface ScheduleDraft {
   enabled: boolean;
   targetType: 'probe' | 'actuator';
   targetId: string;
-  kind: 'window' | 'at' | 'every';
+  kind: 'window' | 'at' | 'every' | 'dark';
   from: string;
   to: string;
   /** "08:00, 20:00" */
@@ -272,7 +272,7 @@ export interface ScheduleDraft {
 }
 
 export function scheduleDraft(s?: Schedule): ScheduleDraft {
-  const r = s?.rule?.kind === 'dark' ? undefined : s?.rule;
+  const r = s?.rule;
   return {
     id: s?.id ?? '',
     enabled: s?.enabled ?? true,
@@ -283,25 +283,27 @@ export function scheduleDraft(s?: Schedule): ScheduleDraft {
     to: r?.kind === 'window' ? r.to : '00:00',
     times: r?.kind === 'at' ? r.times.join(', ') : '08:00',
     everyMinutes: r?.kind === 'every' ? r.everyMinutes : 5,
-    durationSeconds: r && r.kind !== 'window' ? r.durationMs / 1000 : 0,
+    durationSeconds: r && (r.kind === 'at' || r.kind === 'every') ? r.durationMs / 1000 : 0,
   };
 }
 
 export function toSchedule(d: ScheduleDraft): Schedule {
   const durationMs = Math.round(d.durationSeconds * 1000);
   const rule: Schedule['rule'] =
-    d.kind === 'window'
-      ? { kind: 'window', from: d.from, to: d.to }
-      : d.kind === 'at'
-        ? {
-            kind: 'at',
-            times: d.times
-              .split(/[,\s]+/)
-              .map((t) => t.trim())
-              .filter(Boolean),
-            durationMs,
-          }
-        : { kind: 'every', everyMinutes: d.everyMinutes, durationMs };
+    d.kind === 'dark'
+      ? { kind: 'dark' }
+      : d.kind === 'window'
+        ? { kind: 'window', from: d.from, to: d.to }
+        : d.kind === 'at'
+          ? {
+              kind: 'at',
+              times: d.times
+                .split(/[,\s]+/)
+                .map((t) => t.trim())
+                .filter(Boolean),
+              durationMs,
+            }
+          : { kind: 'every', everyMinutes: d.everyMinutes, durationMs };
   const target: Schedule['target'] =
     d.targetType === 'probe' ? { type: 'probe', probeId: d.targetId } : { type: 'actuator', actuatorId: d.targetId };
   return { id: d.id, target, rule, enabled: d.enabled };

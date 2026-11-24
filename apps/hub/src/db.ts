@@ -96,6 +96,8 @@ export const MIGRATIONS: readonly string[] = [
   ALTER TABLE rooms ADD COLUMN light_start TEXT NOT NULL DEFAULT '06:00';
   ALTER TABLE rooms ADD COLUMN light_plant_id TEXT REFERENCES plants(id) ON DELETE SET NULL;
   UPDATE rooms SET calendar_start = substr(calendar_start, 1, 10) WHERE calendar_start IS NOT NULL;
+  UPDATE rooms SET calendar_start = NULL
+    WHERE calendar_start IS NOT NULL AND calendar_start NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]';
   `,
 ];
 

@@ -39,6 +39,8 @@ export type FeedPreview =
 export interface Snapshot {
   rooms: (Room & {
     phase: { phase: Phase; day: number } | null;
+    /** Set to follow the calendar but with no phase to follow: its own schedules run. */
+    lightFallback: boolean;
     /** The light when it follows the grow calendar (null: the tent's own schedules). */
     light: {
       hours: number;

@@ -199,6 +199,13 @@ export class Agent {
       const allowed = config.mode === 'normal' || actuator.kind === 'light';
       if (s.rule.kind === 'window' || s.rule.kind === 'dark') {
         const want = allowed && s.rule.kind === 'window' && windowActive(s.rule, minuteOfDay);
+        // Dark is held, not just switched at an edge: a light switched on by hand goes off again on the next tick.
+        if (s.rule.kind === 'dark' && this.actuators.isOn(actuator.id)) {
+          await this.actuators
+            .switch(actuator.id, false, 'schedule')
+            .catch((err) => this.fault(`actuator ${actuator.id}`, err.message));
+          continue;
+        }
         // Act on edges only, so a manual switch holds until the next window boundary.
         if (this.lastWindow.get(s.id) !== want) {
           this.lastWindow.set(s.id, want);

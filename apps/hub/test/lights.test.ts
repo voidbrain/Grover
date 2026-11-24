@@ -71,3 +71,31 @@ test('a phase with no light keeps it dark; Start flush needs a bloom first', asy
   assert.equal((await api('POST', '/api/plants/young/flush')).status, 400);
   assert.equal((await api('POST', '/api/plants/nl5h-gen2/flush')).status, 200);
 });
+
+test('light schedule ids stay distinct for long, similar light names', () => {
+  const long = 'x'.repeat(55);
+  for (const suffix of ['a', 'b'])
+    hub.store.putActuator({
+      id: `${long}${suffix}`,
+      roomId: 'grow-1',
+      potId: null,
+      kind: 'light',
+      name: `L${suffix}`,
+      enabled: true,
+      binding: { driver: 'mock' },
+      maxRunMs: 0,
+      mlPerSecond: null,
+    });
+  const ids = hub.agents.buildConfig('pi-1')!.schedules.map((s) => s.id);
+  assert.equal(new Set(ids).size, ids.length, 'no duplicate schedule ids');
+  for (const suffix of ['a', 'b']) hub.store.deleteEntity('actuators', `${long}${suffix}`);
+});
+
+test('following the calendar with no phase to follow says so', async () => {
+  const room = hub.store.getRoom('grow-1');
+  hub.store.putRoom({ ...room, calendarId: null });
+  const snap = (await api('GET', '/api/snapshot')).json;
+  assert.equal(snap.rooms[0].light, null);
+  assert.equal(snap.rooms[0].lightFallback, true);
+  hub.store.putRoom(room);
+});

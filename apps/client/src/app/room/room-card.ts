@@ -222,7 +222,10 @@ export class RoomCard {
   /** "Light: 12 h from 06:00 · Late bloom of NL5xHaze gen 2", or null on the tent's own schedules. */
   protected readonly lightLabel = computed(() => {
     const l = this.room().light;
-    if (!l) return null;
+    if (!l)
+      return this.room().lightFallback
+        ? 'Light: set to follow the calendar, but there is no phase to follow: its own schedules run'
+        : null;
     const plant = l.plantId ? (this.snap()?.plants ?? []).find((p) => p.id === l.plantId)?.name : null;
     const when =
       l.rule.kind === 'dark' ? 'off all day' : l.hours >= 24 ? 'on all day' : `${l.hours} h from ${l.rule.from}`;

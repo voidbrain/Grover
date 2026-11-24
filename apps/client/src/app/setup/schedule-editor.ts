@@ -38,6 +38,7 @@ const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
           <select [formField]="f.kind">
             @if (canHold()) {
               <option value="window">Keep on between two times</option>
+              <option value="dark">Keep off all day</option>
             }
             <option value="at">At set times</option>
             <option value="every">Every few minutes</option>
@@ -75,7 +76,7 @@ const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
             </label>
           }
         }
-        @if (model().kind !== 'window' && model().targetType === 'actuator') {
+        @if (model().kind !== 'window' && model().kind !== 'dark' && model().targetType === 'actuator') {
           <label class="field">
             Run for (seconds)
             <input type="number" step="0.5" [formField]="f.durationSeconds" />
@@ -132,7 +133,7 @@ export class ScheduleEditor {
     required(p.targetId, { message: 'Choose what it runs' });
     validate(p.kind, ({ value, valueOf }) => {
       const a = this.actuators().find((x) => x.id === valueOf(p.targetId));
-      return value() === 'window' && !(a && !isPump(a.kind))
+      return (value() === 'window' || value() === 'dark') && !(a && !isPump(a.kind))
         ? { kind: 'window', message: 'Only lights, fans and water loops can stay on' }
         : undefined;
     });
@@ -162,7 +163,7 @@ export class ScheduleEditor {
     this.model.update((d) => ({
       ...d,
       targetType: isProbe ? 'probe' : 'actuator',
-      kind: d.kind === 'window' && !this.canHold() ? 'every' : d.kind,
+      kind: (d.kind === 'window' || d.kind === 'dark') && !this.canHold() ? 'every' : d.kind,
     }));
   }
 

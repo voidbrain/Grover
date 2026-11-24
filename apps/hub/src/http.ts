@@ -103,7 +103,16 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     agents: agents.views().map((a) => ({ id: a.agentId, online: a.online })),
   }));
   app.get('/api/snapshot', async () => ({
-    rooms: store.listRooms().map((room) => ({ ...room, phase: feeder.phase(room), light: lights.plan(room) })),
+    rooms: store.listRooms().map((room) => {
+      const light = lights.plan(room);
+      // Set to follow the calendar but nothing to follow: its own schedules run; say so.
+      return {
+        ...room,
+        phase: feeder.phase(room),
+        light,
+        lightFallback: room.lightFrom === 'calendar' && light === null,
+      };
+    }),
     pots: store.listPots(),
     potPhases: Object.fromEntries(store.listPots().map((p) => [p.id, feeder.potPhase(p)])),
     probes: store.listProbes(),

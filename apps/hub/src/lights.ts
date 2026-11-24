@@ -71,13 +71,14 @@ export class Lights {
           (s.rule.kind === 'window' || s.rule.kind === 'dark')
         ),
     );
-    for (const id of lights)
-      schedules.push({
-        id: `calendar-light-${id}`.slice(0, 64),
-        target: { type: 'actuator', actuatorId: id },
-        rule: plan.rule,
-        enabled: true,
-      });
+    // Short ids by position, made unique against the stored ones (light ids can be long and alike).
+    const taken = new Set(schedules.map((s) => s.id));
+    lights.forEach((id, i) => {
+      let sid = `calendar-light-${i + 1}`;
+      while (taken.has(sid)) sid = `${sid}-x`;
+      taken.add(sid);
+      schedules.push({ id: sid, target: { type: 'actuator', actuatorId: id }, rule: plan.rule, enabled: true });
+    });
     return { ...config, schedules };
   }
 }

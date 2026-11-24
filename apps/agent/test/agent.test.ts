@@ -163,9 +163,9 @@ test('a dark rule keeps the light off', async () => {
     () => t,
   );
   await agent.execute({ id: 'c', kind: 'switch', actuatorId: 'light', on: true, source: 'manual' });
-  assert.equal(drivers.states.get('light'), true);
-  // A new config (same rule) re-applies the schedule on the next tick: dark wins.
+  assert.equal(drivers.states.get('light'), true, 'switched on by hand');
+  // Dark is re-asserted on every tick (review of #20): a light switched on by hand goes off again.
   await agent.tick();
+  assert.equal(drivers.states.get('light'), false, 'off before the agent stops');
   await agent.stop();
-  assert.notEqual(drivers.states.get('light'), true);
 });

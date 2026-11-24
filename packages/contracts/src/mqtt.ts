@@ -11,11 +11,12 @@ import { FeedPlan } from './feeding.ts';
  *   grover/agents/{agentId}/commands  hub → agent  QoS 1
  *   grover/agents/{agentId}/acks      agent → hub  one per command
  *
- * Version 2 adds feeds (the `feed` command and event).
+ * Version 2 adds feeds (the `feed` command and event). Version 3 adds the `dark` schedule rule (F-007): an agent on
+ * an older version refuses the config (a fault) and keeps running its previous one; update hub and agent together.
  *
  * Agents connect with username = agentId and password = agent token.
  */
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 
 export const topics = {
   status: (agentId: string) => `grover/agents/${agentId}/status`,
