@@ -390,9 +390,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟢 Small |
+| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Add the manifest, icons and a service worker; notifications stay with NERV (F-008).
+🧑 **→ Human action required: Procedure**<br />On the phone, open Grover at its `tailscale serve` address and add it to the home screen (Chrome: Install app; Safari: Share → Add to Home Screen).
 
 | | |
 |---|---|
@@ -403,7 +403,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24. Install needs HTTPS, which `tailscale serve` gives.
+**Next action / closure evidence:** Requested 2026-11-24. Install needs HTTPS, which `tailscale serve` gives. Built 2026-11-24 on `feat/f019-install`: `manifest.webmanifest`, `icon.svg` with 192/512 PNGs, `sw.js` (keeps the page and the files it names at install, network first for pages, kept copies for hashed files, never `/api` or `/mcp`), registered in production builds only; index links and theme colour. Checks: a hub test (manifest, worker and icons served with their types; the worker's routing and the files it keeps, run in a sandbox). Headless Chrome on a simulated rig: the manifest parses, the worker activates and controls the page; with the network cut, a reload opens the app with "Offline: last known data". Not verified: Chrome's headless installability check still reports no acceptable icon although both PNGs are served (200, image/png, 192 and 512 px), so installing is for the owner to try; pages never opened online (their lazy scripts) are not kept. Closes when CI passes and the owner has installed it.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
