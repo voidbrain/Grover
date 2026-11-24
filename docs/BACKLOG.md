@@ -792,7 +792,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|---|---|---|---|:---:|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | 🧑‍🔧 | — |
 
-🧑 **→** Next: [🧑‍🔧](work/records/B-002.md) B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T03) (Planned).
+🧑 **→** Next: [🧑‍🔧](work/records/B-002.md) B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T01 (released)) (Planned).
 
 | | |
 |---|---|
@@ -804,7 +804,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="b-002-t03"></a>B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T03) | — | 0 h | 0 h agent + 0.25 h owner | Planned | — | [B-002-T02](#b-002-t02) | [🧑‍🔧](work/records/B-002.md) |
+| 🟢 Small | <a id="b-002-t03"></a>B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T01 (released)) | — | 0 h | 0 h agent + 0.25 h owner | Planned | — | [B-002-T02](#b-002-t02) | [🧑‍🔧](work/records/B-002.md) |
 | 🟢 Small | <a id="b-002-t02"></a>B-002-T02 — Adopt the template release whose convention check reads apps/client/src | 0.5 h | 0 h | 0.5 h | Planned | [B-002-T03](#b-002-t03) | — | ⏳ 🤖 |
 | 🟢 Small | **Total** | 0.5 h (1 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.5 h agent + 0.25 h owner | 1 of 3 completed | | | |
 
@@ -882,7 +882,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 ---
 ## Other changes
 
-**Reconciliation, 2026-11-25 (main `b62a29b`).** PRs #30, #31 and #32 merged with green PR CI and green main runs after merge: B-007 closed (#32); F-019 stays Implemented until the owner installs the app. B-002-T01 closed on the owner's decision; B-002-T02 waits on project-harness:F-098-T03.
+**Reconciliation, 2026-11-25 (main `b62a29b`).** PRs #30, #31 and #32 merged with green PR CI and green main runs after merge: B-007 closed (#32); F-019 stays Implemented until the owner installs the app. B-002-T01 closed on the owner's decision; B-002-T02 waits on project-harness:F-098-T01 (released).
 
 Earlier entries: [reconciliation log](archive/reconciliation-2026.md).
 
