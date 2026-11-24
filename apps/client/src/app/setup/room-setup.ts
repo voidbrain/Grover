@@ -5,7 +5,17 @@ import { Room } from '@grover/contracts';
 import { isPump } from '@grover/contracts/kinds';
 import { Hub } from '../hub';
 import { ActuatorEditor } from './actuator-editor';
-import { actuatorWiring, describeRule, issueLines, probeWiring, roomDraft, slugify, toRoom, uniqueId } from './drafts';
+import {
+  actuatorWiring,
+  describeDays,
+  describeRule,
+  issueLines,
+  probeWiring,
+  roomDraft,
+  slugify,
+  toRoom,
+  uniqueId,
+} from './drafts';
 import { EditorRun } from './editor-run';
 import { FieldError } from './field-error';
 import { ACTUATOR_LABELS } from './labels';
@@ -93,7 +103,7 @@ export class RoomSetup {
       .map((s) => ({
         schedule: s,
         target: s.target.type === 'probe' ? probes.get(s.target.probeId) : actuators.get(s.target.actuatorId),
-        rule: describeRule(s.rule),
+        rule: describeRule(s.rule) + (s.days ? `, ${describeDays(s.days)}` : ''),
       }))
       .filter((row) => row.target !== undefined);
   });

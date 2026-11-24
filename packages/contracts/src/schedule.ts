@@ -63,6 +63,31 @@ export function localMidnight(day: string, timeZone: string): number {
   return t;
 }
 
+/** ISO weekday of a calendar date (YYYY-MM-DD): 1 Monday … 7 Sunday. */
+export function isoWeekday(day: string): number {
+  const d = new Date(`${day}T00:00:00Z`).getUTCDay();
+  return d === 0 ? 7 : d;
+}
+
+/**
+ * Whether a schedule applies at this local day and minute (F-016). A window that wraps midnight belongs to the day
+ * it started on: Friday 22:00–06:00 still holds at 03:00 on Saturday, and not at 03:00 on Friday.
+ */
+export function scheduleOnDay(
+  s: { rule: ScheduleRule; days: readonly number[] | null },
+  day: string,
+  minuteOfDay: number,
+): boolean {
+  if (!s.days) return true;
+  let weekday = isoWeekday(day);
+  if (s.rule.kind === 'window') {
+    const from = parseHHMM(s.rule.from);
+    const to = parseHHMM(s.rule.to);
+    if (from > to && minuteOfDay < to) weekday = weekday === 1 ? 7 : weekday - 1;
+  }
+  return s.days.includes(weekday);
+}
+
 /** Is a window rule "on" at this minute? `to` is exclusive; a window that wraps midnight is supported. */
 export function windowActive(rule: Extract<ScheduleRule, { kind: 'window' }>, minuteOfDay: number): boolean {
   const from = parseHHMM(rule.from);

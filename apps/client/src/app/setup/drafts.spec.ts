@@ -2,6 +2,7 @@ import { Actuator, Pot, Probe, Room, Schedule } from '@grover/contracts';
 import {
   actuatorDraft,
   actuatorWiring,
+  describeDays,
   describeRule,
   parseI2cAddress,
   potDraft,
@@ -138,18 +139,21 @@ describe('setup drafts', () => {
         target: { type: 'actuator', actuatorId: 'light' },
         rule: { kind: 'window', from: '06:00', to: '00:00' },
         enabled: true,
+        days: [1, 2, 3, 4, 5],
       },
       {
         id: 'a',
         target: { type: 'actuator', actuatorId: 'pump' },
         rule: { kind: 'at', times: ['08:00', '20:00'], durationMs: 2000 },
         enabled: true,
+        days: null,
       },
       {
         id: 'e',
         target: { type: 'probe', probeId: 'ph' },
         rule: { kind: 'every', everyMinutes: 5, durationMs: 0 },
         enabled: false,
+        days: [6, 7],
       },
     ];
     for (const s of schedules) expect(Schedule.parse(toSchedule(scheduleDraft(s)))).toEqual(s);
@@ -158,6 +162,7 @@ describe('setup drafts', () => {
       target: { type: 'actuator', actuatorId: 'light' },
       rule: { kind: 'dark' },
       enabled: true,
+      days: null,
     };
     expect(Schedule.parse(toSchedule(scheduleDraft(dark)))).toEqual(dark);
     expect(toSchedule({ ...scheduleDraft(schedules[1]), times: '07:00,19:30  21:00' }).rule).toEqual({
@@ -166,6 +171,18 @@ describe('setup drafts', () => {
       durationMs: 2000,
     });
     expect(describeRule(schedules[1]!.rule)).toBe('at 08:00, 20:00 for 2 s');
+  });
+
+  it('weekdays (F-016): all seven ticked is every day; none is refused; the list words weekdays and weekend apart', () => {
+    const d = scheduleDraft();
+    expect(d.days).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(toSchedule({ ...d, id: 'x', targetId: 'light', days: [1, 2, 3, 4, 5, 6, 7] }).days).toBeNull();
+    expect(toSchedule({ ...d, id: 'x', targetId: 'light', days: [7, 6] }).days).toEqual([6, 7]);
+    expect(Schedule.safeParse(toSchedule({ ...d, id: 'x', targetId: 'light', days: [] })).success).toBe(false);
+    expect(describeDays(null)).toBe('every day');
+    expect(describeDays([1, 2, 3, 4, 5])).toBe('Mon–Fri');
+    expect(describeDays([6, 7])).toBe('Sat, Sun');
+    expect(describeDays([1, 3, 6])).toBe('Mon, Wed · Sat');
   });
 
   it('round-trips rooms; no calendar means no start date', () => {

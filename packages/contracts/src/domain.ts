@@ -170,6 +170,17 @@ export const Schedule = z.object({
   ]),
   rule: ScheduleRule,
   enabled: z.boolean(),
+  /**
+   * The weekdays it runs on (1 Monday … 7 Sunday, F-016); null: every day. A window past midnight belongs to the
+   * day it started on.
+   */
+  days: z
+    .array(z.number().int().min(1).max(7))
+    .min(1)
+    .max(7)
+    .refine((d) => new Set(d).size === d.length, 'each day once')
+    .nullable()
+    .default(null),
 });
 export type Schedule = z.infer<typeof Schedule>;
 

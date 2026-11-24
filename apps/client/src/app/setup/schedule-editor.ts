@@ -3,7 +3,7 @@ import { FormField, form, max, min, pattern, required, submit, validate } from '
 import { Schedule, type Actuator, type Probe } from '@grover/contracts';
 import { isPump } from '@grover/contracts/kinds';
 import { FieldError } from './field-error';
-import { issueLines, scheduleDraft, slugify, toSchedule, uniqueId } from './drafts';
+import { WEEKDAY_NAMES, issueLines, scheduleDraft, slugify, toSchedule, uniqueId } from './drafts';
 import { EditorRun } from './editor-run';
 import { SetupApi } from './setup-api';
 
@@ -86,8 +86,39 @@ const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
             <gr-field-error [state]="f.durationSeconds()" />
           </label>
         }
+        <fieldset class="field days">
+          <legend>Days</legend>
+          <div class="day-groups">
+            <span class="day-group">
+              @for (d of weekdays; track d) {
+                <label class="day"
+                  ><input type="checkbox" [checked]="model().days.includes(d)" (change)="toggleDay(d)" />{{
+                    dayNames[d - 1]
+                  }}</label
+                >
+              }
+            </span>
+            <span class="day-group">
+              @for (d of weekend; track d) {
+                <label class="day"
+                  ><input type="checkbox" [checked]="model().days.includes(d)" (change)="toggleDay(d)" />{{
+                    dayNames[d - 1]
+                  }}</label
+                >
+              }
+            </span>
+          </div>
+          <span class="day-shortcuts">
+            <button type="button" class="ghost small" (click)="setDays(all)">Every day</button>
+            <button type="button" class="ghost small" (click)="setDays(weekdays)">Weekdays</button>
+            <button type="button" class="ghost small" (click)="setDays(weekend)">Weekend</button>
+          </span>
+          @if (!model().days.length) {
+            <span class="form-errors" role="alert">Pick at least one day.</span>
+          }
+        </fieldset>
       </div>
-      <p class="hint">Times are the hub's local time.</p>
+      <p class="hint">Times are the hub's local time. A window past midnight belongs to the day it starts.</p>
       @if (errors().length) {
         <ul class="form-errors" role="alert">
           @for (e of errors(); track $index) {
@@ -105,8 +136,56 @@ const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
       </div>
     </form>
   `,
+  styles: `
+    .days {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      grid-column: 1 / -1;
+      legend {
+        padding: 0;
+      }
+    }
+    .day-groups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+    .day-group {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .day {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+    .day-shortcuts {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+  `,
 })
 export class ScheduleEditor {
+  protected readonly weekdays = [1, 2, 3, 4, 5];
+  protected readonly weekend = [6, 7];
+  protected readonly all = [1, 2, 3, 4, 5, 6, 7];
+  protected readonly dayNames = WEEKDAY_NAMES;
+
+  protected toggleDay(d: number): void {
+    this.model.update((m) => ({
+      ...m,
+      days: m.days.includes(d) ? m.days.filter((x) => x !== d) : [...m.days, d].sort((a, b) => a - b),
+    }));
+  }
+
+  protected setDays(days: readonly number[]): void {
+    this.model.update((m) => ({ ...m, days: [...days] }));
+  }
+
   private readonly api = inject(SetupApi);
   readonly schedule = input<Schedule | null>(null);
   readonly probes = input<readonly Probe[]>([]);
@@ -169,6 +248,8 @@ export class ScheduleEditor {
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();
+    // No day ticked: the inline message already says so; nothing to send.
+    if (!this.model().days.length) return;
     await submit(this.f, async () => {
       const d = this.model();
       const id = this.isNew() ? uniqueId(slugify(`${d.targetId}-${d.kind}`), this.takenIds()) : d.id;
