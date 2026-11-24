@@ -127,6 +127,8 @@ export class AgentLink {
     return this.store.listAgents().map((a) => this.view(a.id));
   }
 
+  /** The last config problem recorded per agent, so a refused config is recorded once. */
+  private readonly configFaults = new Map<string, string>();
   /** Adjusts a config before it is sent (the light following the grow calendar, F-007). */
   private adjust: (config: AgentConfig) => AgentConfig = (c) => c;
   setConfigAdjuster(fn: (config: AgentConfig) => AgentConfig): void {
@@ -155,10 +157,17 @@ export class AgentLink {
     if (!parsed.success) {
       const at = Date.now();
       const message = `not sent: ${parsed.error.issues.map((i) => i.message).join('; ')}`;
-      if (this.store.addFault(agentId, at, 'config', message))
-        this.bus.emit({ type: 'fault', agentId, subject: 'config', message, at });
+      // The agent runs an older config: the dashboard must not call it current.
+      this.configHashes.delete(agentId);
+      // Once per problem, not on every publish (every connect, timer tick and save would repeat it).
+      if (this.configFaults.get(agentId) !== message) {
+        this.configFaults.set(agentId, message);
+        if (this.store.addFault(agentId, at, 'config', message))
+          this.bus.emit({ type: 'fault', agentId, subject: 'config', message, at });
+      }
       return null;
     }
+    this.configFaults.delete(agentId);
     return this.adjust(parsed.data);
   }
 
