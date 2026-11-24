@@ -33,7 +33,7 @@ Expected: `{"ok":true,…,"value":<°C>}` close to a reference thermometer.
 
 ## 3b. Calibrate pH and EC
 
-Analog pH and EC probes read volts until calibrated, and feeds will not use them. In Setup → the tent → Probes → Edit the pH probe → Calibration: rinse the probe, put it in buffer pH 7, **Read now**, enter `7`, **Add point**; rinse, buffer pH 4, **Read now**, enter `4`, **Add point**; choose the water temperature probe; **Save**. For EC: the calibration solution (e.g. 1.413 mS/cm), **Read now**, enter its value, **Add point**, **Save**.
+Analog pH and EC probes read volts until calibrated, and feeds will not use them. In Setup → the tent → Probes → Edit the pH probe → Calibration: rinse the probe, put it in buffer pH 7, **Read now**, enter `7`, **Add point**; rinse, buffer pH 4, **Read now**, enter `4`, **Add point**; choose the water temperature probe; **Save**. For EC: the calibration solution (e.g. 1.413 mS/cm at 25 °C, the value on the bottle), **Read now**, enter its value, **Add point**, **Save**. pH needs both buffers; the editor says when points cannot be saved. After moving a probe to another channel, calibrate it again (the old calibration is dropped).
 
 Expected: back in buffer pH 7 and pH 4, **Read** gives 7 ± 0.1 and 4 ± 0.1; EC in the solution gives its value ± 0.1 mS/cm.
 

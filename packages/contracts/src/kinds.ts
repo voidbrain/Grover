@@ -135,3 +135,92 @@ export function lineage(plantId: string, plants: readonly Plant[]): Plant[] {
   }
   return out;
 }
+
+// ── Calibration maths (F-004; zod-free so the client preview is the agent's own) ─────────────
+
+/** The shape the maths needs; the schema is `Calibration` in calibration.ts. */
+export interface CalibrationData {
+  points: readonly { raw: number; value: number; tempC: number | null }[];
+  compensation: 'none' | 'ph' | 'ec';
+}
+
+/** A compensation temperature is used only inside this range: outside it is a sensor fault (a DS18B20 reads -127 or 85). */
+export const COMPENSATION_TEMP_RANGE = { min: 0, max: 50 } as const;
+/** An older water temperature is not used for compensation: the solution may have changed since. */
+export const COMPENSATION_TEMP_MAX_AGE_MS = 15 * 60_000;
+/** Two points closer than this (in driver units, e.g. volts) cannot fix a line. */
+export const MIN_RAW_SPREAD = 0.05;
+
+export const usableTemp = (t: number | null | undefined): t is number =>
+  typeof t === 'number' && Number.isFinite(t) && t >= COMPENSATION_TEMP_RANGE.min && t <= COMPENSATION_TEMP_RANGE.max;
+
+const KELVIN = 273.15;
+const ecAt = (value25: number, tempC: number) => value25 * (1 + 0.02 * (tempC - 25));
+
+/**
+ * Why these points cannot calibrate a probe of `kind`, or null. pH needs two buffers (one point would only shift
+ * the line, and its electrode slope runs backwards); two or more points need a spread in raw and in value; EC
+ * through one point needs a reading above zero.
+ */
+export function calibrationProblem(c: CalibrationData, kind?: string): string | null {
+  const pts = c.points;
+  if (!pts.length) return 'no points';
+  if (kind === 'ph' && pts.length < 2) return 'pH needs two buffers (pH 7 and pH 4)';
+  if (pts.length === 1) {
+    if (c.compensation === 'ec' && !(pts[0]!.raw > 0)) return 'an EC point needs a reading above zero';
+    return null;
+  }
+  const raws = pts.map((p) => p.raw);
+  const values = pts.map((p) => p.value);
+  if (Math.max(...raws) - Math.min(...raws) < MIN_RAW_SPREAD)
+    return `the points read almost the same (${Math.min(...raws)} to ${Math.max(...raws)}): use solutions further apart`;
+  if (Math.max(...values) === Math.min(...values)) return 'the points have the same reference value';
+  return null;
+}
+
+/**
+ * The line value = slope·raw + intercept for the points.
+ * - Two or more points: least squares. One point: EC scales through zero, anything else shifts by an offset.
+ * - EC bottles state their value at 25 °C: a point taken at another temperature is fitted to what the solution
+ *   conducts at that temperature, so compensation later brings it back to the bottle value.
+ */
+export function calibrationLine(c: CalibrationData): { slope: number; intercept: number } {
+  const pts = c.points.map((p) => ({
+    raw: p.raw,
+    value: c.compensation === 'ec' && usableTemp(p.tempC) ? ecAt(p.value, p.tempC) : p.value,
+  }));
+  if (pts.length === 1) {
+    const p = pts[0]!;
+    if (c.compensation === 'ec') return { slope: p.raw !== 0 ? p.value / p.raw : 1, intercept: 0 };
+    return { slope: 1, intercept: p.value - p.raw };
+  }
+  const n = pts.length;
+  const mx = pts.reduce((a, p) => a + p.raw, 0) / n;
+  const my = pts.reduce((a, p) => a + p.value, 0) / n;
+  const sxx = pts.reduce((a, p) => a + (p.raw - mx) ** 2, 0);
+  if (sxx === 0) return { slope: 1, intercept: my - mx };
+  const slope = pts.reduce((a, p) => a + (p.raw - mx) * (p.value - my), 0) / sxx;
+  return { slope, intercept: my - slope * mx };
+}
+
+/** Temperature the points were taken at (the mean of the usable ones), or 25 °C. */
+export function calibrationTemp(c: CalibrationData): number {
+  const temps = c.points.map((p) => p.tempC).filter(usableTemp);
+  return temps.length ? temps.reduce((a, t) => a + t, 0) / temps.length : 25;
+}
+
+/**
+ * A raw reading in the probe's unit. `tempC`: the solution's temperature now, when known (ignored outside
+ * COMPENSATION_TEMP_RANGE).
+ * - 'ph': the electrode slope follows absolute temperature (Nernst), around pH 7;
+ * - 'ec': referred to 25 °C at 2 % per °C.
+ */
+export function applyCalibration(raw: number, c: CalibrationData, tempC: number | null): number {
+  const { slope, intercept } = calibrationLine(c);
+  let value = slope * raw + intercept;
+  if (usableTemp(tempC)) {
+    if (c.compensation === 'ph') value = 7 + (value - 7) * ((calibrationTemp(c) + KELVIN) / (tempC + KELVIN));
+    else if (c.compensation === 'ec') value = value / (1 + 0.02 * (tempC - 25));
+  }
+  return Math.round(value * 1000) / 1000;
+}

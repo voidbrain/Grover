@@ -367,8 +367,8 @@ export class Feeder {
   private fresh(pot: Pot, kind: 'ec' | 'ph' | 'water_level'): number | null {
     const probe = this.store.potProbe(pot, kind);
     // An uncalibrated analog pH/EC probe reads volts: never plan with it (F-004).
-    if (probe && this.store.needsCalibration(probe)) return null;
-    const r = probe ? this.store.latestReading(probe.id) : null;
+    // A reading from before its calibration changed is in other units.
+    const r = probe ? this.store.latestMeasurement(probe) : null;
     return r && this.now() - r.at <= this.opts.freshMs ? r.value : null;
   }
 

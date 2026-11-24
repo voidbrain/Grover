@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS, TANK_ROLES, isPump } from './kinds.ts';
+import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS, TANK_ROLES, calibrationProblem, isPump } from './kinds.ts';
 
 /** What a probe measures. Units are fixed per kind (see PROBE_KINDS). */
 export const ProbeKind = z.enum(PROBE_KIND_IDS);
@@ -100,22 +100,27 @@ export const Pot = z.object({
 });
 export type Pot = z.infer<typeof Pot>;
 
-export const Probe = z.object({
-  id: Id,
-  roomId: Id,
-  potId: Id.nullable(),
-  kind: ProbeKind,
-  name: z.string().min(1),
-  enabled: z.boolean(),
-  binding: ProbeBinding,
-  /** Level probes only: the tank it measures (null: the pot it belongs to). */
-  tank: TankRole.nullable().default(null),
-  /** Raise an alert below / above these values (for example a supply tank running low). */
-  alertBelow: z.number().nullable().default(null),
-  alertAbove: z.number().nullable().default(null),
-  /** From driver units to the probe's (F-004). Null: readings are used as the driver gives them. */
-  calibration: Calibration.nullable().default(null),
-});
+export const Probe = z
+  .object({
+    id: Id,
+    roomId: Id,
+    potId: Id.nullable(),
+    kind: ProbeKind,
+    name: z.string().min(1),
+    enabled: z.boolean(),
+    binding: ProbeBinding,
+    /** Level probes only: the tank it measures (null: the pot it belongs to). */
+    tank: TankRole.nullable().default(null),
+    /** Raise an alert below / above these values (for example a supply tank running low). */
+    alertBelow: z.number().nullable().default(null),
+    alertAbove: z.number().nullable().default(null),
+    /** From driver units to the probe's (F-004). Null: readings are used as the driver gives them. */
+    calibration: Calibration.nullable().default(null),
+  })
+  .superRefine((p, ctx) => {
+    const problem = p.calibration && calibrationProblem(p.calibration, p.kind);
+    if (problem) ctx.addIssue({ code: 'custom', message: problem, path: ['calibration', 'points'] });
+  });
 export type Probe = z.infer<typeof Probe>;
 
 export const Actuator = z

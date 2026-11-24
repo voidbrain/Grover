@@ -4,6 +4,7 @@ import {
   Actuation,
   Actuator,
   AgentStatus,
+  CALIBRATION_PROTOCOL,
   Calendar,
   Phase,
   Pot,
@@ -172,7 +173,7 @@ export class Store {
 
   // ── probes ─────────────────────────────────────────────────────────────────
   private probe(r: Row): Probe {
-    return Probe.parse({
+    const row = {
       id: r['id'],
       roomId: r['room_id'],
       potId: r['pot_id'] ?? null,
@@ -184,7 +185,11 @@ export class Store {
       alertBelow: r['alert_below'] ?? null,
       alertAbove: r['alert_above'] ?? null,
       calibration: r['calibration'] == null ? null : json(r['calibration']),
-    });
+    };
+    // A stored calibration the current rules refuse (e.g. one pH point) reads as none: the probe is then treated as
+    // uncalibrated, never as calibrated wrongly.
+    const parsed = Probe.safeParse(row);
+    return parsed.success ? parsed.data : Probe.parse({ ...row, calibration: null });
   }
   listProbes(roomId?: string): Probe[] {
     const rows = (
@@ -214,7 +219,21 @@ export class Store {
    * measurement (F-004).
    */
   needsCalibration(p: Probe): boolean {
-    return p.binding.driver === 'ads1115' && (p.kind === 'ph' || p.kind === 'ec') && p.calibration === null;
+    if (p.binding.driver !== 'ads1115' || (p.kind !== 'ph' && p.kind !== 'ec')) return false;
+    if (!p.calibration) return true;
+    // An agent older than the calibration protocol does not apply it: its readings are still volts.
+    const agentId = this.getRoom(p.roomId).agentId;
+    const status = agentId ? this.listAgents().find((a) => a.id === agentId)?.status : null;
+    return !!status && status.protocol < CALIBRATION_PROTOCOL;
+  }
+  /**
+   * The probe's latest reading if it is a measurement in the probe's unit: not from an uncalibrated analog
+   * probe, and not taken before its calibration last changed.
+   */
+  latestMeasurement(p: Probe): Reading | null {
+    if (this.needsCalibration(p)) return null;
+    const r = this.latestReading(p.id);
+    return r && r.at >= (p.calibration?.calibratedAt ?? 0) ? r : null;
   }
   /** The water temperature probe for a probe's solution: the pot's own, else the tent's (no tank). */
   roomWaterTemp(p: Probe): string | null {
@@ -230,7 +249,28 @@ export class Store {
     return out;
   }
   putProbe(input: unknown): Probe {
-    const p = Probe.parse(input);
+    let p = Probe.parse(input);
+    const before = this.db.prepare('SELECT * FROM probes WHERE id = ?').get(p.id) as Row | undefined;
+    const old = before ? this.probe(before) : null;
+    const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+    const points = (c: Probe['calibration']) => (c ? { ...c, calibratedAt: null } : null);
+    if (p.calibration && old?.calibration && same(points(p.calibration), points(old.calibration))) {
+      // Unchanged calibration: it no longer applies if the probe was rewired or changed kind.
+      p =
+        old.kind !== p.kind || !same(old.binding, p.binding)
+          ? { ...p, calibration: null }
+          : { ...p, calibration: { ...p.calibration, calibratedAt: old.calibration.calibratedAt } };
+    } else if (p.calibration) {
+      p = { ...p, calibration: { ...p.calibration, calibratedAt: Date.now() } };
+    }
+    const tempId = p.calibration?.tempProbeId;
+    if (tempId) {
+      const t = this.listProbes(p.roomId).find((x) => x.id === tempId);
+      if (!t || t.kind !== 'water_temperature' || t.tank !== null || (t.potId !== null && t.potId !== p.potId))
+        throw new BadReference(
+          `${tempId} cannot compensate ${p.name}: use a water temperature probe in the same pot or the tent's shared one`,
+        );
+    }
     this.db
       .prepare(
         `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding, tank, alert_below, alert_above, calibration)

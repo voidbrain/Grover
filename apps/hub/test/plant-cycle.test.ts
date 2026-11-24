@@ -156,3 +156,70 @@ test('an analog pH probe without calibration is not used to plan a feed, and the
   hub.store.addReading({ probeId: 'pot-1-ph', value: 6.1, at: Date.now() + 1 });
   assert.equal((await api('GET', '/api/pots/pot-1/feed')).json.ph, 6.1);
 });
+
+test('calibration: volts read before it are not used; changing the wiring drops it; the temperature probe must be water temperature', async () => {
+  const ph = hub.store.getProbe('pot-1-ph');
+  const cal = {
+    points: [
+      { raw: 2.53, value: 4, tempC: null, takenOn: '2026-11-24' },
+      { raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' },
+    ],
+    compensation: 'ph',
+    tempProbeId: null,
+  };
+  hub.store.putProbe({
+    ...ph,
+    binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 0 },
+    calibration: null,
+  });
+  hub.store.addReading({ probeId: 'pot-1-ph', value: 2.1, at: Date.now() - 1000 }); // volts, before calibrating
+  const saved = await api('PUT', '/api/probes/pot-1-ph', { ...hub.store.getProbe('pot-1-ph'), calibration: cal });
+  assert.equal(saved.status, 200);
+  assert.ok(hub.store.getProbe('pot-1-ph').calibration!.calibratedAt! > 0, 'the hub stamps when it changed');
+  assert.equal(
+    (await api('GET', '/api/pots/pot-1/feed')).json.ph,
+    null,
+    'a reading from before the calibration is volts',
+  );
+  const moved = await api('PUT', '/api/probes/pot-1-ph', {
+    ...hub.store.getProbe('pot-1-ph'),
+    binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 1 },
+  });
+  assert.equal(moved.json.calibration, null, 'rewired: the old calibration no longer applies');
+  const wrongTemp = await api('PUT', '/api/probes/pot-1-ph', {
+    ...hub.store.getProbe('pot-1-ph'),
+    calibration: { ...cal, tempProbeId: 'pot-1-ec' },
+  });
+  assert.equal(wrongTemp.status, 400);
+  assert.match(wrongTemp.json.error, /water temperature/);
+});
+
+test('alerts ignore volts from an uncalibrated analog pH/EC probe', async () => {
+  const ph = hub.store.getProbe('pot-1-ph');
+  hub.store.putProbe({
+    ...ph,
+    binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 0 },
+    calibration: null,
+    alertBelow: 5,
+  });
+  hub.bus.emit({ type: 'reading', reading: { probeId: 'pot-1-ph', value: 2.0, at: Date.now() } });
+  assert.ok(!hub.alerts.list().some((a) => a.key === 'probe:pot-1-ph:below'));
+});
+
+test('a stored calibration the rules now refuse reads as none', () => {
+  const ph = hub.store.getProbe('pot-1-ph');
+  hub.store.putProbe({
+    ...ph,
+    binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 0 },
+    calibration: null,
+  });
+  hub.store.db
+    .prepare('UPDATE probes SET calibration = ? WHERE id = ?')
+    .run(
+      JSON.stringify({ points: [{ raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' }], compensation: 'ph' }),
+      'pot-1-ph',
+    );
+  const p = hub.store.getProbe('pot-1-ph');
+  assert.equal(p.calibration, null);
+  assert.equal(hub.store.needsCalibration(p), true);
+});

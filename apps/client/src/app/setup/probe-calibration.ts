@@ -1,26 +1,8 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, model, signal } from '@angular/core';
 import type { Calibration, Probe, ProbeKind } from '@grover/contracts';
+import { applyCalibration, calibrationProblem, usableTemp } from '@grover/contracts/kinds';
 import { Hub } from '../hub';
-
-/** Local copy of the calibration maths for the preview (the agent applies the real one). */
-function preview(raw: number, c: Calibration): number {
-  const pts = c.points;
-  let slope = 1;
-  let intercept = 0;
-  if (pts.length === 1) {
-    if (c.compensation === 'ec') slope = pts[0]!.raw !== 0 ? pts[0]!.value / pts[0]!.raw : 1;
-    else intercept = pts[0]!.value - pts[0]!.raw;
-  } else {
-    const n = pts.length;
-    const mx = pts.reduce((a, p) => a + p.raw, 0) / n;
-    const my = pts.reduce((a, p) => a + p.value, 0) / n;
-    const sxx = pts.reduce((a, p) => a + (p.raw - mx) ** 2, 0);
-    slope = sxx === 0 ? 1 : pts.reduce((a, p) => a + (p.raw - mx) * (p.value - my), 0) / sxx;
-    intercept = my - slope * mx;
-  }
-  return Math.round((slope * raw + intercept) * 1000) / 1000;
-}
 
 /**
  * Calibration of a saved probe (F-004): read the probe raw while it sits in a reference solution, enter the
@@ -53,7 +35,10 @@ function preview(raw: number, c: Calibration): number {
         <p class="hint">Not calibrated: readings are used as the probe gives them.</p>
       }
       <div class="row">
-        <button type="button" class="ghost small" [disabled]="reading()" (click)="readNow()">Read now</button>
+        <button type="button" class="ghost small" [disabled]="reading() || !online()" (click)="readNow()">Read now</button>
+        @if (!online()) {
+          <span class="hint">The agent is offline: nothing to read.</span>
+        }
         @if (last(); as l) {
           <span>
             raw {{ l.raw | number: '1.0-4' }}
@@ -61,7 +46,7 @@ function preview(raw: number, c: Calibration): number {
               <span class="hint">· water {{ l.tempC }} °C</span>
             }
             @if (calibration(); as c) {
-              <span class="hint">· now reads {{ previewValue(l.raw, c) }}</span>
+              <span class="hint">· now reads {{ preview(l.raw, l.tempC, c) }}</span>
             }
           </span>
         }
@@ -96,6 +81,9 @@ function preview(raw: number, c: Calibration): number {
           </label>
         }
       </div>
+      @if (problem(); as p) {
+        <p class="form-errors" role="alert">Not saved like this: {{ p }}.</p>
+      }
       @if (error()) {
         <p class="form-errors" role="alert">{{ error() }}</p>
       }
@@ -139,33 +127,57 @@ export class ProbeCalibration {
   private readonly hub = inject(Hub);
   readonly probeId = input.required<string>();
   readonly kind = input.required<ProbeKind>();
+  /** Whether the tent's agent is online (Read now needs it). */
+  readonly online = input(true);
   readonly tempProbes = input<readonly Probe[]>([]);
   readonly calibration = model<Calibration | null>(null);
 
+  /** Choices made before the first point; kept in the calibration once it exists. */
+  private readonly pendingCompensation = signal<Calibration['compensation'] | null>(null);
+  private readonly pendingTempProbe = signal<string | null | undefined>(undefined);
+
   protected readonly points = computed(() => this.calibration()?.points ?? []);
-  protected readonly compensation = computed(
-    () => this.calibration()?.compensation ?? (this.kind() === 'ph' ? 'ph' : this.kind() === 'ec' ? 'ec' : 'none'),
+  protected readonly compensation = computed<Calibration['compensation']>(
+    () =>
+      this.calibration()?.compensation ??
+      this.pendingCompensation() ??
+      (this.kind() === 'ph' ? 'ph' : this.kind() === 'ec' ? 'ec' : 'none'),
   );
-  protected readonly tempProbeId = computed(() => this.calibration()?.tempProbeId ?? '');
+  protected readonly tempProbeId = computed(() => {
+    const c = this.calibration();
+    if (c) return c.tempProbeId ?? '';
+    const pending = this.pendingTempProbe();
+    return pending === undefined ? (this.tempProbes()[0]?.id ?? '') : (pending ?? '');
+  });
   protected readonly last = signal<{ raw: number; tempC: number | null } | null>(null);
   protected readonly reference = signal('');
   protected readonly reading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly canAdd = computed(() => this.last() !== null && /^\s*-?\d+(\.\d+)?\s*$/.test(this.reference()));
+  /** Why the hub would refuse these points (the same check it runs), or null. */
+  protected readonly problem = computed(() => {
+    const c = this.calibration();
+    return c ? calibrationProblem(c, this.kind()) : null;
+  });
   protected readonly guide = computed(() =>
     this.kind() === 'ph'
       ? 'Rinse the probe, put it in buffer pH 7, Read now, enter 7, Add point; then the same with buffer pH 4. Save.'
       : this.kind() === 'ec'
-        ? 'Put the probe in the calibration solution (e.g. 1.413 mS/cm), Read now, enter its value, Add point. Save.'
+        ? 'Put the probe in the calibration solution (e.g. 1.413 mS/cm at 25 °C), Read now, enter its value, Add point. Save.'
         : 'Read now next to a reference, enter the true value, Add point. Save.',
   );
-  protected readonly previewValue = preview;
+
+  /** What the probe would report for this raw value, with the agent's own maths and compensation. */
+  protected preview(raw: number, tempC: number | null, c: Calibration): number {
+    return applyCalibration(raw, c, tempC);
+  }
 
   protected async readNow(): Promise<void> {
     this.reading.set(true);
     this.error.set(null);
     try {
-      this.last.set(await this.hub.readRaw(this.probeId()));
+      const r = await this.hub.readRaw(this.probeId());
+      this.last.set({ raw: r.raw, tempC: usableTemp(r.tempC) ? r.tempC : null });
     } catch (err) {
       const e = err as { error?: { error?: string }; message?: string };
       this.error.set(e.error?.error ?? e.message ?? 'Could not read the probe.');
@@ -186,8 +198,9 @@ export class ProbeCalibration {
     const current = this.calibration();
     this.calibration.set({
       points: [...(current?.points ?? []), point].slice(-8),
-      compensation: this.compensation() as Calibration['compensation'],
-      tempProbeId: current?.tempProbeId ?? this.tempProbes()[0]?.id ?? null,
+      compensation: this.compensation(),
+      tempProbeId: this.tempProbeId() || null,
+      calibratedAt: current?.calibratedAt ?? null,
     });
     this.reference.set('');
   }
@@ -196,16 +209,23 @@ export class ProbeCalibration {
     const c = this.calibration();
     if (!c) return;
     const points = c.points.filter((_, j) => j !== i);
+    if (!points.length) {
+      // Keep the choices for the next first point.
+      this.pendingCompensation.set(c.compensation);
+      this.pendingTempProbe.set(c.tempProbeId);
+    }
     this.calibration.set(points.length ? { ...c, points } : null);
   }
 
   protected setCompensation(value: Calibration['compensation']): void {
     const c = this.calibration();
     if (c) this.calibration.set({ ...c, compensation: value });
+    else this.pendingCompensation.set(value);
   }
 
   protected setTempProbe(id: string): void {
     const c = this.calibration();
     if (c) this.calibration.set({ ...c, tempProbeId: id || null });
+    else this.pendingTempProbe.set(id || null);
   }
 }

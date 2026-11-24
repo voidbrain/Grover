@@ -7,6 +7,7 @@ import { NUMBER_TEXT, issueLines, probeDraft, slugify, toProbe, uniqueId } from 
 import { PROBE_DRIVERS, probeKinds, tankRoles } from './labels';
 import { EditorRun } from './editor-run';
 import { SetupApi } from './setup-api';
+import { Hub } from '../hub';
 
 @Component({
   selector: 'gr-probe-editor',
@@ -100,11 +101,14 @@ import { SetupApi } from './setup-api';
           }
         }
       </div>
-      @if (!isNew()) {
+      @if (!isNew() && rewired()) {
+        <p class="hint">Kind or wiring changed: save first, then calibrate again (the old calibration is dropped).</p>
+      } @else if (!isNew()) {
         <gr-probe-calibration
           [probeId]="probe()!.id"
           [kind]="model().kind"
-          [tempProbes]="tempProbes()"
+          [online]="online()"
+          [tempProbes]="compensators()"
           [calibration]="model().calibration"
           (calibrationChange)="setCalibration($event)"
         />
@@ -163,6 +167,28 @@ export class ProbeEditor {
   protected readonly state = new EditorRun();
   protected readonly errors = this.state.errors;
   protected readonly busy = this.state.busy;
+
+  private readonly hub = inject(Hub);
+  /** Kind or wiring edited since the save: the hub drops the calibration, so it is not offered until saved. */
+  protected readonly rewired = computed(() => {
+    const p = this.probe();
+    if (!p) return false;
+    const was = probeDraft(p);
+    const now = this.model();
+    const keys = ['kind', 'driver', 'address', 'i2cBus', 'i2cAddress', 'channel', 'triggerPin', 'echoPin'] as const;
+    return keys.some((k) => was[k] !== now[k]);
+  });
+  /** Water temperature probes that measure this probe's solution: its pot's, or the tent's shared ones. */
+  protected readonly compensators = computed(() =>
+    this.tempProbes().filter(
+      (t) =>
+        t.tank === null && t.id !== this.probe()?.id && (t.potId === null || t.potId === (this.model().potId || null)),
+    ),
+  );
+  protected readonly online = computed(() => {
+    const room = this.hub.snapshot()?.rooms.find((r) => r.id === this.roomId());
+    return !!room && !!this.hub.agentFor(room)?.online;
+  });
 
   protected setCalibration(calibration: Probe['calibration']): void {
     this.model.update((d) => ({ ...d, calibration }));

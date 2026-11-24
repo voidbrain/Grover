@@ -49,3 +49,46 @@ test('probes carry an optional calibration', () => {
   assert.equal(Probe.parse(base).calibration, null);
   assert.equal(Probe.safeParse({ ...base, calibration: { points: [] } }).success, false, 'at least one point');
 });
+
+// Review of #21: calibrations that would send wrong pH or EC to the feed planner are refused.
+test('a pH probe needs two points; degenerate points are refused', () => {
+  const base = {
+    id: 'ph',
+    roomId: 'r',
+    potId: null,
+    kind: 'ph',
+    name: 'pH',
+    enabled: true,
+    binding: { driver: 'mock' },
+  };
+  assert.equal(
+    Probe.safeParse({ ...base, calibration: { points: [point(2.03, 7)] } }).success,
+    false,
+    'pH 7 alone reads backwards',
+  );
+  assert.equal(Probe.safeParse({ ...base, calibration: { points: [point(2.53, 4), point(2.03, 7)] } }).success, true);
+  assert.equal(Calibration.safeParse({ points: [point(2.03, 7), point(2.03, 4)] }).success, false, 'same raw twice');
+  assert.equal(
+    Calibration.safeParse({ points: [point(2.03, 7), point(2.031, 4)] }).success,
+    false,
+    'too close to fit a line',
+  );
+  assert.equal(
+    Calibration.safeParse({ points: [point(0, 1.413)], compensation: 'ec' }).success,
+    false,
+    'EC through a zero reading',
+  );
+});
+
+test('EC: a point taken away from 25 °C still reads the bottle value at that temperature', () => {
+  // The bottle says 1.413 mS/cm at 25 °C; at 20 °C that solution conducts 1.413·0.9 and reads 0.855 V.
+  const c = Calibration.parse({ points: [point(0.855, 1.413, 20)], compensation: 'ec' });
+  assert.ok(Math.abs(applyCalibration(0.855, c, 20) - 1.413) < 0.002, `${applyCalibration(0.855, c, 20)}`);
+  assert.ok(Math.abs(applyCalibration(0.95, c, 25) - 1.413) < 0.002, 'the same solution at 25 °C');
+});
+
+test('a temperature outside 0-50 °C is not used for compensation', () => {
+  const c = Calibration.parse({ points: [point(2.53, 4), point(2.03, 7)], compensation: 'ph' });
+  assert.equal(applyCalibration(2.53, c, -127), 4, 'a DS18B20 fault value');
+  assert.equal(applyCalibration(2.53, c, 85), 4);
+});

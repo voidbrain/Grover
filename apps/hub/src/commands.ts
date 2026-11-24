@@ -1,4 +1,11 @@
-import { isPump, type ActuationSource, type CommandResult, type OperatingMode } from '@grover/contracts';
+import {
+  COMPENSATION_TEMP_MAX_AGE_MS,
+  isPump,
+  usableTemp,
+  type ActuationSource,
+  type CommandResult,
+  type OperatingMode,
+} from '@grover/contracts';
 import type { AgentLink } from './agents.ts';
 import type { Bus } from './events.ts';
 import type { Store } from './store.ts';
@@ -50,7 +57,8 @@ export class Commands {
     if (!ack.ok || ack.value === null) throw new Refused(ack.error ?? 'the agent could not read the probe');
     const tempProbe = probe.calibration?.tempProbeId ?? this.store.roomWaterTemp(probe);
     const temp = tempProbe ? this.store.latestReading(tempProbe) : null;
-    return { raw: ack.value, tempC: temp?.value ?? null };
+    const recent = temp && Date.now() - temp.at <= COMPENSATION_TEMP_MAX_AGE_MS && usableTemp(temp.value);
+    return { raw: ack.value, tempC: recent ? temp.value : null };
   }
 
   /** Bounded run of a pump. Give `ml` (needs a calibrated pump) or `durationMs`. */

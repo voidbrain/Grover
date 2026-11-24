@@ -5,6 +5,7 @@ import {
   AgentCommand,
   AgentConfig,
   applyCalibration,
+  COMPENSATION_TEMP_MAX_AGE_MS,
   PROTOCOL_VERSION,
   configHash,
   firesAt,
@@ -242,7 +243,7 @@ export class Agent {
 
   /** A reading and its time; the command ack for a read carries the same time, so the hub stores it once. */
   /** Last calibrated value per probe: the temperature a calibration compensates with. */
-  private readonly lastValues = new Map<string, number>();
+  private readonly lastValues = new Map<string, { value: number; at: number }>();
 
   private async takeReading(probeId: string, raw = false): Promise<{ value: number; at: number }> {
     const entry = this.probes.get(probeId);
@@ -254,9 +255,11 @@ export class Agent {
       // A raw read is for taking calibration points: the driver's value, not stored as a measurement.
       if (raw) return { value: reading, at };
       const cal = entry.probe.calibration;
-      const tempC = cal?.tempProbeId ? (this.lastValues.get(cal.tempProbeId) ?? null) : null;
+      const temp = cal?.tempProbeId ? this.lastValues.get(cal.tempProbeId) : undefined;
+      // A stale temperature is not compensated with (applyCalibration also ignores one outside 0–50 °C).
+      const tempC = temp && at - temp.at <= COMPENSATION_TEMP_MAX_AGE_MS ? temp.value : null;
       const value = cal ? applyCalibration(reading, cal, tempC) : reading;
-      this.lastValues.set(probeId, value);
+      this.lastValues.set(probeId, { value, at });
       this.publishEvent({ type: 'reading', reading: { probeId, value, at } });
       return { value, at };
     } catch (err) {
