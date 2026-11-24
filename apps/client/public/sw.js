@@ -27,14 +27,38 @@ function pageFiles(html) {
 }
 self.groverPageFiles = pageFiles;
 
+const isPage = (res) => (res.headers.get('content-type') || '').includes('text/html');
+
+/** Fetches a file and keeps it if it is what was asked for: never the page (a hub may answer unknown names with it). */
+async function keepFile(cache, request) {
+  const res = await fetch(request);
+  if (res.ok && !isPage(res)) await cache.put(request, res.clone());
+  return res;
+}
+
+/**
+ * Keeps a page and the files it names. A page naming other files is a new build: the old build's files (hashed
+ * names) are dropped, so the cache does not grow and a broken entry cannot outlive a deploy.
+ */
+async function keepPage(html, headers) {
+  const cache = await caches.open(SHELL);
+  const old = await cache.match('/');
+  const files = pageFiles(html);
+  if (old && pageFiles(await old.text()).join() !== files.join()) {
+    const keep = new Set([...START, ...files].map((p) => new URL(p, self.location.origin).href));
+    for (const k of await cache.keys()) if (!keep.has(k.url)) await cache.delete(k);
+  }
+  await cache.put('/', new Response(html, { headers }));
+  for (const f of files) if (!(await cache.match(f))) await keepFile(cache, f).catch(() => {});
+}
+
 /** Keeps the page and everything it needs to start, so it opens without the hub. */
 async function keepShell() {
-  const cache = await caches.open(SHELL);
   const page = await fetch('/', { cache: 'no-store' });
-  if (!page.ok) throw new Error(`page ${page.status}`);
-  const html = await page.clone().text();
-  await cache.put('/', page);
-  await cache.addAll([...START.filter((p) => p !== '/'), ...pageFiles(html)]);
+  if (!page.ok || !isPage(page)) throw new Error(`page ${page.status}`);
+  await keepPage(await page.text(), page.headers);
+  const cache = await caches.open(SHELL);
+  for (const f of START.filter((p) => p !== '/')) await keepFile(cache, f);
 }
 
 self.addEventListener('install', (event) => {
@@ -54,43 +78,25 @@ self.addEventListener('fetch', (event) => {
   const kind = route(event.request.url, event.request.method, event.request.mode);
   if (kind === 'network') return;
   if (kind === 'page') {
-    // The newest page when the hub answers (it names the newest scripts); the kept one otherwise.
+    // The newest page when the hub answers with one; the kept page when it cannot be reached or fails (a proxy's
+    // 502 while the hub restarts). Anything else (an icon opened in a tab) is passed on and never kept as the page.
     event.respondWith(
       fetch(event.request)
-        .then((res) => {
-          // A new page names new scripts: keep them too before the hub goes away.
-          if (res.ok)
-            event.waitUntil(
-              res
-                .clone()
-                .text()
-                .then((html) =>
-                  caches
-                    .open(SHELL)
-                    .then((c) =>
-                      Promise.all([
-                        c.put('/', new Response(html, { headers: res.headers })),
-                        c.addAll(pageFiles(html)),
-                      ]),
-                    ),
-                )
-                .catch(() => {}),
-            );
+        .then(async (res) => {
+          if (res.ok && isPage(res)) {
+            const html = await res.clone().text();
+            event.waitUntil(keepPage(html, res.headers).catch(() => {}));
+            return res;
+          }
+          if (res.status >= 500) return (await caches.match('/')) ?? res;
           return res;
         })
-        .catch(() => caches.match('/')),
+        .catch(async () => (await caches.match('/')) ?? Response.error()),
     );
     return;
   }
   // Scripts and styles have hashed names: a kept copy is the right one; fetch and keep what is missing.
   event.respondWith(
-    caches.match(event.request).then(
-      (hit) =>
-        hit ??
-        fetch(event.request).then((res) => {
-          if (res.ok) event.waitUntil(caches.open(SHELL).then((c) => c.put(event.request, res.clone())));
-          return res;
-        }),
-    ),
+    caches.match(event.request).then(async (hit) => hit ?? keepFile(await caches.open(SHELL), event.request)),
   );
 });

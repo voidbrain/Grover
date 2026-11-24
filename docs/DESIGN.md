@@ -80,7 +80,7 @@ Enforced on the agent ([`actuators.ts`](../apps/agent/src/actuators.ts)) whateve
 
 ## Who can reach the hub
 
-Installable (F-019): the client has a web app manifest and a service worker (`apps/client/public/sw.js`, registered in production builds only). The worker keeps the app's own files (the page, the scripts and styles it names, icons) so the installed app opens without the hub and shows the last snapshot the client cached; it never answers `/api` or `/mcp`, so data and commands always go to the hub. Install needs HTTPS, which `tailscale serve` gives. Notifications are NERV's (F-008), not the browser's.
+Installable (F-019): the client has a web app manifest and a service worker (`apps/client/public/sw.js`, registered in production builds only). The worker keeps the app's own files (the page, the scripts and styles it names, icons) so the installed app opens without the hub and shows the last snapshot the client cached; it never answers `/api` or `/mcp`, so data and commands always go to the hub. It serves the kept page when the hub cannot be reached or a proxy answers 5xx, never keeps a page as a script, and drops the old build's files when the page names new ones; the hub answers a missing file with 404, not the page. Install needs HTTPS, which `tailscale serve` gives. Notifications are NERV's (F-008), not the browser's.
 
 The hub listens on loopback; `tailscale serve` publishes it to the tailnet. On top of that it refuses requests whose Host is not loopback or in `GROVER_ALLOWED_HOSTS` (DNS rebinding), whose browser Origin is foreign (cross-site requests and WebSockets), and POST/PUT without a JSON body (cross-site forms). MQTT needs a per-agent token and confines each agent to its own topics.
 

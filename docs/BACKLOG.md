@@ -3,7 +3,7 @@
 Current work ledger, reviewed 24 November 2026 against main `8e5da72`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 21.5 h agent + 13 h owner across 46 open steps of 17 features and 3 other records. Generated from the task files.
+**Remaining effort:** 19 h agent + 13 h owner across 46 open steps of 17 features and 3 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -701,6 +701,47 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="f-019"></a>[✨ F-019](#top)
+
+**Install Grover as a web app on the phone**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
+
+💻 **→** Next: F-019-T01 — Web app manifest and icons (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | The client is a plain web page: it cannot be added to the home screen as an app with its own icon and window. The owner asked on 2026-11-24 ("can be installed as webapp? notifications?"), and said notifications will be handled by NERV. |
+| **Reproduce** | Open the client over `tailscale serve` on a phone: the browser offers only a bookmark, no install. |
+| **Check** | A web app manifest (name, short name, icons from the favicon's design, theme colours from the STYLE-GUIDE tokens, `display: standalone`, start URL `/`) and a service worker that caches the app shell, so the installed app opens and shows the last snapshot (the client already caches it) while the hub is unreachable; API calls are never served from the cache. Installable from Chrome and Safari over the HTTPS `tailscale serve` address. No push notifications: alerts reach the owner through NERV (F-008). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="f-019-t01"></a>F-019-T01 — Web app manifest and icons | 1 h | 0 h | 0 h | Implemented; verification pending | — | [F-019-T02](#f-019-t02) | 🤖 | [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes |
+| 🟢 Small | <a id="f-019-t02"></a>F-019-T02 — Service worker for the app shell | 1.5 h | 0 h | 0 h | Implemented; verification pending | [F-019-T01](#f-019-t01) | [F-019-T03](#f-019-t03) | 🤖 | [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes |
+| 🟢 Small | <a id="f-019-t03"></a>F-019-T03 — Owner installs the app on the phone | 0 h | 0 h | 0 h agent + 0.25 h owner | Ready | [F-019-T02](#f-019-t02), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
+| 🟢 Small | **Total** | 2.5 h | 0 h (0 of 3 steps recorded) | 0.25 h owner | 0 of 3 completed | | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-019.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-019-T01: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes · F-019-T02: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes. [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### <a id="f-010"></a>[✨ F-010](#top)
 
 **Hub data retention and backups**
@@ -733,47 +774,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
-### <a id="f-019"></a>[✨ F-019](#top)
-
-**Install Grover as a web app on the phone**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | 2.5 h agent + 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
-
-💻 **→** Next: F-019-T01 — Web app manifest and icons (Ready).
-
-| | |
-|---|---|
-| **Issue** | The client is a plain web page: it cannot be added to the home screen as an app with its own icon and window. The owner asked on 2026-11-24 ("can be installed as webapp? notifications?"), and said notifications will be handled by NERV. |
-| **Reproduce** | Open the client over `tailscale serve` on a phone: the browser offers only a bookmark, no install. |
-| **Check** | A web app manifest (name, short name, icons from the favicon's design, theme colours from the STYLE-GUIDE tokens, `display: standalone`, start URL `/`) and a service worker that caches the app shell, so the installed app opens and shows the last snapshot (the client already caches it) while the hub is unreachable; API calls are never served from the cache. Installable from Chrome and Safari over the HTTPS `tailscale serve` address. No push notifications: alerts reach the owner through NERV (F-008). |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-019-t01"></a>F-019-T01 — Web app manifest and icons | 1 h | 0 h | 1 h | Ready | — | [F-019-T02](#f-019-t02) | 🤖 |
-| 🟡 Medium | <a id="f-019-t02"></a>F-019-T02 — Service worker for the app shell | 1.5 h | 0 h | 1.5 h | Planned | [F-019-T01](#f-019-t01) | [F-019-T03](#f-019-t03) | ⏳ 🤖 |
-| 🟢 Small | <a id="f-019-t03"></a>F-019-T03 — Owner installs the app on the phone | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-019-T02](#f-019-t02), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 |
-| 🟡 Medium | **Total** | 2.5 h | 0 h (0 of 3 steps recorded) | 2.5 h agent + 0.25 h owner | 0 of 3 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-019.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

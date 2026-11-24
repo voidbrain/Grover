@@ -250,9 +250,14 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   // ── client ───────────────────────────────────────────────────────────────
   if (existsSync(config.clientDir)) {
     await app.register(fastifyStatic, { root: config.clientDir, wildcard: false });
-    app.setNotFoundHandler((req, reply) =>
-      req.url.startsWith('/api/') ? reply.code(404).send({ error: 'not found' }) : reply.sendFile('index.html'),
-    );
+    // App routes get the page; a missing file (a name with an extension, e.g. a script of a newer build than the
+    // hub has indexed) is a 404, so the installed app's worker never keeps the page as a script (F-019).
+    app.setNotFoundHandler((req, reply) => {
+      const path = req.url.split('?')[0]!;
+      return path.startsWith('/api/') || /\.[a-z0-9]+$/i.test(path)
+        ? reply.code(404).send({ error: 'not found' })
+        : reply.sendFile('index.html');
+    });
   }
 
   return app;

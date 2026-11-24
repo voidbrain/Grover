@@ -4,7 +4,7 @@
   "parent": "F-019",
   "title": "Owner installs the app on the phone",
   "goal": "The app installs from Chrome and Safari over the tailnet address",
-  "status": "planned",
+  "status": "ready",
   "acceptance": [
     "Installed from the HTTPS tailscale serve address on the phone; opens offline with the last snapshot"
   ],

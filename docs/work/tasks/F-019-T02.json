@@ -4,7 +4,7 @@
   "parent": "F-019",
   "title": "Service worker for the app shell",
   "goal": "The installed app opens and shows the last snapshot while the hub is unreachable",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
     "The app shell is cached; API calls are never served from the cache (a test shows it)",
     "No push notifications"
@@ -35,12 +35,18 @@
   ],
   "effort": {
     "size": "medium",
-    "estimate": "1.5 h agent",
-    "basis": "Estimated 2026-11-24: 1.5 h agent; the hub must serve the worker with the right headers.",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-24 in #31: service worker; tests run its fetch handling (never /api or /mcp, kept page on network failure or 5xx, no HTML kept as a script, old builds dropped). Verification: CI on #31.",
     "reviewed": "2026-11-24",
-    "agentHours": 1.5,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,
     "estimateAgentHours": 1.5
-  }
+  },
+  "prs": [
+    {
+      "pr": 31,
+      "note": "implementation and review fixes"
+    }
+  ]
 }
