@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "B-002-T03",
+  "parent": "B-002",
+  "title": "Template release with a configurable convention source is out (waits on project-harness:F-098-T03)",
+  "goal": "A project-harness release makes the convention check's source folder configurable",
+  "status": "planned",
+  "acceptance": [
+    "Waits on project-harness:F-098-T03 (the minor release carrying `conventions.sourceDirs`)",
+    "The owner or the coordinator confirms the release tag here, which makes B-002-T02 ready"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/B-002.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/work/records/B-002.md",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-25: 15 minutes to confirm the release tag. Stands for project-harness:F-098-T03 until Grover is on a harness release with cross-repository dependsOn (v10.10.0), when B-002-T02 can depend on it directly with externalMet and this step closes as superseded.",
+    "reviewed": "2026-11-25",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "procedure"
+  }
+}
