@@ -4,7 +4,7 @@
   "parent": "F-019",
   "title": "Web app manifest and icons",
   "goal": "The client can be installed as an app",
-  "status": "ready",
+  "status": "implemented",
   "acceptance": [
     "A manifest (name, short name, icons from the favicon design, theme colours from STYLE-GUIDE tokens, standalone, start URL /)",
     "The build serves it; a client spec or build check finds it"
@@ -33,12 +33,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h agent",
-    "basis": "Estimated 2026-11-24: 1 h agent.",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-24 in #31: manifest, icons (SVG, 192/512, maskable) and theme colours; the hub test finds them served with their types. Verification: CI on #31.",
     "reviewed": "2026-11-24",
-    "agentHours": 1,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 31,
+      "note": "implementation and review fixes"
+    }
+  ]
 }

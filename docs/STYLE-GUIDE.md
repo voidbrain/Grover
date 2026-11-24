@@ -80,7 +80,7 @@ System UI stack (`--font`: Inter if installed, then the platform font); no web f
 
 ## Assets
 
-`apps/client/public/` holds the favicon only. Hardware photos and diagrams from the original build live in `docs/hardware/img/` and are documentation, not app assets.
+`apps/client/public/` holds the favicon, the app icon (`icon.svg`, a white sprout and pot on the light theme's `--accent` #2f7d4f with 96/512 rounded corners; `icon-192.png` and `icon-512.png` rendered from it), the web app manifest and the service worker (F-019). The manifest's `theme_color` and `background_color`, and the page's `theme-color` metas (`--accent` light, `--bg` dark), are the tokens' values written out: neither can read tokens, so change them together. `icon-maskable-512.png` is the same icon without rounded corners, for launchers that crop. Hardware photos and diagrams from the original build live in `docs/hardware/img/` and are documentation, not app assets.
 
 ## Writing in this repository
 
