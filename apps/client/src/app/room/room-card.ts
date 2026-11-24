@@ -4,27 +4,17 @@ import { RouterLink } from '@angular/router';
 import type { Actuator, FeedView, OperatingMode, Phase, Pot, Probe } from '@grover/contracts';
 import { TANK_ROLES, TANK_TITLES, generationLabel, geneticsLabel, isPump } from '@grover/contracts/kinds';
 import { Clock } from '../clock';
-import { ago, health, targetRange, type Health } from '../format';
+import { ago } from '../format';
 import { Hub, type FeedPreview, type Snapshot } from '../hub';
+import { PumpControl } from './pump-control';
+import { probeTile, type Tile } from './tiles';
 
 type RoomView = Snapshot['rooms'][number];
-
-export interface Tile {
-  probe: Probe;
-  title: string;
-  unit: string;
-  value: number | undefined;
-  range: { min: number; max: number } | null;
-  health: Health;
-  ago: string;
-  /** Read from the tent's shared probe, not the pot's own. */
-  shared: boolean;
-}
 
 /** One tent: its own probes, the tanks, each pot with its feed, switches and manual pump runs. */
 @Component({
   selector: 'gr-room-card',
-  imports: [DecimalPipe, NgTemplateOutlet, RouterLink],
+  imports: [DecimalPipe, NgTemplateOutlet, RouterLink, PumpControl],
   templateUrl: './room-card.html',
   styleUrl: './room-card.scss',
 })
@@ -156,25 +146,16 @@ export class RoomCard {
     return a.configCurrent ? `Agent ${a.agentId} online` : `Agent ${a.agentId} online, applying new settings`;
   });
 
-  protected readonly pumpAmount = signal<Record<string, number>>({});
   protected readonly previews = signal<Record<string, FeedPreview | 'loading'>>({});
 
   private tile(probe: Probe, shared: boolean, phase: Phase | null = this.phase()): Tile {
-    const snap = this.snap();
-    const r = this.hub.latest().get(probe.id);
-    const now = this.clock.now();
-    // Phase ranges apply to pots (and the shared pair); tank levels have their own alert thresholds.
-    const range = probe.tank ? null : targetRange(probe.kind, phase);
-    return {
-      probe,
-      title: probe.name,
-      unit: snap?.probeKinds[probe.kind].unit ?? '',
-      value: r?.value,
-      range,
-      health: health(r?.value, range, r?.at, now),
-      ago: ago(r?.at, now),
+    return probeTile(probe, {
+      latest: this.hub.latest(),
+      unit: this.snap()?.probeKinds[probe.kind].unit ?? '',
+      now: this.clock.now(),
+      phase,
       shared,
-    };
+    });
   }
 
   /** What the mode allows to switch on: everything in normal, lights in silent, nothing when off. Off is always allowed. */
@@ -290,20 +271,5 @@ export class RoomCard {
   protected async feed(pot: Pot): Promise<void> {
     this.closePreview(pot);
     await this.hub.feed(pot.id);
-  }
-
-  protected amount(a: Actuator): number {
-    return this.pumpAmount()[a.id] ?? (a.mlPerSecond ? 5 : 2);
-  }
-
-  protected setAmount(a: Actuator, value: string): void {
-    const n = Number(value);
-    if (Number.isFinite(n) && n > 0) this.pumpAmount.update((m) => ({ ...m, [a.id]: n }));
-  }
-
-  protected runPump(a: Actuator): void {
-    const n = this.amount(a);
-    // Keep Run disabled at most for the pump's cap plus a margin for the queue, in case the "off" report is lost.
-    void this.hub.run(a.id, a.mlPerSecond ? { ml: n } : { durationMs: Math.round(n * 1000) }, a.maxRunMs + 60_000);
   }
 }

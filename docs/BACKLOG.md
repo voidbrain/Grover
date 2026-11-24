@@ -186,9 +186,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Build the map page after F-004 and F-014.
+🧑 **→ Human action required: Procedure**<br />Look at the map on the dev stack ([run it](../README.md#run-it), then Map next to the tent's name), on a phone and a laptop, light and dark.
 
 | | |
 |---|---|
@@ -199,13 +199,13 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24. The legacy logical map (tag `legacy-v1`, `Documentation/img/Logical map.png`: room → pots → sensors and actuators) is a starting point for the layout.
+**Next action / closure evidence:** Requested 2026-11-24. Built 2026-11-24 on `feat/f015-rig-map`: `/rooms/<id>/map` drawn from the setup (tent switches and probes; the six supply tanks with level, low mark and pump; the mixing tank with the running feed's step; each pot with plant, phase, alerts, feed pump, loop and readings), with the dashboard's controls (Run, Switch, Read, Feed now, Stop all) through the same Hub calls; the pump control and probe tiles are now shared with the room card (`pump-control.ts`, `tiles.ts`), `.toggle` moved to the global styles. Checks: a client spec (drawing from a setup, alerts on their part, a supply pump run that disables Run), 22 client tests, build, lint. Looked at with headless Chrome on a simulated rig: 390 px phone viewport (page as wide as the screen, no horizontal scroll) light and dark, and 1280 px dark; words in narrow tiles no longer break mid-word. Review of #26 fixed (specs and fix in one commit; the reviewer put the previous component back and five of the six map specs failed): tank and mixing-tank alerts show their words on the part (they showed only a border); Stop all, Read and the switches follow the room card's rules; parts the drawing has no place for are listed under "Other parts"; the mixing tank names the pot it feeds; a room card spec shows the shared pump control keeps Run disabled while a pump waits (B-005). 27 client tests. Closes when CI passes and the owner has looked at it. The legacy logical map (tag `legacy-v1`, `Documentation/img/Logical map.png`: room → pots → sensors and actuators) is a starting point for the layout.
 
-**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#23](https://github.com/voidbrain/Grover/pull/23) (record) |
+| PR / evidence | [#23](https://github.com/voidbrain/Grover/pull/23) (record), [#26](https://github.com/voidbrain/Grover/pull/26) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

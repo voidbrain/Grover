@@ -280,3 +280,13 @@ select[aria-invalid='true'] {
 .table-wrap {
   overflow-x: auto;
 }
+
+/* Switch (lights, fans, loops): a button with role="switch"; shared by the room card and the rig map. */
+.toggle {
+  min-width: 4rem;
+  &[aria-checked='true'] {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: var(--accent);
+  }
+}

@@ -133,32 +133,6 @@ h3 {
     text-transform: capitalize;
   }
 }
-.running {
-  margin-left: var(--space-2);
-  font-size: 0.75rem;
-  color: var(--accent);
-}
-.pump-run {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  input {
-    width: 4.5rem;
-  }
-  .unit {
-    color: var(--muted);
-    font-size: 0.875rem;
-    min-width: 1.5rem;
-  }
-}
-.toggle {
-  min-width: 4rem;
-  &[aria-checked='true'] {
-    background: var(--accent);
-    color: var(--on-accent);
-    border-color: var(--accent);
-  }
-}
 .dosing p {
   margin: 0 0 var(--space-2);
 }
@@ -302,4 +276,10 @@ h3 {
     color: var(--text);
     font-weight: 600;
   }
+}
+
+.map-link {
+  margin-left: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 400;
 }

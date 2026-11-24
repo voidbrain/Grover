@@ -8,6 +8,11 @@ export const routes: Routes = [
     title: 'Probe history · Grover',
   },
   {
+    path: 'rooms/:id/map',
+    loadComponent: () => import('./map/rig-map').then((m) => m.RigMap),
+    title: 'Map · Grover',
+  },
+  {
     path: 'plants/:id',
     loadComponent: () => import('./plant/plant-page').then((m) => m.PlantPage),
     title: 'Plant · Grover',

@@ -1,0 +1,213 @@
+<p><a routerLink="/">← All rooms</a></p>
+@if (room(); as r) {
+  <header class="head">
+    <h1>{{ r.name }}: map</h1>
+    <span class="muted">
+      {{ online() ? 'Agent online' : 'Agent offline' }} · mode {{ r.mode }}
+      @if (r.phase; as ph) {
+        · {{ ph.phase.name }}, day {{ ph.day }}
+      }
+    </span>
+    <button type="button" class="danger" [disabled]="!online() || hub.busy().has('room:' + r.id)" (click)="stopAll()">
+      Stop all
+    </button>
+  </header>
+
+  @if (tentAlerts().length) {
+    <ul class="alerts" aria-label="Alerts">
+      @for (a of tentAlerts(); track a.key) {
+        <li [attr.data-level]="a.level">{{ a.message }}</li>
+      }
+    </ul>
+  }
+
+  <section class="stage" aria-labelledby="tent-h">
+    <h2 id="tent-h" class="label">Tent</h2>
+    <div class="row">
+      @for (a of tent().switches; track a.id) {
+        <div class="node switch">
+          <span class="node-title">{{ a.name }}</span>
+          <button
+            type="button"
+            class="toggle small"
+            role="switch"
+            [attr.aria-checked]="hub.active().has(a.id)"
+            [disabled]="!canSwitch(a)"
+            (click)="toggle(a)"
+          >
+            <span class="sr-only">{{ a.name }}: </span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}
+          </button>
+        </div>
+      }
+      @for (t of tent().tiles; track t.probe.id) {
+        <ng-container [ngTemplateOutlet]="tileTpl" [ngTemplateOutletContext]="{ $implicit: t }" />
+      }
+    </div>
+  </section>
+
+  <section class="stage" aria-labelledby="supply-h">
+    <h2 id="supply-h" class="label">Supply tanks → mixing tank</h2>
+    <div class="row supply">
+      @for (t of tanks(); track t.role) {
+        <div class="node tank" [attr.data-alert]="t.worst">
+          <span class="node-title">{{ t.title }}</span>
+          @if (t.tile; as tile) {
+            <a class="value-link" [routerLink]="['/probes', tile.probe.id]" [attr.data-health]="tile.health">
+              <span class="value">{{ tile.value === undefined ? '–' : (tile.value | number: '1.0-1') }}</span>
+              <span class="unit">{{ tile.unit }}</span>
+            </a>
+            <span
+              class="hint"
+              >{{ t.low && !t.alerts.length ? 'Low: refill' : tile.health === 'stale' ? 'stale, ' + tile.ago : tile.ago }}</span
+            >
+          } @else {
+            <span class="hint">No level probe</span>
+          }
+          @if (t.pump; as p) {
+            <gr-pump-control [pump]="p" [allowed]="canAct()" [showName]="false" idPrefix="map-" />
+          } @else {
+            <span class="hint">No pump</span>
+          }
+          @for (a of t.alerts; track a.key) {
+            <span class="alert-line" [attr.data-level]="a.level">{{ a.message }}</span>
+          }
+        </div>
+      }
+    </div>
+    <div class="pipe" aria-hidden="true"></div>
+    <div class="node mix" [attr.data-alert]="mix().worst">
+      <span class="node-title">Mixing tank</span>
+      @if (mix().tile; as tile) {
+        <span>
+          <span class="value">{{ tile.value === undefined ? '–' : (tile.value | number: '1.0-1') }}</span>
+          <span class="unit">{{ tile.unit }}</span>
+        </span>
+      }
+      <!-- One live region that stays, so a feed starting or ending is announced. -->
+      <span role="status">
+        @if (feed(); as f) {
+          <span class="feeding">Feeding {{ feedingPot() }}: {{ f.message }}</span>
+        } @else {
+          <span class="hint">Idle</span>
+        }
+      </span>
+      @for (a of mix().alerts; track a.key) {
+        <span class="alert-line" [attr.data-level]="a.level">{{ a.message }}</span>
+      }
+    </div>
+    <div class="pipe" aria-hidden="true"></div>
+  </section>
+
+  <section class="stage" aria-labelledby="pots-h">
+    <h2 id="pots-h" class="label">Feed pumps → pots</h2>
+    <div class="row pots">
+      @for (p of pots(); track p.pot.id) {
+        <div class="node pot" [attr.data-alert]="p.worst" [attr.data-feeding]="p.feeding">
+          <span class="node-title">{{ p.pot.name }}</span>
+          @if (p.plant; as pl) {
+            <a [routerLink]="['/plants', pl.id]">{{ pl.name }}</a>
+          } @else {
+            <span class="hint">Empty</span>
+          }
+          @if (p.phase) {
+            <span class="hint">{{ p.phase }}</span>
+          }
+          @for (a of p.alerts; track a.key) {
+            <span class="alert-line" [attr.data-level]="a.level">{{ a.message }}</span>
+          }
+          @if (p.feedPump; as fp) {
+            <div class="part">
+              <span class="part-title">Feed pump</span>
+              <gr-pump-control [pump]="fp" [allowed]="canAct()" [showName]="false" idPrefix="map-" />
+            </div>
+          }
+          @if (p.loop; as l) {
+            <div class="part">
+              <span class="part-title">Loop</span>
+              <button
+                type="button"
+                class="toggle small"
+                role="switch"
+                [attr.aria-checked]="hub.active().has(l.id)"
+                [disabled]="!canSwitch(l)"
+                (click)="toggle(l)"
+              >
+                <span class="sr-only">{{ l.name }}: </span>{{ hub.active().has(l.id) ? 'On' : 'Off' }}
+              </button>
+            </div>
+          }
+          <div class="tiles">
+            @for (t of p.tiles; track t.probe.id) {
+              <ng-container [ngTemplateOutlet]="tileTpl" [ngTemplateOutletContext]="{ $implicit: t }" />
+            }
+          </div>
+          @if (p.feedPump) {
+            <button
+              type="button"
+              class="small"
+              [disabled]="!canAct() || !!feed() || hub.busy().has('feed:' + p.pot.id)"
+              (click)="feedNow(p.pot.id, p.pot.name)"
+            >
+              {{ p.feeding ? 'Feeding…' : 'Feed now' }}
+            </button>
+          }
+        </div>
+      } @empty {
+        <p class="muted">No pots in this tent.</p>
+      }
+    </div>
+  </section>
+
+  @if (others().length) {
+    <section class="stage others" aria-labelledby="others-h">
+      <h2 id="others-h" class="label">Other parts</h2>
+      <p class="hint">
+        Switches and pumps the drawing has no place for (a second pump of the same kind, a feed pump without a pot).
+      </p>
+      <div class="row">
+        @for (a of others(); track a.id) {
+          <div class="node">
+            <span class="node-title">{{ a.name }}</span>
+            @if (isPump(a.kind)) {
+              <gr-pump-control [pump]="a" [allowed]="canAct()" [showName]="false" idPrefix="map-" />
+            } @else {
+              <button
+                type="button"
+                class="toggle small"
+                role="switch"
+                [attr.aria-checked]="hub.active().has(a.id)"
+                [disabled]="!canSwitch(a)"
+                (click)="toggle(a)"
+              >
+                <span class="sr-only">{{ a.name }}: </span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
+} @else {
+  <p>Unknown tent.</p>
+}
+
+<ng-template #tileTpl let-t>
+  <div class="tile" [attr.data-health]="t.health">
+    <a [routerLink]="['/probes', t.probe.id]" class="tile-name"
+      >{{ t.title }}
+      @if (t.shared && !t.title.includes('shared')) {
+        <span class="hint">(shared)</span>
+      }
+    </a>
+    <span>
+      <span class="value">{{ t.value === undefined ? '–' : (t.value | number: '1.0-2') }}</span>
+      <span class="unit">{{ t.unit }}</span>
+      @if (t.health !== 'ok' && t.health !== 'unknown') {
+        <span class="health">{{ t.health }}</span>
+      }
+    </span>
+    <button type="button" class="ghost small" [disabled]="!canRead() || reading(t)" (click)="read(t)">
+      <span class="sr-only">{{ t.title }}: </span>Read
+    </button>
+  </div>
+</ng-template>
