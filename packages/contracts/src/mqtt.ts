@@ -44,6 +44,8 @@ export const AgentStatus = z.object({
   active: z.array(Id),
   /** The feed the agent is running, if any: lets the hub close a feed it lost track of. */
   feed: z.string().nullable().default(null),
+  /** Events still in the agent's outbox: until it is 0, a feed report may be on its way. */
+  queued: z.number().int().min(0).default(0),
   at: z.number().int(),
 });
 export type AgentStatus = z.infer<typeof AgentStatus>;

@@ -88,12 +88,20 @@ export class Actuators {
     if (!slot.actuator.enabled) throw new Error(`${id} is disabled`);
     if (!isPump(slot.actuator.kind)) throw new Error(`${id} is not a pump`);
     if (!(slot.actuator.maxRunMs > 0)) throw new Error(`${id} has no run cap (maxRunMs): refusing to run it`);
+    const stuck = this.stuckPump();
+    if (stuck) throw new Error(`${stuck} failed to switch off: no pump runs until it does`);
     const ms = Math.max(0, Math.min(durationMs, slot.actuator.maxRunMs));
     const epoch = this.epoch;
     const done = this.pumpQueue.then(
       () =>
         new Promise<boolean>((resolve) => {
-          if (epoch !== this.epoch || !slot.actuator.enabled || ms === 0 || this.slots.get(id) !== slot)
+          if (
+            epoch !== this.epoch ||
+            !slot.actuator.enabled ||
+            ms === 0 ||
+            this.slots.get(id) !== slot ||
+            this.stuckPump()
+          )
             return resolve(false);
           slot.release = resolve;
           this.turnOn(slot, source, commandId, epoch).then(
@@ -148,6 +156,12 @@ export class Actuators {
     return acted;
   }
 
+  /** A pump whose relay failed to switch off, if any. */
+  stuckPump(): string | null {
+    for (const s of this.slots.values()) if (s.stuck && isPump(s.actuator.kind)) return s.actuator.id;
+    return null;
+  }
+
   private require(id: string): Slot {
     const slot = this.slots.get(id);
     if (!slot) throw new Error(`unknown actuator ${id}`);
@@ -184,8 +198,10 @@ export class Actuators {
     try {
       await slot.driver.set(false);
     } catch {
-      // The relay may still be on: keep it reported on; the watchdog retries on the next tick.
+      // The relay may still be on: keep it reported on; the watchdog retries on the next tick. Whoever waits on
+      // this run is told it did not run cleanly, and no other pump runs meanwhile (one pump at a time).
       slot.stuck = true;
+      this.settle(slot, false);
       return;
     }
     slot.stuck = false;

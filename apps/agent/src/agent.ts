@@ -94,6 +94,8 @@ export class Agent {
     if (this.ticker) clearInterval(this.ticker);
     this.feeds.cancel('the agent is stopping');
     await this.actuators.allOff('safety');
+    // Let a cancelled feed report its abort before the outbox closes (bounded: never block a shutdown).
+    await Promise.race([this.feeds.idle(), new Promise((r) => setTimeout(r, 2000))]);
     if (this.client?.connected) {
       await new Promise<void>((r) =>
         this.client!.publish(
@@ -104,7 +106,8 @@ export class Agent {
         ),
       );
     }
-    await this.client?.endAsync();
+    // Force: with the hub unreachable a graceful end would wait for a connection that never comes.
+    await this.client?.endAsync(true);
     await this.drivers.close();
     this.outbox.close();
   }
@@ -200,11 +203,13 @@ export class Agent {
         if (this.lastWindow.get(s.id) !== want) {
           this.lastWindow.set(s.id, want);
           if (this.actuators.isOn(actuator.id) !== want)
-            await this.actuators
-              .switch(actuator.id, want, 'schedule')
-              .catch((err) => this.fault(`actuator ${actuator.id}`, err.message));
+            await this.actuators.switch(actuator.id, want, 'schedule').catch((err) => {
+              // Forget the edge so the next tick tries again (a relay that was busy, a stop in between).
+              this.lastWindow.delete(s.id);
+              this.fault(`actuator ${actuator.id}`, err.message);
+            });
         }
-      } else if (newMinute && allowed && firesAt(s.rule, minuteOfDay)) {
+      } else if (newMinute && allowed && firesAt(s.rule, minuteOfDay) && !(isPump(actuator.kind) && this.feeds.busy)) {
         if (isPump(actuator.kind)) {
           try {
             this.actuators.run(actuator.id, s.rule.durationMs, 'schedule');
@@ -330,6 +335,8 @@ export class Agent {
           this.outbox.ack(ev.seq);
         }
       }
+      // Everything sent: say so, so the hub knows no feed report is still on its way.
+      this.publishStatus();
     } catch {
       // Disconnected mid-flush: the rest stays queued for the next connect.
     } finally {
@@ -346,6 +353,7 @@ export class Agent {
       mode: this.config?.mode ?? null,
       active: state === 'online' ? this.actuators.active() : [],
       feed: state === 'online' ? this.feeds.busy : null,
+      queued: this.outbox.size(),
       at: this.now(),
     };
     return JSON.stringify(s);

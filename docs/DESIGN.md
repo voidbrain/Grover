@@ -67,7 +67,8 @@ Enforced on the agent ([`actuators.ts`](../apps/agent/src/actuators.ts)) whateve
 - One pump at a time (shared supply; a dose must not mix mid-measurement). Runs queue.
 - A watchdog on every tick forces off any pump past its cap, even if its timer was lost.
 - Config change, `stop_all`, `off` mode, SIGINT/SIGTERM and uncaught errors turn everything off and drop every queued run, including one whose relay is still switching on: nothing starts after a stop. Drivers start with outputs off; MCP23017 pins stay inputs until claimed and are set to their off level (high for active-low relays) before they become outputs and again at shutdown.
-- A relay that fails to switch off stays reported on, and the watchdog retries it on every tick.
+- A relay that fails to switch off stays reported on, the watchdog retries it on every tick, and no pump runs until it is off.
+- A feed that aborts stops the pumps only: lights, fans and recirculation keep their schedule. Scheduled pump runs wait while a feed runs. A window switch that fails is retried on the next tick.
 - No pump runs by hand while a feed runs (hub and agent both refuse).
 - `silent` keeps only lights; `off` refuses everything.
 - Window schedules act on edges only, so a manual switch holds until the next window boundary.
@@ -81,7 +82,7 @@ The hub listens on loopback; `tailscale serve` publishes it to the tailnet. On t
 
 - **Agent without hub**: keeps its cached config (`<state>/config.json`), runs schedules and windows, queues events in `<state>/outbox.sqlite` (capped at 200 000 events) and sends them when the hub is back. No feeds: they are planned by the hub.
 - **Client without hub**: shows the last snapshot (browser storage) with an "Offline" badge; actions are disabled. Setup is not editable offline.
-- **Hub without agent**: commands answer 503 (agent offline); the dashboard shows when the agent was last seen. A feed in progress when the agent goes offline is closed as aborted; so is one the agent's status says it is not running, and any left open when the hub restarts.
+- **Hub without agent**: commands answer 503 (agent offline); the dashboard shows when the agent was last seen. A feed stays open while the agent is offline or the hub restarts (the agent may still be running it); it is closed when a status from the agent, newer than its answer to the feed and with an empty outbox, says it is not running it.
 
 ## Setup rules
 

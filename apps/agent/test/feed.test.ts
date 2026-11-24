@@ -36,6 +36,7 @@ async function rig() {
     pump('pump-water', 'pump_water'),
     pump('pump-grow', 'pump_grow'),
     pump('pot-1-transfer', 'pump_transfer', 'pot-1'),
+    { ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null },
   ];
   await acts.load(
     await Promise.all(list.map(async (actuator) => ({ actuator, driver: await drivers.actuator(actuator) }))),
@@ -64,7 +65,7 @@ const plan = (over: Partial<FeedPlan> = {}): FeedPlan => ({
   // 1.5 L of water and 3 mL of grow into the mixing tank
   steps: [
     { actuatorId: 'pump-water', tank: 'water', ml: 1500, durationMs: 150 },
-    { actuatorId: 'pump-grow', tank: 'grow', ml: 3, durationMs: 1 },
+    { actuatorId: 'pump-grow', tank: 'grow', ml: 100, durationMs: 10 },
   ],
   checks: [
     { probeId: 'tank-water', what: 'water', min: 5, max: null },
@@ -186,4 +187,13 @@ test('Stop all during a tank re-check: the next pump does not start', async () =
   assert.equal(reports.at(-1)!.state, 'aborted');
   assert.equal(world.supply.grow, 1, 'no grow was pumped after the stop');
   assert.ok([...drivers.states.values()].every((on) => !on));
+});
+
+test('an aborted feed stops the pumps but leaves lights, fans and loops alone', async () => {
+  const { runner, reports, acts, world } = await rig();
+  await acts.switch('light', true, 'schedule');
+  world.supply.grow = 0.1; // low: the feed aborts at its first check
+  await runner.start(plan());
+  assert.equal(reports.at(-1)!.state, 'aborted');
+  assert.equal(acts.isOn('light'), true, 'the light stays on');
 });

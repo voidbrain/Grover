@@ -26,7 +26,7 @@ function rig(answer: () => Promise<CommandAck>) {
     },
   };
   const feeder = new Feeder(store, bus, agents as never, alerts, { mixMs: 600_000, freshMs: 3_600_000 });
-  const agentEvent = (online: boolean, feed: string | null) =>
+  const agentEvent = (online: boolean, feed: string | null, queued = 0, at = Date.now() + 1) =>
     bus.emit({
       type: 'agent',
       agent: {
@@ -43,7 +43,8 @@ function rig(answer: () => Promise<CommandAck>) {
           mode: 'normal',
           active: [],
           feed,
-          at: Date.now(),
+          queued,
+          at,
         },
       } as AgentView,
     });
@@ -71,13 +72,36 @@ test('two feeds requested together: the second is refused, the first stays reser
   assert.match(c.message, /another feed/, 'still reserved by the first');
 });
 
-test('the agent going offline mid-feed ends the feed and frees the tent', async () => {
+test('the agent dropping off keeps the feed open; its status after reconnecting decides', async () => {
   const { feeder, store, agentEvent } = rig(ok);
   const a = await feeder.feed('pot-1', 'manual');
   agentEvent(false, null);
+  assert.equal(
+    store.getFeed(a.feedId)!.state,
+    'planned',
+    'a short network drop does not end a feed the agent may still run',
+  );
+  agentEvent(true, a.feedId);
+  assert.equal(store.getFeed(a.feedId)!.state, 'planned', 'still running it');
+  agentEvent(true, null, 3);
+  assert.equal(store.getFeed(a.feedId)!.state, 'planned', 'events still queued: they may hold its "done"');
+  agentEvent(true, null, 0, Date.now() - 60_000);
+  assert.equal(store.getFeed(a.feedId)!.state, 'planned', 'a status from before the agent answered says nothing');
+  agentEvent(true, null, 0);
   assert.equal(store.getFeed(a.feedId)!.state, 'aborted');
-  assert.match(store.getFeed(a.feedId)!.message, /offline/);
-  agentEvent(true, null);
+  const b = await feeder.feed('pot-2', 'manual');
+  assert.notEqual(b.state, 'refused', b.message);
+});
+
+test('a planning error does not leave the tent blocked', async () => {
+  const { feeder, store } = rig(ok);
+  const original = store.getPot.bind(store);
+  let calls = 0;
+  store.getPot = (id: string) => {
+    if (++calls === 2) throw new Error('pot vanished');
+    return original(id);
+  };
+  await assert.rejects(feeder.feed('pot-1', 'manual'), /vanished/);
   const b = await feeder.feed('pot-2', 'manual');
   assert.notEqual(b.state, 'refused', b.message);
 });
@@ -97,7 +121,7 @@ test('no answer to the feed command: the feed is not final until the agent says 
   assert.equal(s2.getFeed(b.feedId)!.state, 'planned');
 });
 
-test('the hub restarting mid-feed closes the feeds it can no longer follow', () => {
+test('after a hub restart an open feed stays open until the agent says what it runs', () => {
   const store = new Store(openDb(':memory:'));
   seedDemo(store, 'pi-1');
   store.addFeed({
@@ -120,7 +144,37 @@ test('the hub restarting mid-feed closes the feeds it can no longer follow', () 
     expectedPh: null,
   });
   const bus = new Bus();
-  new Feeder(store, bus, { isOnline: () => true } as never, new Alerts(store, bus), { mixMs: 1, freshMs: 1 });
+  const feeder = new Feeder(store, bus, { isOnline: () => true } as never, new Alerts(store, bus), {
+    mixMs: 1,
+    freshMs: 1,
+  });
+  assert.equal(store.getFeed('old')!.state, 'started', 'the agent may still be running it');
+  void feeder;
+  const view = (feed: string | null) =>
+    bus.emit({
+      type: 'agent',
+      agent: {
+        agentId: 'pi-1',
+        roomId: 'grow-1',
+        online: true,
+        lastSeen: Date.now(),
+        configCurrent: true,
+        status: {
+          state: 'online',
+          protocol: 2,
+          version: 't',
+          configHash: null,
+          mode: 'normal',
+          active: [],
+          feed,
+          queued: 0,
+          at: Date.now(),
+        },
+      } as AgentView,
+    });
+  view('old');
+  assert.equal(store.getFeed('old')!.state, 'started');
+  view(null);
   assert.equal(store.getFeed('old')!.state, 'aborted');
-  assert.match(store.getFeed('old')!.message, /hub restarted/);
+  assert.match(store.getFeed('old')!.message, /not running/);
 });

@@ -175,3 +175,25 @@ test('the watchdog forces off a pump past its cap', async () => {
   assert.equal(pin, false);
   assert.equal(events.at(-1)!.source, 'safety');
 });
+
+test('a pump whose relay will not switch off: its run settles, and no other pump runs until it does', async () => {
+  const acts = new Actuators(() => {});
+  let failOff = false;
+  const pins = new Map<string, boolean>();
+  const driver = (id: string) => ({
+    set: async (on: boolean) => {
+      if (!on && failOff && id === 'a') throw new Error('i2c error');
+      pins.set(id, on);
+    },
+  });
+  await acts.load([pump('a', 40), pump('b', 40)].map((actuator) => ({ actuator, driver: driver(actuator.id) })));
+  const a = acts.run('a', 40, 'manual');
+  failOff = true;
+  assert.equal(await a.done, false, 'settles instead of hanging');
+  assert.equal(pins.get('a'), true, 'the relay is stuck on');
+  assert.throws(() => acts.run('b', 40, 'manual'), /failed to switch off/);
+  failOff = false;
+  await acts.watchdog();
+  assert.equal(pins.get('a'), false);
+  assert.equal(await acts.run('b', 40, 'manual').done, true, 'pumps run again once it is off');
+});

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-24T18:04:50.723Z",
+  "reviewed": "2026-11-24T18:15:36.706Z",
   "policy": "c9570a34ab0c7e4f1274fe37802a6eff8e7edfb8266c98f0cec7119533729b2b",
   "inputs": {
     "AGENTS.md": "1a21d05cab093092100bf8cb514fe043a5eec2948fa82d6ff74a22f92fe6d22f",
     "docs/BACKLOG-RULES.md": "2774fde691339976f30fe4482ddd8242953fc845aa3d3bd77861002137753ab8",
     "docs/agents/architecture-review.md": "5d967314854912b1a5f1446aeab309763b14f9856bceb3c82df5c6c25c166526",
-    "docs/agents/areas.md": "d1c156b73d841bf0ea333f18567d8c419f20dd227bcf59675a75c1ab70ff6a73",
+    "docs/agents/areas.md": "e7712192d28aee79404ef58782ef403bf5803bd49149f2857146d723a4948d6a",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
     "docs/agents/change-impact.md": "dc1c473e274f76bd70a87ff57bbc53fc75dc75a35d121cf67baf163a2fd2e975",
     "docs/agents/coverage-guide.md": "3d539eb8beedfa101a5e47d9973cdf85dce197436fab2ab096f760e12d208106",
@@ -128,6 +128,12 @@
       "disposition": "implemented",
       "target": "docs/agents/areas.md",
       "evidence": "B-003: area notes record the stop epoch, the pre-run cancel check, the MCP23017 off-level claim, the HTTP guard and the Feeder reservation rules, each with the test that covers it."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "docs/agents/areas.md",
+      "evidence": "B-003 re-review: feed closing rule (status newer than the ack, empty outbox; offline and restart keep feeds open) recorded with its lessons; covered by feeder.test.ts."
     }
   ]
 }

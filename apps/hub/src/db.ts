@@ -70,6 +70,10 @@ export const MIGRATIONS: readonly string[] = [
     key TEXT PRIMARY KEY, room_id TEXT NOT NULL, pot_id TEXT, level TEXT NOT NULL, message TEXT NOT NULL, since INTEGER NOT NULL
   );
   `,
+  // 3: every pump needs a run cap (B-003). Pumps saved with none get 30 s, so the hub can read them again.
+  `
+  UPDATE actuators SET max_run_ms = 30000 WHERE max_run_ms <= 0 AND kind NOT IN ('light', 'fan', 'water_loop');
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

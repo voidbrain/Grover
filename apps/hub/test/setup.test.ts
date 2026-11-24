@@ -141,3 +141,23 @@ test('migration 2 leaves auto-feed off, whatever auto-dose was', () => {
   assert.equal(upgraded.getRoom('r').autoFeed, false);
   upgraded.db.close();
 });
+
+test('pumps saved without a run cap get one on upgrade, so the hub can still read them', () => {
+  const path = join(mkdtempSync(join(tmpdir(), 'grover-mig3-')), 'hub.sqlite');
+  const db = new DatabaseSync(path);
+  db.exec('CREATE TABLE schema_version (version INTEGER NOT NULL); INSERT INTO schema_version VALUES (2);');
+  db.exec(MIGRATIONS[0]!);
+  db.exec(MIGRATIONS[1]!);
+  db.prepare("INSERT INTO rooms (id, name, mode) VALUES ('r', 'R', 'normal')").run();
+  db.prepare(
+    "INSERT INTO actuators (id, room_id, kind, name, binding, max_run_ms, ml_per_second) VALUES ('p', 'r', 'pump_grow', 'P', '{\"driver\":\"mock\"}', 0, 1)",
+  ).run();
+  db.prepare(
+    "INSERT INTO actuators (id, room_id, kind, name, binding, max_run_ms) VALUES ('l', 'r', 'light', 'L', '{\"driver\":\"mock\"}', 0)",
+  ).run();
+  db.close();
+  const store = new Store(openDb(path));
+  assert.equal(store.getActuator('p').maxRunMs, 30_000);
+  assert.equal(store.getActuator('l').maxRunMs, 0, 'switches keep no cap');
+  store.db.close();
+});

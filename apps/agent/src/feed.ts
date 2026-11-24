@@ -1,4 +1,4 @@
-import type { FeedPlan, LevelCheck } from '@grover/contracts';
+import { isPump, type FeedPlan, type LevelCheck } from '@grover/contracts';
 import type { Actuators } from './actuators.ts';
 
 export type FeedState = 'started' | 'step' | 'done' | 'aborted';
@@ -42,6 +42,7 @@ const defaultSleep = (ms: number, cancelled: () => boolean) =>
  */
 export class FeedRunner {
   private current: { feedId: string; cancelled: boolean } | null = null;
+  private finished: Promise<void> = Promise.resolve();
   private readonly deps: FeedDeps;
   private readonly sleep: (ms: number, cancelled: () => boolean) => Promise<boolean>;
 
@@ -52,6 +53,11 @@ export class FeedRunner {
 
   get busy(): string | null {
     return this.current?.feedId ?? null;
+  }
+
+  /** Settles once the current feed (if any) has finished winding down and reported. */
+  idle(): Promise<void> {
+    return this.finished;
   }
 
   /** Stops a running feed (its pumps are switched off by whoever cancels, and by the abort path). */
@@ -73,7 +79,8 @@ export class FeedRunner {
       throw new Error(`unknown transfer pump ${plan.transfer.actuatorId}`);
     this.current = { feedId: plan.feedId, cancelled: false };
     this.cancelReason = 'cancelled';
-    return this.run(plan);
+    this.finished = this.run(plan);
+    return this.finished;
   }
 
   private async run(plan: FeedPlan): Promise<void> {
@@ -130,7 +137,8 @@ export class FeedRunner {
       }
       say('done', `transferred for ${Math.round(elapsed / 1000)} s (${why})`);
     } catch (err) {
-      await actuators.allOff('safety').catch(() => {});
+      // Pumps only: lights, fans and recirculation keep their schedule.
+      await actuators.allOff('safety', (a) => !isPump(a.kind)).catch(() => {});
       say('aborted', (err as Error).message);
     } finally {
       this.current = null;

@@ -53,11 +53,17 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   // without a JSON body (a plain cross-site form cannot send one without a preflight).
   const hostAllowed = (host: string | undefined): boolean => {
     if (!host) return false;
-    const h = host.toLowerCase();
+    let url: URL;
+    try {
+      url = new URL(`http://${host.toLowerCase()}`);
+    } catch {
+      return false;
+    }
     const address = app.server.address();
-    const port = typeof address === 'object' && address ? address.port : config.httpPort;
-    const own = [`127.0.0.1:${port}`, `localhost:${port}`, `[::1]:${port}`];
-    return own.includes(h) || config.allowedHosts.some((a) => h === a || h === `${a}:443` || h.split(':')[0] === a);
+    const port = String(typeof address === 'object' && address ? address.port : config.httpPort);
+    const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
+    if (loopback) return url.port === port;
+    return config.allowedHosts.some((a) => a === url.host || a === url.hostname);
   };
   app.addHook('onRequest', async (req, reply) => {
     if (!hostAllowed(req.headers.host))

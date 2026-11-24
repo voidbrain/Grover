@@ -51,7 +51,7 @@ export class Feeder {
   /** Last automatic attempt per pot, refused ones included, so a refused feed is not retried on every reading. */
   private readonly lastAuto = new Map<string, number>();
   /** Feeds the agent has answered for (or whose answer timed out): only then can its status speak for them. */
-  private readonly settled = new Set<string>();
+  private readonly settled = new Map<string, number>();
   private readonly off: () => void;
   private readonly bus: Bus;
 
@@ -62,9 +62,12 @@ export class Feeder {
     this.opts = opts;
     this.now = opts.now ?? Date.now;
     this.bus = bus;
-    // Feeds left open by a previous run of the hub can no longer be followed: close them.
-    for (const f of store.openFeeds())
-      this.close(f.feedId, 'aborted', 'the hub restarted during this feed: check the mixing tank');
+    // Feeds left open by a previous run of the hub: the agent may still be running them. Reserve their tents and
+    // let the agent's next status say (onAgent).
+    for (const f of store.openFeeds()) {
+      this.running.set(f.roomId, f.feedId);
+      this.settled.set(f.feedId, 0);
+    }
     this.off = bus.on((ev) => {
       if (ev.type === 'feed') this.onFeed(ev.feed);
       else if (ev.type === 'reading') void this.onReading(ev.reading);
@@ -82,21 +85,23 @@ export class Feeder {
   }
 
   /**
-   * Keeps the hub's idea of running feeds honest: an agent that goes offline ends its feed (it switches everything
-   * off when it restarts); an agent that says it runs no feed (or another one) ends the one the hub was waiting on.
+   * Keeps the hub's idea of running feeds honest. Going offline proves nothing (a network drop; the agent may
+   * still be feeding). A status that says the agent runs no such feed closes it, but only when it is newer than
+   * the agent's answer to the feed command and its outbox is empty (a late "done" may still be queued).
    */
   private onAgent(agent: AgentView): void {
     const roomId = agent.roomId;
-    if (!roomId) return;
+    if (!roomId || !agent.online || !agent.status) return;
     const feedId = this.running.get(roomId);
     if (!feedId) return;
-    if (!agent.online)
-      return this.close(feedId, 'aborted', 'the agent went offline during this feed: check the mixing tank');
-    if (this.settled.has(feedId) && agent.status && agent.status.feed !== feedId)
+    const since = this.settled.get(feedId);
+    if (since === undefined) return;
+    const s = agent.status;
+    if (s.feed !== feedId && s.queued === 0 && s.at > since)
       this.close(
         feedId,
         'aborted',
-        'the agent is not running this feed (it never started, or stopped without a report)',
+        'the agent is not running this feed (it stopped without a report, or never started)',
       );
   }
 
@@ -223,32 +228,39 @@ export class Feeder {
       if (this.running.get(room.id) === feedId) this.running.delete(room.id);
     };
 
+    let decision: ReturnType<Feeder['preview']>;
+    let feed: FeedView;
     try {
-      await this.refreshReadings(pot, room.agentId);
-    } catch {
-      // Readings are best effort.
-    }
-    const decision = this.preview(potId, feedId);
-    if (!decision.ok) {
+      try {
+        await this.refreshReadings(pot, room.agentId);
+      } catch {
+        // Readings are best effort.
+      }
+      decision = this.preview(potId, feedId);
+      if (!decision.ok) {
+        release();
+        return refuse(decision.reason);
+      }
+      feed = {
+        ...base,
+        message: decision.notes.join('; ') || 'phase dose',
+        batchLiters: decision.batchLiters,
+        ml: decision.ml,
+        ecBefore: decision.ec,
+        phBefore: decision.ph,
+        potLitersBefore: decision.potLitersBefore,
+        expectedEc: decision.expected.ec,
+        expectedPh: decision.expected.ph,
+      };
+      this.store.addFeed(feed);
+    } catch (err) {
+      // Anything thrown before the command goes out must not leave the tent reserved.
       release();
-      return refuse(decision.reason);
+      throw err;
     }
-
-    const feed: FeedView = {
-      ...base,
-      message: decision.notes.join('; ') || 'phase dose',
-      batchLiters: decision.batchLiters,
-      ml: decision.ml,
-      ecBefore: decision.ec,
-      phBefore: decision.ph,
-      potLitersBefore: decision.potLitersBefore,
-      expectedEc: decision.expected.ec,
-      expectedPh: decision.expected.ph,
-    };
-    this.store.addFeed(feed);
     try {
       const ack = await this.agents.command(room.agentId, { kind: 'feed', plan: decision.plan });
-      this.settled.add(feedId);
+      this.settled.set(feedId, this.now());
       if (!ack.ok) {
         release();
         this.store.updateFeed(feedId, 'refused', ack.error ?? 'refused by the agent', this.now());
@@ -263,7 +275,7 @@ export class Feeder {
       }
     } catch (err) {
       if (err instanceof CommandTimeout) {
-        this.settled.add(feedId);
+        this.settled.set(feedId, this.now());
         // The agent may have started it: keep the feed open and the tent reserved; its next status says
         // whether it runs this feed (see onAgent).
         this.store.updateFeed(feedId, 'planned', `no answer from the agent yet: ${(err as Error).message}`, this.now());
