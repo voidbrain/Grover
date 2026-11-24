@@ -396,3 +396,42 @@ test('a day-start edge does not cut another schedule of the same switch (weekday
   assert.equal(drivers.states.get('light'), false, 'Sunday 02:00 off');
   await agent.stop();
 });
+
+test('a light window is not lost while its switch was stuck after a failed switch-on (review of #32)', async () => {
+  let t = Date.parse('2026-06-01T09:59:00Z');
+  const drivers = new MockDrivers();
+  let fail = false;
+  const real = drivers.actuator.bind(drivers);
+  drivers.actuator = async (a) => {
+    const d = await real(a);
+    return { set: async (on) => (fail ? Promise.reject(new Error('i2c write failed')) : d.set(on)) };
+  };
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [{ ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null }],
+      schedules: [
+        {
+          id: 'w',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '10:00', to: '20:00' },
+          enabled: true,
+        },
+      ],
+    },
+    drivers,
+    () => t,
+  );
+  await agent.tick();
+  fail = true;
+  t = Date.parse('2026-06-01T10:00:00Z');
+  await agent.tick(); // switch-on fails, the switch-off after it too: stuck
+  t = Date.parse('2026-06-01T10:01:00Z');
+  await agent.tick(); // still failing
+  fail = false;
+  t = Date.parse('2026-06-01T10:02:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'on inside its window once the bus works again');
+  await agent.stop();
+});
