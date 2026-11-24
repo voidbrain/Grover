@@ -74,6 +74,8 @@ test('local midnight of a day in a time zone, across DST', () => {
   );
   assert.equal(new Date(localMidnight('2026-01-15', 'Pacific/Auckland')).toISOString(), '2026-01-14T11:00:00.000Z');
   assert.equal(localMidnight('2026-01-15', 'UTC'), Date.parse('2026-01-15T00:00:00Z'));
+  // Beirut's clocks jump from 00:00 to 01:00 on 2026-03-29: the day starts at 01:00 local, 22:00Z.
+  assert.equal(new Date(localMidnight('2026-03-29', 'Asia/Beirut')).toISOString(), '2026-03-28T22:00:00.000Z');
   assert.equal(
     plantStats({
       placedOn: '2026-01-02',

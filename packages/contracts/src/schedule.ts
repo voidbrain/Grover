@@ -56,6 +56,10 @@ export function localMidnight(day: string, timeZone: string): number {
     if (offsetMin === 0) return t;
     t -= offsetMin * 60_000;
   }
+  // Midnight was skipped (clocks jump from 00:00 to 01:00): `t` is still on the day before; the day starts at the
+  // end of that day's last local hour.
+  const l = localTime(new Date(t), timeZone);
+  if (l.day < day) t += (1440 - l.minuteOfDay) * 60_000;
   return t;
 }
 
