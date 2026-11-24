@@ -248,6 +248,8 @@ export class ScheduleEditor {
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();
+    // No day ticked: the inline message already says so; nothing to send.
+    if (!this.model().days.length) return;
     await submit(this.f, async () => {
       const d = this.model();
       const id = this.isNew() ? uniqueId(slugify(`${d.targetId}-${d.kind}`), this.takenIds()) : d.id;
