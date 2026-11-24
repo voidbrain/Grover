@@ -58,7 +58,7 @@
             </a>
             <span
               class="hint"
-              >{{ t.low ? 'Low: refill' : tile.health === 'stale' ? 'stale, ' + tile.ago : tile.ago }}</span
+              >{{ t.low && !t.alerts.length ? 'Low: refill' : tile.health === 'stale' ? 'stale, ' + tile.ago : tile.ago }}</span
             >
           } @else {
             <span class="hint">No level probe</span>
