@@ -37,6 +37,9 @@ describe('RoomCard', () => {
     expect(run.disabled).toBe(true);
     expect(grow.textContent).toContain('waiting');
 
+    // A shared probe the owner named "pH (Shared)" is not labelled "(shared)" twice, whatever the case.
+    expect(el.textContent!.match(/\(shared\)/gi)?.length ?? 0).toBe(1);
+
     const light = el.querySelector<HTMLButtonElement>('[role=switch]')!;
     light.click();
     expect(http.expectOne((r) => r.url.endsWith('/switch')).request.body).toEqual({ on: true });

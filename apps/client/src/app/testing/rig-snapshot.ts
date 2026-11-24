@@ -46,7 +46,7 @@ export const snapshot = {
     probe('tank-grow', 'water_level', { tank: 'grow', alertBelow: 3 }),
     probe('tank-mix', 'water_level', { tank: 'mix' }),
     probe('pot-1-level', 'water_level', { potId: 'pot-1' }),
-    probe('ph', 'ph'),
+    probe('ph', 'ph', { name: 'pH (Shared)' }),
   ],
   actuators: [
     actuator('light', 'light', { maxRunMs: 0 }),
