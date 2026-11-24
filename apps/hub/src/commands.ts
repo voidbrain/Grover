@@ -39,6 +39,14 @@ export class Commands {
     if (!probe.enabled) throw new Refused(`probe ${probeId} is disabled`);
     if (this.store.getRoom(probe.roomId).mode === 'off') throw new Refused('room is off');
     const ack = await this.agents.command(this.agentFor(probe.roomId), { kind: 'read', probeId, raw: false });
+    // Made with another calibration than the current one (the new one has not reached the agent yet): other units.
+    if (ack.ok && ack.calibratedAt !== (probe.calibration?.calibratedAt ?? null))
+      return {
+        commandId: ack.id,
+        ok: false,
+        error: 'the agent does not have the current calibration yet: read again in a moment',
+        value: null,
+      };
     // Store it now (B-004): the agent's reading event for the same reading may come later, and is then ignored.
     if (
       ack.ok &&

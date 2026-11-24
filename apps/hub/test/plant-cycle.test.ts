@@ -286,3 +286,45 @@ test('a deleted or moved temperature probe is released from calibrations; saving
   assert.equal(hub.store.getProbe('pot-1-ph').calibration!.tempProbeId, null, 'deleted');
   assert.doesNotThrow(() => hub.store.putProbe({ ...hub.store.getProbe('pot-1-ph'), name: 'Renamed' }));
 });
+
+test('a stored calibration the rules refuse is none for readings too: the probe does not go silent', () => {
+  const ph = hub.store.getProbe('pot-1-ph');
+  hub.store.putProbe({ ...ph, calibration: null });
+  hub.store.db.prepare('UPDATE probes SET calibration = ? WHERE id = ?').run(
+    JSON.stringify({
+      points: [{ raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' }],
+      compensation: 'ph',
+      calibratedAt: 123,
+    }),
+    'pot-1-ph',
+  );
+  assert.equal(hub.store.getProbe('pot-1-ph').calibration, null);
+  assert.equal(hub.store.acceptReading({ probeId: 'pot-1-ph', value: 6.5, at: Date.now() + 7_000 }, null), true);
+});
+
+test('moving a pH probe away from its temperature probe releases the link instead of refusing the save', () => {
+  hub.store.putProbe({
+    id: 'pot-1-wt2',
+    roomId: 'grow-1',
+    potId: 'pot-1',
+    kind: 'water_temperature',
+    name: 'Pot 1 water 2',
+    enabled: true,
+    binding: { driver: 'mock' },
+  });
+  const ph = hub.store.getProbe('pot-1-ph');
+  const cal = {
+    points: [
+      { raw: 2.53, value: 4, tempC: null, takenOn: '2026-11-24' },
+      { raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' },
+    ],
+    compensation: 'ph' as const,
+    tempProbeId: 'pot-1-wt2',
+    calibratedAt: null,
+  };
+  const saved = hub.store.putProbe({ ...ph, calibration: cal });
+  const moved = hub.store.putProbe({ ...saved, potId: 'pot-2' });
+  assert.equal(moved.calibration!.tempProbeId, null);
+  assert.equal(moved.calibration!.calibratedAt, saved.calibration!.calibratedAt, 'the points still hold');
+  hub.store.putProbe({ ...moved, potId: 'pot-1' });
+});

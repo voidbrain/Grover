@@ -6,7 +6,6 @@ import {
   AgentStatus,
   CALIBRATION_PROTOCOL,
   Calendar,
-  Calibration,
   Phase,
   Pot,
   Probe,
@@ -30,7 +29,6 @@ const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 /** Whether temperature probe `t` measures the solution of probe `p`: same pot, or the tent's shared one. */
 const compensates = (t: Probe, p: Probe) =>
   t.kind === 'water_temperature' &&
-  t.enabled &&
   t.tank === null &&
   t.roomId === p.roomId &&
   (t.potId === null || t.potId === p.potId);
@@ -272,13 +270,15 @@ export class Store {
       p = { ...p, calibration: { ...p.calibration, calibratedAt: Date.now() } };
     }
     const tempId = p.calibration?.tempProbeId;
-    // Checked when chosen; a temperature probe deleted or moved later is released (releaseTempProbe).
-    if (tempId && (tempId !== old?.calibration?.tempProbeId || p.potId !== old?.potId)) {
-      const t = this.listProbes(p.roomId).find((x) => x.id === tempId);
-      if (!t || !compensates(t, p))
+    const t = tempId ? this.listProbes().find((x) => x.id === tempId) : undefined;
+    if (p.calibration && tempId && (!t || !compensates(t, p))) {
+      // A new choice must fit; a kept one that no longer fits (this probe moved pot or tent) is released, and the
+      // points still hold. Temperature probes deleted or moved later: releaseTempProbe.
+      if (tempId !== old?.calibration?.tempProbeId)
         throw new BadReference(
           `${tempId} cannot compensate ${p.name}: use a water temperature probe in the same pot or the tent's shared one`,
         );
+      p = { ...p, calibration: { ...p.calibration, tempProbeId: null } };
     }
     this.db
       .prepare(
@@ -632,11 +632,9 @@ export class Store {
    * calibration: a reading made before the agent had a new calibration (or after it was removed) is in other units.
    */
   acceptReading(reading: Reading, calibratedAt: number | null): boolean {
-    const r = this.db.prepare('SELECT calibration FROM probes WHERE id = ?').get(reading.probeId) as Row | undefined;
-    if (r) {
-      const current = r['calibration'] == null ? null : (Calibration.safeParse(json(r['calibration'])).data ?? null);
-      if ((current?.calibratedAt ?? null) !== calibratedAt) return false;
-    }
+    const r = this.db.prepare('SELECT * FROM probes WHERE id = ?').get(reading.probeId) as Row | undefined;
+    // The calibration as the agent's config has it: the same rules as getProbe (a refused one is none).
+    if (r && (this.probe(r).calibration?.calibratedAt ?? null) !== calibratedAt) return false;
     return this.addReading(reading);
   }
   /** Idempotent: a replayed reading returns false. */
