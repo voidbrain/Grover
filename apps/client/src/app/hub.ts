@@ -5,6 +5,9 @@ import type {
   Actuation,
   Actuator,
   AgentView,
+  Breeder,
+  Plant,
+  Strain,
   Calendar,
   CommandResult,
   Alert,
@@ -44,6 +47,9 @@ export interface Snapshot {
   latest: Reading[];
   alerts: Alert[];
   feeds: FeedView[];
+  breeders: Breeder[];
+  strains: Strain[];
+  plants: Plant[];
   probeKinds: Record<ProbeKind, { unit: string; min: number; max: number; title: string }>;
 }
 

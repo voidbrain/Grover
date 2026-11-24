@@ -1,5 +1,5 @@
 import type { Actuator, ActuatorKind, OperatingMode, Pot, Probe, ProbeKind, Room, Schedule } from '@grover/contracts';
-import type { TankRoleId } from '@grover/contracts/kinds';
+import { slugify, type TankRoleId } from '@grover/contracts/kinds';
 
 /**
  * Forms edit flat drafts (strings, numbers, booleans), because a form field cannot change shape when the user
@@ -9,16 +9,7 @@ import type { TankRoleId } from '@grover/contracts/kinds';
 
 export const ID_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
 
-/** A readable id from a name: "Grow pump #2" → "grow-pump-2". */
-export function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 48);
-}
+export { slugify };
 
 /** `base`, or `base-2`, `base-3`… whichever is not taken. */
 export function uniqueId(base: string, taken: Iterable<string>): string {

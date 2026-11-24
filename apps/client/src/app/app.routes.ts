@@ -22,5 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('./setup/calendar-setup').then((m) => m.CalendarSetup),
     title: 'Grow calendar · Grover',
   },
+  {
+    path: 'setup/plants',
+    loadComponent: () => import('./setup/plants-setup').then((m) => m.PlantsSetup),
+    title: 'Plants and strains · Grover',
+  },
   { path: '**', redirectTo: '' },
 ];

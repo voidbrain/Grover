@@ -95,6 +95,17 @@
                 >
               }
             </div>
+            @for (pl of p.plants; track pl.id) {
+              <p class="plant">
+                <a routerLink="/setup/plants">{{ pl.name }}</a>
+                @if (pl.strain) {
+                  · {{ pl.strain }}
+                }
+                <br /><span class="muted">{{ pl.facts }}</span>
+              </p>
+            } @empty {
+              <p class="muted">No plant recorded.</p>
+            }
             <ul class="tiles compact">
               @for (t of p.tiles; track t.probe.id) {
                 <ng-container *ngTemplateOutlet="tileTpl; context: { $implicit: t }" />

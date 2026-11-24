@@ -74,6 +74,22 @@ export const MIGRATIONS: readonly string[] = [
   `
   UPDATE actuators SET max_run_ms = 30000 WHERE max_run_ms <= 0 AND kind NOT IN ('light', 'fan', 'water_loop');
   `,
+  // 4: what grows (F-012): breeders, strains with their parents, plants with their origin.
+  `
+  CREATE TABLE breeders (id TEXT PRIMARY KEY, name TEXT NOT NULL, website TEXT, notes TEXT NOT NULL DEFAULT '');
+  CREATE TABLE strains (
+    id TEXT PRIMARY KEY, name TEXT NOT NULL, breeder_id TEXT REFERENCES breeders(id), parent_ids TEXT NOT NULL DEFAULT '[]',
+    sativa_percent REAL, thc_percent REAL, cbd_percent REAL, flowering_days INTEGER, autoflower INTEGER NOT NULL DEFAULT 0,
+    notes TEXT NOT NULL DEFAULT ''
+  );
+  CREATE TABLE plants (
+    id TEXT PRIMARY KEY, name TEXT NOT NULL, strain_id TEXT REFERENCES strains(id), breeder_id TEXT REFERENCES breeders(id),
+    generation INTEGER NOT NULL DEFAULT 0, mother_id TEXT REFERENCES plants(id) ON DELETE SET NULL,
+    pot_id TEXT REFERENCES pots(id) ON DELETE SET NULL, medium TEXT,
+    started_on TEXT, trimmed_on TEXT, bloom_on TEXT, flush_on TEXT, harvested_on TEXT, yield_grams REAL, notes TEXT NOT NULL DEFAULT ''
+  );
+  CREATE INDEX plants_by_pot ON plants(pot_id);
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

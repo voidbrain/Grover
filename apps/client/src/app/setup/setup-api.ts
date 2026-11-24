@@ -4,7 +4,8 @@ import { firstValueFrom } from 'rxjs';
 import { Hub } from '../hub';
 import { issueLines } from './drafts';
 
-export type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars';
+export type Entity =
+  'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars' | 'breeders' | 'strains' | 'plants';
 
 /** A save or delete that the hub refused, as lines to show next to the form. */
 export class SetupError extends Error {

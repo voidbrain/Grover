@@ -1,5 +1,21 @@
+import { readFileSync } from 'node:fs';
 import { loadConfig } from './config.ts';
+import { openDb } from './db.ts';
 import { startHub } from './hub.ts';
+import { importLegacy } from './legacy.ts';
+import { Store } from './store.ts';
+
+// One-off: `npm run hub -- import-legacy <dump.sql>` adds the old Grover's breeders, strains and plants.
+if (process.argv[2] === 'import-legacy') {
+  const file = process.argv[3];
+  if (!file) throw new Error('usage: npm run hub -- import-legacy <dump.sql>');
+  const config = loadConfig();
+  const store = new Store(openDb(config.dbPath));
+  const r = importLegacy(store, readFileSync(file, 'utf8'));
+  console.log(`imported into ${config.dbPath}: ${r.breeders} breeders, ${r.strains} strains, ${r.plants} plants`);
+  store.db.close();
+  process.exit(0);
+}
 
 const hub = await startHub(loadConfig());
 console.log(

@@ -1,0 +1,217 @@
+<p><a routerLink="/setup">← Setup</a></p>
+<h1>Plants and strains</h1>
+
+@if (!snapshot()) {
+  <p role="status">Connecting to the hub…</p>
+} @else {
+  <section aria-labelledby="plants-title">
+    <div class="section-head">
+      <h2 id="plants-title">Plants</h2>
+      <button type="button" class="ghost" (click)="edit('plant', null)">Add plant</button>
+    </div>
+    @if (harvestedCount()) {
+      <label class="show">
+        <input type="checkbox" [checked]="showHarvested()" (change)="showHarvested.set($any($event.target).checked)" />
+        Show harvested plants ({{ harvestedCount() }})
+      </label>
+    }
+    @if (isEditing('plant', null)) {
+      <gr-plant-editor
+        [plants]="plants()"
+        [strains]="strains()"
+        [breeders]="breeders()"
+        [pots]="pots()"
+        (done)="editing.set(null)"
+      />
+    }
+    @if (plantRows().length) {
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Plant</th>
+              <th scope="col">Strain</th>
+              <th scope="col">Origin</th>
+              <th scope="col">Seed from</th>
+              <th scope="col">Pot</th>
+              <th scope="col">Started</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of plantRows(); track row.plant.id) {
+              <tr [class.off]="row.plant.harvestedOn">
+                <td>
+                  {{ row.plant.name }}
+                  @if (row.plant.harvestedOn) {
+                    (harvested {{ row.plant.harvestedOn }})
+                  }
+                </td>
+                <td>{{ row.strain }}</td>
+                <td>
+                  {{ row.origin }}
+                  @if (row.mother) {
+                    <span class="muted"> of {{ row.mother }}</span>
+                  }
+                </td>
+                <td>{{ row.breeder }}</td>
+                <td>{{ row.pot ?? '—' }}</td>
+                <td>{{ row.plant.startedOn ?? '—' }}</td>
+                <td class="actions">
+                  <button
+                    type="button"
+                    class="ghost small"
+                    (click)="edit('plant', row.plant.id)"
+                    [attr.aria-label]="'Edit ' + row.plant.name"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              @if (isEditing('plant', row.plant.id)) {
+                <tr>
+                  <td colspan="7">
+                    <gr-plant-editor
+                      [plant]="editingPlant()"
+                      [plants]="plants()"
+                      [strains]="strains()"
+                      [breeders]="breeders()"
+                      [pots]="pots()"
+                      (done)="editing.set(null)"
+                    />
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty">No plants yet.</p>
+    }
+  </section>
+
+  <section aria-labelledby="strains-title">
+    <div class="section-head">
+      <h2 id="strains-title">Strains</h2>
+      <button type="button" class="ghost" (click)="edit('strain', null)">Add strain</button>
+    </div>
+    @if (isEditing('strain', null)) {
+      <gr-strain-editor [strains]="strains()" [breeders]="breeders()" (done)="editing.set(null)" />
+    }
+    @if (strainRows().length) {
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Strain</th>
+              <th scope="col">Breeder</th>
+              <th scope="col">Bred from</th>
+              <th scope="col">Genetics</th>
+              <th scope="col">THC</th>
+              <th scope="col">Flowering</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of strainRows(); track row.strain.id) {
+              <tr>
+                <td>
+                  {{ row.strain.name }}
+                  @if (row.strain.autoflower) {
+                    (auto)
+                  }
+                </td>
+                <td>{{ row.breeder }}</td>
+                <td>{{ row.parents }}</td>
+                <td>{{ row.genetics }}</td>
+                <td>{{ row.strain.thcPercent !== null ? row.strain.thcPercent + ' %' : '—' }}</td>
+                <td>{{ row.strain.floweringDays !== null ? row.strain.floweringDays + ' days' : '—' }}</td>
+                <td class="actions">
+                  <button
+                    type="button"
+                    class="ghost small"
+                    (click)="edit('strain', row.strain.id)"
+                    [attr.aria-label]="'Edit ' + row.strain.name"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              @if (isEditing('strain', row.strain.id)) {
+                <tr>
+                  <td colspan="7">
+                    <gr-strain-editor
+                      [strain]="editingStrain()"
+                      [strains]="strains()"
+                      [breeders]="breeders()"
+                      (done)="editing.set(null)"
+                    />
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty">
+        No strains yet. The old Grover's can be imported: <code>npm run hub -- import-legacy &lt;dump.sql&gt;</code>.
+      </p>
+    }
+  </section>
+
+  <section aria-labelledby="breeders-title">
+    <div class="section-head">
+      <h2 id="breeders-title">Breeders</h2>
+      <button type="button" class="ghost" (click)="edit('breeder', null)">Add breeder</button>
+    </div>
+    @if (isEditing('breeder', null)) {
+      <gr-breeder-editor [takenIds]="breederIds()" (done)="editing.set(null)" />
+    }
+    @if (breeders().length) {
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Breeder</th>
+              <th scope="col">Website</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of breeders(); track b.id) {
+              <tr>
+                <td>{{ b.name }}</td>
+                <td>
+                  @if (b.website) {
+                    <a [href]="b.website" rel="noopener noreferrer" target="_blank">{{ b.website }}</a>
+                  } @else {
+                    —
+                  }
+                </td>
+                <td class="actions">
+                  <button
+                    type="button"
+                    class="ghost small"
+                    (click)="edit('breeder', b.id)"
+                    [attr.aria-label]="'Edit ' + b.name"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+              @if (isEditing('breeder', b.id)) {
+                <tr>
+                  <td colspan="3"><gr-breeder-editor [breeder]="editingBreeder()" (done)="editing.set(null)" /></td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty">No breeders yet.</p>
+    }
+  </section>
+}

@@ -22,7 +22,7 @@ How Grover works today, checked against the code. Planned work lives in the [bac
 - **Contracts** (`packages/contracts`): every shape that crosses a boundary, as zod schemas, plus the pure logic both sides need (schedule rules, the feed planner, the dosing model). `@grover/contracts/kinds` is the zod-free subset the browser imports.
 - **Hub** (`apps/hub`): one process. `Store` (SQLite through `node:sqlite`, migrations in `db.ts`), `AgentLink` (broker, auth, topic ACLs, configs, request/ack commands), `Commands` (single hardware actions), `Feeder` (plans and starts feeds, learns from them, auto-feed), `Alerts`, `http.ts` (API, live socket, MCP, static client).
 - **Agent** (`apps/agent`): one per Raspberry Pi, one room each. `Actuators` (safety), `FeedRunner` (runs a feed step by step), drivers (`drivers/mock.ts` simulates the whole rig, `drivers/hardware.ts`), `Outbox` (durable event queue), `Agent` (config, schedule runner, commands).
-- **Client** (`apps/client`): dashboard per tent (alerts, tent probes, tank levels, each pot with its readings against the phase range, last feed, feed preview and "Feed now", switches, manual pump runs, mode, stop), a probe history chart, and Setup: rooms, pots, probes, actuators, schedules, grow calendars and agent registration. It reads `/api/snapshot`, follows `/api/live` and writes through the same `PUT`/`DELETE` routes as any API client; forms are checked with the contracts schemas before sending, and the hub checks again.
+- **Client** (`apps/client`): dashboard per tent (alerts, tent probes, tank levels, each pot with its readings against the phase range, last feed, feed preview and "Feed now", switches, manual pump runs, mode, stop), a probe history chart, and Setup: rooms, pots, probes, actuators, schedules, grow calendars, agent registration, and plants, strains and breeders. Each pot card names its plant (strain, origin, breeder, genetics, THC). It reads `/api/snapshot`, follows `/api/live` and writes through the same `PUT`/`DELETE` routes as any API client; forms are checked with the contracts schemas before sending, and the hub checks again.
 
 Hub and agent are separate processes even on the same Pi, so the agent's safety does not depend on the hub staying up.
 
@@ -43,6 +43,7 @@ The rig (confirmed by the owner, F-011):
 - **Actuator**: a *switch* (light, fan, recirculation: holds a state) or a *pump* (bounded runs only): the six supply pumps into the mixing tank, and the pots' feed pumps. Pumps have `maxRunMs` (hard cap) and `mlPerSecond` (calibration, needed to dose by volume).
 - **Schedule**: a target (probe or actuator) and a rule: `window` (on between two times, may wrap midnight), `at` (listed times), `every` (every N minutes from midnight). Times are local to the hub's time zone, which travels in the agent config.
 - **Calendar**: ordered phases, each with days, light hours, dose per 10 L and ranges for EC, pH, water temperature and level. The default calendar comes from the original Grover tables, with ripen alone in its own phase and a plain-water Flush phase at the end: [`DEFAULT_CALENDAR`](../packages/contracts/src/dosing.ts).
+- **What grows** ([`plants.ts`](../packages/contracts/src/plants.ts)): *breeders*; *strains* with their breeder, parent strains (ancestry, one level each, followed recursively), sativa share (indica is the rest), THC/CBD, flowering days, autoflower and notes saying where the numbers come from; *plants* with strain, the breeder the seed came from, generation (0 from seed, 1 first cutting, 2 a cutting of a cutting…), the mother plant it was cut from, its pot (or none), medium, dates (start, trim, bloom, flush, harvest), yield and notes. A strain, breeder or mother still in use cannot be deleted (409); deleting a pot takes its plant out of the pot, deleting a mother leaves its cuttings without one. `npm run hub -- import-legacy <dump.sql>` adds the old Grover's breeders, strains and plants once (old pots do not map; strains take the breeder their plants share).
 - **Operating modes**: `normal` (everything runs), `silent` (probes and lights only), `off` (everything off, no readings).
 
 ## Protocol (hub ↔ agent)
@@ -119,7 +120,7 @@ NERV drives Grover through the hub's MCP endpoint (`/mcp`, streamable HTTP, stat
 | Tool | Changes hardware |
 |---|---|
 | `grover_overview`: rooms, agents, phase, pots, probes with latest readings, actuators, alerts | no |
-| `grover_readings`, `grover_history`, `grover_alerts`, `grover_feeds`, `grover_feed_preview` | no |
+| `grover_readings`, `grover_history`, `grover_alerts`, `grover_feeds`, `grover_feed_preview`, `grover_plants` (strain, ancestry, generation, mothers, pot) | no |
 | `grover_read_probe` | takes a reading |
 | `grover_run_pump`, `grover_switch`, `grover_feed_pot`, `grover_set_mode` | yes |
 | `grover_stop_all` | yes (always safe) |
@@ -138,6 +139,6 @@ Hub: `GROVER_DB`, `GROVER_HTTP_HOST` (default 127.0.0.1), `GROVER_ALLOWED_HOSTS`
 
 - `packages/contracts/test`: schedule rules and time zones, topics, config hash, model fitting, feed planning (batch, doses, EC/pH adjustments, ripen and flush, splitting at caps, refusals), feed reasons, phase lookup.
 - `apps/agent/test`: actuator safety (cap, one pump at a time, stop releases the queue, reload drops queued runs, watchdog); feed runs on the simulated rig (full feed, low tank, mixing tank not empty, pot full, cancel, unknown pump).
-- `apps/hub/test/e2e.test.ts`: a real hub and a real agent with mock drivers over MQTT: config delivery, reads, bounded runs, refusals, mode changes, topic and credential checks, setup pushes, a feed end to end, a low tank aborting a feed with alerts, auto-feed and its cooldown, one feed per tent, MCP listing and a tool call, outbox drain. `apps/hub/test/setup.test.ts`: delete cascades and 409s.
+- `apps/hub/test/e2e.test.ts`: a real hub and a real agent with mock drivers over MQTT: config delivery, reads, bounded runs, refusals, mode changes, topic and credential checks, setup pushes, a feed end to end, a low tank aborting a feed with alerts, auto-feed and its cooldown, one feed per tent, MCP listing and a tool call, outbox drain. `apps/hub/test/setup.test.ts`: delete cascades and 409s, plants and strains through the API. `apps/hub/test/legacy.test.ts`: the old dump format and the import. `packages/contracts/test/plants.test.ts`: plant rules, labels, ancestry and lineage.
 - `apps/client`: shell rendering and the formatting helpers.
 - Not covered: real drivers on a Pi, browser tests of the client, accessibility checks with a tool, long outages and reboots on a device.

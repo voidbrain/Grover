@@ -9,6 +9,7 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - Anything the browser needs at runtime goes in `kinds.ts` (no zod); the client imports the rest as types only.
 - A schema change is a protocol change: check that an agent running the previous config still parses (or bump `PROTOCOL_VERSION`), and update docs/DESIGN.md.
 - Lesson: one sample where a dose moved EC the wrong way dragged the fitted coefficient from 0.4 to 0.12; wrong-direction samples are now dropped (`fit: … bad data is ignored`).
+- Plants (`plants.ts`): schemas only; the display helpers (`generationLabel`, `geneticsLabel`, `ancestry`, `lineage`, and `slugify` shared with the hub) live in the zod-free `kinds.ts` so the dashboard can use them without zod.
 - The feed planner (`feeding.ts`) is pure and owns every dosing decision; the agent never decides amounts. Change it with a case in `contracts.test.ts` ("feed: …").
 
 ## Hub
@@ -19,6 +20,7 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - `Commands` runs single actions; the `Feeder` plans whole feeds and sends them as one `feed` command, one per tent at a time. HTTP errors map from `NotFound` 404, `Refused` 409, `AgentOffline` 503, `CommandTimeout` 504, `ZodError` 400.
 - Any setup write republishes agent configs (`publishAllConfigs`).
 - The HTTP server binds loopback by default; never change the default to a public bind. The `onRequest` guard in `http.ts` (Host, Origin, JSON bodies) is a safeguard: keep it in front of every route, MCP and the live socket included. MCP is stateless (a server per request).
+- The legacy importer (`legacy.ts`) only adds missing ids and never overwrites: keep it that way, the owner edits imported records. Its test uses an invented dump; never commit the real one.
 - Feeds: the Feeder reserves the tent before anything is awaited and only releases its own reservation; a feed is closed only when a status from the agent, newer than its answer to the feed and with an empty outbox, says it is not running it; offline and hub restarts keep it open. Lessons (review): without closing, one power cut mid-feed blocked every later feed; closing on disconnect or on any status recorded finished feeds as aborted (a status overtook the queued "done").
 - Alerts: raised once per key, kept while the condition lasts. A refused manual feed answers with its reason and raises nothing; automatic refusals and aborted feeds raise `feed:<pot>`.
 - Lesson: per-agent sequence numbers were first used to drop replays, which would have dropped every event after an agent reinstall (counter back to 0); idempotent keys replaced them.

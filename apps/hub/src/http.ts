@@ -9,9 +9,9 @@ import { AgentOffline, CommandTimeout } from './agents.ts';
 import { Refused } from './commands.ts';
 import type { Hub } from './hub.ts';
 import { createMcpServer } from './mcp.ts';
-import { NotFound } from './store.ts';
+import { InUse, NotFound } from './store.ts';
 
-type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars';
+type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars' | 'breeders' | 'strains' | 'plants';
 
 /**
  * HTTP surface of the hub:
@@ -31,7 +31,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   app.setErrorHandler((err, _req, reply) => {
     if (err instanceof ZodError) return reply.code(400).send({ error: 'invalid', issues: err.issues });
     if (err instanceof NotFound) return reply.code(404).send({ error: err.message });
-    if (err instanceof Refused) return reply.code(409).send({ error: err.message });
+    if (err instanceof Refused || err instanceof InUse) return reply.code(409).send({ error: err.message });
     if (err instanceof AgentOffline) return reply.code(503).send({ error: err.message });
     if (err instanceof CommandTimeout) return reply.code(504).send({ error: err.message });
     const sqlite =
@@ -99,6 +99,9 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     actuators: store.listActuators(),
     schedules: store.listSchedules(),
     calendars: store.listCalendars(),
+    breeders: store.listBreeders(),
+    strains: store.listStrains(),
+    plants: store.listPlants(),
     agents: agents.views(),
     latest: store.latestReadings(),
     alerts: alerts.list(),
@@ -149,6 +152,9 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     actuators: (b: unknown) => store.putActuator(b),
     schedules: (b: unknown) => store.putSchedule(b),
     calendars: (b: unknown) => store.putCalendar(b),
+    breeders: (b: unknown) => store.putBreeder(b),
+    strains: (b: unknown) => store.putStrain(b),
+    plants: (b: unknown) => store.putPlant(b),
   } satisfies Record<Entity, (b: unknown) => unknown>;
   for (const entity of Object.keys(put) as Entity[]) {
     app.put<{ Params: { id: string } }>(`/api/${entity}/:id`, async (req) => {

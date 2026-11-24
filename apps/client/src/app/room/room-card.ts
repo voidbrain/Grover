@@ -2,7 +2,7 @@ import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Actuator, FeedView, OperatingMode, Pot, Probe } from '@grover/contracts';
-import { TANK_ROLES, TANK_TITLES, isPump } from '@grover/contracts/kinds';
+import { TANK_ROLES, TANK_TITLES, generationLabel, geneticsLabel, isPump } from '@grover/contracts/kinds';
 import { Clock } from '../clock';
 import { ago, health, targetRange, type Health } from '../format';
 import { Hub, type FeedPreview, type Snapshot } from '../hub';
@@ -99,8 +99,24 @@ export class RoomCard {
         }
         const temp = own('water_temperature');
         if (temp) tiles.push(this.tile(temp, false));
+        const strains = this.snap()?.strains ?? [];
+        const breeders = this.snap()?.breeders ?? [];
+        const plants = (this.snap()?.plants ?? [])
+          .filter((p) => p.potId === pot.id && p.harvestedOn === null)
+          .map((p) => {
+            const strain = strains.find((s) => s.id === p.strainId);
+            const breeder = breeders.find((b) => b.id === (p.breederId ?? strain?.breederId));
+            const facts = [
+              generationLabel(p.generation),
+              breeder?.name,
+              strain ? geneticsLabel(strain.sativaPercent) : null,
+              strain?.thcPercent != null ? `THC ${strain.thcPercent} %` : null,
+            ].filter(Boolean);
+            return { id: p.id, name: p.name, strain: strain?.name ?? null, facts: facts.join(' · ') };
+          });
         return {
           pot,
+          plants,
           tiles,
           lastFeed: feeds.find((f) => f.potId === pot.id) ?? null,
           loop: this.actuators().find((a) => a.potId === pot.id && a.kind === 'water_loop') ?? null,

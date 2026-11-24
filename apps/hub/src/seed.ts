@@ -123,6 +123,47 @@ export function seedDemo(store: Store, agentId = 'pi-1'): void {
         binding: mock,
       });
 
+    // What grows: the owner's example (F-012). Figures from the breeder's own pages; THC from retailers (see notes).
+    store.putBreeder({ id: 'sensi-seeds', name: 'Sensi Seeds', website: 'https://sensiseeds.com', notes: '' });
+    store.putStrain({ id: 'afghani', name: 'Afghani', sativaPercent: 0, notes: 'Landrace.' });
+    store.putStrain({
+      id: 'northern-lights-5',
+      name: 'Northern Lights #5',
+      breederId: 'sensi-seeds',
+      parentIds: ['afghani'],
+    });
+    store.putStrain({ id: 'haze', name: 'Haze', sativaPercent: 100 });
+    store.putStrain({
+      id: 'northern-lights-5-x-haze',
+      name: 'Northern Lights #5 x Haze',
+      breederId: 'sensi-seeds',
+      parentIds: ['northern-lights-5', 'haze'],
+      sativaPercent: 70,
+      thcPercent: 20,
+      floweringDays: 70,
+      notes:
+        'Sativa 70 % and flowering 65-75 days: Sensi Seeds product page. THC: Sensi publishes none; about 20 % per Zamnesia and Cannapot (Leafly 19 %).',
+    });
+    const nl = { strainId: 'northern-lights-5-x-haze', breederId: 'sensi-seeds', medium: 'hydro' as const };
+    store.putPlant({
+      id: 'nl5h-seed',
+      name: 'NL5xHaze from seed',
+      ...nl,
+      generation: 0,
+      startedOn: '2021-11-05',
+      harvestedOn: '2022-04-01',
+    });
+    store.putPlant({ id: 'nl5h-mother', name: 'NL5xHaze mother', ...nl, generation: 1, motherId: 'nl5h-seed' });
+    store.putPlant({
+      id: 'nl5h-gen2',
+      name: 'NL5xHaze gen 2',
+      ...nl,
+      generation: 2,
+      motherId: 'nl5h-mother',
+      potId: 'pot-3',
+      startedOn: start,
+    });
+
     // Readings every 5 minutes for everything.
     for (const p of store.listProbes(room))
       store.putSchedule({
