@@ -92,9 +92,12 @@ export class FeedRunner {
         guard();
         const tankCheck = plan.checks.find((c) => c.what === step.tank && c.min !== null);
         if (tankCheck) await this.check(tankCheck);
-        const run = actuators.run(step.actuatorId, step.durationMs, 'feed', plan.feedId);
-        await run.done;
+        // The re-check above can take seconds: a stop may have come in meanwhile.
         guard();
+        const run = actuators.run(step.actuatorId, step.durationMs, 'feed', plan.feedId);
+        const ran = await run.done;
+        guard();
+        if (!ran) throw new Abort(`${step.tank} pump did not run`);
         say('step', `${step.tank}: ${step.ml} mL`);
       }
 
@@ -110,10 +113,13 @@ export class FeedRunner {
         guard();
         const slice = Math.min(t.sliceMs, t.maxMs - elapsed);
         const run = actuators.run(t.actuatorId, slice, 'feed', plan.feedId);
-        await run.done;
+        const ran = await run.done;
+        guard();
+        if (!ran) throw new Abort('the pot pump did not run');
         elapsed += run.durationMs;
         guard();
         if (t.potProbeId && t.potMaxLevel !== null && (await this.level(t.potProbeId, 'pot')) >= t.potMaxLevel) {
+          guard();
           why = 'pot full';
           break;
         }

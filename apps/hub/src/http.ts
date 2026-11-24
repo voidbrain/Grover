@@ -47,6 +47,40 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     return reply.code(status).send({ error: (err as Error).message });
   });
 
+  // ── who may talk to the hub ──────────────────────────────────────────────
+  // Loopback plus `tailscale serve` keeps strangers out, but not a web page open in a browser on the tailnet:
+  // refuse unknown Host names (DNS rebinding), foreign Origins (cross-site requests and sockets), and POST/PUT
+  // without a JSON body (a plain cross-site form cannot send one without a preflight).
+  const hostAllowed = (host: string | undefined): boolean => {
+    if (!host) return false;
+    const h = host.toLowerCase();
+    const address = app.server.address();
+    const port = typeof address === 'object' && address ? address.port : config.httpPort;
+    const own = [`127.0.0.1:${port}`, `localhost:${port}`, `[::1]:${port}`];
+    return own.includes(h) || config.allowedHosts.some((a) => h === a || h === `${a}:443` || h.split(':')[0] === a);
+  };
+  app.addHook('onRequest', async (req, reply) => {
+    if (!hostAllowed(req.headers.host))
+      return reply.code(403).send({ error: `unknown host ${req.headers.host}: add it to GROVER_ALLOWED_HOSTS` });
+    const origin = req.headers.origin;
+    if (origin !== undefined) {
+      const allowed = (): boolean => {
+        try {
+          const url = new URL(origin);
+          return config.allowedOrigins.includes(url.origin.toLowerCase()) || hostAllowed(url.host);
+        } catch {
+          return false;
+        }
+      };
+      if (!allowed()) return reply.code(403).send({ error: `requests from ${origin} are not allowed` });
+    }
+    if (
+      (req.method === 'POST' || req.method === 'PUT') &&
+      !/^application\/json\b/i.test(req.headers['content-type'] ?? '')
+    )
+      return reply.code(415).send({ error: 'send JSON (content-type: application/json)' });
+  });
+
   // ── read ─────────────────────────────────────────────────────────────────
   app.get('/api/health', async () => ({
     ok: true,

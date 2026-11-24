@@ -46,6 +46,8 @@ export class Commands {
     if (!a.enabled) throw new Refused(`actuator ${a.id} is disabled`);
     if (!isPump(a.kind)) throw new Refused(`${a.id} is a ${a.kind}: switch it on or off instead`);
     if (room.mode !== 'normal') throw new Refused(`room ${room.id} is ${room.mode}: pumps only run in normal mode`);
+    if (this.store.openFeeds(room.id).length)
+      throw new Refused('a feed is running in this tent: wait for it, or Stop all');
     let durationMs = req.durationMs;
     if (req.ml !== undefined) {
       if (!a.mlPerSecond) throw new Refused(`${a.id} is not calibrated (mlPerSecond missing)`);

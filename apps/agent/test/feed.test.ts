@@ -155,3 +155,35 @@ test('a plan naming a pump the agent does not have is refused at once', async ()
     /unknown transfer pump/,
   );
 });
+
+test('Stop all during a tank re-check: the next pump does not start', async () => {
+  const { runner, reports, acts, drivers, world } = await rig();
+  // The grow re-check reading takes a while; Stop all lands in the middle of it.
+  let slowGrow = false;
+  const probes = new Map([
+    ['tank-water', { kind: 'water_level' as const, potId: null, tank: 'water' as const }],
+    ['tank-grow', { kind: 'water_level' as const, potId: null, tank: 'grow' as const }],
+    ['tank-mix', { kind: 'water_level' as const, potId: null, tank: 'mix' as const }],
+    ['pot-1-level', { kind: 'water_level' as const, potId: 'pot-1', tank: null }],
+  ]);
+  const slowRunner = new FeedRunner({
+    actuators: acts,
+    read: async (id) => {
+      if (id === 'tank-grow' && slowGrow) await new Promise((r) => setTimeout(r, 50));
+      return world.read(probes.get(id)!);
+    },
+    report: (_f, _p, state, message) => reports.push({ state, message }),
+    sleep: async (_ms, cancelled) => !cancelled(),
+  });
+  void runner;
+  const running = slowRunner.start(plan());
+  await new Promise((r) => setTimeout(r, 5));
+  slowGrow = true; // first checks done; the re-check before the grow step is slow
+  await new Promise((r) => setTimeout(r, 160)); // water step (150 ms) finishes, grow re-check starts
+  slowRunner.cancel('stopped with Stop all');
+  await acts.allOff('manual');
+  await running;
+  assert.equal(reports.at(-1)!.state, 'aborted');
+  assert.equal(world.supply.grow, 1, 'no grow was pumped after the stop');
+  assert.ok([...drivers.states.values()].every((on) => !on));
+});

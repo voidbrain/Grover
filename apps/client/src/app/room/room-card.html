@@ -162,7 +162,7 @@
               role="switch"
               class="toggle"
               [attr.aria-checked]="hub.active().has(a.id)"
-              [disabled]="!online() || busy('act:' + a.id)"
+              [disabled]="!online() || busy('act:' + a.id) || (!hub.active().has(a.id) && !canSwitchOn(a))"
               (click)="hub.switch(a.id, !hub.active().has(a.id))"
             >
               <span class="sr-only">{{ a.name }}</span>{{ hub.active().has(a.id) ? 'On' : 'Off' }}

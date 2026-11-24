@@ -11,11 +11,23 @@ export interface HubConfig {
   /** Built Angular client, served at /. */
   clientDir: string;
   timezone: string;
+  /**
+   * Host names the HTTP API answers to besides loopback, e.g. the Pi's `pi.tailnet.ts.net` behind `tailscale serve`.
+   * Anything else is refused, against DNS rebinding.
+   */
+  allowedHosts: string[];
+  /** Browser origins allowed besides the hub's own (e.g. the Angular dev server). */
+  allowedOrigins: string[];
   /** How long a command waits for the agent's ack. */
   commandTimeoutMs: number;
 }
 
 const env = (name: string): string | undefined => process.env[name] || undefined;
+const list = (value: string | undefined): string[] =>
+  (value ?? '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
 
 export function loadConfig(overrides: Partial<HubConfig> = {}): HubConfig {
   return {
@@ -26,6 +38,8 @@ export function loadConfig(overrides: Partial<HubConfig> = {}): HubConfig {
     mqttPort: Number(env('GROVER_MQTT_PORT') ?? 1883),
     clientDir: resolve(env('GROVER_CLIENT_DIR') ?? 'apps/client/dist/client/browser'),
     timezone: env('GROVER_TZ') ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+    allowedHosts: list(env('GROVER_ALLOWED_HOSTS')),
+    allowedOrigins: list(env('GROVER_ALLOWED_ORIGINS')),
     commandTimeoutMs: Number(env('GROVER_COMMAND_TIMEOUT_MS') ?? 10_000),
     ...overrides,
   };

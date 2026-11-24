@@ -141,6 +141,12 @@ export class RoomCard {
     };
   }
 
+  /** What the mode allows to switch on: everything in normal, lights in silent, nothing when off. Off is always allowed. */
+  protected canSwitchOn(a: Actuator): boolean {
+    const mode = this.room().mode;
+    return mode === 'normal' || (mode === 'silent' && a.kind === 'light');
+  }
+
   protected busy(key: string): boolean {
     return this.hub.busy().has(key);
   }

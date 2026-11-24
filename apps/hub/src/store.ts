@@ -298,13 +298,38 @@ export class Store {
   }
 
   /**
-   * Deletes one entity. Schedules that target a deleted probe or actuator (directly, or through a deleted room)
+   * Deletes one entity. A pot takes its probes and actuators with it. Schedules that target a deleted probe or
+   * actuator (directly, or through a deleted room or pot)
    * go with it, so no schedule points at nothing. A calendar still used by a room is refused by its foreign key.
    */
   deleteEntity(table: 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars', id: string): boolean {
     return this.tx(() => {
-      const probes = table === 'probes' ? [id] : table === 'rooms' ? this.listProbes(id).map((p) => p.id) : [];
-      const actuators = table === 'actuators' ? [id] : table === 'rooms' ? this.listActuators(id).map((a) => a.id) : [];
+      const probes =
+        table === 'probes'
+          ? [id]
+          : table === 'rooms'
+            ? this.listProbes(id).map((p) => p.id)
+            : table === 'pots'
+              ? this.listProbes()
+                  .filter((p) => p.potId === id)
+                  .map((p) => p.id)
+              : [];
+      const actuators =
+        table === 'actuators'
+          ? [id]
+          : table === 'rooms'
+            ? this.listActuators(id).map((a) => a.id)
+            : table === 'pots'
+              ? this.listActuators()
+                  .filter((a) => a.potId === id)
+                  .map((a) => a.id)
+              : [];
+      // A pot's probes and pumps go with it: left behind without a pot, its pH/EC probes would become the
+      // tent's shared pair and its feed pump an unassigned one.
+      if (table === 'pots') {
+        for (const p of probes) this.db.prepare('DELETE FROM probes WHERE id = ?').run(p);
+        for (const a of actuators) this.db.prepare('DELETE FROM actuators WHERE id = ?').run(a);
+      }
       const deleted = Number(this.db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id).changes) > 0;
       if (deleted && (probes.length || actuators.length)) {
         for (const s of this.listSchedules()) {
@@ -536,6 +561,15 @@ export class Store {
         .prepare(`SELECT * FROM feeds WHERE room_id = ? AND state = 'done' ORDER BY requested_at DESC LIMIT ?`)
         .all(roomId, limit) as Row[]
     ).map((r) => this.feed(r));
+  }
+  /** Feeds not yet finished, in a room or anywhere. */
+  openFeeds(roomId?: string): FeedView[] {
+    const rows = (
+      roomId
+        ? this.db.prepare("SELECT * FROM feeds WHERE state IN ('planned', 'started') AND room_id = ?").all(roomId)
+        : this.db.prepare("SELECT * FROM feeds WHERE state IN ('planned', 'started')").all()
+    ) as Row[];
+    return rows.map((r) => this.feed(r));
   }
   lastFeedAt(potId: string): number | null {
     const r = this.db

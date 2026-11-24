@@ -6,7 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
  * Migrations run in order, once. Append only: never edit a shipped migration.
  * Structured fields (bindings, rules, phases) are JSON validated by @grover/contracts on read and write.
  */
-const MIGRATIONS: readonly string[] = [
+export const MIGRATIONS: readonly string[] = [
   `
   CREATE TABLE calendars (id TEXT PRIMARY KEY, name TEXT NOT NULL, phases TEXT NOT NULL);
   CREATE TABLE rooms (
@@ -44,6 +44,8 @@ const MIGRATIONS: readonly string[] = [
   // its dose log are gone. Tanks are level probes with a role; alerts are kept while their condition lasts.
   `
   ALTER TABLE rooms RENAME COLUMN auto_dose TO auto_feed;
+  -- Auto-feed is new behaviour: it starts off, whatever auto-dose was.
+  UPDATE rooms SET auto_feed = 0;
   ALTER TABLE rooms DROP COLUMN reservoir_liters;
   ALTER TABLE rooms ADD COLUMN mix_empty_level REAL NOT NULL DEFAULT 1;
   ALTER TABLE rooms ADD COLUMN mix_settle_seconds INTEGER NOT NULL DEFAULT 60;

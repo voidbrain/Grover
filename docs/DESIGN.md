@@ -63,19 +63,25 @@ Protocol version 2 (feeds). The hub stores each event once (readings keyed by pr
 
 Enforced on the agent ([`actuators.ts`](../apps/agent/src/actuators.ts)) whatever the hub sends, and checked again by the hub ([`commands.ts`](../apps/hub/src/commands.ts)) so refusals come back early with a reason:
 
-- Pumps only run bounded: a run is clamped to `maxRunMs`; a pump cannot be switched on.
+- Pumps only run bounded: a run is clamped to `maxRunMs`, which every pump must have (above 0; the schema and the agent both refuse a pump without one); a pump cannot be switched on.
 - One pump at a time (shared supply; a dose must not mix mid-measurement). Runs queue.
 - A watchdog on every tick forces off any pump past its cap, even if its timer was lost.
-- Config change, `stop_all`, `off` mode, SIGINT/SIGTERM and uncaught errors turn everything off. Drivers start with outputs off.
+- Config change, `stop_all`, `off` mode, SIGINT/SIGTERM and uncaught errors turn everything off and drop every queued run, including one whose relay is still switching on: nothing starts after a stop. Drivers start with outputs off; MCP23017 pins stay inputs until claimed and are set to their off level (high for active-low relays) before they become outputs and again at shutdown.
+- A relay that fails to switch off stays reported on, and the watchdog retries it on every tick.
+- No pump runs by hand while a feed runs (hub and agent both refuse).
 - `silent` keeps only lights; `off` refuses everything.
 - Window schedules act on edges only, so a manual switch holds until the next window boundary.
 - A feed runs one at a time per agent; every check failure, failed reading, Stop all, mode change away from normal or hardware settings change aborts it with everything off and the reason reported.
+
+## Who can reach the hub
+
+The hub listens on loopback; `tailscale serve` publishes it to the tailnet. On top of that it refuses requests whose Host is not loopback or in `GROVER_ALLOWED_HOSTS` (DNS rebinding), whose browser Origin is foreign (cross-site requests and WebSockets), and POST/PUT without a JSON body (cross-site forms). MQTT needs a per-agent token and confines each agent to its own topics.
 
 ## Offline behaviour
 
 - **Agent without hub**: keeps its cached config (`<state>/config.json`), runs schedules and windows, queues events in `<state>/outbox.sqlite` (capped at 200 000 events) and sends them when the hub is back. No feeds: they are planned by the hub.
 - **Client without hub**: shows the last snapshot (browser storage) with an "Offline" badge; actions are disabled. Setup is not editable offline.
-- **Hub without agent**: commands answer 503 (agent offline); the dashboard shows when the agent was last seen.
+- **Hub without agent**: commands answer 503 (agent offline); the dashboard shows when the agent was last seen. A feed in progress when the agent goes offline is closed as aborted; so is one the agent's status says it is not running, and any left open when the hub restarts.
 
 ## Setup rules
 
@@ -125,7 +131,7 @@ Bindings ([`hardware.ts`](../apps/agent/src/drivers/hardware.ts)): `ds18b20` (1-
 
 ## Configuration
 
-Hub: `GROVER_DB`, `GROVER_HTTP_HOST` (default 127.0.0.1), `GROVER_HTTP_PORT` (8080), `GROVER_MQTT_HOST` (127.0.0.1), `GROVER_MQTT_PORT` (1883), `GROVER_CLIENT_DIR`, `GROVER_TZ`, `GROVER_COMMAND_TIMEOUT_MS` ([`config.ts`](../apps/hub/src/config.ts)). Agent: `GROVER_AGENT_ID`, `GROVER_AGENT_TOKEN`, `GROVER_HUB_MQTT`, `GROVER_AGENT_STATE`, `GROVER_DRIVERS` (`mock` or `hardware`) ([`config.ts`](../apps/agent/src/config.ts)).
+Hub: `GROVER_DB`, `GROVER_HTTP_HOST` (default 127.0.0.1), `GROVER_ALLOWED_HOSTS` (host names besides loopback, e.g. the Pi's tailnet name), `GROVER_ALLOWED_ORIGINS`, `GROVER_HTTP_PORT` (8080), `GROVER_MQTT_HOST` (127.0.0.1), `GROVER_MQTT_PORT` (1883), `GROVER_CLIENT_DIR`, `GROVER_TZ`, `GROVER_COMMAND_TIMEOUT_MS` ([`config.ts`](../apps/hub/src/config.ts)). Agent: `GROVER_AGENT_ID`, `GROVER_AGENT_TOKEN`, `GROVER_HUB_MQTT`, `GROVER_AGENT_STATE`, `GROVER_DRIVERS` (`mock` or `hardware`) ([`config.ts`](../apps/agent/src/config.ts)).
 
 ## Tests
 

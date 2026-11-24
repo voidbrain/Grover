@@ -42,6 +42,8 @@ export const AgentStatus = z.object({
   mode: OperatingMode.nullable(),
   /** Actuators currently on. */
   active: z.array(Id),
+  /** The feed the agent is running, if any: lets the hub close a feed it lost track of. */
+  feed: z.string().nullable().default(null),
   at: z.number().int(),
 });
 export type AgentStatus = z.infer<typeof AgentStatus>;

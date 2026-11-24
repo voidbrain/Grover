@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  Actuator,
   AgentConfig,
   DEFAULT_CALENDAR,
   PROTOCOL_VERSION,
@@ -270,4 +271,29 @@ test('phase lookup', () => {
   assert.equal(phaseForDay(DEFAULT_CALENDAR, 112)?.phase.name, 'Flush');
   assert.equal(phaseForDay(DEFAULT_CALENDAR, 118)?.phase.name, 'Flush');
   assert.equal(phaseForDay(DEFAULT_CALENDAR, 119), null);
+});
+
+test('a pump must have a run cap; a switch need not', () => {
+  const base = {
+    id: 'p',
+    roomId: 'r',
+    potId: null,
+    name: 'P',
+    enabled: true,
+    binding: { driver: 'mock' },
+    mlPerSecond: 1,
+  };
+  assert.equal(Actuator.safeParse({ ...base, kind: 'pump_grow', maxRunMs: 0 }).success, false);
+  assert.equal(Actuator.safeParse({ ...base, kind: 'pump_grow', maxRunMs: 30_000 }).success, true);
+  assert.equal(Actuator.safeParse({ ...base, kind: 'light', maxRunMs: 0, mlPerSecond: null }).success, true);
+});
+
+test('feed: a negative level reading (noise, uncalibrated probe) cannot make volumes negative', () => {
+  const d = planFeed(feedInput({ potLevel: -4 }));
+  assert.ok(d.ok);
+  assert.ok(d.potLitersBefore >= 0);
+  assert.ok(
+    Object.values(d.ml).every((v) => Number.isFinite(v) && v >= 0),
+    JSON.stringify(d.ml),
+  );
 });

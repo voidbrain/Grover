@@ -1,0 +1,126 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import type { AgentView, CommandAck } from '@grover/contracts';
+import { CommandTimeout } from '../src/agents.ts';
+import { Alerts } from '../src/alerts.ts';
+import { openDb } from '../src/db.ts';
+import { Bus } from '../src/events.ts';
+import { Feeder } from '../src/feeder.ts';
+import { seedDemo } from '../src/seed.ts';
+import { Store } from '../src/store.ts';
+
+/** A Feeder with a fake agent link: `answer` decides how the agent responds to the feed command. */
+function rig(answer: () => Promise<CommandAck>) {
+  const store = new Store(openDb(':memory:'));
+  seedDemo(store, 'pi-1');
+  for (const p of ['pot-1-level', 'pot-1-ec', 'pot-1-ph', 'pot-2-level', 'ec', 'ph'])
+    store.addReading({ probeId: p, value: p.includes('level') ? 20 : p.includes('ec') ? 1.0 : 6.2, at: Date.now() });
+  const bus = new Bus();
+  const alerts = new Alerts(store, bus);
+  const sent: string[] = [];
+  const agents = {
+    isOnline: () => true,
+    command: async (_agent: string, body: { kind: string }) => {
+      sent.push(body.kind);
+      return answer();
+    },
+  };
+  const feeder = new Feeder(store, bus, agents as never, alerts, { mixMs: 600_000, freshMs: 3_600_000 });
+  const agentEvent = (online: boolean, feed: string | null) =>
+    bus.emit({
+      type: 'agent',
+      agent: {
+        agentId: 'pi-1',
+        roomId: 'grow-1',
+        online,
+        lastSeen: Date.now(),
+        configCurrent: true,
+        status: {
+          state: online ? 'online' : 'offline',
+          protocol: 2,
+          version: 't',
+          configHash: null,
+          mode: 'normal',
+          active: [],
+          feed,
+          at: Date.now(),
+        },
+      } as AgentView,
+    });
+  return { store, feeder, sent, agentEvent, bus };
+}
+
+const ok = (): Promise<CommandAck> => Promise.resolve({ id: 'x', ok: true, error: null, value: null, at: Date.now() });
+
+test('two feeds requested together: the second is refused, the first stays reserved', async () => {
+  const slowOk = () =>
+    new Promise<CommandAck>((r) =>
+      setTimeout(() => r({ id: 'x', ok: true, error: null, value: null, at: Date.now() }), 30),
+    );
+  const { feeder, sent } = rig(slowOk);
+  const [a, b] = await Promise.all([feeder.feed('pot-1', 'manual'), feeder.feed('pot-2', 'auto')]);
+  assert.notEqual(a.state, 'refused', a.message);
+  assert.equal(b.state, 'refused');
+  assert.match(b.message, /another feed/);
+  assert.deepEqual(
+    sent.filter((k) => k === 'feed'),
+    ['feed'],
+    'only one feed command was sent',
+  );
+  const c = await feeder.feed('pot-2', 'manual');
+  assert.match(c.message, /another feed/, 'still reserved by the first');
+});
+
+test('the agent going offline mid-feed ends the feed and frees the tent', async () => {
+  const { feeder, store, agentEvent } = rig(ok);
+  const a = await feeder.feed('pot-1', 'manual');
+  agentEvent(false, null);
+  assert.equal(store.getFeed(a.feedId)!.state, 'aborted');
+  assert.match(store.getFeed(a.feedId)!.message, /offline/);
+  agentEvent(true, null);
+  const b = await feeder.feed('pot-2', 'manual');
+  assert.notEqual(b.state, 'refused', b.message);
+});
+
+test('no answer to the feed command: the feed is not final until the agent says what it runs', async () => {
+  const { feeder, store, agentEvent } = rig(() => Promise.reject(new CommandTimeout('no answer')));
+  const a = await feeder.feed('pot-1', 'manual');
+  assert.equal(store.getFeed(a.feedId)!.state, 'planned', 'it may have started: do not close it');
+  assert.match((await feeder.feed('pot-2', 'manual')).message, /another feed/);
+  // The agent reports it is running nothing: the hub closes the feed and frees the tent.
+  agentEvent(true, null);
+  assert.equal(store.getFeed(a.feedId)!.state, 'aborted');
+  // Had it reported this feed, it would have stayed open.
+  const { feeder: f2, store: s2, agentEvent: ev2 } = rig(() => Promise.reject(new CommandTimeout('no answer')));
+  const b = await f2.feed('pot-1', 'manual');
+  ev2(true, b.feedId);
+  assert.equal(s2.getFeed(b.feedId)!.state, 'planned');
+});
+
+test('the hub restarting mid-feed closes the feeds it can no longer follow', () => {
+  const store = new Store(openDb(':memory:'));
+  seedDemo(store, 'pi-1');
+  store.addFeed({
+    feedId: 'old',
+    roomId: 'grow-1',
+    potId: 'pot-1',
+    source: 'manual',
+    state: 'started',
+    message: '',
+    requestedAt: Date.now() - 60_000,
+    finishedAt: null,
+    batchLiters: 2,
+    ml: null,
+    ecBefore: null,
+    phBefore: null,
+    ecAfter: null,
+    phAfter: null,
+    potLitersBefore: 10,
+    expectedEc: null,
+    expectedPh: null,
+  });
+  const bus = new Bus();
+  new Feeder(store, bus, { isOnline: () => true } as never, new Alerts(store, bus), { mixMs: 1, freshMs: 1 });
+  assert.equal(store.getFeed('old')!.state, 'aborted');
+  assert.match(store.getFeed('old')!.message, /hub restarted/);
+});

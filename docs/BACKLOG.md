@@ -6,6 +6,40 @@ Current work ledger, reviewed 24 November 2026 against main `5d96c91`. [Rules](B
 
 Bugs (B-) and features (F-) in one list, most urgent first.
 
+### B-003
+
+**Safety and robustness findings from the review of #15 to #17**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Let the CI of #17 run the new tests, then merge the stack.
+
+| | |
+|---|---|
+| **Issue** | An independent review on 2026-11-24 found: queued pump runs starting after Stop all, mode change or shutdown; a stop lost while a relay was switching on; a feed starting its next pump after Stop all; pumps with `maxRunMs` 0 running uncapped; MCP23017 active-low relays switched on at init and shutdown; a feed left "running" after an agent power cut, a race between two feeds, manual pump runs mid-feed, a switch-off failure not retried, no Host/Origin check on the HTTP API, a deleted pot's probes becoming the tent's shared pair, migration 2 carrying auto-dose into auto-feed, negative pot levels, and a feed left unknown after a command timeout. |
+| **Reproduce** | The tests named in the Check row fail on the code before the fix (four of the safety bugs were reproduced by the reviewer with scripts). |
+| **Check** | `actuators.test.ts` (stop drops queued runs; stop while switching on; no cap no run; failed switch-off retried), `feed.test.ts` (Stop all during a re-check), `hardware.test.ts` (MCP23017 off levels), `feeder.test.ts` (race, agent offline, timeout, hub restart), `setup.test.ts` (pot delete cascade, Host/Origin/JSON guard, migration resets auto-feed), `e2e.test.ts` (no manual pumps during a feed; Stop all aborts it), `contracts.test.ts` (pump cap in the schema, negative level) all pass. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Each finding started with a failing test, then the fix, on `feat/f011-feed-cycle` (2026-11-24). One test's expectation changed on purpose: "stop releases the queue so later runs still happen" became "stop drops queued runs" (Stop all is an emergency stop). The review found no issue in MQTT auth/ACL, token hashing or the SQL built from strings. Closes on #17's green CI after merge.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#17](https://github.com/voidbrain/Grover/pull/17) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-011
 
 **Feed cycle per pot: supply tanks, mixing tank, pot pumps**

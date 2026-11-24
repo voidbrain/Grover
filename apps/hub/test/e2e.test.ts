@@ -29,8 +29,9 @@ async function until(check: () => boolean | Promise<boolean>, what: string, ms =
 async function api(method: string, path: string, body?: unknown): Promise<{ status: number; json: any }> {
   const res = await fetch(base + path, {
     method,
-    headers: body ? { 'content-type': 'application/json' } : {},
-    body: body ? JSON.stringify(body) : undefined,
+    // Like the client: every POST and PUT carries a JSON body (the hub refuses anything else, against cross-site forms).
+    headers: method === 'GET' || method === 'DELETE' ? {} : { 'content-type': 'application/json' },
+    body: method === 'GET' || method === 'DELETE' ? undefined : JSON.stringify(body ?? {}),
   });
   const text = await res.text();
   return { status: res.status, json: text ? JSON.parse(text) : null };
@@ -237,6 +238,22 @@ test('auto-feed: a pot below its phase minimum is fed after its next level readi
   await new Promise((r) => setTimeout(r, 200));
   assert.equal(hub.store.feeds(since, 'pot-3').length, 1);
   hub.store.putRoom({ ...hub.store.getRoom('grow-1'), autoFeed: false });
+});
+
+test('pumps cannot be run by hand while a feed runs; Stop all ends the feed with everything off', async () => {
+  hub.store.putRoom({ ...hub.store.getRoom('grow-1'), mixSettleSeconds: 5 });
+  Object.assign(drivers.world.mix, { liters: 0, nutrientMl: 0, phDownMl: 0 });
+  const { json } = await api('POST', '/api/pots/pot-4/feed');
+  await until(() => agent.state.feed === json.feedId, 'feed running on the agent');
+  const manual = await api('POST', '/api/actuators/pump-water/run', { durationMs: 100 });
+  assert.equal(manual.status, 409);
+  assert.match(manual.json.error, /feed is running/);
+  await api('POST', '/api/rooms/grow-1/stop');
+  await until(() => hub.store.getFeed(json.feedId)!.state === 'aborted', 'feed aborted');
+  assert.match(hub.store.getFeed(json.feedId)!.message, /Stop all/);
+  assert.ok(![...drivers.states.entries()].some(([id, on]) => on && id.startsWith('pump')), 'no pump left on');
+  hub.store.putRoom({ ...hub.store.getRoom('grow-1'), mixSettleSeconds: 0 });
+  Object.assign(drivers.world.mix, { liters: 0, nutrientMl: 0, phDownMl: 0 });
 });
 
 test('one feed per tent at a time, and none outside normal mode', async () => {

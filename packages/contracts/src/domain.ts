@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS, TANK_ROLES } from './kinds.ts';
+import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS, TANK_ROLES, isPump } from './kinds.ts';
 
 /** What a probe measures. Units are fixed per kind (see PROBE_KINDS). */
 export const ProbeKind = z.enum(PROBE_KIND_IDS);
@@ -105,19 +105,24 @@ export const Probe = z.object({
 });
 export type Probe = z.infer<typeof Probe>;
 
-export const Actuator = z.object({
-  id: Id,
-  roomId: Id,
-  potId: Id.nullable(),
-  kind: ActuatorKind,
-  name: z.string().min(1),
-  enabled: z.boolean(),
-  binding: ActuatorBinding,
-  /** Hard cap enforced on the agent for any single run. Switches use 0 (no cap). */
-  maxRunMs: z.number().int().min(0),
-  /** Pumps only: calibrated flow, used to turn mL into ms. */
-  mlPerSecond: z.number().positive().nullable(),
-});
+export const Actuator = z
+  .object({
+    id: Id,
+    roomId: Id,
+    potId: Id.nullable(),
+    kind: ActuatorKind,
+    name: z.string().min(1),
+    enabled: z.boolean(),
+    binding: ActuatorBinding,
+    /** Hard cap enforced on the agent for any single run. Switches use 0 (no cap). */
+    maxRunMs: z.number().int().min(0),
+    /** Pumps only: calibrated flow, used to turn mL into ms. */
+    mlPerSecond: z.number().positive().nullable(),
+  })
+  .refine((a) => !isPump(a.kind) || a.maxRunMs > 0, {
+    message: 'a pump needs a run cap (maxRunMs above 0)',
+    path: ['maxRunMs'],
+  });
 export type Actuator = z.infer<typeof Actuator>;
 
 const HHMM = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'HH:MM');

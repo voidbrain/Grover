@@ -147,11 +147,13 @@ export function planFeed(input: FeedInput): FeedDecision {
   const targetEc = mid(phase.ec);
   const targetPh = mid(phase.ph);
 
-  if (input.potLevel !== null && input.potLevel >= phase.waterLevel.max)
-    return { ok: false, reason: `pot is full (level ${input.potLevel}, phase maximum ${phase.waterLevel.max})` };
-  const known = input.potLevel !== null && pot.litersPerCm !== null;
-  const v0 = known ? input.potLevel! * pot.litersPerCm! : pot.liters;
-  const room = known ? (phase.waterLevel.max - input.potLevel!) * pot.litersPerCm! : null;
+  // A level below 0 is noise or an uncalibrated probe: count it as empty, never as negative volume.
+  const potLevel = input.potLevel === null ? null : Math.max(0, input.potLevel);
+  if (potLevel !== null && potLevel >= phase.waterLevel.max)
+    return { ok: false, reason: `pot is full (level ${potLevel}, phase maximum ${phase.waterLevel.max})` };
+  const known = potLevel !== null && pot.litersPerCm !== null;
+  const v0 = known ? potLevel! * pot.litersPerCm! : pot.liters;
+  const room = known ? (phase.waterLevel.max - potLevel!) * pot.litersPerCm! : null;
   const capacity = Math.min(pot.feedLiters, room ?? pot.feedLiters);
   if (!known) notes.push('no pot level (or litres per cm): volume taken as full, only a small carrier batch');
 
@@ -177,6 +179,7 @@ export function planFeed(input: FeedInput): FeedDecision {
     if (phase.flushing || doseTotal <= 0) return 0;
     if (ec === null) return (doseTotal * w) / 10;
     const v1 = v0 + w;
+    if (v1 <= 0) return 0;
     const blend = (ec * v0 + waterEc * w) / v1;
     const n = Math.max(0, ((targetEc - blend) * v1) / model.ecPerMlL);
     return Math.min(n, (MAX_DOSE_FACTOR * doseTotal * v1) / 10);
@@ -202,6 +205,7 @@ export function planFeed(input: FeedInput): FeedDecision {
     if (phase.flushing) return 0;
     if (ph === null) return (phase.dose.phDown * w) / 10;
     const v1 = v0 + w;
+    if (v1 <= 0) return 0;
     const expected = (ph * v0 + waterPh * w) / v1 + (model.phRisePerMlL * n) / v1;
     if (expected <= targetPh) return 0;
     return Math.min(((expected - targetPh) * v1) / model.phDownPerMlL, MAX_PH_DOWN_ML_PER_L * v1);
@@ -235,6 +239,7 @@ export function planFeed(input: FeedInput): FeedDecision {
 
   // Notes and the expected result.
   const v1 = v0 + water;
+  if (v1 <= 0) return { ok: false, reason: 'the pot reads empty and no water would go in' };
   const expEc = ec === null ? null : round2((ec * v0 + waterEc * water) / v1 + (model.ecPerMlL * nutrientMl) / v1);
   const expPh =
     ph === null

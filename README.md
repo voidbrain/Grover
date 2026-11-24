@@ -15,7 +15,7 @@ Node 24 (`nvm use`).
 ```bash
 npm install
 npm run dev        # hub + one agent on a simulated rig (tent, 6 supply tanks, mixing tank, 4 pots); http://127.0.0.1:8080
-npm run client     # optional: Angular dev server on :4200 with live reload, proxying to the hub
+npm run client     # optional: Angular dev server on :4200 with live reload, proxying to the dev hub
 npm test           # backend suites, including hub + agent end to end over MQTT
 npm run test:client
 npm run build      # client build the hub serves
@@ -32,7 +32,7 @@ One Pi runs the hub and the agent as two services (so the agent's safety does no
 3. Copy [`deploy/grover-hub.service`](deploy/grover-hub.service) and [`deploy/grover-agent.service`](deploy/grover-agent.service) to `/etc/systemd/system/`, adjust the paths and user, then `sudo systemctl enable --now grover-hub`.
 4. Register the agent: on the Setup page, "Register" `pi-1` (or `curl -X POST localhost:8080/api/agents/pi-1/token`); the token is shown once. Put `GROVER_AGENT_ID=pi-1`, `GROVER_AGENT_TOKEN=…` and `GROVER_DRIVERS=hardware` in `/etc/grover/agent.env`, then `sudo systemctl enable --now grover-agent`.
 5. Open the client's **Setup** page: add the room, its probes, pumps and switches with their wiring, and schedules. (The same is possible through the API, `PUT /api/<rooms|probes|actuators|schedules>/<id>` with the bodies in `packages/contracts/src/domain.ts`; `apps/hub/src/seed.ts` is a full example.)
-6. Publish the hub on your tailnet: `sudo tailscale serve --bg 8080`. Open `https://<pi-name>.<tailnet>.ts.net` from any device on the tailnet. NERV connects to `https://<pi-name>.<tailnet>.ts.net/mcp`.
+6. Publish the hub on your tailnet: `sudo tailscale serve --bg 8080`, and put `GROVER_ALLOWED_HOSTS=<pi-name>.<tailnet>.ts.net` in `/etc/grover/hub.env` (the hub refuses host names it does not know). Open `https://<pi-name>.<tailnet>.ts.net` from any device on the tailnet. NERV connects to `https://<pi-name>.<tailnet>.ts.net/mcp`.
 
 The hub listens on loopback only; `tailscale serve` is what makes it reachable, and only from your tailnet. A second Pi runs only the agent, with `GROVER_HUB_MQTT=mqtt://<hub-pi>:1883` and the hub's `GROVER_MQTT_HOST` set to its Tailscale IP.
 

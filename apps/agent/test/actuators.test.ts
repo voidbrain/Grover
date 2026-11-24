@@ -67,17 +67,72 @@ test('pumps run one at a time', async () => {
   await b.done;
 });
 
-test('stop releases the queue so later runs still happen', async () => {
-  const { acts, pins, load } = rig();
-  await load([pump('a', 10_000), pump('b', 30)]);
+// Requirement changed on 2026-11-24 (review of #15-#17, finding 1): Stop all is an emergency stop, so runs still
+// waiting in the queue are dropped, not started once the queue frees up. The queue still settles every waiter.
+test('stop drops queued runs: nothing switches on after Stop all', async () => {
+  const { acts, pins, load, events } = rig();
+  await load([pump('a', 10_000), pump('b', 400)]);
   const a = acts.run('a', 10_000, 'manual');
-  const b = acts.run('b', 30, 'manual');
+  const b = acts.run('b', 400, 'manual');
   await new Promise((r) => setTimeout(r, 10));
   await acts.allOff('manual');
-  await a.done;
-  await b.done;
-  assert.equal(pins.get('a'), false);
+  assert.equal(await a.done, true, 'a ran (and was stopped)');
+  assert.equal(await b.done, false, 'b never started');
+  await new Promise((r) => setTimeout(r, 30));
   assert.equal(pins.get('b'), false);
+  assert.ok(!events.some((e) => e.actuatorId === 'b'), 'no event for b at all');
+});
+
+test('a stop that arrives while a relay is still switching on wins', async () => {
+  const events: Actuation[] = [];
+  const acts = new Actuators((a) => events.push(a));
+  let pin = false;
+  // set(true) takes 50 ms, like pinctrl spawning a process.
+  const slow = {
+    set: async (on: boolean) => {
+      if (on) await new Promise((r) => setTimeout(r, 50));
+      pin = on;
+    },
+  };
+  await acts.load([{ actuator: pump('a', 10_000), driver: slow }]);
+  const run = acts.run('a', 5_000, 'manual');
+  await new Promise((r) => setTimeout(r, 10));
+  await acts.allOff('manual');
+  assert.equal(await run.done, false);
+  await new Promise((r) => setTimeout(r, 60));
+  assert.equal(pin, false, 'the relay is off once set(true) returns');
+  assert.deepEqual(acts.active(), []);
+});
+
+test('a pump without a cap does not run', async () => {
+  const { acts, load } = rig();
+  await load([pump('a', 0)]);
+  assert.throws(() => acts.run('a', 86_400_000, 'manual'), /no run cap/);
+});
+
+test('a switch-off that fails stays "on" and the watchdog keeps trying', async () => {
+  const events: Actuation[] = [];
+  const acts = new Actuators((a) => events.push(a));
+  let fail = true;
+  let pin = false;
+  const flaky = {
+    set: async (on: boolean) => {
+      if (!on && fail) throw new Error('i2c error');
+      pin = on;
+    },
+  };
+  await acts.load([{ actuator: light, driver: flaky }]).catch(() => {});
+  fail = false;
+  await acts.switch('light', true, 'manual');
+  fail = true;
+  await acts.switch('light', false, 'manual');
+  assert.equal(pin, true);
+  assert.deepEqual(acts.active(), ['light'], 'still reported on');
+  fail = false;
+  await acts.watchdog();
+  assert.equal(pin, false);
+  assert.deepEqual(acts.active(), []);
+  assert.equal(events.at(-1)!.state, 'off');
 });
 
 test('pumps cannot be switched on; switches can', async () => {

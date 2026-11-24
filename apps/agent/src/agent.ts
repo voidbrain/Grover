@@ -274,6 +274,7 @@ export class Agent {
           return ack(true, null, await this.read(cmd.probeId));
         case 'run': {
           if (mode !== 'normal') return ack(false, `agent is ${mode}`);
+          if (this.feeds.busy) return ack(false, 'a feed is running: wait for it, or Stop all');
           const { durationMs } = this.actuators.run(cmd.actuatorId, cmd.durationMs, cmd.source, cmd.id);
           return ack(true, null, durationMs);
         }
@@ -311,7 +312,7 @@ export class Agent {
 
   private publishEvent(body: Parameters<Outbox['push']>[0]): void {
     this.outbox.push(body);
-    if (body.type === 'actuation') this.publishStatus();
+    if (body.type === 'actuation' || (body.type === 'feed' && body.state !== 'step')) this.publishStatus();
     void this.flush();
   }
 
@@ -344,6 +345,7 @@ export class Agent {
       configHash: this.hash,
       mode: this.config?.mode ?? null,
       active: state === 'online' ? this.actuators.active() : [],
+      feed: state === 'online' ? this.feeds.busy : null,
       at: this.now(),
     };
     return JSON.stringify(s);

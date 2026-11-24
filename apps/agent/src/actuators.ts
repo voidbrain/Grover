@@ -8,21 +8,28 @@ interface Slot {
   since: number | null;
   timer: NodeJS.Timeout | null;
   /** Settles the queued run when the pump goes off for any reason (timer, stop, watchdog, failure). */
-  release: (() => void) | null;
+  release: ((ran: boolean) => void) | null;
+  /** The last switch-off failed: the relay may still be on, so it stays "on" and the watchdog retries. */
+  stuck: boolean;
   source: ActuationSource;
   commandId: string | null;
 }
 
 /**
  * Owns every actuator on the agent and the safety rules that hold whatever the hub says:
- * - a pump never runs longer than its maxRunMs (timer, plus a watchdog that checks on every tick);
+ * - a pump never runs longer than its maxRunMs (timer, plus a watchdog that checks on every tick); a pump
+ *   without a cap does not run at all;
  * - only one pump runs at a time (shared supply, and doses must not mix mid-measurement);
  * - pumps only run in bounded runs, never "on" indefinitely;
- * - everything goes off on stop, on shutdown and when the config changes.
+ * - a stop (Stop all, mode change, config change, shutdown) switches everything off AND drops every run still
+ *   waiting, including one whose relay is still switching on: nothing starts after a stop;
+ * - a relay that fails to switch off stays reported on until a retry succeeds.
  */
 export class Actuators {
   private readonly slots = new Map<string, Slot>();
-  private pumpQueue: Promise<void> = Promise.resolve();
+  private pumpQueue: Promise<unknown> = Promise.resolve();
+  /** Bumped by every stop; a run queued or switching on under an older epoch never (stays) on. */
+  private epoch = 0;
   private readonly emit: (a: Actuation) => void;
   private readonly now: () => number;
 
@@ -32,8 +39,6 @@ export class Actuators {
   }
 
   async load(entries: { actuator: Actuator; driver: ActuatorDriver }[]): Promise<void> {
-    // Runs still queued on the old slots must not start: disable them before switching everything off.
-    for (const s of this.slots.values()) s.actuator = { ...s.actuator, enabled: false };
     await this.allOff('safety');
     for (const s of this.slots.values()) await s.driver.close?.().catch(() => {});
     this.slots.clear();
@@ -45,6 +50,7 @@ export class Actuators {
         since: null,
         timer: null,
         release: null,
+        stuck: false,
         source: 'safety',
         commandId: null,
       });
@@ -68,35 +74,38 @@ export class Actuators {
     return [...this.slots.values()].filter((s) => s.on).map((s) => s.actuator.id);
   }
 
-  /** Bounded pump run, queued behind any other pump. Resolves with the clamped duration once queued. */
+  /**
+   * Bounded pump run, queued behind any other pump. Returns the clamped duration at once; `done` settles when the
+   * run is over: true if the pump ran, false if it never started (a stop came first, or switching on failed).
+   */
   run(
     id: string,
     durationMs: number,
     source: ActuationSource,
     commandId: string | null = null,
-  ): { durationMs: number; done: Promise<void> } {
+  ): { durationMs: number; done: Promise<boolean> } {
     const slot = this.require(id);
     if (!slot.actuator.enabled) throw new Error(`${id} is disabled`);
     if (!isPump(slot.actuator.kind)) throw new Error(`${id} is not a pump`);
-    const cap = slot.actuator.maxRunMs > 0 ? slot.actuator.maxRunMs : durationMs;
-    const ms = Math.max(0, Math.min(durationMs, cap));
-    const done = (this.pumpQueue = this.pumpQueue.then(
+    if (!(slot.actuator.maxRunMs > 0)) throw new Error(`${id} has no run cap (maxRunMs): refusing to run it`);
+    const ms = Math.max(0, Math.min(durationMs, slot.actuator.maxRunMs));
+    const epoch = this.epoch;
+    const done = this.pumpQueue.then(
       () =>
-        new Promise<void>((resolve) => {
-          if (!slot.actuator.enabled || ms === 0) return resolve();
+        new Promise<boolean>((resolve) => {
+          if (epoch !== this.epoch || !slot.actuator.enabled || ms === 0 || this.slots.get(id) !== slot)
+            return resolve(false);
           slot.release = resolve;
-          this.turn(slot, true, source, commandId).then(
-            () => {
-              if (slot.on) slot.timer = setTimeout(() => void this.turn(slot, false, source, commandId), ms);
-              else resolve();
+          this.turnOn(slot, source, commandId, epoch).then(
+            (on) => {
+              if (on) slot.timer = setTimeout(() => void this.turnOff(slot, source, commandId), ms);
+              else this.settle(slot, false);
             },
-            () => {
-              slot.release = null;
-              resolve();
-            },
+            () => this.settle(slot, false),
           );
         }),
-    ));
+    );
+    this.pumpQueue = done;
     return { durationMs: ms, done };
   }
 
@@ -105,31 +114,38 @@ export class Actuators {
     const slot = this.require(id);
     if (on && !slot.actuator.enabled) throw new Error(`${id} is disabled`);
     if (on && isPump(slot.actuator.kind)) throw new Error(`${id} is a pump: use a bounded run`);
-    await this.turn(slot, on, source, commandId);
+    if (on) {
+      if (!(await this.turnOn(slot, source, commandId, this.epoch)))
+        throw new Error(`${id}: stopped while switching on`);
+    } else await this.turnOff(slot, source, commandId);
   }
 
+  /**
+   * Switches off everything (or everything but `except`) and drops every queued run. Runs switching on right now
+   * see the new epoch when their driver returns and switch straight off again.
+   */
   async allOff(source: ActuationSource, except: (a: Actuator) => boolean = () => false): Promise<void> {
+    this.epoch++;
     for (const slot of this.slots.values())
-      if (slot.on && !except(slot.actuator)) await this.turn(slot, false, source, null);
+      if ((slot.on || slot.timer) && !except(slot.actuator)) await this.turnOff(slot, source, null);
   }
 
-  /** Watchdog: forces off any pump past its cap (in case a timer was lost). Returns the ids it stopped. */
+  /**
+   * Watchdog, on every tick: forces off any pump past its cap (in case a timer was lost) and retries any relay
+   * whose switch-off failed. Returns the ids it acted on.
+   */
   async watchdog(): Promise<string[]> {
-    const stopped: string[] = [];
+    const acted: string[] = [];
     for (const slot of this.slots.values()) {
       const cap = slot.actuator.maxRunMs;
-      if (
-        slot.on &&
-        isPump(slot.actuator.kind) &&
-        cap > 0 &&
-        slot.since !== null &&
-        this.now() - slot.since > cap + 1000
-      ) {
-        await this.turn(slot, false, 'safety', null);
-        stopped.push(slot.actuator.id);
+      const overdue =
+        slot.on && isPump(slot.actuator.kind) && slot.since !== null && this.now() - slot.since > cap + 1000;
+      if (overdue || slot.stuck) {
+        await this.turnOff(slot, 'safety', null);
+        acted.push(slot.actuator.id);
       }
     }
-    return stopped;
+    return acted;
   }
 
   private require(id: string): Slot {
@@ -138,30 +154,54 @@ export class Actuators {
     return slot;
   }
 
-  private async turn(slot: Slot, on: boolean, source: ActuationSource, commandId: string | null): Promise<void> {
-    if (!on && slot.timer) {
+  /** Switches on unless a stop happened meanwhile (then it makes sure the relay is off). True when on. */
+  private async turnOn(slot: Slot, source: ActuationSource, commandId: string | null, epoch: number): Promise<boolean> {
+    if (slot.on) return true;
+    await slot.driver.set(true);
+    if (epoch !== this.epoch || this.slots.get(slot.actuator.id) !== slot) {
+      // A stop came in while the relay was switching on: it must not stay on.
+      await slot.driver.set(false).catch(() => {
+        slot.stuck = true;
+        slot.on = true;
+      });
+      return false;
+    }
+    const at = this.now();
+    slot.on = true;
+    slot.since = at;
+    slot.source = source;
+    slot.commandId = commandId;
+    this.emit({ actuatorId: slot.actuator.id, state: 'on', at, ranMs: null, source, commandId });
+    return true;
+  }
+
+  private async turnOff(slot: Slot, source: ActuationSource, commandId: string | null): Promise<void> {
+    if (slot.timer) {
       clearTimeout(slot.timer);
       slot.timer = null;
     }
-    if (slot.on === on) return;
+    if (!slot.on) return this.settle(slot, false);
     try {
-      await slot.driver.set(on);
-    } catch (err) {
-      if (on) throw err;
-      // Turning off failed: keep trying in the background, the watchdog will retry too.
-      setTimeout(() => void slot.driver.set(false).catch(() => {}), 500);
+      await slot.driver.set(false);
+    } catch {
+      // The relay may still be on: keep it reported on; the watchdog retries on the next tick.
+      slot.stuck = true;
+      return;
     }
+    slot.stuck = false;
     const at = this.now();
-    const ranMs = !on && slot.since !== null ? at - slot.since : null;
-    slot.on = on;
-    slot.since = on ? at : null;
+    const ranMs = slot.since !== null ? at - slot.since : null;
+    slot.on = false;
+    slot.since = null;
     slot.source = source;
     slot.commandId = commandId;
-    this.emit({ actuatorId: slot.actuator.id, state: on ? 'on' : 'off', at, ranMs, source, commandId });
-    if (!on && slot.release) {
-      const release = slot.release;
-      slot.release = null;
-      release();
-    }
+    this.emit({ actuatorId: slot.actuator.id, state: 'off', at, ranMs, source, commandId });
+    this.settle(slot, true);
+  }
+
+  private settle(slot: Slot, ran: boolean): void {
+    const release = slot.release;
+    slot.release = null;
+    release?.(ran);
   }
 }
