@@ -16,7 +16,8 @@ import { FeedPlan } from './feeding.ts';
  *
  * Agents connect with username = agentId and password = agent token.
  */
-export const PROTOCOL_VERSION = 4;
+/** 5: schedules may name their weekdays (F-016); an older agent would run them every day. */
+export const PROTOCOL_VERSION = 5;
 /** The first protocol whose agents apply probe calibrations (v4); an older agent reports volts. */
 export const CALIBRATION_PROTOCOL = 4;
 

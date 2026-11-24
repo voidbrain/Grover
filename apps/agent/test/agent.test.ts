@@ -1,3 +1,4 @@
+import type { z } from 'zod';
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -22,7 +23,8 @@ const pump = (id: string, kind: Actuator['kind'], potId: string | null = null): 
 
 /** An agent with a cached config and no hub (MQTT to a closed port): enough to drive tick() and execute(). */
 async function agentWith(
-  config: Omit<AgentConfig, 'protocol' | 'agentId' | 'roomId' | 'timezone' | 'issuedAt'>,
+  // The input shape: fields with defaults (a schedule's days) may be left out, as in configs saved before them.
+  config: Omit<z.input<typeof AgentConfig>, 'protocol' | 'agentId' | 'roomId' | 'timezone' | 'issuedAt'>,
   drivers: MockDrivers,
   now: () => number,
 ) {
@@ -220,5 +222,31 @@ test('readings come out calibrated (with temperature compensation); a raw read i
   assert.equal(read.calibratedAt, 123, 'the reading names the calibration it applied');
   assert.equal(raw.calibratedAt, null, 'a raw read applied none');
   assert.equal(agent.state.queued, before + 2, 'the raw reads queued no event; the two normal reads did');
+  await agent.stop();
+});
+
+test('a schedule limited to weekdays does nothing on a Saturday (F-016)', async () => {
+  const saturday = Date.parse('2026-11-28T10:00:00Z');
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [{ ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null }],
+      schedules: [
+        {
+          id: 'w',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '06:00', to: '00:00' },
+          enabled: true,
+          days: [1, 2, 3, 4, 5],
+        },
+      ],
+    },
+    drivers,
+    () => saturday,
+  );
+  await agent.tick();
+  assert.notEqual(drivers.states.get('light'), true, 'off on Saturday');
   await agent.stop();
 });

@@ -77,7 +77,14 @@ export class Lights {
       let sid = `calendar-light-${i + 1}`;
       while (taken.has(sid)) sid = `${sid}-x`;
       taken.add(sid);
-      schedules.push({ id: sid, target: { type: 'actuator', actuatorId: id }, rule: plan.rule, enabled: true });
+      // Daily, whatever days the owner's own light schedules had: plants need their light every day.
+      schedules.push({
+        id: sid,
+        target: { type: 'actuator', actuatorId: id },
+        rule: plan.rule,
+        enabled: true,
+        days: null,
+      });
     });
     return { ...config, schedules };
   }

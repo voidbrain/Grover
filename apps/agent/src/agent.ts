@@ -12,6 +12,7 @@ import {
   isPump,
   localTime,
   topics,
+  scheduleOnDay,
   windowActive,
   type AgentStatus,
   type CommandAck,
@@ -192,17 +193,19 @@ export class Agent {
 
     for (const s of config.schedules) {
       if (!s.enabled) continue;
+      // Not one of its days (F-016): a window holds off, dark is not held, nothing fires.
+      const onDay = scheduleOnDay(s, day, minuteOfDay);
       if (s.target.type === 'probe') {
-        if (newMinute && firesAt(s.rule, minuteOfDay)) void this.read(s.target.probeId).catch(() => {});
+        if (newMinute && onDay && firesAt(s.rule, minuteOfDay)) void this.read(s.target.probeId).catch(() => {});
         continue;
       }
       const actuator = this.actuators.get(s.target.actuatorId);
       if (!actuator || !actuator.enabled) continue;
       const allowed = config.mode === 'normal' || actuator.kind === 'light';
       if (s.rule.kind === 'window' || s.rule.kind === 'dark') {
-        const want = allowed && s.rule.kind === 'window' && windowActive(s.rule, minuteOfDay);
+        const want = allowed && onDay && s.rule.kind === 'window' && windowActive(s.rule, minuteOfDay);
         // Dark is held, not just switched at an edge: a light switched on by hand goes off again on the next tick.
-        if (s.rule.kind === 'dark' && this.actuators.isOn(actuator.id)) {
+        if (s.rule.kind === 'dark' && onDay && this.actuators.isOn(actuator.id)) {
           await this.actuators
             .switch(actuator.id, false, 'schedule')
             .catch((err) => this.fault(`actuator ${actuator.id}`, err.message));
@@ -218,7 +221,13 @@ export class Agent {
               this.fault(`actuator ${actuator.id}`, err.message);
             });
         }
-      } else if (newMinute && allowed && firesAt(s.rule, minuteOfDay) && !(isPump(actuator.kind) && this.feeds.busy)) {
+      } else if (
+        newMinute &&
+        allowed &&
+        onDay &&
+        firesAt(s.rule, minuteOfDay) &&
+        !(isPump(actuator.kind) && this.feeds.busy)
+      ) {
         if (isPump(actuator.kind)) {
           try {
             this.actuators.run(actuator.id, s.rule.durationMs, 'schedule');

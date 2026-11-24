@@ -220,9 +220,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Build after F-014.
+🧑 **→ Human action required: Procedure**<br />Try it on the dev stack: Setup → the tent → a schedule → Days.
 
 | | |
 |---|---|
@@ -233,9 +233,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24 ("Day-of-week schedules, weekends separately").
+**Next action / closure evidence:** Requested 2026-11-24 ("Day-of-week schedules, weekends separately"). Built 2026-11-24 on `feat/f016-weekdays`: `days` on schedules (migration 8; null every day), `isoWeekday` and `scheduleOnDay` in contracts (a window past midnight belongs to the day it started), the agent's tick skips other days (window held off, dark not held, nothing fires), calendar light schedules stay daily, `PROTOCOL_VERSION` 5, the editor's Days fieldset with shortcuts and the days in the schedule list. Checks: 4 contract tests, an agent test (a weekday window does nothing on Saturday), an e2e case (days reach the agent; none refused), drafts and editor specs. Closes when CI passes and the owner has tried it.
 
-**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
