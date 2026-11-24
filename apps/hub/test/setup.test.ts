@@ -295,3 +295,24 @@ test('an actuator on a pin another one already uses is refused (review of #29)',
   );
   await api('DELETE', '/api/actuators/bridge-a');
 });
+
+test('a stored clash (two actuators on one pin, saved before the check) does not break the hub (review of #29)', () => {
+  const light = (id: string) =>
+    hub.store.db
+      .prepare(
+        `INSERT INTO actuators (id, room_id, pot_id, kind, name, enabled, binding, max_run_ms, ml_per_second)
+         VALUES (?, 'grow-1', NULL, 'light', ?, 1, '{"driver":"gpio","pin":17,"activeLow":false}', 0, NULL)`,
+      )
+      .run(id, id);
+  // An earlier test removed agent pi-1: give the tent its agent again.
+  hub.store.issueAgentToken('pi-1');
+  hub.store.putRoom({ ...hub.store.getRoom('grow-1'), agentId: 'pi-1' });
+  light('old-light-1');
+  light('old-light-2');
+  assert.doesNotThrow(() => hub.agents.publishAllConfigs());
+  assert.equal(hub.agents.buildConfig('pi-1'), null, 'no config sent: the agent keeps the one it has');
+  const fault = hub.store.faults(0).find((f) => f.subject === 'config');
+  assert.match(fault!.message, /old-light-2 and old-light-1 use the same pin/);
+  hub.store.db.prepare("DELETE FROM actuators WHERE id IN ('old-light-1', 'old-light-2')").run();
+  assert.ok(hub.agents.buildConfig('pi-1'));
+});
