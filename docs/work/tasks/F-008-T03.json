@@ -2,14 +2,17 @@
   "version": 1,
   "id": "F-008-T03",
   "parent": "F-008",
-  "title": "Owner has the NERV record opened for Grover alert delivery",
-  "goal": "NERV's backlog holds the work to deliver Grover alerts",
-  "status": "ready",
+  "title": "Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02)",
+  "goal": "An alert raised on the hub reaches the owner through NERV",
+  "status": "planned",
   "acceptance": [
-    "A NERV record exists for delivering Grover alerts, or the owner drops delivery from F-008 with a reason",
-    "Until then F-008-T04 stays waiting: this step stands for the external dependency on nerv"
+    "A low supply tank on the deployed hub reaches the owner through NERV",
+    "Waits on nerv:F-122-T02 (NERV delivers Grover alerts)"
   ],
-  "dependsOn": [],
+  "dependsOn": [
+    "F-008-T02",
+    "F-005-T01"
+  ],
   "resources": [
     "docs/work/records/F-008.md"
   ],
@@ -23,14 +26,15 @@
   "escalation": [
     "A material scope or effort increase goes to the owner"
   ],
-  "ownerLink": "docs/work/records/F-008.md",
   "effort": {
     "size": "small",
     "estimate": "0.25 h owner",
-    "basis": "Estimated 2026-11-24: 15 minutes. Stands for the dependency on nerv until cross-repository dependsOn exists.",
+    "basis": "Estimated 2026-11-24: 15 minutes once nerv:F-122-T02 is done (NERV PR #730); its page is written then.",
     "reviewed": "2026-11-24",
     "agentHours": 0,
     "ownerHours": 0.25,
-    "ownerKind": "decision"
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
   }
 }

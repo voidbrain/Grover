@@ -3,7 +3,7 @@
 Current work ledger, reviewed 24 November 2026 against main `c5e0bf3`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 22.5 h agent + 13.25 h owner across 47 open steps of 17 features and 2 other records. Generated from the task files.
+**Remaining effort:** 22.5 h agent + 12.75 h owner across 45 open steps of 17 features and 2 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -16,7 +16,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 1.75 h owner | — | [F-003-T02](#f-003-t02), [F-008-T04](#f-008-t04), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | 🤔 |
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 1.5 h owner | — | [F-003-T02](#f-003-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | — |
 
 🧑 **→** Next: [🧑‍🔧](acceptance/pi-deploy.md) F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale (Ready).
 
@@ -30,11 +30,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale | 0 h | 0 h | 0 h agent + 1.25 h owner | Ready | — | [F-003-T02](#f-003-t02), [F-005-T03](#f-005-t03), [F-005-T04](#f-005-t04), [F-008-T04](#f-008-t04), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/pi-deploy.md) |
-| 🟢 Small | <a id="f-005-t02"></a>F-005-T02 — Owner has the NERV record opened for a Grover MCP connection | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [F-005-T03](#f-005-t03) | [🤔](work/records/F-005.md) |
-| 🟢 Small | <a id="f-005-t03"></a>F-005-T03 — Owner checks NERV lists the Grover tools | — | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01), [F-005-T02](#f-005-t02) | — | ⏳ 🧑‍🔧 |
-| 🟢 Small | <a id="f-005-t04"></a>F-005-T04 — Fix the README and service files from the first install | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.5 h (2 of 4 steps) | 0 h (0 of 4 steps recorded) | 0.5 h agent + 1.75 h owner | 0 of 4 completed | | | |
+| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale | 0 h | 0 h | 0 h agent + 1.25 h owner | Ready | — | [F-003-T02](#f-003-t02), [F-005-T02](#f-005-t02), [F-005-T03](#f-005-t03), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/pi-deploy.md) |
+| 🟢 Small | <a id="f-005-t02"></a>F-005-T02 — Owner checks NERV lists the Grover tools (waits on nerv:F-123-T02) | — | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 |
+| 🟢 Small | <a id="f-005-t03"></a>F-005-T03 — Fix the README and service files from the first install | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.5 h agent + 1.5 h owner | 0 of 3 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -328,7 +327,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.5 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | 🤔 |
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
 
 💻 **→** Next: F-008-T02 — Hysteresis at alert thresholds (Ready).
 
@@ -342,10 +341,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
 |---|---|---|---|---|---|---|---|:---:|---|
-| 🟡 Medium | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | 1.5 h | Ready | — | [F-008-T04](#f-008-t04) | 🤖 | — |
-| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner has the NERV record opened for Grover alert delivery | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [F-008-T04](#f-008-t04) | [🤔](work/records/F-008.md) | — |
-| 🟢 Small | <a id="f-008-t04"></a>F-008-T04 — Owner sees a Grover alert delivered by NERV | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-008-T02](#f-008-t02), [F-008-T03](#f-008-t03), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
-| 🟡 Medium | **Total** | 1.5 h (2 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.5 h owner | 1 of 4 completed | | | | |
+| 🟡 Medium | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | 1.5 h | Ready | — | [F-008-T03](#f-008-t03) | 🤖 | — |
+| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-008-T02](#f-008-t02), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
+| 🟡 Medium | **Total** | 1.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 1.5 h agent + 0.25 h owner | 1 of 3 completed | | | | |
 
 <details><summary>Done steps (1)</summary>
 
@@ -870,7 +868,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 ---
 ## Other changes
 
-**Reconciliation and step plans, 2026-11-24 (main `c5e0bf3`).** PRs #18–#22 and #25–#28 merged with green PR CI (main ran green after each merge except #18, whose e2e read test raced scheduled reads until #19 fixed it): B-004 and B-005 closed; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) and F-017 (from #28) moved to their sources. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`). Review: independent fresh-context review of #30 by the coordinator, 2026-11-24: no blocker; 3 should-fix (external dependencies shown as ready, unverified green-after-merge claims, F-006 PR number checked: #16 is correct) and 4 minor wording points, all fixed in #30.
+**Reconciliation and step plans, 2026-11-24 (main `c5e0bf3`).** PRs #18–#22 and #25–#28 merged with green PR CI (main ran green after each merge except #18, whose e2e read test raced scheduled reads until #19 fixed it): B-004 and B-005 closed; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) and F-017 (from #28) moved to their sources. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`). Review: independent fresh-context review of #30 by the coordinator, 2026-11-24: no blocker; 3 should-fix (external dependencies shown as ready, unverified green-after-merge claims, F-006 PR number checked: #16 is correct) and 4 minor wording points, all fixed in #30; the NERV waits point at nerv:F-122-T02 and nerv:F-123-T02 (NERV PR #730, owner-approved).
 
 ## How to use this file
 
