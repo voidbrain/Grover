@@ -103,6 +103,10 @@ export const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE probes ADD COLUMN calibration TEXT;
   `,
+  // 7: the day a plant went into its pot (F-014), for its page and statistics.
+  `
+  ALTER TABLE plants ADD COLUMN placed_on TEXT;
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

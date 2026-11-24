@@ -54,6 +54,8 @@ export const Plant = z
     potId: Id.nullable().default(null),
     medium: Medium.nullable().default(null),
     startedOn: IsoDate.nullable().default(null),
+    /** The day it went into its pot in the tent (F-014); it started elsewhere on `startedOn`. */
+    placedOn: IsoDate.nullable().default(null),
     trimmedOn: IsoDate.nullable().default(null),
     bloomOn: IsoDate.nullable().default(null),
     flushOn: IsoDate.nullable().default(null),

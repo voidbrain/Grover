@@ -49,7 +49,9 @@
               <tbody>
                 @for (row of group.rows; track row.plant.id) {
                   <tr [class.off]="row.plant.harvestedOn">
-                    <td>{{ row.plant.name }}</td>
+                    <td>
+                      <a [routerLink]="['/plants', row.plant.id]">{{ row.plant.name }}</a>
+                    </td>
                     <td>{{ row.strain }}</td>
                     <td>
                       {{ row.origin }}

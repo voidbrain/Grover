@@ -165,6 +165,7 @@ export function seedDemo(store: Store, agentId = 'pi-1'): void {
       motherId: 'nl5h-mother',
       potId: 'pot-3',
       startedOn: start,
+      placedOn: start,
     });
 
     // Readings every 5 minutes for everything.

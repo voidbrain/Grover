@@ -99,6 +99,6 @@ export class PlantCycle {
     if (p.potId === potId) return p;
     if (p.potId && this.store.plantInPot(p.potId)?.id === p.id)
       throw new BadReference(`${p.name} is in ${p.potId}: harvest it, or edit it to move it`);
-    return this.store.putPlant({ ...p, potId });
+    return this.store.putPlant({ ...p, potId, placedOn: this.today() });
   }
 }

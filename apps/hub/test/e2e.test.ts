@@ -339,6 +339,15 @@ test('MCP: tools are listed and a read-only tool answers', async () => {
   const rooms = JSON.parse(overview.result.content[0].text);
   assert.equal(rooms[0].room.id, 'grow-1');
   assert.equal(rooms[0].agent.online, true);
+  // The plant page's report (F-014), over MCP and HTTP: the same statistics, readings left out of the MCP one.
+  const viaMcp = await rpc('tools/call', { name: 'grover_plant_report', arguments: { plantId: 'nl5h-gen2' } }, 4);
+  const report = JSON.parse(viaMcp.result.content[0].text);
+  assert.equal(report.plantId, 'nl5h-gen2');
+  assert.equal(report.series, undefined);
+  const viaHttp = await api('GET', '/api/plants/nl5h-gen2/report?range=week');
+  assert.equal(viaHttp.status, 200);
+  assert.deepEqual(viaHttp.json.stats, report.stats);
+  assert.ok(Array.isArray(viaHttp.json.series.ec));
 });
 
 test('events queued while the hub is unreachable arrive once after reconnect', async () => {

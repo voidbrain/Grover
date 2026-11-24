@@ -100,7 +100,7 @@
             </div>
             @for (pl of p.plants; track pl.id) {
               <p class="plant">
-                <a routerLink="/setup/plants">{{ pl.name }}</a>
+                <a [routerLink]="['/plants', pl.id]">{{ pl.name }}</a>
                 @if (pl.strain) {
                   · {{ pl.strain }}
                 }

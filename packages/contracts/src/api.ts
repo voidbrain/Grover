@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Actuation, OperatingMode, Reading } from './domain.ts';
 import { AgentStatus } from './mqtt.ts';
+import type { PhaseSpan, PlantStats } from './plant-report.ts';
 
 /** HTTP API request bodies (hub). Shared by the client, MCP tools and NERV. */
 export const RunRequest = z
@@ -72,3 +73,31 @@ export type LiveEvent =
   | { type: 'fault'; agentId: string; subject: string; message: string; at: number }
   | { type: 'feed'; feed: FeedView }
   | { type: 'alert'; alert: Alert; cleared: boolean };
+
+/** The plant page's time range (F-014): today, the last 7 or 30 days, or all its time in the tent. */
+export const PlantReportRange = z.enum(['day', 'week', 'month', 'all']).default('all');
+export type PlantReportRange = z.infer<typeof PlantReportRange>;
+
+/** Everything the plant page shows (F-014), from `GET /api/plants/:id/report`. */
+export interface PlantReport {
+  plantId: string;
+  /** Its pot (kept after harvest as history), or null if it never went into one. */
+  potId: string | null;
+  /** The days shown (inclusive), clamped to its time in the tent. */
+  from: string;
+  to: string;
+  timeline: PhaseSpan[];
+  /** Its pot's readings over `from`–`to`, at most a few hundred points each. */
+  series: Record<'level' | 'ec' | 'ph' | 'waterTemp', { at: number; value: number }[]>;
+  /** Placed, bloom, flush and harvest days; feeds at their time. */
+  markers: (
+    | { kind: 'placed' | 'bloom' | 'flush' | 'harvest'; day: string }
+    | { kind: 'feed'; at: number; state: FeedView['state'] }
+  )[];
+  /** Over its whole time in the tent, whatever the range. */
+  stats: PlantStats;
+  /** Its feeds over its whole time in the tent, newest first. */
+  feeds: FeedView[];
+  /** Its pot's open alerts. */
+  alerts: Alert[];
+}

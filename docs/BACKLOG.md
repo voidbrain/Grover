@@ -316,6 +316,40 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ---
 
+### F-019
+
+**Install Grover as a web app on the phone**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Add the manifest, icons and a service worker; notifications stay with NERV (F-008).
+
+| | |
+|---|---|
+| **Issue** | The client is a plain web page: it cannot be added to the home screen as an app with its own icon and window. The owner asked on 2026-11-24 ("can be installed as webapp? notifications?"), and said notifications will be handled by NERV. |
+| **Reproduce** | Open the client over `tailscale serve` on a phone: the browser offers only a bookmark, no install. |
+| **Check** | A web app manifest (name, short name, icons from the favicon's design, theme colours from the STYLE-GUIDE tokens, `display: standalone`, start URL `/`) and a service worker that caches the app shell, so the installed app opens and shows the last snapshot (the client already caches it) while the hub is unreachable; API calls are never served from the cache. Installable from Chrome and Safari over the HTTPS `tailscale serve` address. No push notifications: alerts reach the owner through NERV (F-008). |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24. Install needs HTTPS, which `tailscale serve` gives.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-003
 
 **Hardware bring-up on the Raspberry Pi**
@@ -356,9 +390,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Build the plant page after F-004.
+🧑 **→ Human action required: Procedure**<br />Try it on the dev stack: [run it](../README.md#run-it), then open NL5xHaze gen 2 from pot 3 (start from a fresh `data/dev` so the demo plant has its placing date).
 
 | | |
 |---|---|
@@ -369,9 +403,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24 ("should also see stats, they were in the old"); scope taken from the legacy plant panel the same day.
+**Next action / closure evidence:** Requested 2026-11-24 ("should also see stats, they were in the old"); scope taken from the legacy plant panel the same day. Built 2026-11-24 on `feat/f014-plant-page`: `placedOn` on plants (migration 7, set by Place in pot, editable), `phaseTimeline`, `plantStats` and `downsample` in contracts, `GET /api/plants/<id>/report?range=day|week|month|all` and the MCP tool `grover_plant_report`, the page at `/plants/<id>` (linked from the pot card and the plants page) with header, statistics, nutrient bars, four charts with phase bands and event markers, and a log. Checks: 3 contract tests, 2 hub tests, an e2e case (HTTP and MCP agree), 2 client specs. Deviation from the check: the log shows the pot's open alerts only, because cleared alerts are not stored. Closes when CI passes and the owner has looked at a plant's page.
 
-**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|

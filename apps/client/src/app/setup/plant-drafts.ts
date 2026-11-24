@@ -70,6 +70,7 @@ export interface PlantDraft {
   potId: string;
   medium: '' | Medium;
   startedOn: string;
+  placedOn: string;
   trimmedOn: string;
   bloomOn: string;
   flushOn: string;
@@ -87,6 +88,7 @@ export const plantDraft = (p?: Plant): PlantDraft => ({
   potId: p?.potId ?? '',
   medium: p?.medium ?? '',
   startedOn: p?.startedOn ?? '',
+  placedOn: p?.placedOn ?? '',
   trimmedOn: p?.trimmedOn ?? '',
   bloomOn: p?.bloomOn ?? '',
   flushOn: p?.flushOn ?? '',
@@ -106,6 +108,7 @@ export const toPlant = (d: PlantDraft): Plant => ({
   potId: d.potId || null,
   medium: d.medium || null,
   startedOn: date(d.startedOn),
+  placedOn: date(d.placedOn),
   trimmedOn: date(d.trimmedOn),
   bloomOn: date(d.bloomOn),
   flushOn: date(d.flushOn),

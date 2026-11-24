@@ -7,6 +7,8 @@ import type {
   AgentView,
   Breeder,
   Plant,
+  PlantReport,
+  PlantReportRange,
   Strain,
   Calendar,
   CommandResult,
@@ -315,6 +317,9 @@ export class Hub {
   /** The driver's value before calibration (not stored), with the compensating temperature. */
   readRaw(probeId: string) {
     return firstValueFrom(this.http.post<{ raw: number; tempC: number | null }>(`/api/probes/${probeId}/read-raw`, {}));
+  }
+  plantReport(plantId: string, range: PlantReportRange) {
+    return firstValueFrom(this.http.get<PlantReport>(`/api/plants/${plantId}/report`, { params: { range } }));
   }
   readings(probeId: string, since: number) {
     return firstValueFrom(this.http.get<Reading[]>(`/api/probes/${probeId}/readings`, { params: { since } }));
