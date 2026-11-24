@@ -214,8 +214,10 @@ export class Store {
    * The probe that reads `kind` for a pot: the pot's own, else the tent's shared one (no pot, no tank).
    * Level probes never fall back: a tent-wide level would say nothing about one pot.
    */
-  potProbe(pot: Pot, kind: ProbeKind): Probe | null {
-    const all = this.listProbes(pot.roomId).filter((p) => p.kind === kind && p.enabled && p.tank === null);
+  potProbe(pot: Pot, kind: ProbeKind, opts: { includeDisabled?: boolean } = {}): Probe | null {
+    const all = this.listProbes(pot.roomId).filter(
+      (p) => p.kind === kind && (p.enabled || opts.includeDisabled) && p.tank === null,
+    );
     const own = all.find((p) => p.potId === pot.id);
     if (own || kind === 'water_level') return own ?? null;
     return all.find((p) => p.potId === null) ?? null;

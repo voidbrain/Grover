@@ -30,6 +30,8 @@ const report = (over: Partial<PlantReport> = {}): PlantReport => ({
   potId: 'pot-3',
   from: '2026-10-20',
   to: '2026-11-24',
+  fromMs: Date.parse('2026-10-19T22:00:00Z'),
+  toMs: Date.parse('2026-11-24T23:00:00Z'),
   timeline: [
     {
       index: 1,
@@ -40,10 +42,12 @@ const report = (over: Partial<PlantReport> = {}): PlantReport => ({
       ph: { min: 5.8, max: 6.2 },
       waterLevel: { min: 10, max: 30 },
       waterTemp: { min: 18, max: 22 },
+      fromMs: Date.parse('2026-10-19T22:00:00Z'),
+      toMs: Date.parse('2026-11-24T23:00:00Z'),
     },
   ],
   series: { level: [], ec: [{ at: Date.parse('2026-11-01T10:00:00'), value: 1.2 }], ph: [], waterTemp: [] },
-  markers: [{ kind: 'placed', day: '2026-10-20' }],
+  markers: [{ kind: 'placed', day: '2026-10-20', at: Date.parse('2026-10-19T22:00:00Z') }],
   stats: {
     daysInTent: 35,
     feeds: 4,

@@ -86,18 +86,22 @@ export interface PlantReport {
   /** The days shown (inclusive), clamped to its time in the tent. */
   from: string;
   to: string;
-  timeline: PhaseSpan[];
+  /** The same as instants in the grow's time zone: local midnight of `from`, and of the day after `to`. */
+  fromMs: number;
+  toMs: number;
+  /** Its phases, each with its local-midnight bounds (`toMs`: the end of its last day). */
+  timeline: (PhaseSpan & { fromMs: number; toMs: number })[];
   /** Its pot's readings over `from`–`to`, at most a few hundred points each. */
   series: Record<'level' | 'ec' | 'ph' | 'waterTemp', { at: number; value: number }[]>;
   /** Placed, bloom, flush and harvest days; feeds at their time. */
   markers: (
-    | { kind: 'placed' | 'bloom' | 'flush' | 'harvest'; day: string }
+    | { kind: 'placed' | 'bloom' | 'flush' | 'harvest'; day: string; at: number }
     | { kind: 'feed'; at: number; state: FeedView['state'] }
   )[];
   /** Over its whole time in the tent, whatever the range. */
   stats: PlantStats;
   /** Its feeds over its whole time in the tent, newest first. */
   feeds: FeedView[];
-  /** Its pot's open alerts. */
+  /** Its pot's open alerts while it grows there (none once harvested: they would be the next plant's). */
   alerts: Alert[];
 }

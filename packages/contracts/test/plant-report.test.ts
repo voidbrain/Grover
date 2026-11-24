@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { DEFAULT_CALENDAR, addDays, downsample, phaseTimeline, plantStats } from '../src/index.ts';
+import {
+  DEFAULT_CALENDAR,
+  Plant,
+  addDays,
+  downsample,
+  localMidnight,
+  phaseTimeline,
+  plantStats,
+} from '../src/index.ts';
 
 const dates = { startedOn: '2026-01-01', bloomOn: '2026-03-01', flushOn: null };
 
@@ -54,4 +62,35 @@ test('downsample keeps the shape: at most n points, averaged per bucket', () => 
   assert.equal(d.length, 100);
   assert.ok(d.every((r) => r.value === 0.5));
   assert.equal(downsample(rs.slice(0, 50), 100).length, 50, 'short series unchanged');
+});
+
+test('local midnight of a day in a time zone, across DST', () => {
+  assert.equal(new Date(localMidnight('2026-01-15', 'Europe/Rome')).toISOString(), '2026-01-14T23:00:00.000Z');
+  assert.equal(new Date(localMidnight('2026-07-15', 'Europe/Rome')).toISOString(), '2026-07-14T22:00:00.000Z');
+  assert.equal(
+    new Date(localMidnight('2026-03-29', 'Europe/Rome')).toISOString(),
+    '2026-03-28T23:00:00.000Z',
+    'DST starts at 02:00 that day',
+  );
+  assert.equal(new Date(localMidnight('2026-01-15', 'Pacific/Auckland')).toISOString(), '2026-01-14T11:00:00.000Z');
+  assert.equal(localMidnight('2026-01-15', 'UTC'), Date.parse('2026-01-15T00:00:00Z'));
+  assert.equal(
+    plantStats({
+      placedOn: '2026-01-02',
+      endDay: '2026-01-01',
+      timeline: [],
+      feeds: [],
+      ec: [],
+      ph: [],
+      yieldGrams: null,
+    }).daysInTent,
+    0,
+  );
+});
+
+test('a plant is placed in the tent on or after it started, and not after its harvest', () => {
+  const base = { id: 'p', name: 'P', startedOn: '2026-01-01' };
+  assert.equal(Plant.safeParse({ ...base, placedOn: '2025-12-31' }).success, false);
+  assert.equal(Plant.safeParse({ ...base, placedOn: '2026-01-10', harvestedOn: '2026-01-05' }).success, false);
+  assert.equal(Plant.safeParse({ ...base, placedOn: '2026-01-10', harvestedOn: '2026-03-01' }).success, true);
 });

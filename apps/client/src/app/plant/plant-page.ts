@@ -30,12 +30,14 @@ const MARKER_TITLES = {
   harvest: 'Harvested',
 };
 
-/** A local calendar day (YYYY-MM-DD) as the time of its local midnight. */
-const dayStart = (day: string) => Date.parse(`${day}T00:00:00`);
-const DAY_MS = 86_400_000;
+/** Whole days from one calendar date (YYYY-MM-DD) to another, whatever the browser's time zone. */
+const daysFrom = (a: string, b: string) =>
+  Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86_400_000);
 
 interface LogLine {
   at: number;
+  /** For whole-day events: the grow's date, shown as is (the hub's days, not the browser's). */
+  day?: string;
   what: string;
   detail: string;
 }
@@ -50,7 +52,10 @@ interface LogLine {
 export class PlantPage {
   private readonly hub = inject(Hub);
   readonly id = input.required<string>();
-  protected readonly ranges = RANGES;
+  /** A harvested plant's "today" is its last day in the tent. */
+  protected readonly ranges = computed(() =>
+    this.plant()?.harvestedOn ? RANGES.map((r) => (r.id === 'day' ? { ...r, label: 'Last day' } : r)) : RANGES,
+  );
   protected readonly range = signal<PlantReportRange>('all');
 
   private readonly snap = this.hub.snapshot;
@@ -89,12 +94,21 @@ export class PlantPage {
     return p ? [p.potId, p.placedOn, p.bloomOn, p.flushOn, p.harvestedOn, p.yieldGrams].join('|') : null;
   });
 
+  /** Its pot's feeds and their states: a new feed or one finishing reloads the report. */
+  private readonly feedsKey = computed(() => {
+    const potId = this.plant()?.potId;
+    return (this.snap()?.feeds ?? [])
+      .filter((f) => f.potId === potId)
+      .map((f) => `${f.feedId}:${f.state}`)
+      .join(',');
+  });
+
   protected readonly report = resource({
     params: () => ({
       id: this.id(),
       range: this.range(),
       // Reload when the pot gets news: a feed, or a plant change.
-      feeds: this.snap()?.feeds.length,
+      feeds: this.feedsKey(),
       plant: this.plantKey(),
     }),
     loader: ({ params }) => this.hub.plantReport(params.id, params.range),
@@ -104,12 +118,12 @@ export class PlantPage {
     const r = this.report.value();
     if (!r || this.plant()?.harvestedOn) return null;
     const span = r.timeline.at(-1);
-    return span ? { name: span.name, day: Math.round((dayStart(r.to) - dayStart(span.from)) / DAY_MS) + 1 } : null;
+    return span ? { name: span.name, day: daysFrom(span.from, r.to) + 1 } : null;
   });
 
   protected readonly window = computed(() => {
     const r = this.report.value();
-    return r ? { from: dayStart(r.from), to: dayStart(r.to) + DAY_MS } : null;
+    return r ? { from: r.fromMs, to: r.toMs } : null;
   });
 
   protected readonly charts = computed(() => {
@@ -117,11 +131,11 @@ export class PlantPage {
     if (!r) return [];
     const kinds = this.snap()?.probeKinds;
     const bands = (pick: (s: PlantReport['timeline'][number]) => { min: number; max: number }): ChartBand[] =>
-      r.timeline.map((s) => ({ from: dayStart(s.from), to: dayStart(s.to) + DAY_MS, ...pick(s) }));
+      r.timeline.map((s) => ({ from: s.fromMs, to: s.toMs, ...pick(s) }));
     const markers: ChartMarker[] = r.markers.map((m) =>
       m.kind === 'feed'
         ? { at: m.at, label: `Feed (${m.state})` }
-        : { at: dayStart(m.day), label: MARKER_TITLES[m.kind] },
+        : { at: m.at, label: `${MARKER_TITLES[m.kind]} ${m.day}` },
     );
     return [
       {
@@ -167,9 +181,9 @@ export class PlantPage {
         detail: [given, ec, ph, f.state === 'done' ? null : f.message].filter(Boolean).join(' · '),
       });
     }
-    for (const s of r.timeline) lines.push({ at: dayStart(s.from), what: `Phase: ${s.name}`, detail: '' });
+    for (const s of r.timeline) lines.push({ at: s.fromMs, day: s.from, what: `Phase: ${s.name}`, detail: '' });
     for (const m of r.markers)
-      if (m.kind !== 'feed') lines.push({ at: dayStart(m.day), what: MARKER_TITLES[m.kind], detail: '' });
+      if (m.kind !== 'feed') lines.push({ at: m.at, day: m.day, what: MARKER_TITLES[m.kind], detail: '' });
     return lines.sort((a, b) => b.at - a.at);
   });
 }

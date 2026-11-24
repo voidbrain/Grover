@@ -63,6 +63,14 @@ export const Plant = z
     yieldGrams: z.number().min(0).nullable().default(null),
     notes: z.string().default(''),
   })
+  .refine((p) => !p.placedOn || !p.startedOn || p.placedOn >= p.startedOn, {
+    message: 'it went into the tent before it started',
+    path: ['placedOn'],
+  })
+  .refine((p) => !p.placedOn || !p.harvestedOn || p.placedOn <= p.harvestedOn, {
+    message: 'it went into the tent after its harvest',
+    path: ['placedOn'],
+  })
   .refine((p) => p.motherId !== p.id, { message: 'a plant cannot be its own mother', path: ['motherId'] })
   .refine((p) => p.motherId === null || p.generation > 0, {
     message: 'a plant from seed (generation 0) has no mother plant',

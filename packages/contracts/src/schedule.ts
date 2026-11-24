@@ -11,10 +11,12 @@ export function formatHHMM(minuteOfDay: number): string {
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 }
 
-/** Local wall-clock parts of `at` in `timeZone`. */
-export function localTime(at: Date, timeZone: string): { day: string; minuteOfDay: number } {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat('en-CA', {
+/** One formatter per time zone: making one costs far more than using it (a report reads thousands of times). */
+const formatters = new Map<string, Intl.DateTimeFormat>();
+function formatter(timeZone: string): Intl.DateTimeFormat {
+  let f = formatters.get(timeZone);
+  if (!f) {
+    f = new Intl.DateTimeFormat('en-CA', {
       timeZone,
       year: 'numeric',
       month: '2-digit',
@@ -22,7 +24,16 @@ export function localTime(at: Date, timeZone: string): { day: string; minuteOfDa
       hour: '2-digit',
       minute: '2-digit',
       hourCycle: 'h23',
-    })
+    });
+    formatters.set(timeZone, f);
+  }
+  return f;
+}
+
+/** Local wall-clock parts of `at` in `timeZone`. */
+export function localTime(at: Date, timeZone: string): { day: string; minuteOfDay: number } {
+  const parts = Object.fromEntries(
+    formatter(timeZone)
       .formatToParts(at)
       .map((p) => [p.type, p.value]),
   );
@@ -30,6 +41,22 @@ export function localTime(at: Date, timeZone: string): { day: string; minuteOfDa
     day: `${parts['year']}-${parts['month']}-${parts['day']}`,
     minuteOfDay: Number(parts['hour']) * 60 + Number(parts['minute']),
   };
+}
+
+/**
+ * The instant local midnight starts `day` (YYYY-MM-DD) in `timeZone`, in ms. Found by correcting a guess with the
+ * zone's offset (twice, for a DST change near midnight); a zone that skips midnight gets the first minute after it.
+ */
+export function localMidnight(day: string, timeZone: string): number {
+  const target = Date.parse(`${day}T00:00:00Z`);
+  let t = target;
+  for (let i = 0; i < 3; i++) {
+    const l = localTime(new Date(t), timeZone);
+    const offsetMin = (Date.parse(`${l.day}T00:00:00Z`) - target) / 60_000 + l.minuteOfDay;
+    if (offsetMin === 0) return t;
+    t -= offsetMin * 60_000;
+  }
+  return t;
 }
 
 /** Is a window rule "on" at this minute? `to` is exclusive; a window that wraps midnight is supported. */

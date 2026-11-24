@@ -31,9 +31,9 @@
   }
   @if (report.value(); as r) {
     @if (r.alerts.length) {
-      <ul class="alerts">
+      <ul class="alerts" role="status">
         @for (a of r.alerts; track a.key) {
-          <li [class.bad]="a.level === 'bad'" role="status">{{ a.message }}</li>
+          <li [class.bad]="a.level === 'bad'">{{ a.message }}</li>
         }
       </ul>
     }
@@ -88,7 +88,7 @@
         <h2 id="charts-h" class="label">Its pot</h2>
         <fieldset class="segmented">
           <legend class="sr-only">Time range</legend>
-          @for (o of ranges; track o.id) {
+          @for (o of ranges(); track o.id) {
             <label [class.selected]="range() === o.id">
               <input
                 type="radio"
@@ -126,7 +126,7 @@
         <ol class="log">
           @for (l of log(); track $index) {
             <li>
-              <time>{{ l.at | date: 'yyyy-MM-dd HH:mm' }}</time>
+              <time>{{ l.day ?? (l.at | date: 'yyyy-MM-dd HH:mm') }}</time>
               <span>{{ l.what }}</span>
               @if (l.detail) {
                 <span class="muted">{{ l.detail }}</span>
