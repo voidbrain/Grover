@@ -41,7 +41,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -83,7 +83,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record) |
+| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -126,7 +126,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -174,7 +174,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-004-T01: [PR #21](https://github.com/voidbrain/Grover/pull/21) implementation. [#21](https://github.com/voidbrain/Grover/pull/21) |
+| PR / evidence | Steps: F-004-T01: [PR #21](https://github.com/voidbrain/Grover/pull/21) implementation. [#21](https://github.com/voidbrain/Grover/pull/21); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #21 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -222,7 +222,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-011-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16) |
+| PR / evidence | Steps: F-011-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #17 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -261,7 +261,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -308,7 +308,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18) |
+| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #18 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -359,7 +359,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16) |
+| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -407,7 +407,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-006-T01: [PR #16](https://github.com/voidbrain/Grover/pull/16) implementation. [#16](https://github.com/voidbrain/Grover/pull/16) (stacked on #15) |
+| PR / evidence | Steps: F-006-T01: [PR #16](https://github.com/voidbrain/Grover/pull/16) implementation. [#16](https://github.com/voidbrain/Grover/pull/16) (stacked on #15); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #16 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -455,7 +455,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-007-T01: [PR #20](https://github.com/voidbrain/Grover/pull/20) implementation. [#20](https://github.com/voidbrain/Grover/pull/20) |
+| PR / evidence | Steps: F-007-T01: [PR #20](https://github.com/voidbrain/Grover/pull/20) implementation. [#20](https://github.com/voidbrain/Grover/pull/20); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #20 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -503,7 +503,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-013-T01: [PR #19](https://github.com/voidbrain/Grover/pull/19) implementation. [#19](https://github.com/voidbrain/Grover/pull/19) |
+| PR / evidence | Steps: F-013-T01: [PR #19](https://github.com/voidbrain/Grover/pull/19) implementation. [#19](https://github.com/voidbrain/Grover/pull/19); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #19 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -551,7 +551,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-014-T01: [PR #25](https://github.com/voidbrain/Grover/pull/25) implementation. [#25](https://github.com/voidbrain/Grover/pull/25) |
+| PR / evidence | Steps: F-014-T01: [PR #25](https://github.com/voidbrain/Grover/pull/25) implementation. [#25](https://github.com/voidbrain/Grover/pull/25); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #25 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -599,7 +599,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-015-T01: [PR #26](https://github.com/voidbrain/Grover/pull/26) implementation. [#23](https://github.com/voidbrain/Grover/pull/23) (record), [#26](https://github.com/voidbrain/Grover/pull/26) |
+| PR / evidence | Steps: F-015-T01: [PR #26](https://github.com/voidbrain/Grover/pull/26) implementation. [#23](https://github.com/voidbrain/Grover/pull/23) (record), [#26](https://github.com/voidbrain/Grover/pull/26); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #26 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -647,7 +647,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-016-T01: [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation. [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#27](https://github.com/voidbrain/Grover/pull/27) |
+| PR / evidence | Steps: F-016-T01: [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation. [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#27](https://github.com/voidbrain/Grover/pull/27); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: CI green on #27 after merge; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
@@ -685,7 +685,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -725,7 +725,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -766,7 +766,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record) |
+| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -807,7 +807,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#25](https://github.com/voidbrain/Grover/pull/25) (record) |
+| PR / evidence | [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -848,7 +848,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
