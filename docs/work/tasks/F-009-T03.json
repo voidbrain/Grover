@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-009-T03",
+  "parent": "F-009",
+  "title": "Run the browser suite in CI",
+  "goal": "CI runs the browser tests on every PR",
+  "status": "planned",
+  "acceptance": [
+    "A CI job installs the browser and runs the suite",
+    "docs/agents/coverage-guide.md or the README names the command"
+  ],
+  "dependsOn": [
+    "F-009-T02"
+  ],
+  "resources": [
+    ".github/workflows/ci.yml",
+    "package.json",
+    "docs/work/records/F-009.md"
+  ],
+  "capabilities": [
+    "ci"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-24: 1 h agent including one CI round.",
+    "reviewed": "2026-11-24",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

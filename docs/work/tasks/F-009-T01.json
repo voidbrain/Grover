@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-009-T01",
+  "parent": "F-009",
+  "title": "Playwright against the dev stack: the dashboard renders the demo tent",
+  "goal": "A browser test starts the dev stack and sees the demo tent",
+  "status": "ready",
+  "acceptance": [
+    "`npm run e2e` starts `npm run dev` on a free port with a fresh data folder and checks the dashboard renders the demo tent",
+    "Runs locally headless"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "package.json",
+    "e2e/**",
+    "tools/dev.ts",
+    "docs/work/records/F-009.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "browser-testing"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h agent",
+    "basis": "Estimated 2026-11-24: 2 h agent including the browser install and a stable start/stop of the dev stack.",
+    "reviewed": "2026-11-24",
+    "agentHours": 2,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  }
+}

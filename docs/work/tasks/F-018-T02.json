@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "F-018-T02",
+  "parent": "F-018",
+  "title": "The l298n actuator binding",
+  "goal": "Pumps can be driven through an L298N on two MCP23017 pins",
+  "status": "closed",
+  "acceptance": [
+    "An `l298n` binding (address, IN1, IN2, optional EN, active level) for pumps only: on is IN1 high IN2 low, off both low",
+    "Both pins low at start, on stop, watchdog trip and shutdown (mock test)",
+    "The probe editor offers it; docs/DESIGN.md \"Hardware\" note"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "packages/contracts/src/domain.ts",
+    "apps/agent/src/drivers/hardware.ts",
+    "apps/agent/src/drivers/mock.ts",
+    "apps/agent/src/actuators.ts",
+    "apps/agent/test/**",
+    "apps/client/src/app/setup/**",
+    "docs/DESIGN.md",
+    "docs/work/records/F-018.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "hardware-drivers",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #29 on green CI 2026-11-24 (another session), before this plan merged. No actual: the step was not timed here.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  },
+  "prs": [
+    {
+      "pr": 29,
+      "note": "implementation"
+    }
+  ]
+}

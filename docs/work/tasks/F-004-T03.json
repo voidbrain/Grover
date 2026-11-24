@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-004-T03",
+  "parent": "F-004",
+  "title": "Record the calibration result; fix what it found",
+  "goal": "The record carries the device evidence and closes",
+  "status": "planned",
+  "acceptance": [
+    "Read-back values and date in the Verification row",
+    "Any defect gets a B- record with a failing test"
+  ],
+  "dependsOn": [
+    "F-004-T02"
+  ],
+  "resources": [
+    "docs/work/records/F-004.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "Estimated 2026-11-24: 0.25 h to record.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0.25,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25
+  }
+}

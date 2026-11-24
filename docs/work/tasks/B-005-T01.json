@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "B-005-T01",
+  "parent": "B-005",
+  "title": "Refuse a second run of a busy pump",
+  "goal": "A pump that is waiting or running cannot be queued again",
+  "status": "closed",
+  "acceptance": [
+    "actuators.test.ts \"a pump that is running or waiting cannot be queued again\" passes",
+    "CI green on #22"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/agent/src/actuators.ts",
+    "apps/agent/test/actuators.test.ts",
+    "docs/work/records/B-005.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Fixed in #22, merged on green CI 2026-11-24. No actual: the step was not timed. Closed 2026-11-24.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0
+  },
+  "prs": [
+    {
+      "pr": 22,
+      "note": "fix"
+    }
+  ]
+}

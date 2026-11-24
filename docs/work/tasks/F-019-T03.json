@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "F-019-T03",
+  "parent": "F-019",
+  "title": "Owner installs the app on the phone",
+  "goal": "The app installs from Chrome and Safari over the tailnet address",
+  "status": "planned",
+  "acceptance": [
+    "Installed from the HTTPS tailscale serve address on the phone; opens offline with the last snapshot"
+  ],
+  "dependsOn": [
+    "F-019-T02",
+    "F-005-T01"
+  ],
+  "resources": [
+    "docs/work/records/F-019.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-24: 15 minutes; its page is written with F-019-T02.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

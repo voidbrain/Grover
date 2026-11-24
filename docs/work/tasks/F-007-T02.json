@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "F-007-T02",
+  "parent": "F-007",
+  "title": "Owner tries Switch to bloom and the light line on the dev stack",
+  "goal": "The owner has tried Switch to bloom and the light line and said what felt wrong",
+  "status": "ready",
+  "acceptance": [
+    "The owner follows the page on the Mac and reports fine or what felt wrong"
+  ],
+  "dependsOn": [
+    "F-007-T01"
+  ],
+  "resources": [
+    "docs/acceptance/dev-stack.md",
+    "docs/work/records/F-007.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/acceptance/dev-stack.md#lights-and-switch-to-bloom",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-24: about 15 minutes of the owner's time on the dev stack, start included.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

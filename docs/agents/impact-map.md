@@ -12,6 +12,7 @@ What must follow a change, and what must run again after it (docs/agents/change-
 | backend | `apps/hub/**`, `apps/agent/**`, `tools/dev.ts` |  | Run the backend suite (includes the hub+agent end-to-end test over real MQTT); reconcile docs/DESIGN.md and the README run and deploy sections. | `npm test` | contracts | node --test suites in packages/, apps/hub/test and apps/agent/test |
 | client | `apps/client/**` |  | Build and test the client; the hub serves apps/client/dist/client/browser, so a deployed hub needs a fresh build. Reconcile docs/STYLE-GUIDE.md for UI changes. | `npm run build && npm run test:client` |  | Angular build and Vitest unit tests |
 | mcp-tools | `apps/hub/src/mcp.ts`, `apps/hub/src/commands.ts` |  | The MCP tool surface NERV uses changed: update the tool table in docs/DESIGN.md ("NERV") and tell NERV's pack owner. | `npm test` | backend | MCP listing and call test in apps/hub/test/e2e.test.ts |
+| work-items | `docs/work/**`, `docs/agents/model-profiles.json`, `tools/work-items.mjs`, `tools/task-claims.mjs` |  | Regenerate the source-owned ledger (npm run work:build), then the dependency and queue views; review task resources and owner pages. | `npm run work:build && npm run check:work` |  | check:work, check:backlog, check:dependencies and check:queue in CI |
 
 ## Content dependencies
 
