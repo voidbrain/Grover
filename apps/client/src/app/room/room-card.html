@@ -66,7 +66,12 @@
         @for (t of tankTiles(); track t.probe.id) {
           <li class="tank" [class.low]="t.low">
             <a [routerLink]="['/probes', t.probe.id]">
-              <span class="tank-name">{{ t.title }}</span>
+              <span class="tank-name">
+                @if (t.colour) {
+                  <span class="swatch" [style.background]="t.colour"></span>
+                }
+                {{ t.title }}</span
+              >
               <span class="tank-value">
                 @if (t.value !== undefined) {
                   {{ t.value | number: '1.0-1' }}<small>{{ t.unit }}</small>
@@ -254,7 +259,7 @@
       <ul class="list">
         @for (a of pumps(); track a.id) {
           <li>
-            <gr-pump-control [pump]="a" [allowed]="canAct()" />
+            <gr-pump-control [pump]="a" [allowed]="canAct()" [colour]="pumpColour(a)" />
           </li>
         } @empty {
           <li class="empty">None.</li>
@@ -269,7 +274,7 @@
     <a [routerLink]="['/probes', t.probe.id]" class="probe-link">
       <span class="probe-name"
         >{{ t.title }}
-        @if (t.shared) {
+        @if (t.shared && !t.title.toLowerCase().includes('shared')) {
           <span class="muted"> (shared)</span>
         }
       </span>

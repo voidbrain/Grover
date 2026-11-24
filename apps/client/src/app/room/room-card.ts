@@ -2,7 +2,16 @@ import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Actuator, FeedView, OperatingMode, Phase, Pot, Probe } from '@grover/contracts';
-import { TANK_ROLES, TANK_TITLES, generationLabel, geneticsLabel, isPump } from '@grover/contracts/kinds';
+import {
+  SUPPLY_TANKS,
+  TANK_PUMP,
+  TANK_ROLES,
+  TANK_TITLES,
+  generationLabel,
+  geneticsLabel,
+  isPump,
+  tankColour,
+} from '@grover/contracts/kinds';
 import { Clock } from '../clock';
 import { ago } from '../format';
 import { Hub, type FeedPreview, type Snapshot } from '../hub';
@@ -60,6 +69,7 @@ export class RoomCard {
         {
           ...t,
           title: TANK_TITLES[role],
+          colour: role === 'mix' ? null : tankColour(this.room(), role),
           low: p.alertBelow !== null && t.value !== undefined && t.value < p.alertBelow,
         },
       ];
@@ -137,6 +147,11 @@ export class RoomCard {
 
   protected readonly switches = computed(() => this.actuators().filter((a) => !isPump(a.kind)));
   protected readonly pumps = computed(() => this.actuators().filter((a) => isPump(a.kind)));
+  /** A supply pump's nutrient colour: the tank it draws from (F-017). */
+  protected pumpColour(a: Actuator): string | null {
+    const tank = SUPPLY_TANKS.find((t) => TANK_PUMP[t] === a.kind);
+    return tank ? tankColour(this.room(), tank) : null;
+  }
 
   protected readonly agentLabel = computed(() => {
     const a = this.agent();

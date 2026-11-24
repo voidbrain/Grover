@@ -1,3 +1,4 @@
+import { DEFAULT_TANK_COLOURS } from '@grover/contracts';
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import { mkdtempSync } from 'node:fs';
@@ -239,4 +240,30 @@ test('migration 5 clears calendar start dates it cannot read', () => {
   assert.equal(store.getRoom('a').calendarStart, '2026-11-01');
   assert.equal(store.getRoom('b').calendarStart, null);
   store.db.close();
+});
+
+test('nutrient colours are kept with the tent (F-017)', async () => {
+  const room = (await api('GET', '/api/snapshot')).json.rooms.find((r: { id: string }) => r.id === 'grow-1');
+  const { phase: _phase, ...stored } = room;
+  const res = await api('PUT', '/api/rooms/grow-1', { ...stored, tankColours: { grow: '#1a7f37', bloom: '#7b3fa0' } });
+  assert.equal(res.status, 200, JSON.stringify(res.json));
+  assert.deepEqual(hub.store.getRoom('grow-1').tankColours, { grow: '#1a7f37', bloom: '#7b3fa0' });
+  assert.equal((await api('PUT', '/api/rooms/grow-1', { ...stored, tankColours: { grow: 'red' } })).status, 400);
+});
+
+test('nutrient colours: a damaged stored value keeps the good keys; defaults and case are normalised (review of #28)', () => {
+  const store = new Store(openDb(':memory:'));
+  seedDemo(store, 'pi-1');
+  store.db.prepare('UPDATE rooms SET tank_colours = ? WHERE id = ?').run('not json', 'grow-1');
+  assert.deepEqual(store.getRoom('grow-1').tankColours, {}, 'unreadable: the defaults');
+  store.db
+    .prepare('UPDATE rooms SET tank_colours = ? WHERE id = ?')
+    .run(JSON.stringify({ grow: '#1a7f37', mix: '#000000', bloom: 'red' }), 'grow-1');
+  assert.deepEqual(store.getRoom('grow-1').tankColours, { grow: '#1a7f37' }, 'only the bad keys are dropped');
+  const saved = store.putRoom({
+    ...store.getRoom('grow-1'),
+    tankColours: { grow: '#1A7F37', water: DEFAULT_TANK_COLOURS.water },
+  });
+  assert.deepEqual(saved.tankColours, { grow: '#1a7f37' }, 'lower case; a default is not stored');
+  assert.deepEqual(store.getRoom('grow-1').tankColours, { grow: '#1a7f37' });
 });

@@ -1,5 +1,12 @@
 import type { Actuator, ActuatorKind, OperatingMode, Pot, Probe, ProbeKind, Room, Schedule } from '@grover/contracts';
-import { slugify, type TankRoleId } from '@grover/contracts/kinds';
+import {
+  DEFAULT_TANK_COLOURS,
+  SUPPLY_TANKS,
+  slugify,
+  tankColour,
+  type SupplyTankId,
+  type TankRoleId,
+} from '@grover/contracts/kinds';
 
 /**
  * Forms edit flat drafts (strings, numbers, booleans), because a form field cannot change shape when the user
@@ -50,6 +57,8 @@ export interface RoomDraft {
   lightStart: string;
   /** '' = the most advanced plant */
   lightPlantId: string;
+  /** Each supply tank's colour (F-017): always set here, the default when the tent has none. */
+  tankColours: Record<SupplyTankId, string>;
 }
 
 export const roomDraft = (r?: Room): RoomDraft => ({
@@ -68,6 +77,7 @@ export const roomDraft = (r?: Room): RoomDraft => ({
   lightFrom: r?.lightFrom ?? 'schedule',
   lightStart: r?.lightStart ?? '06:00',
   lightPlantId: r?.lightPlantId ?? '',
+  tankColours: Object.fromEntries(SUPPLY_TANKS.map((t) => [t, tankColour(r ?? {}, t)])) as Record<SupplyTankId, string>,
 });
 
 export const toRoom = (d: RoomDraft): Room => ({
@@ -86,6 +96,10 @@ export const toRoom = (d: RoomDraft): Room => ({
   lightFrom: d.lightFrom,
   lightStart: d.lightStart,
   lightPlantId: orNull(d.lightPlantId),
+  // Only colours that differ from the default are stored, so a better default reaches tents that never chose.
+  tankColours: Object.fromEntries(
+    SUPPLY_TANKS.filter((t) => d.tankColours[t] !== DEFAULT_TANK_COLOURS[t]).map((t) => [t, d.tankColours[t]]),
+  ),
 });
 
 // ── pot ────────────────────────────────────────────────────────────────────

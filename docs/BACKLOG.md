@@ -288,9 +288,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟢 Small |
+| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Build after F-014; the colours feed F-014's doses and F-015's map.
+🧑 **→ Human action required: Procedure**<br />Pick the colours of your nutrients: Setup → the tent → Nutrient colours.
 
 | | |
 |---|---|
@@ -301,13 +301,13 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24.
+**Next action / closure evidence:** Requested 2026-11-24. Built 2026-11-24 on `feat/f017-nutrient-colours` (stacked on F-016 for the migration order): `tankColours` on rooms (migration 9, validated on read; only colours that differ from the default are stored), `NUTRIENT_PALETTE`, `DEFAULT_TANK_COLOURS`, `tankColour` and `doseTank` in `kinds.ts`, a colour picker per supply tank with the palette as suggestions, swatches beside the tanks (dashboard, map) and supply pumps, coloured dose bars on the plant page. Deviations from the check: there are no per-tank chart series yet, so no chart uses the colours; no spec drives the setup form's pickers (drafts and map specs cover the values). Review of #28 (no blocker), failing tests committed first: a damaged stored value broke loading the tent or dropped every colour (now read key by key); the hub drops default colours and lowers the case whoever sends them; the "(shared)" label check ignores case. Checks: 2 contract tests, a hub test (stored with the tent, bad values refused), drafts and map specs. Closes when CI passes and the owner has chosen the colours.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record) |
+| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#28](https://github.com/voidbrain/Grover/pull/28) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

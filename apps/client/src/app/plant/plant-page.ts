@@ -2,7 +2,7 @@ import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Component, computed, inject, input, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { PlantReport, PlantReportRange } from '@grover/contracts';
-import { generationLabel, geneticsLabel, lineage } from '@grover/contracts/kinds';
+import { doseTank, generationLabel, geneticsLabel, lineage, tankColour } from '@grover/contracts/kinds';
 import { Hub } from '../hub';
 import { PlantChart, type ChartBand, type ChartMarker } from './plant-chart';
 
@@ -157,11 +157,21 @@ export class PlantPage {
     ];
   });
 
+  /** The tent of the plant's pot: its nutrient colours colour the dose bars (F-017). */
+  private readonly potRoom = computed(() => {
+    const potId = this.report.value()?.potId;
+    const roomId = this.snap()?.pots?.find((p) => p.id === potId)?.roomId;
+    return this.snap()?.rooms?.find((r) => r.id === roomId) ?? null;
+  });
+
   protected readonly doses = computed(() => {
     const ml = this.report.value()?.stats.nutrientMl ?? {};
     const rows = Object.entries(ml)
       .filter(([, v]) => v > 0)
-      .map(([tank, v]) => ({ tank: DOSE_TITLES[tank] ?? tank, ml: v }));
+      .map(([tank, v]) => {
+        const role = doseTank(tank);
+        return { tank: DOSE_TITLES[tank] ?? tank, ml: v, colour: role ? tankColour(this.potRoom() ?? {}, role) : null };
+      });
     const most = Math.max(1, ...rows.map((r) => r.ml));
     return rows.map((r) => ({ ...r, share: r.ml / most }));
   });
