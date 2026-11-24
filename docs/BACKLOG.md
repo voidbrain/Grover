@@ -694,7 +694,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-019-T01: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes · F-019-T02: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes. [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | Steps: F-019-T01: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes · F-019-T02: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes. [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-25: PR CI green on #31 and the main run after merge (1e892b4) green; the owner's install on the phone is pending. |
 | Reviewed | 2026-11-24 |
@@ -823,7 +823,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
