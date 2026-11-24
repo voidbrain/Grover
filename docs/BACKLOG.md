@@ -180,6 +180,40 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 
 
+### F-015
+
+**Rig map: the tent as a live diagram, with its controls**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+
+💻 **→ Human action required: No**<br />Build the map page after F-004 and F-014.
+
+| | |
+|---|---|
+| **Issue** | The dashboard lists probes and actuators as cards; nothing shows how the rig is plumbed and wired (supply tanks → their pumps → mixing tank → feed pumps → pots with their loops; lights, fan, air temperature) or where a fault or a running pump sits in it. Requested by the owner on 2026-11-24 ("a visual map would be nice, maybe as an alternative page, with all controls and situation"). |
+| **Reproduce** | `npm run dev`: there is no view of the rig as it is built. |
+| **Check** | An alternative page per tent (a link from the dashboard) draws the rig from its setup, not a fixed picture: the six supply tanks with level and low marks, their pumps, the mixing tank, each pot's feed pump, loop, level, EC, pH and plant (name, phase, day), and the tent's lights, fan and air temperature. Live: pumps and switches show on, waiting or off, a feed in progress shows its step, stale readings and alerts are marked on the part they concern. Controls on each part are the dashboard's (Run, Switch, Feed now, Read now, Stop all), go through the same API, and disable while running (B-005). Works at phone width and in both themes (STYLE-GUIDE tokens). A client spec covers drawing from a setup and one control. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24. The legacy logical map (tag `legacy-v1`, `Documentation/img/Logical map.png`: room → pots → sensors and actuators) is a starting point for the layout.
+
+**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#23](https://github.com/voidbrain/Grover/pull/23) (record) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-003
 
 **Hardware bring-up on the Raspberry Pi**
