@@ -81,9 +81,9 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟢 Small |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Decision**<br />Approve changing the agent's safety layer (`actuators.ts`): treat a failed switch-on like a failed switch-off.
+💻 **→ Human action required: No**<br />Approved by the owner on 2026-11-24; closes when CI passes.
 
 | | |
 |---|---|
@@ -94,7 +94,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Found 2026-11-24. Waiting for the owner's decision.
+**Next action / closure evidence:** Found 2026-11-24; the owner approved the change on 2026-11-24 ("ok"). Fixed on `fix/b007-failed-switch-on`: the failing actuators test is committed first; `Actuators.turnOn` now switches off again after a failed switch-on and, if that fails too, marks the actuator on and stuck. The other limits are unchanged (the existing actuators tests pass). The owner asked whether the Pi can tell a failure: it sees writes the expander does not acknowledge; reading the output register back and sensing the pump's current are not done.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 

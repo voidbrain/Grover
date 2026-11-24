@@ -70,6 +70,7 @@ Enforced on the agent ([`actuators.ts`](../apps/agent/src/actuators.ts)) whateve
 - Pumps only run bounded: a run is clamped to `maxRunMs`, which every pump must have (above 0; the schema and the agent both refuse a pump without one); a pump cannot be switched on.
 - One pump at a time (shared supply; a dose must not mix mid-measurement). Runs queue, but a pump that is already waiting or running cannot be queued again (B-005).
 - A watchdog on every tick forces off any pump past its cap, even if its timer was lost.
+- A switch-on that fails is switched off again at once; if that fails too, the actuator is treated like one that failed to switch off (reported on, stuck: no other pump runs, the watchdog retries off), since the failed write may have reached the relay (B-007).
 - Config change, `stop_all`, `off` mode, SIGINT/SIGTERM and uncaught errors turn everything off and drop every queued run, including one whose relay is still switching on: nothing starts after a stop. Drivers start with outputs off; MCP23017 pins stay inputs until claimed and are set to their off level (high for active-low relays) before they become outputs and again at shutdown; an L298N pump's IN1, IN2 and EN are all claimed low, and IN2 is never driven high.
 - A relay that fails to switch off stays reported on, the watchdog retries it on every tick, and no pump runs until it is off.
 - A feed that aborts stops the pumps only: lights, fans and recirculation keep their schedule. Scheduled pump runs wait while a feed runs. A window switch that fails is retried on the next tick.

@@ -25,7 +25,8 @@ interface Slot {
  * - pumps only run in bounded runs, never "on" indefinitely;
  * - a stop (Stop all, mode change, config change, shutdown) switches everything off AND drops every run still
  *   waiting, including one whose relay is still switching on: nothing starts after a stop;
- * - a relay that fails to switch off stays reported on until a retry succeeds.
+ * - a relay that fails to switch off stays reported on until a retry succeeds; so does one whose switch-on failed
+ *   and whose switch-off right after failed too (the failed write may have reached it).
  */
 export class Actuators {
   private readonly slots = new Map<string, Slot>();
@@ -180,7 +181,19 @@ export class Actuators {
   /** Switches on unless a stop happened meanwhile (then it makes sure the relay is off). True when on. */
   private async turnOn(slot: Slot, source: ActuationSource, commandId: string | null, epoch: number): Promise<boolean> {
     if (slot.on) return true;
-    await slot.driver.set(true);
+    try {
+      await slot.driver.set(true);
+    } catch (err) {
+      // The write may have reached the relay although it reported an error (B-007, approved by the owner on
+      // 2026-11-24): switch it off again; if that fails too, treat it like a failed switch-off (reported on, stuck:
+      // no other pump runs, the watchdog retries off).
+      await slot.driver.set(false).catch(() => {
+        slot.stuck = true;
+        slot.on = true;
+        slot.since = this.now();
+      });
+      throw err;
+    }
     if (epoch !== this.epoch || this.slots.get(slot.actuator.id) !== slot) {
       // A stop came in while the relay was switching on: it must not stay on.
       await slot.driver.set(false).catch(() => {
