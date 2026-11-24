@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { generationLabel, geneticsLabel } from '@grover/contracts/kinds';
+import { Clock } from '../clock';
 import { Hub } from '../hub';
 import { BreederEditor, PlantEditor, StrainEditor } from './plant-editors';
 
@@ -75,14 +76,14 @@ export class PlantsSetup {
     pot: new Map(this.pots().map((p) => [p.id, p.name])),
   }));
 
-  private readonly today = Date.now();
+  private readonly clock = inject(Clock);
   protected readonly plantRows = computed(() =>
     this.plants()
       .filter((p) => this.showHarvested() || p.harvestedOn === null)
       .map((p) => ({
         where: p.harvestedOn ? ('harvested' as const) : p.potId ? ('tent' as const) : ('elsewhere' as const),
         age: p.startedOn
-          ? Math.max(0, Math.floor((this.today - Date.parse(`${p.startedOn}T00:00:00Z`)) / 86_400_000))
+          ? Math.max(0, Math.floor((this.clock.now() - Date.parse(`${p.startedOn}T00:00:00Z`)) / 86_400_000))
           : null,
         plant: p,
         strain: p.strainId ? (this.names().strain.get(p.strainId) ?? p.strainId) : '—',
@@ -103,16 +104,25 @@ export class PlantsSetup {
 
   protected async cuttings(plantId: string, name: string): Promise<void> {
     const answer = prompt(`How many cuttings from ${name}?`, '4');
+    if (answer === null) return;
     const count = Number(answer);
-    if (answer === null || !Number.isInteger(count) || count < 1 || count > 20) return;
+    if (!Number.isInteger(count) || count < 1 || count > 20) {
+      this.hub.lastError.set('Cuttings: give a whole number from 1 to 20.');
+      return;
+    }
     await this.hub.takeCuttings(plantId, count);
   }
   protected async harvest(plantId: string, name: string): Promise<void> {
     if (confirm(`Record ${name} as harvested today? Its pot becomes free.`)) await this.hub.harvest(plantId);
   }
   protected async place(plantId: string): Promise<void> {
-    const potId = this.placeChoice()[plantId] ?? this.freePots()[0]?.id;
+    const wanted = this.placeChoice()[plantId];
+    const potId = this.freePots().some((p) => p.id === wanted) ? wanted : this.freePots()[0]?.id;
     if (potId) await this.hub.place(potId, plantId);
+    this.placeChoice.update((m) => {
+      const { [plantId]: _drop, ...rest } = m;
+      return rest;
+    });
   }
   protected choosePot(plantId: string, potId: string): void {
     this.placeChoice.update((m) => ({ ...m, [plantId]: potId }));

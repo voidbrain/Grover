@@ -129,9 +129,12 @@ export function phaseForDay(
   return null;
 }
 
-/** Whole days from `from` (YYYY-MM-DD) to `now` (epoch ms); negative before it. */
-export function daysSince(from: string, now: number): number {
-  return Math.floor((now - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+/**
+ * Whole days between two calendar dates (YYYY-MM-DD), negative when `to` is before `from`. Callers pass today's
+ * date in the grow's time zone (`localTime`), so a day starts at local midnight and DST changes do not matter.
+ */
+export function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 }
 
 export interface PlantDates {
@@ -151,10 +154,10 @@ export interface PlantDates {
 export function phaseForPlant(
   calendar: Calendar,
   dates: PlantDates,
-  now: number,
+  today: string,
 ): { phase: Phase; index: number; dayInPhase: number; day: number } | null {
   if (!dates.startedOn) return null;
-  const day = daysSince(dates.startedOn, now);
+  const day = daysBetween(dates.startedOn, today);
   if (day < 0) return null;
   const indexed = calendar.phases.map((phase, index) => ({ phase, index }));
   const walk = (group: typeof indexed, elapsed: number) => {
@@ -170,10 +173,11 @@ export function phaseForPlant(
   const veg = indexed.filter((g) => !g.phase.blooming && !g.phase.flushing);
   const bloom = indexed.filter((g) => g.phase.blooming && !g.phase.flushing);
   const flush = indexed.filter((g) => g.phase.flushing);
-  if (dates.flushOn && daysSince(dates.flushOn, now) >= 0)
-    return walk(flush, daysSince(dates.flushOn, now)) ?? walk(bloom, 0);
-  if (dates.bloomOn && daysSince(dates.bloomOn, now) >= 0)
-    return walk([...bloom, ...flush], daysSince(dates.bloomOn, now));
+  if (dates.flushOn && daysBetween(dates.flushOn, today) >= 0)
+    // No flush phase in this calendar: hold in the last flowering phase, never back to the first.
+    return walk(flush, daysBetween(dates.flushOn, today)) ?? walk(bloom, Number.MAX_SAFE_INTEGER);
+  if (dates.bloomOn && daysBetween(dates.bloomOn, today) >= 0)
+    return walk([...bloom, ...flush], daysBetween(dates.bloomOn, today));
   return walk(veg, day) ?? walk(indexed, day);
 }
 

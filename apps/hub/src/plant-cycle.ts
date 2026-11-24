@@ -1,4 +1,4 @@
-import { GENERATION_WARNING, type Plant } from '@grover/contracts';
+import { GENERATION_WARNING, localTime, type Plant } from '@grover/contracts';
 import { slugify } from '@grover/contracts/kinds';
 import { BadReference, NotFound, type Store } from './store.ts';
 
@@ -9,9 +9,10 @@ import { BadReference, NotFound, type Store } from './store.ts';
 export class PlantCycle {
   private readonly store: Store;
   private readonly today: () => string;
-  constructor(store: Store, today: () => string = () => new Date().toISOString().slice(0, 10)) {
+  /** `timeZone`: the grow's, so "today" changes at local midnight. */
+  constructor(store: Store, timeZone: string, now: () => number = Date.now) {
     this.store = store;
-    this.today = today;
+    this.today = () => localTime(new Date(now()), timeZone).day;
   }
 
   private plant(id: string): Plant {
@@ -26,13 +27,20 @@ export class PlantCycle {
     const generation = mother.generation + 1;
     const strain = this.store.listStrains().find((s) => s.id === mother.strainId);
     const base = strain?.name ?? mother.name.replace(/\s+g\d+.*$/i, '');
-    const taken = new Set(this.store.listPlants().map((p) => p.id));
+    const all = this.store.listPlants();
+    const taken = new Set(all.map((p) => p.id));
+    // Number cuttings on from the highest already taken from this mother, so names and ids stay in step across
+    // calls. The id keeps room for its suffix (slugify cuts at 48 characters; a long strain name must not eat it).
+    const numbers = all.filter((p) => p.motherId === mother.id).map((p) => Number(/#(\d+)$/.exec(p.name)?.[1] ?? 0));
+    let n = Math.max(0, ...numbers);
+    const stem = slugify(base).slice(0, 36).replace(/-+$/, '');
     const plants: Plant[] = [];
     return this.store.tx(() => {
       for (let k = 1; k <= count; k++) {
-        let n = k;
-        let id = slugify(`${base} g${generation} ${n}`);
-        while (taken.has(id)) id = slugify(`${base} g${generation} ${++n + count}`);
+        let id: string;
+        do id = `${stem}-g${generation}-${++n}`;
+        while (taken.has(id) && n < 10_000);
+        if (taken.has(id)) throw new BadReference(`no free id for a cutting of ${mother.name}`);
         taken.add(id);
         plants.push(
           this.store.putPlant({
@@ -61,6 +69,8 @@ export class PlantCycle {
   harvest(plantId: string, date?: string, yieldGrams?: number | null): Plant {
     const p = this.plant(plantId);
     if (p.harvestedOn) throw new BadReference(`${p.name} was already harvested on ${p.harvestedOn}`);
+    if (date && date > this.today())
+      throw new BadReference(`${date} is in the future: record a harvest when it happens`);
     return this.store.putPlant({ ...p, harvestedOn: date ?? this.today(), yieldGrams: yieldGrams ?? p.yieldGrams });
   }
 

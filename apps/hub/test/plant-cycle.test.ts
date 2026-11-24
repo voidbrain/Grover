@@ -103,3 +103,28 @@ test('each pot is fed for its own plant: staggered pots, different phases', asyn
   assert.equal(preview.ok, true, JSON.stringify(preview));
   assert.ok(preview.ml.bloom > preview.ml.micro && preview.ml.micro > preview.ml.grow, JSON.stringify(preview.ml));
 });
+
+test('cuttings of a strain with a long name: distinct ids and names, and it returns (no endless loop)', async () => {
+  hub.store.putStrain({ id: 'long-one', name: 'Northern Lights number five crossed with Original Haze' });
+  hub.store.putPlant({ id: 'long-mother', name: 'Long mother', strainId: 'long-one', generation: 2 });
+  const first = await api('POST', '/api/plants/long-mother/cuttings', { count: 1 });
+  const more = await api('POST', '/api/plants/long-mother/cuttings', { count: 2 });
+  assert.equal(first.status, 200);
+  assert.equal(more.status, 200);
+  const cuts = hub.store.listPlants().filter((p) => p.motherId === 'long-mother');
+  assert.equal(new Set(cuts.map((p) => p.id)).size, 3, 'distinct ids');
+  assert.deepEqual(
+    cuts.map((p) => p.name.match(/#(\d+)$/)![1]).sort(),
+    ['1', '2', '3'],
+    'numbered 1, 2, 3 across calls',
+  );
+  for (const p of cuts)
+    assert.ok(p.id.endsWith(`-${p.name.match(/#(\d+)$/)![1]}`), `id ${p.id} matches name ${p.name}`);
+});
+
+test('a harvest date in the future is refused', async () => {
+  hub.store.putPlant({ id: 'future', name: 'Future', generation: 0, potId: 'pot-2' });
+  const res = await api('POST', '/api/plants/future/harvest', { date: '2999-01-01' });
+  assert.equal(res.status, 400);
+  assert.match(res.json.error, /future/);
+});

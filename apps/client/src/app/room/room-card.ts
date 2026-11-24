@@ -127,7 +127,13 @@ export class RoomCard {
           pot,
           plants,
           phaseLabel: potPhase
-            ? `${potPhase.phase.name} · day ${potPhase.day}${potPhase.source === 'tent' ? ' (tent calendar)' : ''}`
+            ? `${potPhase.phase.name} · day ${potPhase.day}${
+                potPhase.source === 'plant'
+                  ? ''
+                  : potPhase.plantId
+                    ? ' (tent calendar: its plant has no start date yet)'
+                    : ' (tent calendar)'
+              }`
             : null,
           tiles,
           lastFeed: feeds.find((f) => f.potId === pot.id) ?? null,
@@ -183,8 +189,12 @@ export class RoomCard {
 
   protected async cuttings(plantId: string, name: string): Promise<void> {
     const answer = prompt(`How many cuttings from ${name}?`, '4');
+    if (answer === null) return;
     const count = Number(answer);
-    if (answer === null || !Number.isInteger(count) || count < 1 || count > 20) return;
+    if (!Number.isInteger(count) || count < 1 || count > 20) {
+      this.hub.lastError.set('Cuttings: give a whole number from 1 to 20.');
+      return;
+    }
     await this.hub.takeCuttings(plantId, count);
   }
 
@@ -193,8 +203,14 @@ export class RoomCard {
   }
 
   protected async place(pot: Pot): Promise<void> {
-    const plantId = this.placeChoice()[pot.id] ?? this.nursery()[0]?.id;
+    // A remembered choice may be stale (the plant was placed elsewhere): fall back to the first one available.
+    const wanted = this.placeChoice()[pot.id];
+    const plantId = this.nursery().some((p) => p.id === wanted) ? wanted : this.nursery()[0]?.id;
     if (plantId) await this.hub.place(pot.id, plantId);
+    this.placeChoice.update((m) => {
+      const { [pot.id]: _drop, ...rest } = m;
+      return rest;
+    });
   }
 
   protected choose(potId: string, plantId: string): void {

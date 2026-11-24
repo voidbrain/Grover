@@ -4,6 +4,8 @@ import {
   fitModel,
   phaseForDay,
   phaseForPlant,
+  daysBetween,
+  localTime,
   planFeed,
   type ActuatorKind,
   type AgentView,
@@ -25,7 +27,6 @@ import { Refused } from './commands.ts';
 import type { Bus } from './events.ts';
 import type { Store } from './store.ts';
 
-const DAY = 86_400_000;
 const NUTRIENTS = ['grow', 'micro', 'bloom', 'ripen'] as const;
 
 export interface FeederOptions {
@@ -33,6 +34,8 @@ export interface FeederOptions {
   mixMs: number;
   /** A reading older than this is not used to plan a feed. */
   freshMs: number;
+  /** The grow's time zone: plant and calendar days start at local midnight. Defaults to the host's. */
+  timezone?: string;
   now?: () => number;
 }
 
@@ -111,11 +114,16 @@ export class Feeder {
     this.off();
   }
 
+  /** Today's calendar date in the grow's time zone. */
+  private today(): string {
+    return localTime(new Date(this.now()), this.opts.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone).day;
+  }
+
   phase(room: Room): { phase: Phase; day: number } | null {
     if (!room.calendarId || !room.calendarStart) return null;
     const calendar = this.store.getCalendar(room.calendarId);
     if (!calendar) return null;
-    const day = Math.floor((this.now() - Date.parse(room.calendarStart)) / DAY);
+    const day = daysBetween(room.calendarStart.slice(0, 10), this.today());
     const found = phaseForDay(calendar, day);
     return found ? { phase: found.phase, day } : null;
   }
@@ -129,7 +137,7 @@ export class Feeder {
     const plant = this.store.plantInPot(pot.id);
     const calendar = room.calendarId ? this.store.getCalendar(room.calendarId) : null;
     if (plant && calendar) {
-      const found = phaseForPlant(calendar, plant, this.now());
+      const found = phaseForPlant(calendar, plant, this.today());
       if (found) return { phase: found.phase, day: found.day, source: 'plant', plantId: plant.id };
     }
     const tent = this.phase(room);

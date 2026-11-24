@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   DEFAULT_CALENDAR,
+  daysBetween,
   Plant,
   Strain,
   ancestry,
@@ -76,7 +77,8 @@ test('lineage: the line of mothers, newest first, safe against loops', () => {
 });
 
 test('phase per plant: veg from its start (holding until bloom), bloom from its bloom date, then flush', () => {
-  const at = (iso: string) => Date.parse(`${iso}T12:00:00Z`);
+  // phaseForPlant takes today's calendar date in the grow's time zone.
+  const at = (iso: string) => iso;
   const p = (startedOn: string, bloomOn: string | null = null, flushOn: string | null = null) => ({
     startedOn,
     bloomOn,
@@ -106,4 +108,21 @@ test('phase per plant: veg from its start (holding until bloom), bloom from its 
     null,
   );
   assert.equal(phaseForPlant(DEFAULT_CALENDAR, p('2026-12-01'), at('2026-11-05')), null, 'not started yet');
+});
+
+test('flushing on a calendar without a flush phase holds in the last flowering phase', () => {
+  const noFlush = { ...DEFAULT_CALENDAR, phases: DEFAULT_CALENDAR.phases.filter((ph) => !ph.flushing) };
+  const r = phaseForPlant(
+    noFlush,
+    { startedOn: '2026-01-01', bloomOn: '2026-02-01', flushOn: '2026-03-01' },
+    '2026-03-05',
+  );
+  assert.equal(r?.phase.name, 'Ripen');
+});
+
+test("days are counted on calendar dates in the grow's time zone", () => {
+  assert.equal(daysBetween('2026-11-24', '2026-11-24'), 0);
+  assert.equal(daysBetween('2026-11-24', '2026-11-25'), 1);
+  assert.equal(daysBetween('2026-03-28', '2026-03-30'), 2, 'across a DST change');
+  assert.equal(daysBetween('2026-11-25', '2026-11-24'), -1);
 });
