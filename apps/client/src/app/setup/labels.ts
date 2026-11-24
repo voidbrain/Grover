@@ -39,6 +39,7 @@ export const ACTUATOR_DRIVERS = [
   { id: 'mock', label: 'Simulated' },
   { id: 'gpio', label: 'GPIO pin' },
   { id: 'mcp23017', label: 'MCP23017 expander pin' },
+  { id: 'l298n', label: 'L298N motor driver (pumps)' },
 ] as const;
 
 export const tankRoles = TANK_ROLES.map((id) => ({ id, label: TANK_TITLES[id].replace(' tank', '') }));

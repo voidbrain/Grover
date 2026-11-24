@@ -223,6 +223,9 @@ export interface ActuatorDraft {
   i2cBus: number;
   i2cAddress: string;
   activeLow: boolean;
+  /** L298N (F-018): IN1 is `pin`; IN2, and EN ('' when jumpered on the board). */
+  in2: number;
+  enable: string;
   /** Pumps: hard cap per run, in seconds. */
   maxRunSeconds: number;
   /** Pumps: calibrated flow; 0 = not calibrated. */
@@ -238,10 +241,12 @@ export function actuatorDraft(a?: Actuator): ActuatorDraft {
     potId: a?.potId ?? '',
     enabled: a?.enabled ?? true,
     driver: b?.driver ?? 'mock',
-    pin: b?.driver === 'gpio' || b?.driver === 'mcp23017' ? b.pin : 0,
-    i2cBus: b?.driver === 'mcp23017' ? b.i2cBus : 1,
-    i2cAddress: b?.driver === 'mcp23017' ? formatI2cAddress(b.i2cAddress) : '0x20',
+    pin: b?.driver === 'gpio' || b?.driver === 'mcp23017' ? b.pin : b?.driver === 'l298n' ? b.in1 : 0,
+    i2cBus: b?.driver === 'mcp23017' || b?.driver === 'l298n' ? b.i2cBus : 1,
+    i2cAddress: b?.driver === 'mcp23017' || b?.driver === 'l298n' ? formatI2cAddress(b.i2cAddress) : '0x20',
     activeLow: b?.driver === 'gpio' || b?.driver === 'mcp23017' ? b.activeLow : false,
+    in2: b?.driver === 'l298n' ? b.in2 : 1,
+    enable: b?.driver === 'l298n' && b.enable !== null ? String(b.enable) : '',
     maxRunSeconds: a ? a.maxRunMs / 1000 : 30,
     mlPerSecond: a?.mlPerSecond ?? 0,
   };
@@ -259,7 +264,16 @@ export function toActuator(d: ActuatorDraft, roomId: string, pump: boolean): Act
             pin: d.pin,
             activeLow: d.activeLow,
           }
-        : { driver: 'mock' };
+        : d.driver === 'l298n'
+          ? {
+              driver: 'l298n',
+              i2cBus: d.i2cBus,
+              i2cAddress: parseI2cAddress(d.i2cAddress),
+              in1: d.pin,
+              in2: d.in2,
+              enable: d.enable.trim() === '' ? null : Number(d.enable),
+            }
+          : { driver: 'mock' };
   return {
     id: d.id,
     roomId,
@@ -380,6 +394,8 @@ export function actuatorWiring(b: Actuator['binding']): string {
       return `GPIO ${b.pin}${b.activeLow ? ' (active low)' : ''}`;
     case 'mcp23017':
       return `MCP23017 ${formatI2cAddress(b.i2cAddress)} pin ${b.pin}${b.activeLow ? ' (active low)' : ''}`;
+    case 'l298n':
+      return `L298N on MCP23017 ${formatI2cAddress(b.i2cAddress)}: IN1 ${b.in1}, IN2 ${b.in2}${b.enable === null ? '' : `, EN ${b.enable}`}`;
     case 'mock':
       return 'Simulated';
   }

@@ -3,6 +3,7 @@ import type { DatabaseSync, SQLInputValue } from 'node:sqlite';
 import {
   Actuation,
   Actuator,
+  actuatorPins,
   AgentStatus,
   CALIBRATION_PROTOCOL,
   DEFAULT_TANK_COLOURS,
@@ -378,6 +379,12 @@ export class Store {
   }
   putActuator(input: unknown): Actuator {
     const a = Actuator.parse(input);
+    // One pin, one actuator: the agent refuses a config where two share one (a relay on a bridge's IN2).
+    const mine = new Set(actuatorPins(a.binding));
+    for (const other of this.listActuators(a.roomId))
+      if (other.id !== a.id)
+        for (const pin of actuatorPins(other.binding))
+          if (mine.has(pin)) throw new BadReference(`${pin} is already used by ${other.name} (${other.id})`);
     this.db
       .prepare(
         `INSERT INTO actuators (id, room_id, pot_id, kind, name, enabled, binding, max_run_ms, ml_per_second) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

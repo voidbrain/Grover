@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 24 November 2026 against main `c5e0bf3`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `8e5da72`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 22.5 h agent + 12.75 h owner across 45 open steps of 17 features and 2 other records. Generated from the task files.
+**Remaining effort:** 21.5 h agent + 13 h owner across 46 open steps of 17 features and 3 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -51,55 +51,13 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="f-018"></a>[✨ F-018](#top)
-
-**Pumps through an L298N driver (two pins on the MCP23017)**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 2.25 h agent + 1.5 h owner | [F-005-T01](#f-005-t01) | [F-003-T04](#f-003-t04) | 🤖 | 🧑‍🔧 | — |
-
-💻 **→** Next: F-018-T02 — The l298n actuator binding (Ready).
-
-| | |
-|---|---|
-| **Issue** | The old rig drove each pump through an L298N motor driver: two MCP23017 pins per pump (`pin1`, `pin2` in tag `legacy-v1`). The new `mcp23017` binding drives one pin, which suits a relay but leaves the second L298N input unmanaged. The owner said "L298N probably" on 2026-11-24; the old I²C addresses will be remapped by hand, so no import of them. |
-| **Reproduce** | Bind a pump with `mcp23017`: only one pin is set; nothing holds the other input of the bridge. |
-| **Check** | An `l298n` actuator binding (MCP23017 address, the two input pins, optional enable pin, active level) for pumps only: on is IN1 high and IN2 low, off is both low, and the agent claims both pins low at start and on stop and shutdown; the probe editor offers it; a mock test shows both pins off after stop, a watchdog trip and shutdown; hardware notes in docs/DESIGN.md. Device check: each pump runs forward and stops, recorded here. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-018-t01"></a>F-018-T01 — Owner writes down the pump wiring (L298N inputs on MCP23017 pins) | 0 h | 0 h | 0 h agent + 0.5 h owner | Ready | — | [F-018-T03](#f-018-t03) | [🧑‍🔧](acceptance/pump-wiring.md) |
-| 🟡 Medium | <a id="f-018-t02"></a>F-018-T02 — The l298n actuator binding | 2 h | 0 h | 2 h | Ready | — | [F-003-T04](#f-003-t04), [F-018-T03](#f-018-t03) | 🤖 |
-| 🟢 Small | <a id="f-018-t03"></a>F-018-T03 — Owner runs each pump forward and stops it on the Pi | 0 h | 0 h | 0 h agent + 1 h owner | Planned | [F-018-T01](#f-018-t01), [F-018-T02](#f-018-t02), [F-005-T01](#f-005-t01) | [F-018-T04](#f-018-t04) | ⏳ 🧑‍🔧 |
-| 🟢 Small | <a id="f-018-t04"></a>F-018-T04 — Record the pump device check; fix what it found | 0.25 h | 0 h | 0.25 h | Planned | [F-018-T03](#f-018-t03) | — | ⏳ 🤖 |
-| 🟡 Medium | **Total** | 2.25 h | 0 h (0 of 4 steps recorded) | 2.25 h agent + 1.5 h owner | 0 of 4 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-018.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
 ### <a id="f-003"></a>[✨ F-003](#top)
 
 **Hardware bring-up on the Raspberry Pi**
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔺 P1 | 🟡 Medium | 2.5 h agent + 4.5 h owner | [F-005-T01](#f-005-t01), [F-018-T02](#f-018-t02) | [F-004-T02](#f-004-t02) | ⏳ | — | 🤔 |
+| 🔴 Open | 🔺 P1 | 🟡 Medium | 2.5 h agent + 4.5 h owner | [F-005-T01](#f-005-t01) | [F-004-T02](#f-004-t02) | ⏳ | — | 🤔 |
 
 🧑 **→** Next: [🤔](decisions/level-sensor.md) F-003-T01 — Owner chooses the water-level sensor (Ready).
 
@@ -116,7 +74,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | 🟢 Small | <a id="f-003-t01"></a>F-003-T01 — Owner chooses the water-level sensor | 0 h | 0 h | 0 h agent + 0.5 h owner | Ready | — | [F-003-T03](#f-003-t03) | [🤔](decisions/level-sensor.md) |
 | 🟢 Small | <a id="f-003-t02"></a>F-003-T02 — Owner runs bring-up steps 1–4 on the Pi (buses, bindings, reads, switches) | 0 h | 0 h | 0 h agent + 2 h owner | Planned | [F-005-T01](#f-005-t01) | [F-003-T04](#f-003-t04), [F-004-T02](#f-004-t02) | ⏳ 🧑‍🔧 |
 | 🟡 Medium | <a id="f-003-t03"></a>F-003-T03 — Driver for the chosen level sensor | 2 h | 0 h | 2 h | Planned | [F-003-T01](#f-003-t01) | [F-003-T04](#f-003-t04) | ⏳ 🤖 |
-| 🟢 Small | <a id="f-003-t04"></a>F-003-T04 — Owner runs bring-up steps 5–6 on the Pi (pump calibration, levels, a first feed, safety) | 0 h | 0 h | 0 h agent + 2 h owner | Planned | [F-003-T02](#f-003-t02), [F-003-T03](#f-003-t03), [F-018-T02](#f-018-t02) | [F-003-T05](#f-003-t05) | ⏳ 🧑‍🔧 |
+| 🟢 Small | <a id="f-003-t04"></a>F-003-T04 — Owner runs bring-up steps 5–6 on the Pi (pump calibration, levels, a first feed, safety) | 0 h | 0 h | 0 h agent + 2 h owner | Planned | [F-003-T02](#f-003-t02), [F-003-T03](#f-003-t03) | [F-003-T05](#f-003-t05) | ⏳ 🧑‍🔧 |
 | 🟢 Small | <a id="f-003-t05"></a>F-003-T05 — Record the bring-up results; open B- records for driver faults | 0.5 h | 0 h | 0.5 h | Planned | [F-003-T04](#f-003-t04) | — | ⏳ 🤖 |
 | 🟡 Medium | **Total** | 2.5 h | 0 h (0 of 5 steps recorded) | 2.5 h agent + 4.5 h owner | 0 of 5 completed | | | |
 
@@ -369,6 +327,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="b-007"></a>[🐞 B-007](#top)
+
+**A pump whose switch-on fails is not treated as possibly running**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟢 Small | 1 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
+
+🧑 **→** Next: [🤔](work/records/B-007.md) B-007-T01 — Owner decides on changing the safety layer for a failed switch-on (Ready).
+
+| | |
+|---|---|
+| **Issue** | When a driver's `set(true)` throws, `Actuators` settles the run as not started: the pump is neither on nor stuck, and the watchdog never retries switching it off. If the write reached the chip although it reported an error, and the driver's own roll-back also failed (a dead I²C bus), the pump could keep running with no cap. Found in the second review of #29 (F-018) on 2026-11-24. Changing `actuators.ts` needs the owner's approval (AGENTS.md safety rules). |
+| **Reproduce** | A driver whose `set(true)` writes the pin, then throws, and whose `set(false)` also throws: after `run()`, `isOn` is false and `stuckPump()` is null. |
+| **Check** | With approval: a failed switch-on tries `set(false)`; if that fails too, the pump is marked stuck (no other pump runs, the watchdog retries off). An actuators test shows it, and the existing limits still hold. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="b-007-t01"></a>B-007-T01 — Owner decides on changing the safety layer for a failed switch-on | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [B-007-T02](#b-007-t02) | [🤔](work/records/B-007.md) |
+| 🟢 Small | <a id="b-007-t02"></a>B-007-T02 — Failing test, then a failed switch-on is treated as possibly running | 1 h | 0 h | 1 h | Planned | [B-007-T01](#b-007-t01) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 1 h (1 of 2 steps) | 0 h (0 of 2 steps recorded) | 1 h agent + 0.25 h owner | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-007.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) (steps) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ### <a id="f-006"></a>[✨ F-006](#top)
 
 **Set-up screens in the client**
@@ -656,6 +653,54 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="f-018"></a>[✨ F-018](#top)
+
+**Pumps through an L298N driver (two pins on the MCP23017)**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 1.5 h owner | [F-005-T01](#f-005-t01) | — | ⏳ | 🧑‍🔧 | — |
+
+🧑 **→** Next: [🧑‍🔧](acceptance/pump-wiring.md) F-018-T01 — Owner writes down the pump wiring (L298N inputs on MCP23017 pins) (Ready).
+
+| | |
+|---|---|
+| **Issue** | The old rig drove each pump through an L298N motor driver: two MCP23017 pins per pump (`pin1`, `pin2` in tag `legacy-v1`). The new `mcp23017` binding drives one pin, which suits a relay but leaves the second L298N input unmanaged. The owner said "L298N probably" on 2026-11-24; the old I²C addresses will be remapped by hand, so no import of them. |
+| **Reproduce** | Bind a pump with `mcp23017`: only one pin is set; nothing holds the other input of the bridge. |
+| **Check** | An `l298n` actuator binding (MCP23017 address, the two input pins, optional enable pin, active level) for pumps only: on is IN1 high and IN2 low, off is both low, and the agent claims both pins low at start and on stop and shutdown; the probe editor offers it; a mock test shows both pins off after stop, a watchdog trip and shutdown; hardware notes in docs/DESIGN.md. Device check: each pump runs forward and stops, recorded here. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="f-018-t01"></a>F-018-T01 — Owner writes down the pump wiring (L298N inputs on MCP23017 pins) | 0 h | 0 h | 0 h agent + 0.5 h owner | Ready | — | [F-018-T03](#f-018-t03) | [🧑‍🔧](acceptance/pump-wiring.md) | — |
+| 🟢 Small | <a id="f-018-t03"></a>F-018-T03 — Owner runs each pump forward and stops it on the Pi | 0 h | 0 h | 0 h agent + 1 h owner | Planned | [F-018-T01](#f-018-t01), [F-005-T01](#f-005-t01) | [F-018-T04](#f-018-t04) | ⏳ 🧑‍🔧 | — |
+| 🟢 Small | <a id="f-018-t04"></a>F-018-T04 — Record the pump device check; fix what it found | 0.25 h | 0 h | 0.25 h | Planned | [F-018-T03](#f-018-t03) | — | ⏳ 🤖 | — |
+| 🟢 Small | **Total** | 2.25 h | 0 h (0 of 4 steps recorded) | 0.25 h agent + 1.5 h owner | 1 of 4 completed | | | | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-018-t02"></a>F-018-T02 — The l298n actuator binding | 2 h | 0 h | Completed | [PR #29](https://github.com/voidbrain/Grover/pull/29) implementation |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-018.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-018-T02: [PR #29](https://github.com/voidbrain/Grover/pull/29) implementation. [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#29](https://github.com/voidbrain/Grover/pull/29), [#30](https://github.com/voidbrain/Grover/pull/30) |
+| Opened | 2026-11-24 |
+| Verification | 2026-11-24: PR CI green on #29 and the main run after merge (8e5da72) green; the device check is pending. |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ### <a id="f-010"></a>[✨ F-010](#top)
 
 **Hub data retention and backups**
@@ -868,7 +913,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 ---
 ## Other changes
 
-**Reconciliation and step plans, 2026-11-24 (main `c5e0bf3`).** PRs #18–#22 and #25–#28 merged with green PR CI (main ran green after each merge except #18, whose e2e read test raced scheduled reads until #19 fixed it): B-004 and B-005 closed; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) and F-017 (from #28) moved to their sources. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`). Review: independent fresh-context review of #30 by the coordinator, 2026-11-24: no blocker; 3 should-fix (external dependencies shown as ready, unverified green-after-merge claims, F-006 PR number checked: #16 is correct) and 4 minor wording points, all fixed in #30; the NERV waits point at nerv:F-122-T02 and nerv:F-123-T02 (NERV PR #730, owner-approved).
+**Reconciliation and step plans, 2026-11-24 (main `8e5da72`).** PRs #18–#22 and #25–#29 merged with green PR CI (main ran green after each merge except #18, whose e2e read test raced scheduled reads until #19 fixed it): B-004 and B-005 closed; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) F-017 (from #28), F-018 and B-007 (from #29) moved to their sources. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`). Review: independent fresh-context review of #30 by the coordinator, 2026-11-24: no blocker; 3 should-fix (external dependencies shown as ready, unverified green-after-merge claims, F-006 PR number checked: #16 is correct) and 4 minor wording points, all fixed in #30; the NERV waits point at nerv:F-122-T02 and nerv:F-123-T02 (NERV PR #730, owner-approved).
 
 ## How to use this file
 
