@@ -13,6 +13,8 @@ if (process.argv[2] === 'import-legacy') {
   const store = new Store(openDb(config.dbPath));
   const r = importLegacy(store, readFileSync(file, 'utf8'));
   console.log(`imported into ${config.dbPath}: ${r.breeders} breeders, ${r.strains} strains, ${r.plants} plants`);
+  for (const line of r.skipped) console.log(`  note: ${line}`);
+  console.log('If the hub is running, reload the client to see them.');
   store.db.close();
   process.exit(0);
 }

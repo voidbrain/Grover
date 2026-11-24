@@ -29,6 +29,8 @@ const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 export class NotFound extends Error {}
 /** A delete refused because something still refers to it. */
 export class InUse extends Error {}
+/** A save that refers to something that does not exist (or would make a loop). */
+export class BadReference extends Error {}
 
 /** All persistence for the hub. Everything that enters is validated with the shared contracts. */
 export class Store {
@@ -399,7 +401,22 @@ export class Store {
   }
   putStrain(input: unknown): Strain {
     const s = Strain.parse(input);
-    if (s.parentIds.includes(s.id)) throw new InUse('a strain cannot be its own parent');
+    const strains = this.listStrains();
+    if (s.breederId && !this.listBreeders().some((b) => b.id === s.breederId))
+      throw new BadReference(`unknown breeder ${s.breederId}`);
+    for (const p of s.parentIds) if (!strains.some((x) => x.id === p)) throw new BadReference(`unknown strain ${p}`);
+    // No loops in the ancestry: walk up from the new parents.
+    const parentsOf = new Map(strains.map((x) => [x.id, x.parentIds]));
+    parentsOf.set(s.id, s.parentIds);
+    const stack = [...s.parentIds];
+    const seen = new Set<string>();
+    while (stack.length) {
+      const id = stack.pop()!;
+      if (id === s.id) throw new BadReference(`${s.name} would be its own ancestor`);
+      if (seen.has(id)) continue;
+      seen.add(id);
+      stack.push(...(parentsOf.get(id) ?? []));
+    }
     this.db
       .prepare(
         `INSERT INTO strains (id, name, breeder_id, parent_ids, sativa_percent, thc_percent, cbd_percent, flowering_days, autoflower, notes)
@@ -445,6 +462,13 @@ export class Store {
   }
   putPlant(input: unknown): Plant {
     const p = Plant.parse(input);
+    if (p.strainId && !this.listStrains().some((x) => x.id === p.strainId))
+      throw new BadReference(`unknown strain ${p.strainId}`);
+    if (p.breederId && !this.listBreeders().some((x) => x.id === p.breederId))
+      throw new BadReference(`unknown breeder ${p.breederId}`);
+    if (p.motherId && !this.listPlants().some((x) => x.id === p.motherId))
+      throw new BadReference(`unknown mother plant ${p.motherId}`);
+    if (p.potId && !this.listPots().some((x) => x.id === p.potId)) throw new BadReference(`unknown pot ${p.potId}`);
     this.db
       .prepare(
         `INSERT INTO plants (id, name, strain_id, breeder_id, generation, mother_id, pot_id, medium, started_on, trimmed_on, bloom_on,

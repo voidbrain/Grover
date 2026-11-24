@@ -9,7 +9,7 @@ import { AgentOffline, CommandTimeout } from './agents.ts';
 import { Refused } from './commands.ts';
 import type { Hub } from './hub.ts';
 import { createMcpServer } from './mcp.ts';
-import { InUse, NotFound } from './store.ts';
+import { BadReference, InUse, NotFound } from './store.ts';
 
 type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars' | 'breeders' | 'strains' | 'plants';
 
@@ -31,6 +31,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   app.setErrorHandler((err, _req, reply) => {
     if (err instanceof ZodError) return reply.code(400).send({ error: 'invalid', issues: err.issues });
     if (err instanceof NotFound) return reply.code(404).send({ error: err.message });
+    if (err instanceof BadReference) return reply.code(400).send({ error: err.message });
     if (err instanceof Refused || err instanceof InUse) return reply.code(409).send({ error: err.message });
     if (err instanceof AgentOffline) return reply.code(503).send({ error: err.message });
     if (err instanceof CommandTimeout) return reply.code(504).send({ error: err.message });

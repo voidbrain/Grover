@@ -58,3 +58,44 @@ test('imports breeders, strains with parents, plants with generation and dates; 
   assert.deepEqual(importLegacy(store, DUMP), { breeders: 0, strains: 0, plants: 0, skipped: [] });
   assert.equal(store.listPlants().find((p) => p.id === 'legacy-8')!.name, 'Renamed');
 });
+
+test('a truncated or unusual dump stops with a reason instead of running away', () => {
+  assert.throws(
+    () => parseInserts("INSERT INTO `grover_companies` (`id`, `name`) VALUES (1, 'Acme", 'grover_companies'),
+    /truncated/,
+  );
+  assert.throws(
+    () => parseInserts('INSERT INTO `grover_companies` (`id`, `name`) VALUES (1, 2', 'grover_companies'),
+    /truncated/,
+  );
+  const store = new Store(openDb(':memory:'));
+  assert.throws(
+    () => importLegacy(store, "INSERT INTO `grover_strains` VALUES (1, 'Mist', '0', 100, 1, 0, 1);"),
+    /complete-insert/,
+    'a dump without column lists is refused, not imported as nothing',
+  );
+});
+
+test('names that make the same id are kept apart, and reported', () => {
+  const store = new Store(openDb(':memory:'));
+  store.putStrain({ id: 'mist', name: 'MIST (my own)' });
+  const r = importLegacy(
+    store,
+    "INSERT INTO `grover_strains` (`id`, `name`, `lineage`, `percentSativa`, `deleted`) VALUES (1, 'Mist', '0', 100, 0), (2, 'Mist!', '0', 90, 0);",
+  );
+  assert.equal(r.strains, 2);
+  const ids = store
+    .listStrains()
+    .map((s) => `${s.id}=${s.name}`)
+    .sort();
+  assert.deepEqual(ids, ['mist-2=Mist', 'mist-3=Mist!', 'mist=MIST (my own)']);
+  assert.equal(r.skipped.length, 2, JSON.stringify(r.skipped));
+  // Importing again finds them by name and adds nothing.
+  assert.equal(
+    importLegacy(
+      store,
+      "INSERT INTO `grover_strains` (`id`, `name`, `lineage`, `percentSativa`, `deleted`) VALUES (1, 'Mist', '0', 100, 0), (2, 'Mist!', '0', 90, 0);",
+    ).strains,
+    0,
+  );
+});

@@ -18,6 +18,7 @@ type Value = string | number | null;
 /** The rows of `INSERT INTO \`table\` (cols) VALUES (...), (...);` statements, as objects. */
 export function parseInserts(sql: string, table: string): Record<string, Value>[] {
   const rows: Record<string, Value>[] = [];
+  const truncated = (at: number) => new Error(`truncated dump in ${table} near character ${at}`);
   const head = new RegExp('INSERT INTO `' + table + '` \\(([^)]*)\\) VALUES\\s*', 'g');
   let m: RegExpExecArray | null;
   while ((m = head.exec(sql))) {
@@ -34,6 +35,7 @@ export function parseInserts(sql: string, table: string): Record<string, Value>[
           let out = '';
           i++;
           for (;;) {
+            if (i >= sql.length) throw truncated(i);
             const c = sql[i]!;
             if (c === '\\') {
               const n = sql[i + 1]!;
@@ -53,7 +55,8 @@ export function parseInserts(sql: string, table: string): Record<string, Value>[
           values.push(out);
         } else {
           let raw = '';
-          while (sql[i] !== ',' && sql[i] !== ')') raw += sql[i++];
+          while (i < sql.length && sql[i] !== ',' && sql[i] !== ')') raw += sql[i++];
+          if (i >= sql.length) throw truncated(i);
           raw = raw.trim();
           values.push(raw.toUpperCase() === 'NULL' ? null : Number(raw));
         }
@@ -66,6 +69,7 @@ export function parseInserts(sql: string, table: string): Record<string, Value>[
           i++;
           break;
         }
+        if (i >= sql.length) throw truncated(i);
         throw new Error(`unexpected "${sql[i]}" in ${table} at ${i}`);
       }
       rows.push(Object.fromEntries(cols.map((c, k) => [c, values[k] ?? null])));
@@ -85,6 +89,19 @@ const day = (ms: Value): string | null =>
   typeof ms === 'number' && ms > 0 ? new Date(ms).toISOString().slice(0, 10) : null;
 const live = (r: Record<string, Value>) => r['deleted'] !== 1;
 
+/**
+ * The id for an imported name: an existing record with the same name is the same thing (id reused, nothing added);
+ * otherwise the name's slug, with -2, -3… when another name already has it.
+ */
+function idFor(name: string, existing: Map<string, string>): { id: string; exists: boolean; renamed: boolean } {
+  for (const [id, n] of existing) if (n === name) return { id, exists: true, renamed: false };
+  const base = slug(name);
+  if (!existing.has(base)) return { id: base, exists: false, renamed: false };
+  for (let k = 2; ; k++) if (!existing.has(`${base}-${k}`)) return { id: `${base}-${k}`, exists: false, renamed: true };
+}
+
+const TABLES = ['grover_companies', 'grover_strains', 'grover_plants'] as const;
+
 export interface LegacyImport {
   breeders: number;
   strains: number;
@@ -94,31 +111,58 @@ export interface LegacyImport {
 
 export function importLegacy(store: Store, sql: string): LegacyImport {
   const result: LegacyImport = { breeders: 0, strains: 0, plants: 0, skipped: [] };
+  for (const t of TABLES)
+    if (sql.includes('INSERT INTO `' + t + '`') && parseInserts(sql, t).length === 0)
+      throw new Error(
+        `${t} is in the dump without column lists, which this import cannot read: export it again with mysqldump --complete-insert`,
+      );
   return store.tx(() => {
     const breederIds = new Map<number, string>();
-    const have = new Set(store.listBreeders().map((b) => b.id));
+    const breeders = new Map(store.listBreeders().map((b) => [b.id, b.name]));
     for (const r of parseInserts(sql, 'grover_companies').filter(live)) {
-      const id = slug(String(r['name']));
+      const name = String(r['name']);
+      const { id, exists, renamed } = idFor(name, breeders);
       breederIds.set(Number(r['id']), id);
-      if (have.has(id)) continue;
-      store.putBreeder({ id, name: String(r['name']), website: null, notes: 'Imported from the old Grover.' });
-      have.add(id);
+      if (exists) continue;
+      if (renamed) result.skipped.push(`breeder "${name}" imported as ${id}: its plain id was taken`);
+      store.putBreeder({ id, name, website: null, notes: 'Imported from the old Grover.' });
+      breeders.set(id, name);
       result.breeders++;
     }
 
     const strainRows = parseInserts(sql, 'grover_strains')
       .filter(live)
       .filter((r) => Number(r['id']) !== 0);
-    const strainIds = new Map<number, string>(strainRows.map((r) => [Number(r['id']), slug(String(r['name']))]));
-    const haveStrains = new Set(store.listStrains().map((s) => s.id));
-    const createdStrains = new Set<string>();
+    const strains = new Map(store.listStrains().map((x) => [x.id, x.name]));
+    const strainIds = new Map<number, string>();
+    const toCreate: { id: string; r: Record<string, Value> }[] = [];
     for (const r of strainRows) {
-      const id = strainIds.get(Number(r['id']))!;
-      if (haveStrains.has(id)) continue;
+      const name = String(r['name']);
+      const { id, exists, renamed } = idFor(name, strains);
+      strainIds.set(Number(r['id']), id);
+      if (exists) continue;
+      if (renamed) result.skipped.push(`strain "${name}" imported as ${id}: its plain id was taken`);
+      strains.set(id, name);
+      toCreate.push({ id, r });
+    }
+    const createdStrains = new Set<string>();
+    // Parents first, so every parent id exists when its child is saved.
+    const ordered = [...toCreate].sort((a, b) => depth(a.r) - depth(b.r));
+    function depth(r: Record<string, Value>, seen = new Set<number>()): number {
+      const parents = String(r['lineage'] ?? '')
+        .split(',')
+        .map((x) => Number(x.trim()))
+        .filter((x) => x && !seen.has(x));
+      const rows = parents.map((p) => strainRows.find((s) => Number(s['id']) === p)).filter((x) => !!x);
+      return rows.length ? 1 + Math.max(...rows.map((p) => depth(p!, new Set([...seen, Number(r['id'])])))) : 0;
+    }
+    for (const { id, r } of ordered) {
       const parents = String(r['lineage'] ?? '')
         .split(',')
         .map((x) => strainIds.get(Number(x.trim())))
-        .filter((x): x is string => !!x && x !== id);
+        .filter(
+          (x): x is string => !!x && x !== id && (createdStrains.has(x) || store.listStrains().some((s) => s.id === x)),
+        );
       store.putStrain({
         id,
         name: String(r['name']),
@@ -126,7 +170,6 @@ export function importLegacy(store: Store, sql: string): LegacyImport {
         sativaPercent: typeof r['percentSativa'] === 'number' ? r['percentSativa'] : null,
         notes: 'Imported from the old Grover (sativa % as recorded there).',
       });
-      haveStrains.add(id);
       createdStrains.add(id);
       result.strains++;
     }

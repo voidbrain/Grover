@@ -7,6 +7,40 @@ Current work ledger, reviewed 24 November 2026 against main `a5cf6e3`. [Rules](B
 Bugs (B-) and features (F-) in one list, most urgent first.
 
 
+### B-004
+
+**A probe read was stored only when the agent's reading event arrived**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Let #18's CI run; it closes on green.
+
+| | |
+|---|---|
+| **Issue** | `POST /api/probes/<id>/read` returned the value, but the hub stored it only when the agent's separate reading event came through the outbox. A feed planned right after a read (the e2e test on CI, 2026-11-24) saw no fresh readings and was refused. |
+| **Reproduce** | `apps/hub/test/commands.test.ts`: a fake agent that answers a read and never sends the event; before the fix nothing was stored. |
+| **Check** | The test passes: the read is stored and announced when the agent answers, and the agent's later event for the same reading (same time, which the ack now carries) is not stored twice. CI passes on #18. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Found by CI on #18 (run 45460424727). Fixed on `feat/f012-plants`: the agent's ack carries the reading's own time; `Commands.readProbe` and the Feeder's pre-feed readings store and announce the value from the ack. Closes on #18's green CI.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#18](https://github.com/voidbrain/Grover/pull/18) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-011
 
 **Feed cycle per pot: supply tanks, mixing tank, pot pumps**
@@ -60,7 +94,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Requested 2026-11-24; built the same day on `feat/f012-plants`. Breeders, strains (parents, sativa %, THC/CBD, flowering, autoflower, notes with sources) and plants (strain, breeder, generation, mother, pot, medium, dates, yield) in contracts, migration 4, store, API, MCP (`grover_plants`) and the client (Plants and strains page; the pot card names its plant). Importer: dry run on the real dump 2026-11-24 gave 6 breeders, 33 strains, 16 plants; Northern Lights #5 x Haze with parents Northern Lights #5 and Haze, its seed plant (Sensi Seeds, 2021-11-05 → 2022-04-01) as generation 0; no pots (old ids do not map). Strain figures checked online the same day: Sensi Seeds lists 70 % sativa / 30 % indica and 65-75 days flowering (the old record says 50 %); Sensi publishes no THC, retailers say about 20 % (Zamnesia, Cannapot; Leafly 19 %). The demo seed carries this example in pot 3 (generation 2, its mother, the seed plant). Checks: 7 new backend tests (plants, legacy, API), 2 client tests, build, lint; dev smoke of the page, snapshot and MCP tool. Remaining: the owner imports the real records and enters the generation-2 plant in pot 3 on the deployed hub.
+**Next action / closure evidence:** Requested 2026-11-24; built the same day on `feat/f012-plants`. Breeders, strains (parents, sativa %, THC/CBD, flowering, autoflower, notes with sources) and plants (strain, breeder, generation, mother, pot, medium, dates, yield) in contracts, migration 4, store, API, MCP (`grover_plants`) and the client (Plants and strains page; the pot card names its plant). Importer: dry run on the real dump 2026-11-24 gave 6 breeders, 33 strains, 16 plants; Northern Lights #5 x Haze with parents Northern Lights #5 and Haze, its seed plant (Sensi Seeds, 2021-11-05 → 2022-04-01) as generation 0; no pots (old ids do not map). Strain figures checked online the same day: Sensi Seeds lists 70 % sativa / 30 % indica and 65-75 days flowering (the old record says 50 %); Sensi publishes no THC, retailers say about 20 % (Zamnesia, Cannapot; Leafly 19 %). The demo seed carries this example in pot 3 (generation 2, its mother, the seed plant). Checks: 11 new backend tests (plants, legacy incl. truncated dumps and id collisions, API incl. unknown references and ancestry loops), 2 client tests, build, lint; dev smoke of the page, snapshot and MCP tool. An independent review of #18 found nothing blocking; its seven minor points were fixed the same day (parser bounds, dumps without column lists, id collisions, a doc contradiction, 400 for unknown references, the import message, the mother list on strain change). Remaining: the owner imports the real records and enters the generation-2 plant in pot 3 on the deployed hub.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 

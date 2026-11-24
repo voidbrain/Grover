@@ -198,7 +198,8 @@ test('breeders, strains and plants: saved, read back, and not deleted while in u
   assert.equal((await api('DELETE', '/api/strains/parent-a')).status, 409, 'a parent of another strain');
   assert.equal((await api('DELETE', '/api/strains/cross')).status, 409, 'plants of this strain');
   assert.equal((await api('DELETE', '/api/breeders/acme')).status, 409, 'strains and plants from this breeder');
-  assert.equal((await api('PUT', '/api/strains/self', { name: 'Self', parentIds: ['self'] })).status, 409);
+  // Changed on purpose (review of #18, finding 5): a strain naming itself as parent is bad input (400), not "in use".
+  assert.equal((await api('PUT', '/api/strains/self', { name: 'Self', parentIds: ['self'] })).status, 400);
   assert.equal((await api('PUT', '/api/plants/bad', { name: 'Bad', generation: 0, motherId: 'mother' })).status, 400);
 
   // A deleted mother leaves the cutting without one; a deleted pot leaves its plant without a pot.
@@ -210,4 +211,16 @@ test('breeders, strains and plants: saved, read back, and not deleted while in u
     null,
     'the plant is kept, out of the pot',
   );
+});
+
+test('references to unknown records are refused as such (400), and a strain cannot descend from itself', async () => {
+  const bad = await api('PUT', '/api/plants/ghost', { name: 'Ghost', strainId: 'no-such-strain' });
+  assert.equal(bad.status, 400);
+  assert.match(bad.json.error, /unknown strain no-such-strain/);
+  assert.equal((await api('PUT', '/api/strains/orphan', { name: 'Orphan', parentIds: ['nope'] })).status, 400);
+  await api('PUT', '/api/strains/aa', { name: 'AA' });
+  await api('PUT', '/api/strains/bb', { name: 'BB', parentIds: ['aa'] });
+  const cycle = await api('PUT', '/api/strains/aa', { name: 'AA', parentIds: ['bb'] });
+  assert.equal(cycle.status, 400);
+  assert.match(cycle.json.error, /own ancestor/);
 });
