@@ -315,7 +315,10 @@ export class Feeder {
       try {
         const ack = await this.agents.command(agentId, { kind: 'read', probeId: probe.id });
         // The reading also arrives as an event; store it now so the plan below sees it.
-        if (ack.ok && ack.value !== null) this.store.addReading({ probeId: probe.id, value: ack.value, at: ack.at });
+        if (ack.ok && ack.value !== null) {
+          const reading = { probeId: probe.id, value: ack.value, at: ack.at };
+          if (this.store.addReading(reading)) this.bus.emit({ type: 'reading', reading });
+        }
       } catch {
         // A probe that cannot be read leaves that value unknown; the plan says what it did without it.
       }

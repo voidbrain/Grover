@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { OperatingMode, PROBE_KINDS } from '@grover/contracts';
+import { OperatingMode, PROBE_KINDS, ancestry, generationLabel, geneticsLabel, lineage } from '@grover/contracts';
 import type { Hub } from './hub.ts';
 
 const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] });
@@ -28,7 +28,10 @@ export function createMcpServer(hub: Hub): McpServer {
             room,
             agent: room.agentId ? agents.view(room.agentId) : null,
             phase: feeder.phase(room),
-            pots: store.listPots(room.id),
+            pots: store.listPots(room.id).map((pot) => ({
+              ...pot,
+              plants: store.listPlants().filter((p) => p.potId === pot.id && p.harvestedOn === null),
+            })),
             alerts: alerts.list().filter((a) => a.roomId === room.id),
             probes: store.listProbes(room.id).map((p) => ({
               id: p.id,
@@ -48,6 +51,40 @@ export function createMcpServer(hub: Hub): McpServer {
           };
         }),
       ),
+  );
+
+  server.registerTool(
+    'grover_plants',
+    {
+      description:
+        'Plants with their strain (breeder, sativa/indica, THC/CBD, flowering days, ancestry), generation (0 from seed, 1 first cutting…), line of mothers, pot and dates. Optionally only plants in a pot, or still growing.',
+      inputSchema: { potId: z.string().optional(), growingOnly: z.boolean().optional() },
+      annotations: { readOnlyHint: true },
+    },
+    async ({ potId, growingOnly }) => {
+      const strains = store.listStrains();
+      const breeders = new Map(store.listBreeders().map((b) => [b.id, b]));
+      const plants = store.listPlants();
+      return text(
+        plants
+          .filter((p) => (potId ? p.potId === potId : true) && (growingOnly ? p.harvestedOn === null : true))
+          .map((p) => {
+            const strain = strains.find((s) => s.id === p.strainId) ?? null;
+            return {
+              plant: p,
+              origin: generationLabel(p.generation),
+              breeder: p.breederId ? (breeders.get(p.breederId)?.name ?? p.breederId) : null,
+              strain: strain && {
+                ...strain,
+                genetics: geneticsLabel(strain.sativaPercent),
+                breeder: strain.breederId ? (breeders.get(strain.breederId)?.name ?? strain.breederId) : null,
+                ancestry: ancestry(strain.id, strains),
+              },
+              mothers: lineage(p.id, plants).map((m) => ({ id: m.id, name: m.name, generation: m.generation })),
+            };
+          }),
+      );
+    },
   );
 
   server.registerTool(

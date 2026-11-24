@@ -45,6 +45,14 @@ import { SetupApi } from './setup-api';
       }
     </section>
 
+    <section aria-labelledby="plants-link-title">
+      <div class="section-head">
+        <h2 id="plants-link-title">Plants and strains</h2>
+        <a class="button-link" routerLink="/setup/plants">Open</a>
+      </div>
+      <p class="muted">{{ plantSummary() }}</p>
+    </section>
+
     <section aria-labelledby="calendars-title">
       <div class="section-head">
         <h2 id="calendars-title">Grow calendars</h2>
@@ -207,6 +215,11 @@ export class SetupPage {
     }));
   });
   protected readonly calendars = computed(() => this.hub.snapshot()?.calendars ?? []);
+  protected readonly plantSummary = computed(() => {
+    const s = this.hub.snapshot();
+    const growing = (s?.plants ?? []).filter((p) => p.harvestedOn === null).length;
+    return `${growing} growing, ${(s?.strains ?? []).length} strains, ${(s?.breeders ?? []).length} breeders.`;
+  });
   protected readonly agents = computed(() => this.hub.snapshot()?.agents ?? []);
 
   protected readonly model = signal({ id: '' });

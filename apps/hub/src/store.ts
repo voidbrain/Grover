@@ -11,6 +11,9 @@ import {
   Reading,
   Room,
   Schedule,
+  Breeder,
+  Strain,
+  Plant,
   type Alert,
   type FeedView,
   type ProbeKind,
@@ -24,6 +27,10 @@ const json = (v: unknown) => JSON.parse(String(v));
 const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 
 export class NotFound extends Error {}
+/** A delete refused because something still refers to it. */
+export class InUse extends Error {}
+/** A save that refers to something that does not exist (or would make a loop). */
+export class BadReference extends Error {}
 
 /** All persistence for the hub. Everything that enters is validated with the shared contracts. */
 export class Store {
@@ -302,8 +309,15 @@ export class Store {
    * actuator (directly, or through a deleted room or pot)
    * go with it, so no schedule points at nothing. A calendar still used by a room is refused by its foreign key.
    */
-  deleteEntity(table: 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars', id: string): boolean {
+  deleteEntity(
+    table: 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars' | 'breeders' | 'strains' | 'plants',
+    id: string,
+  ): boolean {
     return this.tx(() => {
+      if (table === 'strains') {
+        const child = this.listStrains().find((s) => s.parentIds.includes(id));
+        if (child) throw new InUse(`${child.name} lists it as a parent: change that first`);
+      }
       const probes =
         table === 'probes'
           ? [id]
@@ -351,6 +365,137 @@ export class Store {
       this.db.prepare('UPDATE rooms SET agent_id = NULL WHERE agent_id = ?').run(agentId);
       return Number(this.db.prepare('DELETE FROM agents WHERE id = ?').run(agentId).changes) > 0;
     });
+  }
+
+  // ── breeders, strains, plants ──────────────────────────────────────────────
+  listBreeders(): Breeder[] {
+    return (this.db.prepare('SELECT * FROM breeders ORDER BY name').all() as Row[]).map((r) =>
+      Breeder.parse({ id: r['id'], name: r['name'], website: r['website'] ?? null, notes: r['notes'] }),
+    );
+  }
+  putBreeder(input: unknown): Breeder {
+    const b = Breeder.parse(input);
+    this.db
+      .prepare(
+        `INSERT INTO breeders (id, name, website, notes) VALUES (?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET name = excluded.name, website = excluded.website, notes = excluded.notes`,
+      )
+      .run(b.id, b.name, b.website, b.notes);
+    return b;
+  }
+  listStrains(): Strain[] {
+    return (this.db.prepare('SELECT * FROM strains ORDER BY name').all() as Row[]).map((r) =>
+      Strain.parse({
+        id: r['id'],
+        name: r['name'],
+        breederId: r['breeder_id'] ?? null,
+        parentIds: json(r['parent_ids']),
+        sativaPercent: r['sativa_percent'] ?? null,
+        thcPercent: r['thc_percent'] ?? null,
+        cbdPercent: r['cbd_percent'] ?? null,
+        floweringDays: r['flowering_days'] ?? null,
+        autoflower: bool(r['autoflower']),
+        notes: r['notes'],
+      }),
+    );
+  }
+  putStrain(input: unknown): Strain {
+    const s = Strain.parse(input);
+    const strains = this.listStrains();
+    if (s.breederId && !this.listBreeders().some((b) => b.id === s.breederId))
+      throw new BadReference(`unknown breeder ${s.breederId}`);
+    for (const p of s.parentIds) if (!strains.some((x) => x.id === p)) throw new BadReference(`unknown strain ${p}`);
+    // No loops in the ancestry: walk up from the new parents.
+    const parentsOf = new Map(strains.map((x) => [x.id, x.parentIds]));
+    parentsOf.set(s.id, s.parentIds);
+    const stack = [...s.parentIds];
+    const seen = new Set<string>();
+    while (stack.length) {
+      const id = stack.pop()!;
+      if (id === s.id) throw new BadReference(`${s.name} would be its own ancestor`);
+      if (seen.has(id)) continue;
+      seen.add(id);
+      stack.push(...(parentsOf.get(id) ?? []));
+    }
+    this.db
+      .prepare(
+        `INSERT INTO strains (id, name, breeder_id, parent_ids, sativa_percent, thc_percent, cbd_percent, flowering_days, autoflower, notes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET name = excluded.name, breeder_id = excluded.breeder_id, parent_ids = excluded.parent_ids,
+           sativa_percent = excluded.sativa_percent, thc_percent = excluded.thc_percent, cbd_percent = excluded.cbd_percent,
+           flowering_days = excluded.flowering_days, autoflower = excluded.autoflower, notes = excluded.notes`,
+      )
+      .run(
+        s.id,
+        s.name,
+        s.breederId,
+        JSON.stringify(s.parentIds),
+        s.sativaPercent,
+        s.thcPercent,
+        s.cbdPercent,
+        s.floweringDays,
+        s.autoflower ? 1 : 0,
+        s.notes,
+      );
+    return s;
+  }
+  listPlants(): Plant[] {
+    return (this.db.prepare('SELECT * FROM plants ORDER BY name').all() as Row[]).map((r) =>
+      Plant.parse({
+        id: r['id'],
+        name: r['name'],
+        strainId: r['strain_id'] ?? null,
+        breederId: r['breeder_id'] ?? null,
+        generation: Number(r['generation']),
+        motherId: r['mother_id'] ?? null,
+        potId: r['pot_id'] ?? null,
+        medium: r['medium'] ?? null,
+        startedOn: r['started_on'] ?? null,
+        trimmedOn: r['trimmed_on'] ?? null,
+        bloomOn: r['bloom_on'] ?? null,
+        flushOn: r['flush_on'] ?? null,
+        harvestedOn: r['harvested_on'] ?? null,
+        yieldGrams: r['yield_grams'] ?? null,
+        notes: r['notes'],
+      }),
+    );
+  }
+  putPlant(input: unknown): Plant {
+    const p = Plant.parse(input);
+    if (p.strainId && !this.listStrains().some((x) => x.id === p.strainId))
+      throw new BadReference(`unknown strain ${p.strainId}`);
+    if (p.breederId && !this.listBreeders().some((x) => x.id === p.breederId))
+      throw new BadReference(`unknown breeder ${p.breederId}`);
+    if (p.motherId && !this.listPlants().some((x) => x.id === p.motherId))
+      throw new BadReference(`unknown mother plant ${p.motherId}`);
+    if (p.potId && !this.listPots().some((x) => x.id === p.potId)) throw new BadReference(`unknown pot ${p.potId}`);
+    this.db
+      .prepare(
+        `INSERT INTO plants (id, name, strain_id, breeder_id, generation, mother_id, pot_id, medium, started_on, trimmed_on, bloom_on,
+           flush_on, harvested_on, yield_grams, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET name = excluded.name, strain_id = excluded.strain_id, breeder_id = excluded.breeder_id,
+           generation = excluded.generation, mother_id = excluded.mother_id, pot_id = excluded.pot_id, medium = excluded.medium,
+           started_on = excluded.started_on, trimmed_on = excluded.trimmed_on, bloom_on = excluded.bloom_on,
+           flush_on = excluded.flush_on, harvested_on = excluded.harvested_on, yield_grams = excluded.yield_grams, notes = excluded.notes`,
+      )
+      .run(
+        p.id,
+        p.name,
+        p.strainId,
+        p.breederId,
+        p.generation,
+        p.motherId,
+        p.potId,
+        p.medium,
+        p.startedOn,
+        p.trimmedOn,
+        p.bloomOn,
+        p.flushOn,
+        p.harvestedOn,
+        p.yieldGrams,
+        p.notes,
+      );
+    return p;
   }
 
   // ── agents ─────────────────────────────────────────────────────────────────

@@ -229,13 +229,19 @@ export class Agent {
 
   // ── probes ───────────────────────────────────────────────────────────────
   async read(probeId: string): Promise<number> {
+    return (await this.takeReading(probeId)).value;
+  }
+
+  /** A reading and its time; the command ack for a read carries the same time, so the hub stores it once. */
+  private async takeReading(probeId: string): Promise<{ value: number; at: number }> {
     const entry = this.probes.get(probeId);
     if (!entry) throw new Error(`unknown or disabled probe ${probeId}`);
     try {
       const value = await withTimeout(entry.driver.read(), READ_TIMEOUT_MS, `probe ${probeId} timed out`);
       if (!Number.isFinite(value)) throw new Error(`probe ${probeId} returned ${value}`);
-      this.publishEvent({ type: 'reading', reading: { probeId, value, at: this.now() } });
-      return value;
+      const at = this.now();
+      this.publishEvent({ type: 'reading', reading: { probeId, value, at } });
+      return { value, at };
     } catch (err) {
       this.fault(`probe ${probeId}`, (err as Error).message);
       throw err;
@@ -264,19 +270,22 @@ export class Agent {
   }
 
   async execute(cmd: AgentCommand): Promise<CommandAck> {
-    const ack = (ok: boolean, error: string | null, value: number | null = null): CommandAck => ({
+    const ack = (ok: boolean, error: string | null, value: number | null = null, at = this.now()): CommandAck => ({
       id: cmd.id,
       ok,
       error,
       value,
-      at: this.now(),
+      at,
     });
     try {
       const mode = this.config?.mode ?? 'off';
       switch (cmd.kind) {
         case 'read':
           if (mode === 'off') return ack(false, 'agent is off');
-          return ack(true, null, await this.read(cmd.probeId));
+          {
+            const r = await this.takeReading(cmd.probeId);
+            return ack(true, null, r.value, r.at);
+          }
         case 'run': {
           if (mode !== 'normal') return ack(false, `agent is ${mode}`);
           if (this.feeds.busy) return ack(false, 'a feed is running: wait for it, or Stop all');

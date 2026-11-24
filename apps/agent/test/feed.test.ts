@@ -92,7 +92,8 @@ test('a feed mixes, settles and empties the mixing tank into the pot', async () 
   await runner.start(plan());
   assert.equal(reports.at(-1)!.state, 'done', JSON.stringify(reports));
   assert.match(reports.at(-1)!.message, /mixing tank empty/);
-  assert.ok(world.mix.liters <= 0.2, `mix left: ${world.mix.liters}`);
+  // Empty means at or below mixEmptyLevel (1 cm = 0.2 L here); allow for floating-point sums.
+  assert.ok(world.mix.liters <= 0.2 + 1e-9, `mix left: ${world.mix.liters}`);
   assert.ok(world.pot('pot-1').liters > potBefore + 1, 'the batch reached the pot');
   assert.ok(world.pot('pot-1').nutrientMl > 20, 'with its nutrients');
   assert.ok(

@@ -89,7 +89,12 @@ test('reading a probe stores the value and returns it', async () => {
   assert.equal(status, 200);
   assert.equal(json.ok, true);
   assert.equal(typeof json.value, 'number');
-  await until(() => hub.store.latestReading('ec')?.value === json.value, 'reading stored');
+  // Stored by the time the request answers (B-004): a plan made right after a read must see it.
+  assert.equal(hub.store.latestReading('ec')?.value, json.value);
+  // The agent's reading event for the same reading arrives too, and is not stored twice.
+  await new Promise((r) => setTimeout(r, 100));
+  const recent = hub.store.readings('ec', Date.now() - 5_000).filter((r) => r.value === json.value);
+  assert.equal(recent.length, 1);
 });
 
 test('a pump run is bounded and logged on both edges', async () => {

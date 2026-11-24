@@ -110,7 +110,7 @@ export const CommandAck = z.object({
   id: z.string(),
   ok: z.boolean(),
   error: z.string().nullable(),
-  /** For a read: the value. For a run: the clamped duration. */
+  /** For a read: the value (and `at` is the reading's time). For a run: the clamped duration. */
   value: z.number().nullable(),
   at: z.number().int(),
 });

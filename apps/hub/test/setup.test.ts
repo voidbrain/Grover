@@ -161,3 +161,66 @@ test('pumps saved without a run cap get one on upgrade, so the hub can still rea
   assert.equal(store.getActuator('l').maxRunMs, 0, 'switches keep no cap');
   store.db.close();
 });
+
+test('breeders, strains and plants: saved, read back, and not deleted while in use', async () => {
+  assert.equal((await api('PUT', '/api/breeders/acme', { name: 'Acme Seeds' })).status, 200);
+  assert.equal((await api('PUT', '/api/strains/parent-a', { name: 'Parent A' })).status, 200);
+  const strain = await api('PUT', '/api/strains/cross', {
+    name: 'Cross',
+    breederId: 'acme',
+    parentIds: ['parent-a'],
+    sativaPercent: 70,
+    thcPercent: 20,
+    floweringDays: 70,
+  });
+  assert.equal(strain.status, 200);
+  const mother = await api('PUT', '/api/plants/mother', {
+    name: 'Mother',
+    strainId: 'cross',
+    breederId: 'acme',
+    generation: 1,
+  });
+  assert.equal(mother.status, 200);
+  const plant = await api('PUT', '/api/plants/cutting', {
+    name: 'Cutting',
+    strainId: 'cross',
+    breederId: 'acme',
+    generation: 2,
+    motherId: 'mother',
+    potId: 'pot-3',
+    startedOn: '2026-11-01',
+  });
+  assert.equal(plant.status, 200, JSON.stringify(plant.json));
+  const snap = (await api('GET', '/api/snapshot')).json;
+  assert.equal(snap.plants.find((p: any) => p.id === 'cutting').potId, 'pot-3');
+  assert.deepEqual(snap.strains.find((s: any) => s.id === 'cross').parentIds, ['parent-a']);
+
+  assert.equal((await api('DELETE', '/api/strains/parent-a')).status, 409, 'a parent of another strain');
+  assert.equal((await api('DELETE', '/api/strains/cross')).status, 409, 'plants of this strain');
+  assert.equal((await api('DELETE', '/api/breeders/acme')).status, 409, 'strains and plants from this breeder');
+  // Changed on purpose (review of #18, finding 5): a strain naming itself as parent is bad input (400), not "in use".
+  assert.equal((await api('PUT', '/api/strains/self', { name: 'Self', parentIds: ['self'] })).status, 400);
+  assert.equal((await api('PUT', '/api/plants/bad', { name: 'Bad', generation: 0, motherId: 'mother' })).status, 400);
+
+  // A deleted mother leaves the cutting without one; a deleted pot leaves its plant without a pot.
+  assert.equal((await api('DELETE', '/api/plants/mother')).status, 204);
+  assert.equal(hub.store.listPlants().find((p) => p.id === 'cutting')!.motherId, null);
+  assert.equal((await api('DELETE', '/api/pots/pot-3')).status, 204);
+  assert.equal(
+    hub.store.listPlants().find((p) => p.id === 'cutting')!.potId,
+    null,
+    'the plant is kept, out of the pot',
+  );
+});
+
+test('references to unknown records are refused as such (400), and a strain cannot descend from itself', async () => {
+  const bad = await api('PUT', '/api/plants/ghost', { name: 'Ghost', strainId: 'no-such-strain' });
+  assert.equal(bad.status, 400);
+  assert.match(bad.json.error, /unknown strain no-such-strain/);
+  assert.equal((await api('PUT', '/api/strains/orphan', { name: 'Orphan', parentIds: ['nope'] })).status, 400);
+  await api('PUT', '/api/strains/aa', { name: 'AA' });
+  await api('PUT', '/api/strains/bb', { name: 'BB', parentIds: ['aa'] });
+  const cycle = await api('PUT', '/api/strains/aa', { name: 'AA', parentIds: ['bb'] });
+  assert.equal(cycle.status, 400);
+  assert.match(cycle.json.error, /own ancestor/);
+});
