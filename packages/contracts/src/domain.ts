@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
-import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS, TANK_ROLES, calibrationProblem, isPump } from './kinds.ts';
+import {
+  ACTUATOR_KIND_IDS,
+  OPERATING_MODES,
+  PROBE_KIND_IDS,
+  SUPPLY_TANKS,
+  TANK_ROLES,
+  calibrationProblem,
+  isPump,
+} from './kinds.ts';
 
 /** What a probe measures. Units are fixed per kind (see PROBE_KINDS). */
 export const ProbeKind = z.enum(PROBE_KIND_IDS);
@@ -84,6 +92,8 @@ export const Room = z.object({
   waterPh: z.number().min(0).max(14).default(7),
   /** Least time between two automatic feeds of one pot. */
   feedCooldownMinutes: z.number().int().min(1).max(10080).default(60),
+  /** Each supply tank's colour, like its real nutrient (F-017); a missing one takes the default. */
+  tankColours: z.partialRecord(z.enum(SUPPLY_TANKS), z.string().regex(/^#[0-9a-f]{6}$/, '#rrggbb')).default({}),
 });
 export type Room = z.infer<typeof Room>;
 

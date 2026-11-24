@@ -240,3 +240,12 @@ test('migration 5 clears calendar start dates it cannot read', () => {
   assert.equal(store.getRoom('b').calendarStart, null);
   store.db.close();
 });
+
+test('nutrient colours are kept with the tent (F-017)', async () => {
+  const room = (await api('GET', '/api/snapshot')).json.rooms.find((r: { id: string }) => r.id === 'grow-1');
+  const { phase: _phase, ...stored } = room;
+  const res = await api('PUT', '/api/rooms/grow-1', { ...stored, tankColours: { grow: '#1a7f37', bloom: '#7b3fa0' } });
+  assert.equal(res.status, 200, JSON.stringify(res.json));
+  assert.deepEqual(hub.store.getRoom('grow-1').tankColours, { grow: '#1a7f37', bloom: '#7b3fa0' });
+  assert.equal((await api('PUT', '/api/rooms/grow-1', { ...stored, tankColours: { grow: 'red' } })).status, 400);
+});

@@ -1,4 +1,5 @@
 import { Actuator, Pot, Probe, Room, Schedule } from '@grover/contracts';
+import { DEFAULT_TANK_COLOURS } from '@grover/contracts/kinds';
 import {
   actuatorDraft,
   actuatorWiring,
@@ -202,8 +203,15 @@ describe('setup drafts', () => {
       lightPlantId: 'p1',
       calendarId: 'default',
       calendarStart: '2026-11-01',
+      tankColours: { grow: '#1a7f37' },
     };
     expect(Room.parse(toRoom(roomDraft(room)))).toEqual(room);
+    // Every tank has a colour in the form; only the ones that differ from the default are stored (F-017).
+    expect(roomDraft(room).tankColours.bloom).toBe(DEFAULT_TANK_COLOURS.bloom);
+    expect(
+      toRoom({ ...roomDraft(room), tankColours: { ...roomDraft(room).tankColours, grow: DEFAULT_TANK_COLOURS.grow } })
+        .tankColours,
+    ).toEqual({});
     const bare = toRoom({ ...roomDraft(room), agentId: '', calendarId: '' });
     expect(bare.agentId).toBeNull();
     expect(bare.calendarStart).toBeNull();

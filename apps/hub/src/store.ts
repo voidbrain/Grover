@@ -97,6 +97,9 @@ export class Store {
       lightFrom: r['light_from'] as Room['lightFrom'],
       lightStart: String(r['light_start']),
       lightPlantId: r['light_plant_id'] == null ? null : String(r['light_plant_id']),
+      // Validated like every JSON column; an unreadable value falls back to the defaults.
+      tankColours:
+        r['tank_colours'] == null ? {} : (Room.shape.tankColours.safeParse(json(r['tank_colours'])).data ?? {}),
     };
   }
   listRooms(): Room[] {
@@ -116,13 +119,13 @@ export class Store {
     this.db
       .prepare(
         `INSERT INTO rooms (id, name, agent_id, mode, auto_feed, calendar_id, calendar_start, mix_empty_level, mix_settle_seconds,
-           feed_cooldown_minutes, water_ec, water_ph, light_from, light_start, light_plant_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           feed_cooldown_minutes, water_ec, water_ph, light_from, light_start, light_plant_id, tank_colours)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET name = excluded.name, agent_id = excluded.agent_id, mode = excluded.mode, auto_feed = excluded.auto_feed,
            calendar_id = excluded.calendar_id, calendar_start = excluded.calendar_start, mix_empty_level = excluded.mix_empty_level,
            mix_settle_seconds = excluded.mix_settle_seconds, feed_cooldown_minutes = excluded.feed_cooldown_minutes,
            water_ec = excluded.water_ec, water_ph = excluded.water_ph, light_from = excluded.light_from,
-           light_start = excluded.light_start, light_plant_id = excluded.light_plant_id`,
+           light_start = excluded.light_start, light_plant_id = excluded.light_plant_id, tank_colours = excluded.tank_colours`,
       )
       .run(
         r.id,
@@ -140,6 +143,7 @@ export class Store {
         r.lightFrom,
         r.lightStart,
         r.lightPlantId,
+        JSON.stringify(r.tankColours),
       );
     return r;
   }

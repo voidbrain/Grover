@@ -2,7 +2,7 @@ import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Actuator, Alert, Probe } from '@grover/contracts';
-import { TANK_PUMP, TANK_ROLES, TANK_TITLES, isPump } from '@grover/contracts/kinds';
+import { TANK_PUMP, TANK_ROLES, TANK_TITLES, isPump, tankColour } from '@grover/contracts/kinds';
 import { Clock } from '../clock';
 import { Hub } from '../hub';
 import { PumpControl } from '../room/pump-control';
@@ -82,6 +82,7 @@ export class RigMap {
       return {
         role,
         title: TANK_TITLES[role],
+        colour: tankColour(this.room() ?? {}, role),
         tile,
         low,
         // One pump per supply tank is drawn; any other of the same kind is listed under "Other parts".

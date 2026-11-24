@@ -29,7 +29,17 @@ export const actuator = (id: string, kind: string, extra: object = {}) => ({
 const units = { unit: '', min: 0, max: 100, title: '' };
 
 export const snapshot = {
-  rooms: [{ id: 'grow-1', name: 'Tent', mode: 'normal', agentId: 'pi-1', phase: null, autoFeed: false }],
+  rooms: [
+    {
+      id: 'grow-1',
+      name: 'Tent',
+      mode: 'normal',
+      agentId: 'pi-1',
+      phase: null,
+      autoFeed: false,
+      tankColours: { grow: '#1a7f37' },
+    },
+  ],
   agents: [{ agentId: 'pi-1', roomId: 'grow-1', online: true, lastSeen: now, status: null, configCurrent: true }],
   pots: [{ id: 'pot-1', roomId: 'grow-1', name: 'Pot 1', liters: 15, feedLiters: 2, litersPerCm: 0.5 }],
   probes: [
