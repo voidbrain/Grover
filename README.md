@@ -30,8 +30,8 @@ One Pi runs the hub and the agent as two services (so the agent's safety does no
 1. Raspberry Pi OS (Bookworm or later), Node 24, Tailscale (`tailscale up`). Enable 1-Wire and I²C with `raspi-config` if you use them.
 2. Clone, `npm ci`, `npm run build`. On the Pi, `npm install i2c-bus` builds the I²C driver.
 3. Copy [`deploy/grover-hub.service`](deploy/grover-hub.service) and [`deploy/grover-agent.service`](deploy/grover-agent.service) to `/etc/systemd/system/`, adjust the paths and user, then `sudo systemctl enable --now grover-hub`.
-4. Register the agent: `curl -X POST localhost:8080/api/agents/pi-1/token` prints its token once. Put `GROVER_AGENT_ID=pi-1`, `GROVER_AGENT_TOKEN=…` and `GROVER_DRIVERS=hardware` in `/etc/grover/agent.env`, then `sudo systemctl enable --now grover-agent`.
-5. Describe the room, probes, actuators and schedules through the API (`PUT /api/rooms/<id>`, `/api/probes/<id>`, `/api/actuators/<id>`, `/api/schedules/<id>`; bodies are the schemas in `packages/contracts/src/domain.ts`). `apps/hub/src/seed.ts` is a full example.
+4. Register the agent: on the Setup page, "Register" `pi-1` (or `curl -X POST localhost:8080/api/agents/pi-1/token`); the token is shown once. Put `GROVER_AGENT_ID=pi-1`, `GROVER_AGENT_TOKEN=…` and `GROVER_DRIVERS=hardware` in `/etc/grover/agent.env`, then `sudo systemctl enable --now grover-agent`.
+5. Open the client's **Setup** page: add the room, its probes, pumps and switches with their wiring, and schedules. (The same is possible through the API, `PUT /api/<rooms|probes|actuators|schedules>/<id>` with the bodies in `packages/contracts/src/domain.ts`; `apps/hub/src/seed.ts` is a full example.)
 6. Publish the hub on your tailnet: `sudo tailscale serve --bg 8080`. Open `https://<pi-name>.<tailnet>.ts.net` from any device on the tailnet. NERV connects to `https://<pi-name>.<tailnet>.ts.net/mcp`.
 
 The hub listens on loopback only; `tailscale serve` is what makes it reachable, and only from your tailnet. A second Pi runs only the agent, with `GROVER_HUB_MQTT=mqtt://<hub-pi>:1883` and the hub's `GROVER_MQTT_HOST` set to its Tailscale IP.

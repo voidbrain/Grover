@@ -34,6 +34,14 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     if (err instanceof Refused) return reply.code(409).send({ error: err.message });
     if (err instanceof AgentOffline) return reply.code(503).send({ error: err.message });
     if (err instanceof CommandTimeout) return reply.code(504).send({ error: err.message });
+    const sqlite =
+      (err as { code?: string; errstr?: string; message?: string }).code === 'ERR_SQLITE_ERROR'
+        ? (err as Error).message
+        : '';
+    if (/FOREIGN KEY constraint failed/i.test(sqlite))
+      return reply.code(409).send({ error: 'still in use: remove what refers to it first' });
+    if (/UNIQUE constraint failed: rooms\.agent_id/i.test(sqlite))
+      return reply.code(409).send({ error: 'that agent already runs another room' });
     const status = (err as { statusCode?: number }).statusCode ?? 500;
     if (status >= 500) console.error(err);
     return reply.code(status).send({ error: (err as Error).message });
@@ -109,11 +117,17 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
       return reply.code(204).send();
     });
   }
-  /** Registers an agent (or rotates its token). The token is shown once. */
-  app.post<{ Params: { id: string } }>('/api/agents/:id/token', async (req) => ({
-    agentId: req.params.id,
-    token: store.issueAgentToken(Id.parse(req.params.id)),
-  }));
+  /** Registers an agent (or rotates its token). The token is shown once; a connected agent must reconnect with it. */
+  app.post<{ Params: { id: string } }>('/api/agents/:id/token', async (req) => {
+    const token = store.issueAgentToken(Id.parse(req.params.id));
+    agents.disconnect(req.params.id);
+    return { agentId: req.params.id, token };
+  });
+  app.delete<{ Params: { id: string } }>('/api/agents/:id', async (req, reply: FastifyReply) => {
+    if (!store.deleteAgent(req.params.id)) throw new NotFound(`agent ${req.params.id}`);
+    agents.disconnect(req.params.id);
+    return reply.code(204).send();
+  });
 
   // ── live ─────────────────────────────────────────────────────────────────
   app.get('/api/live', { websocket: true }, (socket) => {

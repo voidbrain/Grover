@@ -1,0 +1,329 @@
+<p><a routerLink="/setup">← Setup</a></p>
+
+@if (!snapshot()) {
+  <p role="status">Connecting to the hub…</p>
+} @else if (!isNew() && !room()) {
+  <p>There is no room "{{ id() }}". <a routerLink="/setup">Back to setup</a></p>
+} @else {
+  <h1>{{ isNew() ? 'New room' : room()!.name }}</h1>
+
+  <form class="card" (submit)="saveRoom($event)" novalidate aria-label="Room">
+    <div class="form-grid">
+      <label class="field">
+        Name
+        <input type="text" [formField]="f.name" />
+        <gr-field-error [state]="f.name()" />
+      </label>
+      <label class="field">
+        Reservoir (litres)
+        <input type="number" step="0.5" [formField]="f.reservoirLiters" />
+        <gr-field-error [state]="f.reservoirLiters()" />
+      </label>
+      <label class="field">
+        Agent (Raspberry Pi)
+        <select [formField]="f.agentId">
+          <option value="">None</option>
+          @for (a of freeAgents(); track a.agentId) {
+            <option [value]="a.agentId">{{ a.agentId }}{{ a.online ? '' : ' (offline)' }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        Grow calendar
+        <select [formField]="f.calendarId">
+          <option value="">None</option>
+          @for (c of calendars(); track c.id) {
+            <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+      </label>
+      @if (model().calendarId) {
+        <label class="field">
+          Day 1 of the grow
+          <input type="date" [formField]="f.calendarStart" />
+          <gr-field-error [state]="f.calendarStart()" />
+        </label>
+      }
+      <label class="field check">
+        <input type="checkbox" [formField]="f.autoDose" />
+        Correct pH and EC automatically
+      </label>
+    </div>
+    @if (model().autoDose) {
+      <p class="hint">
+        Automatic dosing runs calibrated pumps after a reading, at most every 30 minutes. Leave it off until the probes
+        are calibrated (backlog F-004).
+      </p>
+    }
+    @if (roomRun.errors().length) {
+      <ul class="form-errors" role="alert">
+        @for (e of roomRun.errors(); track $index) {
+          <li>{{ e }}</li>
+        }
+      </ul>
+    }
+    <div class="form-actions">
+      <button type="submit" [disabled]="roomRun.busy()">{{ isNew() ? 'Create room' : 'Save room' }}</button>
+      <span class="spacer"></span>
+      @if (!isNew()) {
+        <button type="button" class="danger" [disabled]="roomRun.busy()" (click)="deleteRoom()">Delete room</button>
+      }
+    </div>
+  </form>
+
+  @if (!isNew()) {
+    <!-- Pots -->
+    <section aria-labelledby="pots-title">
+      <div class="section-head">
+        <h2 id="pots-title">Pots</h2>
+        <button type="button" class="ghost" (click)="edit('pot', null)">Add pot</button>
+      </div>
+      @if (isEditing('pot', null)) {
+        <gr-pot-editor [roomId]="id()" [takenIds]="potIds()" (done)="editing.set(null)" />
+      }
+      @if (pots().length) {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of pots(); track p.id) {
+                <tr>
+                  <td>{{ p.name }}</td>
+                  <td class="actions">
+                    <button
+                      type="button"
+                      class="ghost small"
+                      (click)="edit('pot', p.id)"
+                      [attr.aria-label]="'Edit ' + p.name"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+                @if (isEditing('pot', p.id)) {
+                  <tr>
+                    <td colspan="2">
+                      <gr-pot-editor [roomId]="id()" [pot]="editingPot()" (done)="editing.set(null)" />
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty">No pots. Probes and actuators can belong to the reservoir instead.</p>
+      }
+    </section>
+
+    <!-- Probes -->
+    <section aria-labelledby="probes-title">
+      <div class="section-head">
+        <h2 id="probes-title">Probes</h2>
+        <button type="button" class="ghost" (click)="edit('probe', null)">Add probe</button>
+      </div>
+      @if (isEditing('probe', null)) {
+        <gr-probe-editor [roomId]="id()" [pots]="pots()" [takenIds]="probeIds()" (done)="editing.set(null)" />
+      }
+      @if (probes().length) {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Measures</th>
+                <th scope="col">Where</th>
+                <th scope="col">Wiring</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of probes(); track p.id) {
+                <tr [class.off]="!p.enabled">
+                  <td>
+                    {{ p.name }}
+                    @if (!p.enabled) {
+                      (disabled)
+                    }
+                  </td>
+                  <td>{{ probeKindTitle(p.kind) }}</td>
+                  <td>{{ potName(p.potId) }}</td>
+                  <td>{{ probeWiring(p.binding) }}</td>
+                  <td class="actions">
+                    <button
+                      type="button"
+                      class="ghost small"
+                      (click)="edit('probe', p.id)"
+                      [attr.aria-label]="'Edit ' + p.name"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+                @if (isEditing('probe', p.id)) {
+                  <tr>
+                    <td colspan="5">
+                      <gr-probe-editor
+                        [roomId]="id()"
+                        [probe]="editingProbe()"
+                        [pots]="pots()"
+                        (done)="editing.set(null)"
+                      />
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty">No probes yet.</p>
+      }
+    </section>
+
+    <!-- Actuators -->
+    <section aria-labelledby="actuators-title">
+      <div class="section-head">
+        <h2 id="actuators-title">Pumps and switches</h2>
+        <button type="button" class="ghost" (click)="edit('actuator', null)">Add actuator</button>
+      </div>
+      @if (isEditing('actuator', null)) {
+        <gr-actuator-editor [roomId]="id()" [pots]="pots()" [takenIds]="actuatorIds()" (done)="editing.set(null)" />
+      }
+      @if (actuators().length) {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Kind</th>
+                <th scope="col">Wiring</th>
+                <th scope="col">Flow</th>
+                <th scope="col">Longest run</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of actuators(); track a.id) {
+                <tr [class.off]="!a.enabled">
+                  <td>
+                    {{ a.name }}
+                    @if (!a.enabled) {
+                      (disabled)
+                    }
+                  </td>
+                  <td>{{ actuatorLabels[a.kind] }}</td>
+                  <td>{{ actuatorWiring(a.binding) }}</td>
+                  <td>{{ isPump(a.kind) ? (a.mlPerSecond ? a.mlPerSecond + ' mL/s' : 'not calibrated') : '—' }}</td>
+                  <td>{{ isPump(a.kind) ? a.maxRunMs / 1000 + ' s' : '—' }}</td>
+                  <td class="actions">
+                    <button
+                      type="button"
+                      class="ghost small"
+                      (click)="edit('actuator', a.id)"
+                      [attr.aria-label]="'Edit ' + a.name"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+                @if (isEditing('actuator', a.id)) {
+                  <tr>
+                    <td colspan="6">
+                      <gr-actuator-editor
+                        [roomId]="id()"
+                        [actuator]="editingActuator()"
+                        [pots]="pots()"
+                        (done)="editing.set(null)"
+                      />
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty">No pumps or switches yet.</p>
+      }
+    </section>
+
+    <!-- Schedules -->
+    <section aria-labelledby="schedules-title">
+      <div class="section-head">
+        <h2 id="schedules-title">Schedules</h2>
+        <button
+          type="button"
+          class="ghost"
+          [disabled]="!probes().length && !actuators().length"
+          (click)="edit('schedule', null)"
+        >
+          Add schedule
+        </button>
+      </div>
+      @if (isEditing('schedule', null)) {
+        <gr-schedule-editor
+          [probes]="probes()"
+          [actuators]="actuators()"
+          [takenIds]="scheduleIds()"
+          (done)="editing.set(null)"
+        />
+      }
+      @if (schedules().length) {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">For</th>
+                <th scope="col">When</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of schedules(); track row.schedule.id) {
+                <tr [class.off]="!row.schedule.enabled">
+                  <td>
+                    {{ row.target }}
+                    @if (!row.schedule.enabled) {
+                      (disabled)
+                    }
+                  </td>
+                  <td>{{ row.rule }}</td>
+                  <td class="actions">
+                    <button
+                      type="button"
+                      class="ghost small"
+                      (click)="edit('schedule', row.schedule.id)"
+                      [attr.aria-label]="'Edit schedule for ' + row.target"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+                @if (isEditing('schedule', row.schedule.id)) {
+                  <tr>
+                    <td colspan="3">
+                      <gr-schedule-editor
+                        [schedule]="editingSchedule()"
+                        [probes]="probes()"
+                        [actuators]="actuators()"
+                        (done)="editing.set(null)"
+                      />
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty">Nothing scheduled. Without schedules the agent only acts when told.</p>
+      }
+    </section>
+  }
+}

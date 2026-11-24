@@ -216,26 +216,26 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🔴 Large |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Design and build client screens for rooms, probes, actuators, schedules, calendars and agent tokens.
+🧑 **→ Human action required: Procedure**<br />Try the Setup pages on the dev stack and report what feels wrong: [run it](../README.md#run-it), then open http://127.0.0.1:8080/setup.
 
 | | |
 |---|---|
 | **Issue** | Everything except daily operation is set up through the HTTP API with curl; the client has no way to add or edit a room, probe, actuator, schedule or calendar. |
 | **Reproduce** | Open the dashboard: there is no edit or add control. |
-| **Check** | Each entity can be created, edited and deleted from the client with validation messages from the contracts schemas; a browser test covers one full set-up. |
+| **Check** | Each entity can be created, edited and deleted from the client with validation messages from the contracts schemas; the owner has tried a full set-up in a browser. (A browser test is F-009.) |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Signal forms over the existing PUT/DELETE routes; agent token issue shows the token once.
+**Next action / closure evidence:** Built 2026-11-24 on `feat/f006-setup-screens` (stacked on #15): Setup overview (rooms, calendars, agent registration with a one-time token, rotate, remove), room page (room form, pots, probes, actuators, schedules with inline editors), calendar editor (phases, doses, ranges). Signal Forms with field messages, contracts schemas checked before sending. Hub: deleting a probe or actuator deletes its schedules; 409 for a calendar in use or an agent already running a room; token rotation drops the agent's connection; `DELETE /api/agents/<id>`. Checks: 5 hub tests (`apps/hub/test/setup.test.ts`), 8 client tests (draft round-trips for every binding and rule, the probe editor's PUT body and its refusal without a name), build, lint, and the dev stack served `/setup`, `/setup/rooms/grow-1`, `/setup/calendars/default`. Not done: looking at the pages in a browser (no browser here) and a browser test (F-009). Closes when CI passes and the owner has tried it.
 
-**Estimates:** Large remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#16](https://github.com/voidbrain/Grover/pull/16) (stacked on #15) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

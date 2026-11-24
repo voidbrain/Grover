@@ -60,6 +60,8 @@ System UI stack (`--font`: Inter if installed, then the platform font); no web f
 - **Segmented control** (global `.segmented`): a `fieldset` of radio inputs with a hidden legend; used for mode and chart range.
 - **Buttons** (global `button`): primary (accent fill), `.ghost` (outline), `.danger` (red outline, only for Stop all), `.small`.
 - **Switch** (`.toggle` with `role="switch"` and `aria-checked`): lights, fans, water loop.
+- **Setup pages** (`apps/client/src/app/setup/`): a table per kind of thing with an "Edit" button per row and an "Add …" button above; the editor opens inline under its row (`.editor`, accent border) and closes on save or cancel. Labels sit above fields (`.field`), errors under them in `--bad` once the field is touched, schema or hub refusals in a `.form-errors` list above the buttons. Save is the primary button, Cancel `.ghost`, Delete `.danger` and always asks first. Ids are made from the name when something is created and never edited.
+- **Form fields** (global): text, number, date, time inputs and selects share one look (`--surface-2`, `--line` border, `--bad` border when invalid); `.form-grid` lays them out in an auto-fill grid (min 12 rem); `.field.check` for a checkbox with its label; `.hint` for help text.
 - **Probe chart** (`apps/client/src/app/probe-page.ts`): inline SVG line with the phase target band and five value ticks.
 
 ## Accessibility

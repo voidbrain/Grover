@@ -15,6 +15,7 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 
 - Code: `apps/hub/src`; tests in `apps/hub/test`.
 - `Store` is the only SQL. Validate with the contracts schema on write and on read of JSON columns. Telemetry inserts are idempotent.
+- Deletes keep the model whole: a deleted probe or actuator takes its schedules with it (`Store.deleteEntity`); SQLite foreign-key and agent-uniqueness failures map to 409 with a plain reason.
 - `Commands` is the only path to hardware; `Control` calls it too. HTTP errors map from `NotFound` 404, `Refused` 409, `AgentOffline` 503, `CommandTimeout` 504, `ZodError` 400.
 - Any setup write republishes agent configs (`publishAllConfigs`).
 - The HTTP server binds loopback by default; never change the default to a public bind. MCP is stateless (a server per request).
@@ -33,4 +34,7 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - Code: `apps/client/src/app`; rules in [Angular rules](angular.md); look in [the style guide](../STYLE-GUIDE.md).
 - `Hub` (service) holds the snapshot and applies live events; components derive with `computed()`. Import from `@grover/contracts` as types only, runtime helpers from `@grover/contracts/kinds`.
 - Every action button is disabled when the hub socket is down, the agent is offline or the mode forbids it; the hub refusal text is shown as is.
+- Setup forms (`setup/`) edit flat drafts (`drafts.ts`), convert to entities and check them with the contracts schema before sending; the zod schemas load only in the lazy setup chunks. Every save goes through `SetupApi`, which refreshes the shared snapshot.
+- Signal Forms own `min`, `max` and `required` on a `[formField]` input: put them in the form schema, never as template attributes (NG8022).
+- In unit tests a select bound with `[formField]` updates on the `input` event (browsers fire it with `change`); dispatch both.
 - Lesson: importing `isPump` from the main contracts entry pulled zod into the dashboard chunk (447 kB → 15 kB after moving it to `kinds`).

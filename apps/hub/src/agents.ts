@@ -100,6 +100,12 @@ export class AgentLink {
     await new Promise<void>((r) => this.server.close(() => r()));
   }
 
+  /** Drops a connected agent (after its token was revoked or rotated). */
+  disconnect(agentId: string): void {
+    // `clients` is public in aedes but missing from its type definitions.
+    (this.broker as unknown as { clients: Record<string, { close(): void } | undefined> }).clients[agentId]?.close();
+  }
+
   isOnline(agentId: string): boolean {
     return this.online.has(agentId);
   }
