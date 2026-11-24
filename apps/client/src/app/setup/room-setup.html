@@ -93,6 +93,28 @@
         <input type="checkbox" [formField]="f.autoFeed" />
         Feed pots by themselves
       </label>
+      <fieldset class="field colours">
+        <legend>Nutrient colours</legend>
+        <span class="hint">Like the real bottles: shown on the tanks, their pumps and the doses.</span>
+        <div class="colour-grid">
+          @for (t of supplyTanks; track t) {
+            <label class="colour">
+              <input
+                type="color"
+                list="nutrient-palette"
+                [value]="model().tankColours[t]"
+                (input)="setTankColour(t, $any($event.target).value)"
+              />
+              {{ tankTitles[t] }}
+            </label>
+          }
+        </div>
+        <datalist id="nutrient-palette">
+          @for (c of palette; track c.hex) {
+            <option [value]="c.hex">{{ c.name }}</option>
+          }
+        </datalist>
+      </fieldset>
     </div>
     @if (model().autoFeed) {
       <p class="hint">

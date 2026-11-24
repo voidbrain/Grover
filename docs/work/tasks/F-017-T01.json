@@ -4,7 +4,7 @@
   "parent": "F-017",
   "title": "A colour per supply tank, stored with the tent",
   "goal": "Each supply tank has a colour with a default per role",
-  "status": "ready",
+  "status": "closed",
   "acceptance": [
     "A migration and contracts field for the colour, defaults per role",
     "Hub test: stored and returned"
@@ -32,12 +32,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h agent",
-    "basis": "Estimated 2026-11-24: 1 h agent.",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #28 on green CI 2026-11-24 (another session), before this plan merged. No actual: the step was not timed here.",
     "reviewed": "2026-11-24",
-    "agentHours": 1,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 28,
+      "note": "implementation"
+    }
+  ]
 }

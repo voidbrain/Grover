@@ -1,3 +1,4 @@
+import { NUTRIENT_PALETTE, SUPPLY_TANKS, TANK_TITLES, type SupplyTankId } from '@grover/contracts/kinds';
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { FormField, form, max, min, pattern, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
@@ -31,6 +32,31 @@ type Editing = { kind: 'pot' | 'probe' | 'actuator' | 'schedule'; id: string | n
   imports: [FormField, FieldError, RouterLink, PotEditor, ProbeEditor, ActuatorEditor, ScheduleEditor],
   templateUrl: './room-setup.html',
   styles: `
+    .colours {
+      grid-column: 1 / -1;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      legend {
+        padding: 0;
+      }
+    }
+    .colour-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin-top: var(--space-2);
+    }
+    .colour {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      input {
+        width: 2.5rem;
+        height: 2rem;
+        padding: 0;
+      }
+    }
     :host {
       display: grid;
       gap: var(--space-5);
@@ -131,6 +157,13 @@ export class RoomSetup {
 
   // ── room form ────────────────────────────────────────────────────────────
   protected readonly model = linkedSignal(() => roomDraft(this.room() ?? undefined));
+  protected readonly supplyTanks = SUPPLY_TANKS;
+  protected readonly tankTitles = TANK_TITLES;
+  protected readonly palette = NUTRIENT_PALETTE;
+  protected setTankColour(tank: SupplyTankId, hex: string): void {
+    if (/^#[0-9a-f]{6}$/.test(hex))
+      this.model.update((d) => ({ ...d, tankColours: { ...d.tankColours, [tank]: hex } }));
+  }
   protected readonly f = form(this.model, (p) => {
     required(p.name, { message: 'Give the room a name' });
     min(p.mixEmptyLevel, 0, { message: 'Not negative' });

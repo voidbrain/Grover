@@ -290,3 +290,14 @@ select[aria-invalid='true'] {
     border-color: var(--accent);
   }
 }
+
+/* A nutrient's colour (F-017): owner data, always beside its name, never behind text. */
+.swatch {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  vertical-align: middle;
+  flex: none;
+}

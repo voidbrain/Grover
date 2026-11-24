@@ -32,7 +32,7 @@ sudo systemctl enable --now grover-agent
 journalctl -u grover-agent -n 20 --no-pager
 ```
 
-Expected: no repeated `fault` or connection errors in the agent log, and the Setup page (step 4) shows agent `pi-1` online.
+Expected: no repeated `fault` or connection errors in the agent log, and, once step 4 below has opened the dashboard, its Setup page shows agent `pi-1` online.
 
 ## 3. Tailnet (on the Pi)
 

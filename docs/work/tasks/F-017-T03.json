@@ -2,9 +2,9 @@
   "version": 1,
   "id": "F-017-T03",
   "parent": "F-017",
-  "title": "Owner looks at the nutrient colours",
-  "goal": "The owner has seen the colours on the dashboard and map",
-  "status": "planned",
+  "title": "Owner picks the nutrient colours",
+  "goal": "Each supply tank shows the colour of the owner's nutrient",
+  "status": "ready",
   "acceptance": [
     "The owner reports fine or what felt wrong"
   ],
@@ -25,10 +25,11 @@
   "escalation": [
     "A material scope or effort increase goes to the owner"
   ],
+  "ownerLink": "docs/acceptance/dev-stack.md#nutrient-colours",
   "effort": {
     "size": "small",
     "estimate": "0.25 h owner",
-    "basis": "Estimated 2026-11-24: 15 minutes; its section of the dev-stack page is written with the code.",
+    "basis": "Estimated 2026-11-24: about 15 minutes on the dev stack.",
     "reviewed": "2026-11-24",
     "agentHours": 0,
     "ownerHours": 0.25,

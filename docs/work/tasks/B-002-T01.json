@@ -2,17 +2,15 @@
   "version": 1,
   "id": "B-002-T01",
   "parent": "B-002",
-  "title": "Adopt the template release whose convention check reads apps/client/src",
-  "goal": "check:conventions checks the Angular client in this monorepo",
-  "status": "planned",
+  "title": "Owner agrees the template change and has it recorded in project-harness",
+  "goal": "The template backlog holds a record for a configurable source root in check-conventions",
+  "status": "ready",
   "acceptance": [
-    "A planted `standalone: true` in an apps/client/src component makes `npm run check:conventions` fail",
-    "The planted problem is removed before merge"
+    "A project-harness record exists for a configurable source root in check-conventions, or the owner drops this bug with a reason",
+    "Until then B-002-T02 stays waiting: this step stands for the external dependency on project-harness"
   ],
   "dependsOn": [],
   "resources": [
-    "tools/check-conventions.mjs",
-    ".harness.json",
     "docs/work/records/B-002.md"
   ],
   "capabilities": [
@@ -20,21 +18,19 @@
   ],
   "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
   "validation": [
-    "npm run check:fast",
-    "npm test",
     "npm run check:work"
   ],
   "escalation": [
     "A material scope or effort increase goes to the owner"
   ],
+  "ownerLink": "docs/work/records/B-002.md",
   "effort": {
     "size": "small",
-    "estimate": "0.5 h agent",
-    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting. Depends on project-harness: a configurable source root for check-conventions, not yet recorded there.",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-24: 15 minutes to agree and register it. Stands for the dependency on project-harness until cross-repository dependsOn exists.",
     "reviewed": "2026-11-24",
-    "agentHours": 0.5,
-    "ownerHours": 0,
-    "baselineAgentHours": 0.5,
-    "estimateAgentHours": 0.5
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "decision"
   }
 }

@@ -4,10 +4,10 @@ Owner checks of features that are built and merged but not yet tried by the owne
 
 ## Start
 
-On the Mac, in a terminal:
+On the Mac, in a terminal, in your Grover clone (replace `<grover-clone>` with its folder):
 
 ```bash
-cd ~/Projects/Grover && git checkout main && git pull --ff-only
+cd <grover-clone> && git checkout main && git pull --ff-only
 nvm use && npm install
 rm -rf data/dev && npm run dev
 ```
@@ -67,3 +67,11 @@ Expected: six supply tanks, the mixing tank, four pots with their pumps, loops, 
 3. Untick every day and try to save.
 
 Expected: the editor shows Monday to Friday apart from Saturday and Sunday; after each save the schedule list names its days; with no day ticked nothing is saved and a message says why.
+
+## Nutrient colours
+
+1. Open http://127.0.0.1:8080/setup, the demo tent, and find **Nutrient colours**.
+2. Give each supply tank the colour of your product (a suggestion from the palette or your own), save.
+3. Back on the dashboard and on the **Map**, look at the tanks and their pumps; open the plant page of pot 3 and look at the dose bars; switch the system to dark mode.
+
+Expected: each tank, its pump and its dose bar show the colour you chose; labels next to the colours stay readable in light and dark.

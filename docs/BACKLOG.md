@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 24 November 2026 against main `236a17f`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `c5e0bf3`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 25 h agent + 12.5 h owner across 44 open steps of 17 features and 2 other records. Generated from the task files.
+**Remaining effort:** 22.5 h agent + 13.25 h owner across 47 open steps of 17 features and 2 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -16,7 +16,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 1.5 h owner | — | [F-003-T02](#f-003-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | — |
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 1.75 h owner | — | [F-003-T02](#f-003-t02), [F-008-T04](#f-008-t04), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | 🤔 |
 
 🧑 **→** Next: [🧑‍🔧](acceptance/pi-deploy.md) F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale (Ready).
 
@@ -30,9 +30,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale | 0 h | 0 h | 0 h agent + 1.5 h owner | Ready | — | [F-003-T02](#f-003-t02), [F-005-T02](#f-005-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/pi-deploy.md) |
-| 🟢 Small | <a id="f-005-t02"></a>F-005-T02 — Fix the README and service files from the first install | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.5 h | 0 h (0 of 2 steps recorded) | 0.5 h agent + 1.5 h owner | 0 of 2 completed | | | |
+| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale | 0 h | 0 h | 0 h agent + 1.25 h owner | Ready | — | [F-003-T02](#f-003-t02), [F-005-T03](#f-005-t03), [F-005-T04](#f-005-t04), [F-008-T04](#f-008-t04), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/pi-deploy.md) |
+| 🟢 Small | <a id="f-005-t02"></a>F-005-T02 — Owner has the NERV record opened for a Grover MCP connection | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [F-005-T03](#f-005-t03) | [🤔](work/records/F-005.md) |
+| 🟢 Small | <a id="f-005-t03"></a>F-005-T03 — Owner checks NERV lists the Grover tools | — | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01), [F-005-T02](#f-005-t02) | — | ⏳ 🧑‍🔧 |
+| 🟢 Small | <a id="f-005-t04"></a>F-005-T04 — Fix the README and service files from the first install | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.5 h (2 of 4 steps) | 0 h (0 of 4 steps recorded) | 0.5 h agent + 1.75 h owner | 0 of 4 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -176,7 +178,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-004-T01: [PR #21](https://github.com/voidbrain/Grover/pull/21) implementation. [#21](https://github.com/voidbrain/Grover/pull/21); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #21 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #21 and the main run after merge (efeccdb) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -224,7 +226,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-011-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #17 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #17 and the main run after merge (a5cf6e3) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -310,7 +312,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #18 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. The owner's import is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -326,7 +328,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.5 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | 🤔 |
 
 💻 **→** Next: F-008-T02 — Hysteresis at alert thresholds (Ready).
 
@@ -340,9 +342,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
 |---|---|---|---|---|---|---|---|:---:|---|
-| 🟡 Medium | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | 1.5 h | Ready | — | [F-008-T03](#f-008-t03) | 🤖 | — |
-| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-008-T02](#f-008-t02), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
-| 🟡 Medium | **Total** | 1.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 1.5 h agent + 0.25 h owner | 1 of 3 completed | | | | |
+| 🟡 Medium | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | 1.5 h | Ready | — | [F-008-T04](#f-008-t04) | 🤖 | — |
+| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner has the NERV record opened for Grover alert delivery | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [F-008-T04](#f-008-t04) | [🤔](work/records/F-008.md) | — |
+| 🟢 Small | <a id="f-008-t04"></a>F-008-T04 — Owner sees a Grover alert delivered by NERV | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-008-T02](#f-008-t02), [F-008-T03](#f-008-t03), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
+| 🟡 Medium | **Total** | 1.5 h (2 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.5 h owner | 1 of 4 completed | | | | |
 
 <details><summary>Done steps (1)</summary>
 
@@ -409,7 +412,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-006-T01: [PR #16](https://github.com/voidbrain/Grover/pull/16) implementation. [#16](https://github.com/voidbrain/Grover/pull/16) (stacked on #15); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #16 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #16 and the main run after merge (1f80ff5) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -457,7 +460,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-007-T01: [PR #20](https://github.com/voidbrain/Grover/pull/20) implementation. [#20](https://github.com/voidbrain/Grover/pull/20); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #20 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #20 and the main run after merge (9400372) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -505,7 +508,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-013-T01: [PR #19](https://github.com/voidbrain/Grover/pull/19) implementation. [#19](https://github.com/voidbrain/Grover/pull/19); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #19 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #19 and the main run after merge (bc36108) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -553,7 +556,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-014-T01: [PR #25](https://github.com/voidbrain/Grover/pull/25) implementation. [#25](https://github.com/voidbrain/Grover/pull/25); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #25 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #25 and the main run after merge (77851b1) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -601,7 +604,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-015-T01: [PR #26](https://github.com/voidbrain/Grover/pull/26) implementation. [#23](https://github.com/voidbrain/Grover/pull/23) (record), [#26](https://github.com/voidbrain/Grover/pull/26); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #26 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #26 and the main run after merge (af7026c) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -649,51 +652,12 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-016-T01: [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation. [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#27](https://github.com/voidbrain/Grover/pull/27); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #27 after merge; the owner's try is pending. |
+| Verification | 2026-11-24: PR CI green on #27 and the main run after merge (236a17f) green; the owner's try is pending. |
 | Reviewed | 2026-11-24 |
 
 </details>
 
 ---
-### <a id="b-002"></a>[🐞 B-002](#top)
-
-**`check:conventions` does not see the client in this monorepo**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | 0.5 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-002-T01 — Adopt the template release whose convention check reads apps/client/src (Planned).
-
-| | |
-|---|---|
-| **Issue** | `tools/check-conventions.mjs` walks `src/`, `tools/` and `e2e/` under the repository root; Grover's Angular code is under `apps/client/src`, so the convention check passes without checking it. |
-| **Reproduce** | `npm run check:conventions` reports no problems even after adding `standalone: true` to a client component. |
-| **Check** | The check finds the planted problem in `apps/client/src`. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status |
-|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-002-t01"></a>B-002-T01 — Adopt the template release whose convention check reads apps/client/src | 0.5 h | 0 h | 0.5 h | Planned |
-| 🟢 Small | **Total** | 0.5 h | 0 h (0 of 1 steps recorded) | 0.5 h | 0 of 1 completed |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-002.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
 ### <a id="f-010"></a>[✨ F-010](#top)
 
 **Hub data retention and backups**
@@ -726,47 +690,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
-### <a id="f-017"></a>[✨ F-017](#top)
-
-**Nutrient colours: each supply tank in its nutrient's real colour**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | 3 h agent + 0.25 h owner | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-017-T01 — A colour per supply tank, stored with the tent (Ready).
-
-| | |
-|---|---|
-| **Issue** | The old app gave each nutrient (Doses page) a colour matching the real product, so doses read at a glance. The new tanks (water, grow, micro, bloom, ripen, pH down) have no colour. Requested by the owner on 2026-11-24 ("colours are nice because they rely on real nutrient colour"). |
-| **Reproduce** | `npm run dev`: supply tanks, their pumps and doses show no colour. |
-| **Check** | Each supply tank has a colour chosen in Setup (a palette of nutrient-like colours plus a custom value, with defaults per role), stored with the tent (a migration), and used for the tank, its pump, dose bars and chart series; text on a colour keeps STYLE-GUIDE contrast in both themes. A client spec covers the editor. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-017-t01"></a>F-017-T01 — A colour per supply tank, stored with the tent | 1 h | 0 h | 1 h | Ready | — | [F-017-T02](#f-017-t02) | 🤖 |
-| 🟡 Medium | <a id="f-017-t02"></a>F-017-T02 — Colour editor and colours on tanks, pumps, dose bars and charts | 2 h | 0 h | 2 h | Planned | [F-017-T01](#f-017-t01) | [F-017-T03](#f-017-t03) | ⏳ 🤖 |
-| 🟢 Small | <a id="f-017-t03"></a>F-017-T03 — Owner looks at the nutrient colours | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-017-T02](#f-017-t02) | — | ⏳ 🧑‍🔧 |
-| 🟡 Medium | **Total** | 3 h | 0 h (0 of 3 steps recorded) | 3 h agent + 0.25 h owner | 0 of 3 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-017.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#24](https://github.com/voidbrain/Grover/pull/24) (record); [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -857,9 +780,97 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="b-002"></a>[🐞 B-002](#top)
+
+**`check:conventions` does not see the client in this monorepo**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
+
+🧑 **→** Next: [🤔](work/records/B-002.md) B-002-T01 — Owner agrees the template change and has it recorded in project-harness (Ready).
+
+| | |
+|---|---|
+| **Issue** | `tools/check-conventions.mjs` walks `src/`, `tools/` and `e2e/` under the repository root; Grover's Angular code is under `apps/client/src`, so the convention check passes without checking it. |
+| **Reproduce** | `npm run check:conventions` reports no problems even after adding `standalone: true` to a client component. |
+| **Check** | The check finds the planted problem in `apps/client/src`. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="b-002-t01"></a>B-002-T01 — Owner agrees the template change and has it recorded in project-harness | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [B-002-T02](#b-002-t02) | [🤔](work/records/B-002.md) |
+| 🟢 Small | <a id="b-002-t02"></a>B-002-T02 — Adopt the template release whose convention check reads apps/client/src | 0.5 h | 0 h | 0.5 h | Planned | [B-002-T01](#b-002-t01) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.5 h (1 of 2 steps) | 0 h (0 of 2 steps recorded) | 0.5 h agent + 0.25 h owner | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-002.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### <a id="f-017"></a>[✨ F-017](#top)
+
+**Nutrient colours: each supply tank in its nutrient's real colour**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | 🧑‍🔧 | — |
+
+🧑 **→** Next: [🧑‍🔧](acceptance/dev-stack.md#nutrient-colours) F-017-T03 — Owner picks the nutrient colours (Ready).
+
+| | |
+|---|---|
+| **Issue** | The old app gave each nutrient (Doses page) a colour matching the real product, so doses read at a glance. The new tanks (water, grow, micro, bloom, ripen, pH down) have no colour. Requested by the owner on 2026-11-24 ("colours are nice because they rely on real nutrient colour"). |
+| **Reproduce** | `npm run dev`: supply tanks, their pumps and doses show no colour. |
+| **Check** | Each supply tank has a colour chosen in Setup (a palette of nutrient-like colours plus a custom value, with defaults per role), stored with the tent (a migration), and used for the tank, its pump, dose bars and chart series; text on a colour keeps STYLE-GUIDE contrast in both themes. A client spec covers the editor. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="f-017-t03"></a>F-017-T03 — Owner picks the nutrient colours | 0 h | 0 h | 0 h agent + 0.25 h owner | Ready | — | [F-017-T04](#f-017-t04) | [🧑‍🔧](acceptance/dev-stack.md#nutrient-colours) | — |
+| 🟢 Small | <a id="f-017-t04"></a>F-017-T04 — Record the colour choice; fix what it found | 0.5 h | 0 h | 0.5 h | Planned | [F-017-T03](#f-017-t03) | — | ⏳ 🤖 | — |
+| 🟢 Small | **Total** | 3.5 h | 0 h (0 of 4 steps recorded) | 0.5 h agent + 0.25 h owner | 2 of 4 completed | | | | |
+
+<details><summary>Done steps (2)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-017-t01"></a>F-017-T01 — A colour per supply tank, stored with the tent | 1 h | 0 h | Completed | [PR #28](https://github.com/voidbrain/Grover/pull/28) implementation |
+| — | <a id="f-017-t02"></a>F-017-T02 — Colour editor and colours on tanks, pumps, dose bars and charts | 2 h | 0 h | Completed | [PR #28](https://github.com/voidbrain/Grover/pull/28) implementation |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-017.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-017-T01: [PR #28](https://github.com/voidbrain/Grover/pull/28) implementation · F-017-T02: [PR #28](https://github.com/voidbrain/Grover/pull/28) implementation. [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#28](https://github.com/voidbrain/Grover/pull/28), [#30](https://github.com/voidbrain/Grover/pull/30) |
+| Opened | 2026-11-24 |
+| Verification | 2026-11-24: PR CI green on #28 and the main run after merge (c5e0bf3) green; the owner's choice of colours is pending. |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ## Other changes
 
-**Reconciliation and step plans, 2026-11-24 (main `236a17f`).** PRs #18, #19, #20, #21, #22, #25, #26 and #27 merged on green CI: B-004 and B-005 closed on it; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) moved to its source. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`).
+**Reconciliation and step plans, 2026-11-24 (main `c5e0bf3`).** PRs #18–#22 and #25–#28 merged with green PR CI (main ran green after each merge except #18, whose e2e read test raced scheduled reads until #19 fixed it): B-004 and B-005 closed; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) and F-017 (from #28) moved to their sources. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`). Review: independent fresh-context review of #30 by the coordinator, 2026-11-24: no blocker; 3 should-fix (external dependencies shown as ready, unverified green-after-merge claims, F-006 PR number checked: #16 is correct) and 4 minor wording points, all fixed in #30.
 
 ## How to use this file
 

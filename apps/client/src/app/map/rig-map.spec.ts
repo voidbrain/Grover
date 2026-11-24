@@ -46,6 +46,9 @@ describe('RigMap', () => {
     expect(grow.getAttribute('data-alert')).toBe('bad');
     expect(grow.textContent).toContain('Low: refill');
     expect(node('.node.tank', 'Micro').textContent).toContain('No pump');
+    // Nutrient colours (F-017): the tent's own, else the default.
+    expect(grow.querySelector<HTMLElement>('.swatch')!.style.background).toBe('rgb(26, 127, 55)');
+    expect(node('.node.tank', 'Bloom').querySelector<HTMLElement>('.swatch')!.style.background).not.toBe('');
     expect(el.querySelector('.node.mix')!.textContent).toContain('Idle');
     const pot = el.querySelector('.node.pot')!;
     expect(pot.textContent).toContain('NL g2');

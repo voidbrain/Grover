@@ -148,7 +148,7 @@ Closed records, in closing-date order. History, not current status: see the [bac
 |:---:|---|---|---|
 | 🔵 | ◻️ P2 | Closed | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Closed 2026-11-24: fix merged in #18 on green CI.
+💻 **→ Human action required: No**<br />Closed 2026-11-24: fix merged in #18 with green PR CI; main green since bc36108 (#19).
 
 | | |
 |---|---|
@@ -159,7 +159,7 @@ Closed records, in closing-date order. History, not current status: see the [bac
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Closed 2026-11-24: fix merged in #18 on green CI. Found by CI on #18 (run 45460424727). Fixed on `feat/f012-plants`: the agent's ack carries the reading's own time; `Commands.readProbe` and the Feeder's pre-feed readings store and announce the value from the ack. Closes on #18's green CI.
+**Next action / closure evidence:** Closed 2026-11-24: fix merged in #18 with green PR CI; main green since bc36108 (#19). Found by CI on #18 (run 45460424727). Fixed on `feat/f012-plants`: the agent's ack carries the reading's own time; `Commands.readProbe` and the Feeder's pre-feed readings store and announce the value from the ack. Closes on #18's green CI.
 
 **Estimates:** No remaining effort.
 
@@ -167,7 +167,7 @@ Closed records, in closing-date order. History, not current status: see the [bac
 |---|---|
 | PR / evidence | [#18](https://github.com/voidbrain/Grover/pull/18) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #18 after merge (reconcile:draft) |
+| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in this record's e2e read test, which assumed the newest reading was the manual one while scheduled reads add others; #19 (789002c) made the test look for the read value; main green since bc36108. |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -182,7 +182,7 @@ Closed records, in closing-date order. History, not current status: see the [bac
 |:---:|---|---|---|
 | 🔵 | ◻️ P1 | Closed | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Closed 2026-11-24: fix merged in #22 on green CI.
+💻 **→ Human action required: No**<br />Closed 2026-11-24: fix merged in #22 with green PR CI and a green main run after merge (7ca3266).
 
 | | |
 |---|---|
@@ -193,7 +193,7 @@ Closed records, in closing-date order. History, not current status: see the [bac
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Closed 2026-11-24: fix merged in #22 on green CI. Fixed 2026-11-24 on `fix/b005-run-once`: `Actuators` tracks a busy state per pump (waiting / running) and refuses another run until the first settles; the client tracks pending runs until the "off" actuation. Other buttons checked: Feed now is disabled while a feed runs, switches and plant actions are disabled while their request is in flight and act once. Closes on the PR's green CI.
+**Next action / closure evidence:** Closed 2026-11-24: fix merged in #22 with green PR CI and a green main run after merge (7ca3266). Fixed 2026-11-24 on `fix/b005-run-once`: `Actuators` tracks a busy state per pump (waiting / running) and refuses another run until the first settles; the client tracks pending runs until the "off" actuation. Other buttons checked: Feed now is disabled while a feed runs, switches and plant actions are disabled while their request is in flight and act once. Closes on the PR's green CI.
 
 **Estimates:** No remaining effort.
 
@@ -201,7 +201,7 @@ Closed records, in closing-date order. History, not current status: see the [bac
 |---|---|
 | PR / evidence | [#22](https://github.com/voidbrain/Grover/pull/22) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: CI green on #22 after merge (reconcile:draft) |
+| Verification | 2026-11-24: PR CI green on #22 and the main run after merge (7ca3266) green. |
 | Reviewed | 2026-11-24 |
 
 </details>

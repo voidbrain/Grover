@@ -50,7 +50,7 @@
     <div class="row supply">
       @for (t of tanks(); track t.role) {
         <div class="node tank" [attr.data-alert]="t.worst">
-          <span class="node-title">{{ t.title }}</span>
+          <span class="node-title"><span class="swatch" [style.background]="t.colour"></span> {{ t.title }}</span>
           @if (t.tile; as tile) {
             <a class="value-link" [routerLink]="['/probes', tile.probe.id]" [attr.data-health]="tile.health">
               <span class="value">{{ tile.value === undefined ? '–' : (tile.value | number: '1.0-1') }}</span>
@@ -195,7 +195,7 @@
   <div class="tile" [attr.data-health]="t.health">
     <a [routerLink]="['/probes', t.probe.id]" class="tile-name"
       >{{ t.title }}
-      @if (t.shared && !t.title.includes('shared')) {
+      @if (t.shared && !t.title.toLowerCase().includes('shared')) {
         <span class="hint">(shared)</span>
       }
     </a>

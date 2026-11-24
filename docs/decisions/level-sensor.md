@@ -12,4 +12,4 @@ Mixing them is possible (for example 1 for the mixing tank and pots, 3 for the s
 
 ## What happens next
 
-The agent builds the driver for the chosen option (option 1 needs only the calibration of volts to centimetres) and adds it to the hardware bring-up. Answer in the backlog record with the option (or mix) and the part you plan to buy.
+The agent builds the driver for the chosen option (option 1 needs only the calibration of volts to centimetres) and adds it to the hardware bring-up. Answer in the backlog record F-003 (step F-003-T01) with the option (or mix) and the part you plan to buy.

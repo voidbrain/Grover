@@ -4,7 +4,7 @@
   "parent": "F-017",
   "title": "Colour editor and colours on tanks, pumps, dose bars and charts",
   "goal": "Doses read at a glance by colour in both themes",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "Setup offers a palette of nutrient-like colours and a custom value",
     "Tank, pump, dose bars and chart series use it; text on a colour keeps STYLE-GUIDE contrast in both themes",
@@ -36,12 +36,18 @@
   ],
   "effort": {
     "size": "medium",
-    "estimate": "2 h agent",
-    "basis": "Estimated 2026-11-24: 2 h agent.",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #28 on green CI 2026-11-24 (another session), before this plan merged. No actual: the step was not timed here.",
     "reviewed": "2026-11-24",
-    "agentHours": 2,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 2,
     "estimateAgentHours": 2
-  }
+  },
+  "prs": [
+    {
+      "pr": 28,
+      "note": "implementation"
+    }
+  ]
 }
