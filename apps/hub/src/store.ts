@@ -5,6 +5,7 @@ import {
   Actuator,
   AgentStatus,
   CALIBRATION_PROTOCOL,
+  DEFAULT_TANK_COLOURS,
   Calendar,
   Phase,
   Pot,
@@ -18,6 +19,7 @@ import {
   type Alert,
   type FeedView,
   type ProbeKind,
+  type SupplyTankId,
   type TankRoleId,
 } from '@grover/contracts';
 import { z } from 'zod';
@@ -26,6 +28,27 @@ type Row = Record<string, SQLInputValue>;
 const bool = (v: unknown) => v === 1 || v === 1n;
 const json = (v: unknown) => JSON.parse(String(v));
 const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
+
+/**
+ * A tent's nutrient colours from their JSON column, validated key by key: an unreadable value, an unknown tank or a
+ * bad colour is dropped (that tank shows its default), and the rest are kept.
+ */
+function readTankColours(raw: unknown): Room['tankColours'] {
+  if (raw == null) return {};
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(String(raw));
+  } catch {
+    return {};
+  }
+  if (!parsed || typeof parsed !== 'object') return {};
+  const out: Room['tankColours'] = {};
+  for (const [k, v] of Object.entries(parsed)) {
+    const one = Room.shape.tankColours.safeParse({ [k]: v });
+    if (one.success) Object.assign(out, one.data);
+  }
+  return out;
+}
 /** Whether temperature probe `t` measures the solution of probe `p`: same pot, or the tent's shared one. */
 const compensates = (t: Probe, p: Probe) =>
   t.kind === 'water_temperature' &&
@@ -97,9 +120,7 @@ export class Store {
       lightFrom: r['light_from'] as Room['lightFrom'],
       lightStart: String(r['light_start']),
       lightPlantId: r['light_plant_id'] == null ? null : String(r['light_plant_id']),
-      // Validated like every JSON column; an unreadable value falls back to the defaults.
-      tankColours:
-        r['tank_colours'] == null ? {} : (Room.shape.tankColours.safeParse(json(r['tank_colours'])).data ?? {}),
+      tankColours: readTankColours(r['tank_colours']),
     };
   }
   listRooms(): Room[] {
@@ -115,7 +136,14 @@ export class Store {
     return r ? this.room(r) : null;
   }
   putRoom(input: unknown): Room {
-    const r = Room.parse(input);
+    const parsed = Room.parse(input);
+    // Only colours that differ from the default are stored, whoever sends them (F-017).
+    const r = {
+      ...parsed,
+      tankColours: Object.fromEntries(
+        Object.entries(parsed.tankColours).filter(([t, c]) => c !== DEFAULT_TANK_COLOURS[t as SupplyTankId]),
+      ),
+    };
     this.db
       .prepare(
         `INSERT INTO rooms (id, name, agent_id, mode, auto_feed, calendar_id, calendar_start, mix_empty_level, mix_settle_seconds,

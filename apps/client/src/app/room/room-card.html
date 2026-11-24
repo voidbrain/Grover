@@ -274,7 +274,7 @@
     <a [routerLink]="['/probes', t.probe.id]" class="probe-link">
       <span class="probe-name"
         >{{ t.title }}
-        @if (t.shared && !t.title.includes('shared')) {
+        @if (t.shared && !t.title.toLowerCase().includes('shared')) {
           <span class="muted"> (shared)</span>
         }
       </span>

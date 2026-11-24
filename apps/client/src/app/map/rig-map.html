@@ -195,7 +195,7 @@
   <div class="tile" [attr.data-health]="t.health">
     <a [routerLink]="['/probes', t.probe.id]" class="tile-name"
       >{{ t.title }}
-      @if (t.shared && !t.title.includes('shared')) {
+      @if (t.shared && !t.title.toLowerCase().includes('shared')) {
         <span class="hint">(shared)</span>
       }
     </a>

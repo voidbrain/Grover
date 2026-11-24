@@ -56,7 +56,6 @@ export const TANK_TITLES: Record<TankRoleId, string> = {
   mix: 'Mixing tank',
 };
 
-/** The supply pump that empties each supply tank into the mixing tank. */
 /** The supply tanks (every tank but the mixing one). */
 export const SUPPLY_TANKS = ['water', 'grow', 'micro', 'bloom', 'ripen', 'ph_down'] as const;
 export type SupplyTankId = (typeof SUPPLY_TANKS)[number];
@@ -94,6 +93,7 @@ export function tankColour(room: { tankColours?: Partial<Record<SupplyTankId, st
 export const doseTank = (key: string): SupplyTankId | null =>
   key === 'phDown' ? 'ph_down' : (SUPPLY_TANKS as readonly string[]).includes(key) ? (key as SupplyTankId) : null;
 
+/** The supply pump that empties each supply tank into the mixing tank. */
 export const TANK_PUMP: Record<Exclude<TankRoleId, 'mix'>, ActuatorKindId> = {
   water: 'pump_water',
   grow: 'pump_grow',

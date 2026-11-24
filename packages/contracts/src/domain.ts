@@ -93,7 +93,15 @@ export const Room = z.object({
   /** Least time between two automatic feeds of one pot. */
   feedCooldownMinutes: z.number().int().min(1).max(10080).default(60),
   /** Each supply tank's colour, like its real nutrient (F-017); a missing one takes the default. */
-  tankColours: z.partialRecord(z.enum(SUPPLY_TANKS), z.string().regex(/^#[0-9a-f]{6}$/, '#rrggbb')).default({}),
+  tankColours: z
+    .partialRecord(
+      z.enum(SUPPLY_TANKS),
+      z
+        .string()
+        .regex(/^#[0-9a-fA-F]{6}$/, '#rrggbb')
+        .transform((c) => c.toLowerCase()),
+    )
+    .default({}),
 });
 export type Room = z.infer<typeof Room>;
 
