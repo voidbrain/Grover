@@ -258,6 +258,8 @@
               {{ a.name }}
               @if (hub.active().has(a.id)) {
                 <span class="running">running</span>
+              } @else if (hub.pendingRuns().has(a.id)) {
+                <span class="running">waiting</span>
               }
             </span>
             <span class="pump-run">
@@ -273,7 +275,13 @@
                 (change)="setAmount(a, $any($event.target).value)"
               />
               <span class="unit">{{ a.mlPerSecond ? 'mL' : 's' }}</span>
-              <button type="button" [disabled]="!canAct() || busy('act:' + a.id)" (click)="runPump(a)">Run</button>
+              <button
+                type="button"
+                [disabled]="!canAct() || busy('act:' + a.id) || hub.active().has(a.id) || hub.pendingRuns().has(a.id)"
+                (click)="runPump(a)"
+              >
+                Run
+              </button>
             </span>
           </li>
         } @empty {
