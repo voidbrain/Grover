@@ -1,15 +1,17 @@
-import { Actuator, Probe, Room, Schedule } from '@grover/contracts';
+import { Actuator, Pot, Probe, Room, Schedule } from '@grover/contracts';
 import {
   actuatorDraft,
   actuatorWiring,
   describeRule,
   parseI2cAddress,
+  potDraft,
   probeDraft,
   probeWiring,
   roomDraft,
   scheduleDraft,
   slugify,
   toActuator,
+  toPot,
   toProbe,
   toRoom,
   toSchedule,
@@ -40,6 +42,9 @@ describe('setup drafts', () => {
         name: 'A',
         enabled: true,
         binding: { driver: 'ds18b20', address: '28-01' },
+        tank: null,
+        alertBelow: null,
+        alertAbove: 30,
       },
       {
         id: 'b',
@@ -49,11 +54,50 @@ describe('setup drafts', () => {
         name: 'B',
         enabled: false,
         binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 2 },
+        tank: null,
+        alertBelow: null,
+        alertAbove: null,
       },
-      { id: 'c', roomId: 'r', potId: null, kind: 'ec', name: 'C', enabled: true, binding: { driver: 'mock' } },
+      {
+        id: 'c',
+        roomId: 'r',
+        potId: null,
+        kind: 'water_level',
+        name: 'Grow tank',
+        enabled: true,
+        binding: { driver: 'mock' },
+        tank: 'grow',
+        alertBelow: 3,
+        alertAbove: null,
+      },
     ];
     for (const p of probes) expect(Probe.parse(toProbe(probeDraft(p), 'r'))).toEqual(p);
     expect(probeWiring(probes[1]!.binding)).toBe('ADS1115 0x48 ch 2');
+  });
+
+  it('keeps tanks off pots and reads optional alert numbers', () => {
+    const d = {
+      ...probeDraft(),
+      id: 'x',
+      name: 'Water tank',
+      kind: 'water_level' as const,
+      potId: 'pot-1',
+      tank: 'water' as const,
+      alertBelow: ' 5 ',
+      alertAbove: '',
+    };
+    const p = toProbe(d, 'r');
+    expect(p.potId).toBeNull();
+    expect(p.alertBelow).toBe(5);
+    expect(p.alertAbove).toBeNull();
+    expect(toProbe({ ...d, kind: 'ph' }, 'r').tank).toBeNull();
+    expect(Probe.safeParse(toProbe({ ...d, alertBelow: 'lots' }, 'r')).success).toBe(false);
+  });
+
+  it('round-trips pots; 0 litres per cm means unknown', () => {
+    const pot: Pot = { id: 'p', roomId: 'r', name: 'Pot', liters: 15, feedLiters: 2, litersPerCm: 0.5 };
+    expect(Pot.parse(toPot(potDraft(pot), 'r'))).toEqual(pot);
+    expect(toPot({ ...potDraft(pot), litersPerCm: 0 }, 'r').litersPerCm).toBeNull();
   });
 
   it('round-trips pumps and switches, dropping pump-only values on switches', () => {
@@ -120,8 +164,12 @@ describe('setup drafts', () => {
       name: 'Room',
       agentId: 'pi-1',
       mode: 'silent',
-      autoDose: true,
-      reservoirLiters: 25,
+      autoFeed: true,
+      mixEmptyLevel: 1.5,
+      mixSettleSeconds: 30,
+      feedCooldownMinutes: 90,
+      waterEc: 0.25,
+      waterPh: 7.2,
       calendarId: 'default',
       calendarStart: '2026-11-01',
     };

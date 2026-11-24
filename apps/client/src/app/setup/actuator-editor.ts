@@ -31,7 +31,7 @@ import { SetupApi } from './setup-api';
         <label class="field">
           Where
           <select [formField]="f.potId">
-            <option value="">Reservoir (whole room)</option>
+            <option value="">The tent (supply pumps, lights, fans)</option>
             @for (p of pots(); track p.id) {
               <option [value]="p.id">{{ p.name }}</option>
             }

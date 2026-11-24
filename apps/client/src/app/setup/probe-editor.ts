@@ -2,8 +2,8 @@ import { Component, computed, inject, input, linkedSignal, output } from '@angul
 import { FormField, form, max, min, pattern, required, submit } from '@angular/forms/signals';
 import { Probe, type Pot } from '@grover/contracts';
 import { FieldError } from './field-error';
-import { issueLines, probeDraft, slugify, toProbe, uniqueId } from './drafts';
-import { PROBE_DRIVERS, probeKinds } from './labels';
+import { NUMBER_TEXT, issueLines, probeDraft, slugify, toProbe, uniqueId } from './drafts';
+import { PROBE_DRIVERS, probeKinds, tankRoles } from './labels';
 import { EditorRun } from './editor-run';
 import { SetupApi } from './setup-api';
 
@@ -27,16 +27,38 @@ import { SetupApi } from './setup-api';
             }
           </select>
         </label>
+        @if (model().kind === 'water_level') {
+          <label class="field">
+            Measures the level of
+            <select [formField]="f.tank">
+              <option value="">Its pot (or the tent)</option>
+              @for (t of tanks; track t.id) {
+                <option [value]="t.id">{{ t.label }} tank</option>
+              }
+            </select>
+          </label>
+        }
         <label class="field">
           Where
           <select [formField]="f.potId">
-            <option value="">Reservoir (whole room)</option>
+            <option value="">The tent (shared)</option>
             @for (p of pots(); track p.id) {
               <option [value]="p.id">{{ p.name }}</option>
             }
           </select>
         </label>
         <label class="field check"><input type="checkbox" [formField]="f.enabled" /> Enabled</label>
+        <label class="field">
+          Alert below
+          <input type="text" inputmode="decimal" [formField]="f.alertBelow" />
+          <span class="hint">{{ model().tank && model().tank !== 'mix' ? 'Refill warning, and feeds that need this tank are refused.' : 'Leave empty for no alert.' }}</span>
+          <gr-field-error [state]="f.alertBelow()" />
+        </label>
+        <label class="field">
+          Alert above
+          <input type="text" inputmode="decimal" [formField]="f.alertAbove" />
+          <gr-field-error [state]="f.alertAbove()" />
+        </label>
 
         <label class="field">
           Wiring
@@ -109,6 +131,7 @@ export class ProbeEditor {
 
   protected readonly kinds = probeKinds;
   protected readonly drivers = PROBE_DRIVERS;
+  protected readonly tanks = tankRoles;
   protected readonly isNew = computed(() => !this.probe());
   protected readonly model = linkedSignal(() => probeDraft(this.probe() ?? undefined));
   protected readonly f = form(this.model, (p) => {
@@ -118,6 +141,8 @@ export class ProbeEditor {
       when: ({ valueOf }) => valueOf(p.driver) === 'ds18b20',
     });
     pattern(p.i2cAddress, /^(0x[0-9a-fA-F]{1,2}|\d{1,3})$/, { message: 'Like 0x48' });
+    pattern(p.alertBelow, NUMBER_TEXT, { message: 'A number, or empty' });
+    pattern(p.alertAbove, NUMBER_TEXT, { message: 'A number, or empty' });
     min(p.i2cBus, 0, { message: 'Bus 0 or more' });
     min(p.channel, 0, { message: '0 to 3' });
     max(p.channel, 3, { message: '0 to 3' });

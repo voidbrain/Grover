@@ -11,7 +11,7 @@ const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON
  * every tool that changes state says so in its description and is annotated as not read-only.
  */
 export function createMcpServer(hub: Hub): McpServer {
-  const { store, commands, control, agents } = hub;
+  const { store, commands, feeder, alerts, agents } = hub;
   const server = new McpServer({ name: 'grover', version: '2.0.0' });
 
   server.registerTool(
@@ -27,7 +27,9 @@ export function createMcpServer(hub: Hub): McpServer {
           return {
             room,
             agent: room.agentId ? agents.view(room.agentId) : null,
-            phase: control.phase(room),
+            phase: feeder.phase(room),
+            pots: store.listPots(room.id),
+            alerts: alerts.list().filter((a) => a.roomId === room.id),
             probes: store.listProbes(room.id).map((p) => ({
               id: p.id,
               kind: p.kind,
@@ -85,14 +87,34 @@ export function createMcpServer(hub: Hub): McpServer {
   );
 
   server.registerTool(
-    'grover_dose_suggestion',
+    'grover_alerts',
     {
       description:
-        'What the dosing model would add now to bring EC and pH into the phase range, with the reasoning and model coefficients. Does not run anything.',
-      inputSchema: { roomId: z.string() },
+        'What needs the owner now: low supply tanks, refused or stopped feeds, offline agents. Each stays until its condition clears.',
       annotations: { readOnlyHint: true },
     },
-    async ({ roomId }) => text(control.suggest(roomId)),
+    async () => text(alerts.list()),
+  );
+
+  server.registerTool(
+    'grover_feed_preview',
+    {
+      description:
+        'What a feed of this pot would mix now (batch, mL per pump, reasons), or why it would be refused. Does not run anything.',
+      inputSchema: { potId: z.string() },
+      annotations: { readOnlyHint: true },
+    },
+    async ({ potId }) => text(feeder.preview(potId)),
+  );
+
+  server.registerTool(
+    'grover_feeds',
+    {
+      description: 'Feeds of the last N days (default 7), newest first, with doses and EC/pH before and after.',
+      inputSchema: { days: z.number().positive().max(90).optional(), potId: z.string().optional() },
+      annotations: { readOnlyHint: true },
+    },
+    async ({ days, potId }) => text(store.feeds(Date.now() - (days ?? 7) * 86_400_000, potId)),
   );
 
   server.registerTool(
@@ -132,13 +154,14 @@ export function createMcpServer(hub: Hub): McpServer {
   );
 
   server.registerTool(
-    'grover_apply_dose',
+    'grover_feed_pot',
     {
-      description: 'CHANGES HARDWARE STATE. Runs the current dose suggestion for a room (one correction step).',
-      inputSchema: { roomId: z.string() },
+      description:
+        'CHANGES HARDWARE STATE. Feeds one pot now: mixes its batch in the mixing tank and pumps it into the pot. Refused (with the reason) when a supply tank is low, the mixing tank is not empty, the pot is full or another feed is running.',
+      inputSchema: { potId: z.string() },
       annotations: { readOnlyHint: false, destructiveHint: true },
     },
-    async ({ roomId }) => text(await control.apply(roomId, 'mcp')),
+    async ({ potId }) => text(await feeder.feed(potId, 'mcp')),
   );
 
   server.registerTool(

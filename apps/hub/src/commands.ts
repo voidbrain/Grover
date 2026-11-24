@@ -6,7 +6,8 @@ import type { Store } from './store.ts';
 export class Refused extends Error {}
 
 /**
- * Every way of moving hardware goes through here: the HTTP API, MCP tools (NERV) and the control loop.
+ * Every single hardware action goes through here: the HTTP API and MCP tools (NERV). Feeds are planned by the Feeder
+ * and run by the agent as one sequence with the same limits.
  * The hub refuses what the room's mode or the actuator's limits do not allow; the agent enforces the
  * same limits again on its side, so a bad hub cannot run a pump past its cap.
  */
@@ -45,6 +46,8 @@ export class Commands {
     if (!a.enabled) throw new Refused(`actuator ${a.id} is disabled`);
     if (!isPump(a.kind)) throw new Refused(`${a.id} is a ${a.kind}: switch it on or off instead`);
     if (room.mode !== 'normal') throw new Refused(`room ${room.id} is ${room.mode}: pumps only run in normal mode`);
+    if (this.store.openFeeds(room.id).length)
+      throw new Refused('a feed is running in this tent: wait for it, or Stop all');
     let durationMs = req.durationMs;
     if (req.ml !== undefined) {
       if (!a.mlPerSecond) throw new Refused(`${a.id} is not calibrated (mlPerSecond missing)`);

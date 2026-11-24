@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
-import { FormField, form, min, required, submit } from '@angular/forms/signals';
+import { FormField, form, max, min, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { Room } from '@grover/contracts';
 import { isPump } from '@grover/contracts/kinds';
@@ -115,7 +115,14 @@ export class RoomSetup {
   protected readonly model = linkedSignal(() => roomDraft(this.room() ?? undefined));
   protected readonly f = form(this.model, (p) => {
     required(p.name, { message: 'Give the room a name' });
-    min(p.reservoirLiters, 1, { message: 'At least 1 L' });
+    min(p.mixEmptyLevel, 0, { message: 'Not negative' });
+    min(p.mixSettleSeconds, 0, { message: 'Not negative' });
+    max(p.mixSettleSeconds, 3600, { message: 'At most an hour' });
+    min(p.feedCooldownMinutes, 1, { message: 'At least a minute' });
+    min(p.waterEc, 0, { message: '0 to 5' });
+    max(p.waterEc, 5, { message: '0 to 5' });
+    min(p.waterPh, 0, { message: '0 to 14' });
+    max(p.waterPh, 14, { message: '0 to 14' });
     required(p.calendarStart, {
       message: 'Day 1 of the grow',
       when: ({ valueOf }) => valueOf(p.calendarId) !== '',
@@ -175,6 +182,6 @@ export class RoomSetup {
     return e?.kind === kind && e.id ? (list.find((x) => x.id === e.id) ?? null) : null;
   }
   protected potName(id: string | null): string {
-    return id ? (this.pots().find((p) => p.id === id)?.name ?? id) : 'Reservoir';
+    return id ? (this.pots().find((p) => p.id === id)?.name ?? id) : 'Tent';
   }
 }

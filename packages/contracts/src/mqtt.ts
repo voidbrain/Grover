@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Actuation, Actuator, ActuationSource, Id, OperatingMode, Probe, Reading, Schedule } from './domain.ts';
+import { FeedPlan } from './feeding.ts';
 
 /**
  * MQTT protocol between hub (broker) and agents.
@@ -10,9 +11,11 @@ import { Actuation, Actuator, ActuationSource, Id, OperatingMode, Probe, Reading
  *   grover/agents/{agentId}/commands  hub → agent  QoS 1
  *   grover/agents/{agentId}/acks      agent → hub  one per command
  *
+ * Version 2 adds feeds (the `feed` command and event).
+ *
  * Agents connect with username = agentId and password = agent token.
  */
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 
 export const topics = {
   status: (agentId: string) => `grover/agents/${agentId}/status`,
@@ -39,6 +42,10 @@ export const AgentStatus = z.object({
   mode: OperatingMode.nullable(),
   /** Actuators currently on. */
   active: z.array(Id),
+  /** The feed the agent is running, if any: lets the hub close a feed it lost track of. */
+  feed: z.string().nullable().default(null),
+  /** Events still in the agent's outbox: until it is 0, a feed report may be on its way. */
+  queued: z.number().int().min(0).default(0),
   at: z.number().int(),
 });
 export type AgentStatus = z.infer<typeof AgentStatus>;
@@ -52,6 +59,16 @@ export const AgentEvent = z.discriminatedUnion('type', [
     seq: z.number().int(),
     at: z.number().int(),
     subject: z.string(),
+    message: z.string(),
+  }),
+  /** Progress of a feed: started, one line per step, then done or aborted (with the reason). */
+  z.object({
+    type: z.literal('feed'),
+    seq: z.number().int(),
+    at: z.number().int(),
+    feedId: z.string(),
+    potId: Id,
+    state: z.enum(['started', 'step', 'done', 'aborted']),
     message: z.string(),
   }),
 ]);
@@ -84,6 +101,8 @@ export const AgentCommand = z.discriminatedUnion('kind', [
   }),
   z.object({ id: z.string(), kind: z.literal('switch'), actuatorId: Id, on: z.boolean(), source: ActuationSource }),
   z.object({ id: z.string(), kind: z.literal('stop_all'), source: ActuationSource }),
+  /** Runs a whole feed. Acked when it starts (or is refused); progress follows as `feed` events. */
+  z.object({ id: z.string(), kind: z.literal('feed'), plan: FeedPlan }),
 ]);
 export type AgentCommand = z.infer<typeof AgentCommand>;
 

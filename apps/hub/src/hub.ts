@@ -3,9 +3,10 @@ import { DEFAULT_CALENDAR } from '@grover/contracts';
 import { AgentLink } from './agents.ts';
 import { Commands } from './commands.ts';
 import type { HubConfig } from './config.ts';
-import { Control } from './control.ts';
 import { openDb } from './db.ts';
 import { Bus } from './events.ts';
+import { Alerts } from './alerts.ts';
+import { Feeder } from './feeder.ts';
 import { createHttp } from './http.ts';
 import { Store } from './store.ts';
 
@@ -15,7 +16,8 @@ export interface Hub {
   bus: Bus;
   agents: AgentLink;
   commands: Commands;
-  control: Control;
+  alerts: Alerts;
+  feeder: Feeder;
 }
 
 export interface RunningHub extends Hub {
@@ -31,12 +33,9 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
   const bus = new Bus();
   const agents = new AgentLink(store, bus, { timezone: config.timezone, commandTimeoutMs: config.commandTimeoutMs });
   const commands = new Commands(store, agents, bus);
-  const control = new Control(store, bus, commands, {
-    mixMs: 10 * 60_000,
-    freshMs: 60 * 60_000,
-    autoDoseCooldownMs: config.autoDoseCooldownMs,
-  });
-  const hub: Hub = { config, store, bus, agents, commands, control };
+  const alerts = new Alerts(store, bus);
+  const feeder = new Feeder(store, bus, agents, alerts, { mixMs: 10 * 60_000, freshMs: 60 * 60_000 });
+  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder };
 
   const mqttPort = await agents.listen(config.mqttHost, config.mqttPort);
   const http = await createHttp(hub);
@@ -50,7 +49,8 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
     httpPort,
     mqttPort,
     async close() {
-      control.stop();
+      feeder.stop();
+      alerts.stop();
       await http.close();
       await agents.close();
       store.db.close();

@@ -41,7 +41,7 @@ import { SetupApi } from './setup-api';
           </table>
         </div>
       } @else {
-        <p class="empty">No rooms yet. A room is one space with one reservoir and one Raspberry Pi.</p>
+        <p class="empty">No rooms yet. A room is one tent with its tanks, pots and one Raspberry Pi.</p>
       }
     </section>
 

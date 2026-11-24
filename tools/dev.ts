@@ -9,7 +9,10 @@ import { loadConfig } from '../apps/hub/src/config.ts';
 import { startHub } from '../apps/hub/src/hub.ts';
 import { seedDemo } from '../apps/hub/src/seed.ts';
 
-const hub = await startHub(loadConfig({ dbPath: 'data/dev/hub.sqlite' }));
+// The Angular dev server (npm run client) proxies to the hub from another origin.
+const hub = await startHub(
+  loadConfig({ dbPath: 'data/dev/hub.sqlite', allowedOrigins: ['http://localhost:4200', 'http://127.0.0.1:4200'] }),
+);
 if (hub.store.listRooms().length === 0) seedDemo(hub.store, 'pi-1');
 const token = hub.store.issueAgentToken('pi-1');
 

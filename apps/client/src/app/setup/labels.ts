@@ -1,17 +1,24 @@
 import type { ActuatorKindId, ProbeKindId } from '@grover/contracts/kinds';
-import { ACTUATOR_KIND_IDS, PROBE_KIND_IDS, PROBE_KINDS, isPump } from '@grover/contracts/kinds';
+import {
+  ACTUATOR_KIND_IDS,
+  PROBE_KIND_IDS,
+  PROBE_KINDS,
+  TANK_ROLES,
+  TANK_TITLES,
+  isPump,
+} from '@grover/contracts/kinds';
 
 export const ACTUATOR_LABELS: Record<ActuatorKindId, string> = {
   light: 'Light',
   fan: 'Fan',
-  water_loop: 'Water loop',
-  pump_water: 'Water pump',
+  water_loop: 'Pot recirculation',
+  pump_water: 'Water pump (into the mixing tank)',
   pump_ph_down: 'pH-down pump',
   pump_grow: 'Grow nutrient pump',
   pump_micro: 'Micro nutrient pump',
   pump_bloom: 'Bloom nutrient pump',
   pump_ripen: 'Ripen nutrient pump',
-  pump_transfer: 'Transfer pump',
+  pump_transfer: 'Pot feed pump (from the mixing tank)',
 };
 
 export const actuatorKinds = ACTUATOR_KIND_IDS.map((id) => ({ id, label: ACTUATOR_LABELS[id], pump: isPump(id) }));
@@ -33,3 +40,5 @@ export const ACTUATOR_DRIVERS = [
   { id: 'gpio', label: 'GPIO pin' },
   { id: 'mcp23017', label: 'MCP23017 expander pin' },
 ] as const;
+
+export const tankRoles = TANK_ROLES.map((id) => ({ id, label: TANK_TITLES[id].replace(' tank', '') }));

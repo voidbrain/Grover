@@ -7,7 +7,8 @@ import type {
   AgentView,
   Calendar,
   CommandResult,
-  DoseSuggestion,
+  Alert,
+  FeedView,
   LiveEvent,
   OperatingMode,
   Phase,
@@ -19,6 +20,19 @@ import type {
   Schedule,
 } from '@grover/contracts';
 
+export type FeedPreview =
+  | {
+      ok: true;
+      batchLiters: number;
+      ml: Record<string, number>;
+      notes: string[];
+      ec: number | null;
+      ph: number | null;
+      potLitersBefore: number;
+      expected: { ec: number | null; ph: number | null };
+    }
+  | { ok: false; reason: string; ec: number | null; ph: number | null };
+
 export interface Snapshot {
   rooms: (Room & { phase: { phase: Phase; day: number } | null })[];
   pots: Pot[];
@@ -28,6 +42,8 @@ export interface Snapshot {
   calendars: Calendar[];
   agents: AgentView[];
   latest: Reading[];
+  alerts: Alert[];
+  feeds: FeedView[];
   probeKinds: Record<ProbeKind, { unit: string; min: number; max: number; title: string }>;
 }
 
@@ -132,6 +148,17 @@ export class Hub {
           rooms: snap.rooms.map((r) => (r.id === ev.roomId ? { ...r, mode: ev.mode } : r)),
         });
         break;
+      case 'feed':
+        this.snapshot.set({ ...snap, feeds: [ev.feed, ...snap.feeds.filter((f) => f.feedId !== ev.feed.feedId)] });
+        break;
+      case 'alert':
+        this.snapshot.set({
+          ...snap,
+          alerts: ev.cleared
+            ? snap.alerts.filter((a) => a.key !== ev.alert.key)
+            : [ev.alert, ...snap.alerts.filter((a) => a.key !== ev.alert.key)],
+        });
+        break;
       case 'fault':
         this.lastError.set(`${ev.subject}: ${ev.message}`);
         break;
@@ -187,13 +214,16 @@ export class Hub {
   setMode(roomId: string, mode: OperatingMode) {
     return this.act(`room:${roomId}`, () => firstValueFrom(this.http.put<Room>(`/api/rooms/${roomId}/mode`, { mode })));
   }
-  suggestion(roomId: string) {
-    return firstValueFrom(this.http.get<DoseSuggestion>(`/api/rooms/${roomId}/dose`));
+  /** What a feed of this pot would mix now, or why it would be refused. */
+  feedPreview(potId: string) {
+    return firstValueFrom(this.http.get<FeedPreview>(`/api/pots/${potId}/feed`));
   }
-  applyDose(roomId: string) {
-    return this.act(`dose:${roomId}`, () =>
-      firstValueFrom(this.http.post<{ suggestion: DoseSuggestion; ran: unknown[] }>(`/api/rooms/${roomId}/dose`, {})),
-    );
+  feed(potId: string) {
+    return this.act(`feed:${potId}`, async () => {
+      const feed = await firstValueFrom(this.http.post<FeedView>(`/api/pots/${potId}/feed`, {}));
+      if (feed.state === 'refused') this.lastError.set(`Feed refused: ${feed.message}`);
+      return feed;
+    });
   }
   readings(probeId: string, since: number) {
     return firstValueFrom(this.http.get<Reading[]>(`/api/probes/${probeId}/readings`, { params: { since } }));

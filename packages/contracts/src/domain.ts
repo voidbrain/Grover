@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS } from './kinds.ts';
+import { ACTUATOR_KIND_IDS, OPERATING_MODES, PROBE_KIND_IDS, TANK_ROLES, isPump } from './kinds.ts';
 
 /** What a probe measures. Units are fixed per kind (see PROBE_KINDS). */
 export const ProbeKind = z.enum(PROBE_KIND_IDS);
@@ -16,6 +16,8 @@ export type ActuatorKind = z.infer<typeof ActuatorKind>;
  */
 export const OperatingMode = z.enum(OPERATING_MODES);
 export type OperatingMode = z.infer<typeof OperatingMode>;
+
+export const TankRole = z.enum(TANK_ROLES);
 
 export const Id = z
   .string()
@@ -57,13 +59,20 @@ export const Room = z.object({
   name: z.string().min(1),
   agentId: Id.nullable(),
   mode: OperatingMode,
-  /** Automatic pH / EC correction. Off by default: the hub only suggests doses. */
-  autoDose: z.boolean(),
-  /** Reservoir volume used to scale doses. */
-  reservoirLiters: z.number().positive(),
+  /** Start feeds by themselves when a pot runs low or its EC/pH leaves the phase range. Off by default. */
+  autoFeed: z.boolean(),
   calendarId: Id.nullable(),
   /** Day 0 of the grow calendar (ISO date). */
   calendarStart: z.string().nullable(),
+  /** Mixing tank level (probe units) at or below which it counts as empty. */
+  mixEmptyLevel: z.number().min(0).default(1),
+  /** Wait after mixing before the transfer, so the batch is even. */
+  mixSettleSeconds: z.number().int().min(0).max(3600).default(60),
+  /** The tent's tap water, measured once: the feed planner counts its dilution. */
+  waterEc: z.number().min(0).max(5).default(0.3),
+  waterPh: z.number().min(0).max(14).default(7),
+  /** Least time between two automatic feeds of one pot. */
+  feedCooldownMinutes: z.number().int().min(1).max(10080).default(60),
 });
 export type Room = z.infer<typeof Room>;
 
@@ -71,6 +80,12 @@ export const Pot = z.object({
   id: Id,
   roomId: Id,
   name: z.string().min(1),
+  /** Solution the pot holds when full: scales its pH correction. */
+  liters: z.number().positive().default(10),
+  /** Largest batch mixed for one feed. */
+  feedLiters: z.number().positive().default(2),
+  /** Litres per unit of the pot's level probe, to tell whether a batch fits. Null: unknown, trust the level range. */
+  litersPerCm: z.number().positive().nullable().default(null),
 });
 export type Pot = z.infer<typeof Pot>;
 
@@ -82,22 +97,32 @@ export const Probe = z.object({
   name: z.string().min(1),
   enabled: z.boolean(),
   binding: ProbeBinding,
+  /** Level probes only: the tank it measures (null: the pot it belongs to). */
+  tank: TankRole.nullable().default(null),
+  /** Raise an alert below / above these values (for example a supply tank running low). */
+  alertBelow: z.number().nullable().default(null),
+  alertAbove: z.number().nullable().default(null),
 });
 export type Probe = z.infer<typeof Probe>;
 
-export const Actuator = z.object({
-  id: Id,
-  roomId: Id,
-  potId: Id.nullable(),
-  kind: ActuatorKind,
-  name: z.string().min(1),
-  enabled: z.boolean(),
-  binding: ActuatorBinding,
-  /** Hard cap enforced on the agent for any single run. Switches use 0 (no cap). */
-  maxRunMs: z.number().int().min(0),
-  /** Pumps only: calibrated flow, used to turn mL into ms. */
-  mlPerSecond: z.number().positive().nullable(),
-});
+export const Actuator = z
+  .object({
+    id: Id,
+    roomId: Id,
+    potId: Id.nullable(),
+    kind: ActuatorKind,
+    name: z.string().min(1),
+    enabled: z.boolean(),
+    binding: ActuatorBinding,
+    /** Hard cap enforced on the agent for any single run. Switches use 0 (no cap). */
+    maxRunMs: z.number().int().min(0),
+    /** Pumps only: calibrated flow, used to turn mL into ms. */
+    mlPerSecond: z.number().positive().nullable(),
+  })
+  .refine((a) => !isPump(a.kind) || a.maxRunMs > 0, {
+    message: 'a pump needs a run cap (maxRunMs above 0)',
+    path: ['maxRunMs'],
+  });
 export type Actuator = z.infer<typeof Actuator>;
 
 const HHMM = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'HH:MM');
@@ -170,7 +195,7 @@ export const Reading = z.object({
 });
 export type Reading = z.infer<typeof Reading>;
 
-export const ActuationSource = z.enum(['schedule', 'manual', 'auto_dose', 'mcp', 'safety']);
+export const ActuationSource = z.enum(['schedule', 'manual', 'feed', 'mcp', 'safety']);
 export type ActuationSource = z.infer<typeof ActuationSource>;
 
 export const Actuation = z.object({

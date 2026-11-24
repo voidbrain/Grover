@@ -223,6 +223,14 @@ export class AgentLink {
         if (this.store.addReading(ev.reading)) this.bus.emit({ type: 'reading', reading: ev.reading });
       } else if (ev.type === 'actuation') {
         if (this.store.addActuation(ev.actuation)) this.bus.emit({ type: 'actuation', actuation: ev.actuation });
+      } else if (ev.type === 'feed') {
+        const before = this.store.getFeed(ev.feedId);
+        if (!before) return;
+        const state = ev.state === 'step' ? 'started' : ev.state;
+        const after = this.store.updateFeed(ev.feedId, state, ev.message, ev.at);
+        // A replayed event after the feed finished changes nothing and is not announced again.
+        if (after && (after.state !== before.state || after.message !== before.message))
+          this.bus.emit({ type: 'feed', feed: after });
       } else if (this.store.addFault(agentId, ev.at, ev.subject, ev.message)) {
         this.bus.emit({ type: 'fault', agentId, subject: ev.subject, message: ev.message, at: ev.at });
       }

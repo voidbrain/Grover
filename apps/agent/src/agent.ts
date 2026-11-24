@@ -16,6 +16,7 @@ import {
   type Probe,
 } from '@grover/contracts';
 import { Actuators } from './actuators.ts';
+import { FeedRunner } from './feed.ts';
 import type { AgentEnv } from './config.ts';
 import type { DriverFactory, ProbeDriver } from './drivers/types.ts';
 import { Outbox } from './outbox.ts';
@@ -33,6 +34,7 @@ export class Agent {
   private hash: string | null = null;
   private probes = new Map<string, { probe: Probe; driver: ProbeDriver }>();
   private readonly actuators: Actuators;
+  private readonly feeds: FeedRunner;
   private readonly outbox: Outbox;
   private readonly lastWindow = new Map<string, boolean>();
   private lastMinute = '';
@@ -50,6 +52,12 @@ export class Agent {
     mkdirSync(env.stateDir, { recursive: true });
     this.outbox = new Outbox(join(env.stateDir, 'outbox.sqlite'));
     this.actuators = new Actuators((actuation) => this.publishEvent({ type: 'actuation', actuation }), now);
+    this.feeds = new FeedRunner({
+      actuators: this.actuators,
+      read: (probeId) => this.read(probeId),
+      report: (feedId, potId, state, message) =>
+        this.publishEvent({ type: 'feed', at: this.now(), feedId, potId, state, message }),
+    });
   }
 
   private get configPath(): string {
@@ -84,7 +92,10 @@ export class Agent {
 
   async stop(): Promise<void> {
     if (this.ticker) clearInterval(this.ticker);
+    this.feeds.cancel('the agent is stopping');
     await this.actuators.allOff('safety');
+    // Let a cancelled feed report its abort before the outbox closes (bounded: never block a shutdown).
+    await Promise.race([this.feeds.idle(), new Promise((r) => setTimeout(r, 2000))]);
     if (this.client?.connected) {
       await new Promise<void>((r) =>
         this.client!.publish(
@@ -95,13 +106,21 @@ export class Agent {
         ),
       );
     }
-    await this.client?.endAsync();
+    // Force: with the hub unreachable a graceful end would wait for a connection that never comes.
+    await this.client?.endAsync(true);
     await this.drivers.close();
     this.outbox.close();
   }
 
-  get state(): { config: AgentConfig | null; active: string[]; queued: number; connected: boolean } {
+  get state(): {
+    config: AgentConfig | null;
+    active: string[];
+    queued: number;
+    connected: boolean;
+    feed: string | null;
+  } {
     return {
+      feed: this.feeds.busy,
       config: this.config,
       active: this.actuators.active(),
       queued: this.outbox.size(),
@@ -118,6 +137,9 @@ export class Agent {
   private async doApply(config: AgentConfig, persist: boolean): Promise<void> {
     const hash = configHash(config);
     const modeOnly = this.config !== null && this.hash !== null && sameHardware(this.config, config);
+    // A feed survives a settings change that leaves its hardware alone, but not a mode change away from normal.
+    if (!modeOnly) this.feeds.cancel('the hardware settings changed');
+    else if (config.mode !== 'normal') this.feeds.cancel(`the tent was set to ${config.mode}`);
     this.config = config;
     this.hash = hash;
     if (persist) writeFileSync(this.configPath, JSON.stringify(config));
@@ -181,11 +203,13 @@ export class Agent {
         if (this.lastWindow.get(s.id) !== want) {
           this.lastWindow.set(s.id, want);
           if (this.actuators.isOn(actuator.id) !== want)
-            await this.actuators
-              .switch(actuator.id, want, 'schedule')
-              .catch((err) => this.fault(`actuator ${actuator.id}`, err.message));
+            await this.actuators.switch(actuator.id, want, 'schedule').catch((err) => {
+              // Forget the edge so the next tick tries again (a relay that was busy, a stop in between).
+              this.lastWindow.delete(s.id);
+              this.fault(`actuator ${actuator.id}`, err.message);
+            });
         }
-      } else if (newMinute && allowed && firesAt(s.rule, minuteOfDay)) {
+      } else if (newMinute && allowed && firesAt(s.rule, minuteOfDay) && !(isPump(actuator.kind) && this.feeds.busy)) {
         if (isPump(actuator.kind)) {
           try {
             this.actuators.run(actuator.id, s.rule.durationMs, 'schedule');
@@ -255,6 +279,7 @@ export class Agent {
           return ack(true, null, await this.read(cmd.probeId));
         case 'run': {
           if (mode !== 'normal') return ack(false, `agent is ${mode}`);
+          if (this.feeds.busy) return ack(false, 'a feed is running: wait for it, or Stop all');
           const { durationMs } = this.actuators.run(cmd.actuatorId, cmd.durationMs, cmd.source, cmd.id);
           return ack(true, null, durationMs);
         }
@@ -266,8 +291,14 @@ export class Agent {
           return ack(true, null, cmd.on ? 1 : 0);
         }
         case 'stop_all':
+          this.feeds.cancel('stopped with Stop all');
           await this.actuators.allOff(cmd.source);
           return ack(true, null);
+        case 'feed': {
+          if (mode !== 'normal') return ack(false, `agent is ${mode}`);
+          void this.feeds.start(cmd.plan);
+          return ack(true, null);
+        }
       }
     } catch (err) {
       return ack(false, (err as Error).message);
@@ -286,7 +317,7 @@ export class Agent {
 
   private publishEvent(body: Parameters<Outbox['push']>[0]): void {
     this.outbox.push(body);
-    if (body.type === 'actuation') this.publishStatus();
+    if (body.type === 'actuation' || (body.type === 'feed' && body.state !== 'step')) this.publishStatus();
     void this.flush();
   }
 
@@ -304,6 +335,8 @@ export class Agent {
           this.outbox.ack(ev.seq);
         }
       }
+      // Everything sent: say so, so the hub knows no feed report is still on its way.
+      this.publishStatus();
     } catch {
       // Disconnected mid-flush: the rest stays queued for the next connect.
     } finally {
@@ -319,6 +352,8 @@ export class Agent {
       configHash: this.hash,
       mode: this.config?.mode ?? null,
       active: state === 'online' ? this.actuators.active() : [],
+      feed: state === 'online' ? this.feeds.busy : null,
+      queued: this.outbox.size(),
       at: this.now(),
     };
     return JSON.stringify(s);

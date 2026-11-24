@@ -6,6 +6,108 @@ Current work ledger, reviewed 24 November 2026 against main `5d96c91`. [Rules](B
 
 Bugs (B-) and features (F-) in one list, most urgent first.
 
+### B-003
+
+**Safety and robustness findings from the review of #15 to #17**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Let the CI of #17 run the new tests, then merge the stack.
+
+| | |
+|---|---|
+| **Issue** | An independent review on 2026-11-24 found: queued pump runs starting after Stop all, mode change or shutdown; a stop lost while a relay was switching on; a feed starting its next pump after Stop all; pumps with `maxRunMs` 0 running uncapped; MCP23017 active-low relays switched on at init and shutdown; a feed left "running" after an agent power cut, a race between two feeds, manual pump runs mid-feed, a switch-off failure not retried, no Host/Origin check on the HTTP API, a deleted pot's probes becoming the tent's shared pair, migration 2 carrying auto-dose into auto-feed, negative pot levels, and a feed left unknown after a command timeout. A re-review of the fixes found: finished feeds recorded as aborted (status overtaking queued events, network drops, hub restarts), an aborted feed switching off lights for hours, a tent reservation leaking on a planning error, old uncapped pump rows breaking the hub, scheduled pump runs entering a feed, a stuck relay freezing the pump queue, IPv6 allowed hosts, and a cancelled feed reporting into a closed outbox at shutdown. |
+| **Reproduce** | The tests named in the Check row fail on the code before the fix (four of the safety bugs were reproduced by the reviewer with scripts). |
+| **Check** | `actuators.test.ts` (stop drops queued runs; stop while switching on; no cap no run; failed switch-off retried), `feed.test.ts` (Stop all during a re-check), `hardware.test.ts` (MCP23017 off levels), `feeder.test.ts` (race, agent offline, timeout, hub restart), `setup.test.ts` (pot delete cascade, Host/Origin/JSON guard, migration resets auto-feed), `e2e.test.ts` (no manual pumps during a feed; Stop all aborts it), `contracts.test.ts` (pump cap in the schema, negative level), `agent.test.ts` (scheduled pumps wait during a feed; failed window switch retried), and the re-review cases in `feeder.test.ts`, `feed.test.ts`, `actuators.test.ts` and `setup.test.ts` (migration 3) all pass. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Each finding started with a failing test, then the fix, on `feat/f011-feed-cycle` (2026-11-24). One test's expectation changed on purpose: "stop releases the queue so later runs still happen" became "stop drops queued runs" (Stop all is an emergency stop). The review found no issue in MQTT auth/ACL, token hashing or the SQL built from strings. The re-review (same day) confirmed the 15 findings fixed or partly fixed and found the second round listed in Issue, fixed the same way. Closes on #17's green CI after merge.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#17](https://github.com/voidbrain/Grover/pull/17) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### F-011
+
+**Feed cycle per pot: supply tanks, mixing tank, pot pumps**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
+
+🧑 **→ Human action required: Procedure**<br />Try a feed on the simulated rig and say whether it behaves as your rig should: [run it](../README.md#run-it), then use Preview feed and Feed now on a pot.
+
+| | |
+|---|---|
+| **Issue** | The owner's rig, confirmed 2026-11-24: per tent (room), lights, fan and air temperature on schedules. Six supply tanks (water, grow, micro, bloom, ripen, pH down), each with a level sensor and a pump into one mixing tank (with its own level). Per pot: a transfer pump from the mixing tank, a recirculation pump (closed loop), a level sensor, and pH/EC probes (to start, one pair may serve all pots). A feed mixes one pot's dose (by phase, adjusted by that pot's EC and pH) in the mixing tank and moves it to the pot. Before running: supply tanks must have enough, the mixing tank must be empty, the pot must be able to take the batch. Low tanks are notified. Ripen is used alone at the end, then a plain-water flush phase. Grover today doses into one reservoir and has no feed cycle. |
+| **Reproduce** | `npm run dev`: there is no way to feed a pot; the dose suggestion corrects a single reservoir. |
+| **Check** | A feed for a pot runs end to end on the simulated rig (water, nutrients, pH down into the mixing tank, settle, transfer until the mixing tank is empty or the pot is full); it is refused with a reason (and an alert) when a supply tank is low, the mixing tank is not empty or the pot cannot take the batch; a low pot level or out-of-range pot EC/pH starts one automatically when the tent's auto-feed is on; the agent aborts and switches everything off on stop, mode change or a failed check; tests cover the planner, the agent run and the hub-agent join. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Built 2026-11-24 on `feat/f011-feed-cycle` (stacked on #16). Contracts: tank roles on level probes, alert thresholds, pot volumes, tent feed and tap-water settings, `planFeed` (owner's rule, 2026-11-24: nutrients to reach the target EC after dilution, then pH down for the pH they cause; water by level and EC, in portions between additives) and `feedReason`, a dosing model that separates dilution, nutrient pH rise and pH down, protocol v2 with the `feed` command and event; the default calendar now has ripen alone and a Flush phase. Hub: `Feeder` (plan, start, one per tent, auto-feed with cooldown, learning from feeds) replaces the single-reservoir `Control`; `Alerts` (thresholds, feeds, agents); migration 2. Agent: `FeedRunner`; the mock driver simulates the whole rig. Client: dashboard per tent with alerts, tanks and pot cards (readings, last feed, preview, Feed now); setup fields for tank roles, alerts, pot volumes and feed settings. Checks: 46 backend tests (16 contracts incl. 7 planner cases and a model-recovery case, 6 agent feed runs on the simulated rig, e2e feed end to end, low-tank abort with alerts, auto-feed and cooldown, one feed per tent), 13 client tests, typecheck, lint, build; dev stack smoke on 2026-11-24: preview, feed started, a second feed refused, Stop all aborted the running feed. Not done: pages seen in a browser, anything on the real rig (F-003). Closes when CI passes and the owner has tried it.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### F-012
+
+**Plants and strains: origin, generation, breeder, ancestry**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+
+💻 **→ Human action required: No**<br />Add breeders, strains and plants (with the legacy records) after #15 to #17 land.
+
+| | |
+|---|---|
+| **Issue** | The rebuild dropped the plant records of the old Grover (tables `grover_plants`, `grover_strains`, `grover_companies` at tag `legacy-v1`). The owner needs each plant's origin: strain, breeder, generation (0 from seed, 1 first cutting, 2 cutting of a cutting…) and the plant it was cut from, which pot it is in, its dates; and each strain's breeder, ancestry (parent strains), indica/sativa split, THC (and CBD) when known. Example from the owner, 2026-11-24: Northern Lights #5 x Haze, generation 2, in pot 3; legacy: Sensi Seeds, parents Northern Lights #5 and Haze, 50 % sativa. |
+| **Reproduce** | `git show legacy-v1:Documentation/MYSQL-DB/Sql_backup_2024_07_25.sql`, tables above; the new hub has no plants. |
+| **Check** | Breeders, strains (parents, sativa %, THC/CBD %, flowering days, notes) and plants (strain, breeder, generation, mother plant, pot, dates, yield, notes) can be added and edited in Setup; a pot card shows its plant; the legacy strains, breeders and plants import once (`npm run hub -- import-legacy`) without guessing pots; NERV can read them (MCP); tests cover the schemas, the import and the API. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24. Legacy data checked the same day: strains with lineage and sativa %, six breeders, plants with generation and dates; no THC values; old pot ids do not match the new pots, so imported plants start without a pot. THC/CBD stay empty unless the owner or a cited breeder page gives them.
+
+**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-001
 
 **Rebuild v2: contracts, hub, agent and client**
@@ -161,7 +263,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Design in contracts (calibration in the binding, conversion as pure functions with tests), apply on the agent so readings are already in units. Until then, keep `autoDose` off on a real rig.
+**Next action / closure evidence:** Design in contracts (calibration in the binding, conversion as pure functions with tests), apply on the agent so readings are already in units. Until then, keep auto-feed off on a real rig.
 
 **Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
@@ -257,7 +359,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 | | |
 |---|---|
 | **Issue** | Each phase has `lightHours` (18 in veg, 12 in bloom), but the light schedule is a fixed window: moving into bloom needs a manual schedule change. |
-| **Reproduce** | Seed the demo room (`npm run dev`) and move `calendarStart` back past day 42: the phase reads "Early bloom" but the light window stays 06:00–00:00. |
+| **Reproduce** | Seed the demo tent (`npm run dev`) and move `calendarStart` back past day 42: the phase reads "Early bloom" but the light window stays 06:00–00:00. |
 | **Check** | On the day the phase changes, the agent receives a light window of the new phase's hours without a manual edit, and a test covers the switch. |
 
 <details>
@@ -286,7 +388,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 |:---:|---|---|---|
 | 🔴 | 🔶 P2 | Open | 🟡 Medium |
 
-💻 **→ Human action required: No**<br />Add an alert model on the hub and expose it to NERV over MCP.
+💻 **→ Human action required: No**<br />Deliver Grover alerts through NERV (NERV's pack, its own backlog); add hysteresis if readings flap at a threshold.
 
 | | |
 |---|---|
@@ -297,13 +399,13 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Grover owns detection and the MCP surface; delivery and language (Telegram, LLM explanation) stay in NERV.
+**Next action / closure evidence:** Grover side built with F-011 on 2026-11-24: alerts for probe thresholds (low supply tanks say "refill"), stopped or refused automatic feeds and offline agents, on the dashboard, at `GET /api/alerts` and through `grover_alerts`. Out-of-range pot values start feeds rather than alerts. Remaining: delivery in NERV (recorded in NERV's backlog, not here) and hysteresis at thresholds.
 
 **Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

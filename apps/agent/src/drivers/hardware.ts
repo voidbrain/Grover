@@ -76,8 +76,8 @@ export class HardwareDrivers implements DriverFactory {
           this.expanders.set(key, chip);
         }
         const c = chip;
-        await c.write(b.pin, b.activeLow);
-        return { set: (on) => c.write(b.pin, on !== b.activeLow) };
+        await c.claim(b.pin, b.activeLow);
+        return { set: (on) => c.write(b.pin, on, b.activeLow) };
       }
     }
   }
@@ -99,28 +99,45 @@ async function readAds1115(bus: import('i2c-bus').PromisifiedBus, address: numbe
   return Math.round((buf.readInt16BE(0) * 4.096 * 1000) / 32768) / 1000;
 }
 
-/** MCP23017 with every pin as an output (all low at init). */
-class Mcp23017 {
+/**
+ * MCP23017 output pins. Pins stay inputs (the power-on state, so nothing is driven) until an actuator claims one;
+ * a claim writes the pin's OFF level to the output latch first and only then makes it an output, so an
+ * active-low relay never sees a low (on) level. Closing writes every claimed pin's OFF level.
+ */
+export class Mcp23017 {
   private olat = 0;
-  private readonly bus: import('i2c-bus').PromisifiedBus;
+  private iodir = 0xffff;
+  /** Bit set: that pin is active-low (off = high). */
+  private activeLowMask = 0;
+  private readonly bus: Pick<import('i2c-bus').PromisifiedBus, 'writeByte' | 'close'>;
   private readonly address: number;
-  constructor(bus: import('i2c-bus').PromisifiedBus, address: number) {
+  constructor(bus: Pick<import('i2c-bus').PromisifiedBus, 'writeByte' | 'close'>, address: number) {
     this.bus = bus;
     this.address = address;
   }
   async init(): Promise<void> {
-    await this.bus.writeByte(this.address, 0x14, 0); // OLATA
-    await this.bus.writeByte(this.address, 0x15, 0); // OLATB
-    await this.bus.writeByte(this.address, 0x00, 0); // IODIRA: outputs
-    await this.bus.writeByte(this.address, 0x01, 0); // IODIRB: outputs
+    // Inputs everywhere: nothing is driven until claimed.
+    await this.bus.writeByte(this.address, 0x00, 0xff); // IODIRA
+    await this.bus.writeByte(this.address, 0x01, 0xff); // IODIRB
   }
-  async write(pin: number, high: boolean): Promise<void> {
+  /** Makes `pin` an output at its off level. */
+  async claim(pin: number, activeLow: boolean): Promise<void> {
+    if (activeLow) this.activeLowMask |= 1 << pin;
+    else this.activeLowMask &= ~(1 << pin);
+    await this.write(pin, false, activeLow);
+    this.iodir &= ~(1 << pin);
+    await this.bus.writeByte(this.address, pin < 8 ? 0x00 : 0x01, pin < 8 ? this.iodir & 0xff : this.iodir >> 8);
+  }
+  async write(pin: number, on: boolean, activeLow: boolean): Promise<void> {
+    const high = on !== activeLow;
     this.olat = high ? this.olat | (1 << pin) : this.olat & ~(1 << pin);
     await this.bus.writeByte(this.address, pin < 8 ? 0x14 : 0x15, pin < 8 ? this.olat & 0xff : this.olat >> 8);
   }
   async close(): Promise<void> {
-    await this.bus.writeByte(this.address, 0x14, 0).catch(() => {});
-    await this.bus.writeByte(this.address, 0x15, 0).catch(() => {});
+    // Every claimed pin to its off level: high for active-low relays, low for the others.
+    this.olat = this.activeLowMask;
+    await this.bus.writeByte(this.address, 0x14, this.olat & 0xff).catch(() => {});
+    await this.bus.writeByte(this.address, 0x15, this.olat >> 8).catch(() => {});
     await this.bus.close();
   }
 }
