@@ -195,6 +195,16 @@ export class Agent {
     const newMinute = minuteKey !== this.lastMinute;
     this.lastMinute = minuteKey;
 
+    // Switches some window schedule wants on now: another schedule's "off" edge must not cut that window short
+    // (one light with a weekday and a weekend window, F-016).
+    const wantedOn = new Set<string>();
+    for (const s of config.schedules) {
+      if (!s.enabled || s.target.type !== 'actuator' || s.rule.kind !== 'window') continue;
+      const a = this.actuators.get(s.target.actuatorId);
+      if (!a || !a.enabled || !(config.mode === 'normal' || a.kind === 'light')) continue;
+      if (scheduleOnDay(s, day, minuteOfDay) && windowActive(s.rule, minuteOfDay)) wantedOn.add(a.id);
+    }
+
     for (const s of config.schedules) {
       if (!s.enabled) continue;
       // Not one of its days (F-016): a window holds off, dark is not held, nothing fires.
@@ -222,7 +232,7 @@ export class Agent {
         const edge = want ? 'on' : onDay ? 'off' : `off ${day}`;
         if (this.lastWindow.get(s.id) !== edge) {
           this.lastWindow.set(s.id, edge);
-          if (this.actuators.isOn(actuator.id) !== want)
+          if (this.actuators.isOn(actuator.id) !== want && (want || !wantedOn.has(actuator.id)))
             await this.actuators.switch(actuator.id, want, 'schedule').catch((err) => {
               // Forget the edge so the next tick tries again (a relay that was busy, a stop in between).
               this.lastWindow.delete(s.id);
