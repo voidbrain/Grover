@@ -25,13 +25,47 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Built 2026-11-24 on `feat/f011-feed-cycle` (stacked on #16). Contracts: tank roles on level probes, alert thresholds, pot volumes, tent feed settings, `planFeed` and `feedReason`, protocol v2 with the `feed` command and event; the default calendar now has ripen alone and a Flush phase. Hub: `Feeder` (plan, start, one per tent, auto-feed with cooldown, learning from feeds) replaces the single-reservoir `Control`; `Alerts` (thresholds, feeds, agents); migration 2. Agent: `FeedRunner`; the mock driver simulates the whole rig. Client: dashboard per tent with alerts, tanks and pot cards (readings, last feed, preview, Feed now); setup fields for tank roles, alerts, pot volumes and feed settings. Checks: 43 backend tests (13 contracts incl. 7 planner cases, 6 agent feed runs on the simulated rig, e2e feed end to end, low-tank abort with alerts, auto-feed and cooldown, one feed per tent), 13 client tests, typecheck, lint, build; dev stack smoke on 2026-11-24: preview, feed started, a second feed refused, Stop all aborted the running feed. Not done: pages seen in a browser, anything on the real rig (F-003). Closes when CI passes and the owner has tried it.
+**Next action / closure evidence:** Built 2026-11-24 on `feat/f011-feed-cycle` (stacked on #16). Contracts: tank roles on level probes, alert thresholds, pot volumes, tent feed and tap-water settings, `planFeed` (owner's rule, 2026-11-24: nutrients to reach the target EC after dilution, then pH down for the pH they cause; water by level and EC, in portions between additives) and `feedReason`, a dosing model that separates dilution, nutrient pH rise and pH down, protocol v2 with the `feed` command and event; the default calendar now has ripen alone and a Flush phase. Hub: `Feeder` (plan, start, one per tent, auto-feed with cooldown, learning from feeds) replaces the single-reservoir `Control`; `Alerts` (thresholds, feeds, agents); migration 2. Agent: `FeedRunner`; the mock driver simulates the whole rig. Client: dashboard per tent with alerts, tanks and pot cards (readings, last feed, preview, Feed now); setup fields for tank roles, alerts, pot volumes and feed settings. Checks: 46 backend tests (16 contracts incl. 7 planner cases and a model-recovery case, 6 agent feed runs on the simulated rig, e2e feed end to end, low-tank abort with alerts, auto-feed and cooldown, one feed per tent), 13 client tests, typecheck, lint, build; dev stack smoke on 2026-11-24: preview, feed started, a second feed refused, Stop all aborted the running feed. Not done: pages seen in a browser, anything on the real rig (F-003). Closes when CI passes and the owner has tried it.
 
 **Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
 | PR / evidence | [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### F-012
+
+**Plants and strains: origin, generation, breeder, ancestry**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+
+💻 **→ Human action required: No**<br />Add breeders, strains and plants (with the legacy records) after #15 to #17 land.
+
+| | |
+|---|---|
+| **Issue** | The rebuild dropped the plant records of the old Grover (tables `grover_plants`, `grover_strains`, `grover_companies` at tag `legacy-v1`). The owner needs each plant's origin: strain, breeder, generation (0 from seed, 1 first cutting, 2 cutting of a cutting…) and the plant it was cut from, which pot it is in, its dates; and each strain's breeder, ancestry (parent strains), indica/sativa split, THC (and CBD) when known. Example from the owner, 2026-11-24: Northern Lights #5 x Haze, generation 2, in pot 3; legacy: Sensi Seeds, parents Northern Lights #5 and Haze, 50 % sativa. |
+| **Reproduce** | `git show legacy-v1:Documentation/MYSQL-DB/Sql_backup_2024_07_25.sql`, tables above; the new hub has no plants. |
+| **Check** | Breeders, strains (parents, sativa %, THC/CBD %, flowering days, notes) and plants (strain, breeder, generation, mother plant, pot, dates, yield, notes) can be added and edited in Setup; a pot card shows its plant; the legacy strains, breeders and plants import once (`npm run hub -- import-legacy`) without guessing pots; NERV can read them (MCP); tests cover the schemas, the import and the API. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24. Legacy data checked the same day: strains with lineage and sativa %, six breeders, plants with generation and dates; no THC values; old pot ids do not match the new pots, so imported plants start without a pot. THC/CBD stay empty unless the owner or a cited breeder page gives them.
+
+**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

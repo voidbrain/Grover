@@ -53,6 +53,8 @@ export interface RoomDraft {
   mixEmptyLevel: number;
   mixSettleSeconds: number;
   feedCooldownMinutes: number;
+  waterEc: number;
+  waterPh: number;
 }
 
 export const roomDraft = (r?: Room): RoomDraft => ({
@@ -66,6 +68,8 @@ export const roomDraft = (r?: Room): RoomDraft => ({
   mixEmptyLevel: r?.mixEmptyLevel ?? 1,
   mixSettleSeconds: r?.mixSettleSeconds ?? 60,
   feedCooldownMinutes: r?.feedCooldownMinutes ?? 60,
+  waterEc: r?.waterEc ?? 0.3,
+  waterPh: r?.waterPh ?? 7,
 });
 
 export const toRoom = (d: RoomDraft): Room => ({
@@ -79,6 +83,8 @@ export const toRoom = (d: RoomDraft): Room => ({
   mixEmptyLevel: d.mixEmptyLevel,
   mixSettleSeconds: d.mixSettleSeconds,
   feedCooldownMinutes: d.feedCooldownMinutes,
+  waterEc: d.waterEc,
+  waterPh: d.waterPh,
 });
 
 // ── pot ────────────────────────────────────────────────────────────────────

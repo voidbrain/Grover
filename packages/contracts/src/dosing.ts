@@ -1,32 +1,39 @@
 import type { Calendar, Phase } from './domain.ts';
 
 /**
- * Dosing model. Linear and deliberately simple:
+ * Dosing model, per tent, linear and deliberately simple. A feed adds W litres of tap water, N mL of nutrient
+ * and P mL of pH down to a pot holding V0 litres; with V1 = V0 + W:
  *
- *   ΔEC = ecPerMlL · (mL nutrient / L of pot solution)
- *   ΔpH = −phPerMlL · (mL pH-down / L of pot solution)
+ *   EC after = (EC0·V0 + ECwater·W) / V1  +  ecPerMlL · N / V1
+ *   pH after = (pH0·V0 + pHwater·W) / V1  +  phRisePerMlL · N / V1  −  phDownPerMlL · P / V1
  *
- * Coefficients are fitted per tent from past feeds (the pot's reading before a feed and the first one after it
- * mixed), by least squares through the origin, shrunk towards a prior so a handful of noisy samples cannot swing
- * them. The feed planner (feeding.ts) uses them for pH corrections.
+ * The first term of each is plain dilution; nutrients raise EC and (usually) pH, pH down lowers pH.
+ * Coefficients are fitted from finished feeds by least squares, shrunk towards priors so a handful of noisy
+ * samples cannot swing them. The feed planner (feeding.ts) solves these for N and P.
  */
-export interface DoseSample {
-  /** mL added */
-  ml: number;
-  liters: number;
-  /** Value before and after (EC for nutrients, pH for pH-down), after mixing. */
-  before: number;
-  after: number;
+export interface FeedSample {
+  /** Pot volume before, water added (L); nutrient and pH down added (mL). */
+  v0: number;
+  water: number;
+  nutrientMl: number;
+  phDownMl: number;
+  waterEc: number;
+  waterPh: number;
+  ecBefore: number | null;
+  ecAfter: number | null;
+  phBefore: number | null;
+  phAfter: number | null;
 }
 
 export interface DoseModel {
   ecPerMlL: number;
-  phPerMlL: number;
+  phRisePerMlL: number;
+  phDownPerMlL: number;
   ecSamples: number;
   phSamples: number;
 }
 
-export const DOSE_PRIORS = { ecPerMlL: 0.4, phPerMlL: 2.0, weight: 4 } as const;
+export const DOSE_PRIORS = { ecPerMlL: 0.4, phRisePerMlL: 0.05, phDownPerMlL: 2.0, weight: 4 } as const;
 
 /** Least squares through the origin with a prior: k = (Σxy + w·k0·x̄²) / (Σx² + w·x̄²). */
 export function fitCoefficient(
@@ -40,22 +47,71 @@ export function fitCoefficient(
   const sxx = usable.reduce((a, s) => a + s.x * s.x, 0);
   const sxy = usable.reduce((a, s) => a + s.x * s.y, 0);
   const meanSq = sxx / usable.length;
-  const k = (sxy + weight * prior * meanSq) / (sxx + weight * meanSq);
-  return k;
+  return (sxy + weight * prior * meanSq) / (sxx + weight * meanSq);
 }
 
-export function fitModel(nutrient: readonly DoseSample[], phDown: readonly DoseSample[]): DoseModel {
+/**
+ * Two coefficients at once, y = a·n − b·p, each shrunk towards its prior (ridge regression on the 2×2 normal equations).
+ * Falls back to the priors when the data says something impossible (a < 0 or b ≤ 0).
+ */
+export function fitPh(
+  samples: readonly { n: number; p: number; y: number }[],
+  a0: number,
+  b0: number,
+  weight: number = DOSE_PRIORS.weight,
+): { a: number; b: number } {
+  const usable = samples.filter((s) => (s.n > 0 || s.p > 0) && Number.isFinite(s.y));
+  if (usable.length === 0) return { a: a0, b: b0 };
+  let snn = 0;
+  let spp = 0;
+  let snp = 0;
+  let sny = 0;
+  let spy = 0;
+  for (const { n, p, y } of usable) {
+    snn += n * n;
+    spp += p * p;
+    snp += n * p;
+    sny += n * y;
+    spy += p * y;
+  }
+  // One shrinkage per coefficient, scaled by its own regressor (as in fitCoefficient): a shared one would let
+  // the much larger nutrient term set how hard pH down is pulled to its prior, and bias both.
+  const la = (weight * snn) / usable.length || weight;
+  const lb = (weight * spp) / usable.length || weight;
+  // Solve for a and c = −b.
+  const m11 = snn + la;
+  const m22 = spp + lb;
+  const r1 = sny + la * a0;
+  const r2 = spy - lb * b0;
+  const det = m11 * m22 - snp * snp;
+  if (Math.abs(det) < 1e-12) return { a: a0, b: b0 };
+  const a = (r1 * m22 - snp * r2) / det;
+  const b = -((m11 * r2 - snp * r1) / det);
+  return a >= 0 && b > 0 ? { a, b } : { a: a0, b: b0 };
+}
+
+export function fitModel(samples: readonly FeedSample[]): DoseModel {
+  const ec: { x: number; y: number }[] = [];
+  const ph: { n: number; p: number; y: number }[] = [];
+  for (const s of samples) {
+    const v1 = s.v0 + s.water;
+    if (v1 <= 0) continue;
+    if (s.nutrientMl > 0 && s.ecBefore !== null && s.ecAfter !== null)
+      ec.push({ x: s.nutrientMl / v1, y: s.ecAfter - (s.ecBefore * s.v0 + s.waterEc * s.water) / v1 });
+    if (s.phBefore !== null && s.phAfter !== null)
+      ph.push({
+        n: s.nutrientMl / v1,
+        p: s.phDownMl / v1,
+        y: s.phAfter - (s.phBefore * s.v0 + s.waterPh * s.water) / v1,
+      });
+  }
+  const { a, b } = fitPh(ph, DOSE_PRIORS.phRisePerMlL, DOSE_PRIORS.phDownPerMlL);
   return {
-    ecPerMlL: fitCoefficient(
-      nutrient.map((s) => ({ x: s.ml / s.liters, y: s.after - s.before })),
-      DOSE_PRIORS.ecPerMlL,
-    ),
-    phPerMlL: fitCoefficient(
-      phDown.map((s) => ({ x: s.ml / s.liters, y: s.before - s.after })),
-      DOSE_PRIORS.phPerMlL,
-    ),
-    ecSamples: nutrient.length,
-    phSamples: phDown.length,
+    ecPerMlL: fitCoefficient(ec, DOSE_PRIORS.ecPerMlL),
+    phRisePerMlL: a,
+    phDownPerMlL: b,
+    ecSamples: ec.length,
+    phSamples: ph.length,
   };
 }
 

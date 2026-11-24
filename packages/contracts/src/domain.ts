@@ -68,6 +68,9 @@ export const Room = z.object({
   mixEmptyLevel: z.number().min(0).default(1),
   /** Wait after mixing before the transfer, so the batch is even. */
   mixSettleSeconds: z.number().int().min(0).max(3600).default(60),
+  /** The tent's tap water, measured once: the feed planner counts its dilution. */
+  waterEc: z.number().min(0).max(5).default(0.3),
+  waterPh: z.number().min(0).max(14).default(7),
   /** Least time between two automatic feeds of one pot. */
   feedCooldownMinutes: z.number().int().min(1).max(10080).default(60),
 });

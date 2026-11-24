@@ -51,6 +51,17 @@
         <gr-field-error [state]="f.mixSettleSeconds()" />
       </label>
       <label class="field">
+        Tap water EC
+        <input type="number" step="0.05" [formField]="f.waterEc" />
+        <span class="hint">Measure it once: feeds count its dilution.</span>
+        <gr-field-error [state]="f.waterEc()" />
+      </label>
+      <label class="field">
+        Tap water pH
+        <input type="number" step="0.1" [formField]="f.waterPh" />
+        <gr-field-error [state]="f.waterPh()" />
+      </label>
+      <label class="field">
         Least time between auto-feeds of a pot (minutes)
         <input type="number" step="5" [formField]="f.feedCooldownMinutes" />
         <gr-field-error [state]="f.feedCooldownMinutes()" />

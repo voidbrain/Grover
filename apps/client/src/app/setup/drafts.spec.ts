@@ -168,6 +168,8 @@ describe('setup drafts', () => {
       mixEmptyLevel: 1.5,
       mixSettleSeconds: 30,
       feedCooldownMinutes: 90,
+      waterEc: 0.25,
+      waterPh: 7.2,
       calendarId: 'default',
       calendarStart: '2026-11-01',
     };

@@ -78,6 +78,8 @@ export class Store {
       mixEmptyLevel: Number(r['mix_empty_level']),
       mixSettleSeconds: Number(r['mix_settle_seconds']),
       feedCooldownMinutes: Number(r['feed_cooldown_minutes']),
+      waterEc: Number(r['water_ec']),
+      waterPh: Number(r['water_ph']),
     };
   }
   listRooms(): Room[] {
@@ -96,11 +98,13 @@ export class Store {
     const r = Room.parse(input);
     this.db
       .prepare(
-        `INSERT INTO rooms (id, name, agent_id, mode, auto_feed, calendar_id, calendar_start, mix_empty_level, mix_settle_seconds, feed_cooldown_minutes)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO rooms (id, name, agent_id, mode, auto_feed, calendar_id, calendar_start, mix_empty_level, mix_settle_seconds,
+           feed_cooldown_minutes, water_ec, water_ph)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET name = excluded.name, agent_id = excluded.agent_id, mode = excluded.mode, auto_feed = excluded.auto_feed,
            calendar_id = excluded.calendar_id, calendar_start = excluded.calendar_start, mix_empty_level = excluded.mix_empty_level,
-           mix_settle_seconds = excluded.mix_settle_seconds, feed_cooldown_minutes = excluded.feed_cooldown_minutes`,
+           mix_settle_seconds = excluded.mix_settle_seconds, feed_cooldown_minutes = excluded.feed_cooldown_minutes,
+           water_ec = excluded.water_ec, water_ph = excluded.water_ph`,
       )
       .run(
         r.id,
@@ -113,6 +117,8 @@ export class Store {
         r.mixEmptyLevel,
         r.mixSettleSeconds,
         r.feedCooldownMinutes,
+        r.waterEc,
+        r.waterPh,
       );
     return r;
   }
@@ -454,13 +460,17 @@ export class Store {
       phBefore: num('ph_before'),
       ecAfter: num('ec_after'),
       phAfter: num('ph_after'),
+      potLitersBefore: num('pot_liters_before'),
+      expectedEc: num('expected_ec'),
+      expectedPh: num('expected_ph'),
     };
   }
   addFeed(f: FeedView): void {
     this.db
       .prepare(
-        `INSERT INTO feeds (id, room_id, pot_id, source, state, message, requested_at, finished_at, batch_liters, ml, ec_before, ph_before)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO feeds (id, room_id, pot_id, source, state, message, requested_at, finished_at, batch_liters, ml, ec_before, ph_before,
+           pot_liters_before, expected_ec, expected_ph)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         f.feedId,
@@ -475,6 +485,9 @@ export class Store {
         f.ml ? JSON.stringify(f.ml) : null,
         f.ecBefore,
         f.phBefore,
+        f.potLitersBefore,
+        f.expectedEc,
+        f.expectedPh,
       );
   }
   getFeed(feedId: string): FeedView | null {

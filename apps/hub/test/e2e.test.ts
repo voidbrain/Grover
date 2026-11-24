@@ -178,6 +178,8 @@ test('setup changes are pushed to the agent', async () => {
 });
 
 test('a feed runs end to end: supply tanks into the mixing tank, then into the pot', async () => {
+  // A preview uses what is known; "Feed now" reads the pot first. Read it so the preview has numbers too.
+  for (const probe of ['pot-1-level', 'pot-1-ec', 'pot-1-ph']) await api('POST', `/api/probes/${probe}/read`);
   const preview = (await api('GET', '/api/pots/pot-1/feed')).json;
   assert.equal(preview.ok, true, JSON.stringify(preview));
   assert.equal(preview.batchLiters, 2);

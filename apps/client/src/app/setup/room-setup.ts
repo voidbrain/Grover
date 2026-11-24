@@ -119,6 +119,10 @@ export class RoomSetup {
     min(p.mixSettleSeconds, 0, { message: 'Not negative' });
     max(p.mixSettleSeconds, 3600, { message: 'At most an hour' });
     min(p.feedCooldownMinutes, 1, { message: 'At least a minute' });
+    min(p.waterEc, 0, { message: '0 to 5' });
+    max(p.waterEc, 5, { message: '0 to 5' });
+    min(p.waterPh, 0, { message: '0 to 14' });
+    max(p.waterPh, 14, { message: '0 to 14' });
     required(p.calendarStart, {
       message: 'Day 1 of the grow',
       when: ({ valueOf }) => valueOf(p.calendarId) !== '',

@@ -8,6 +8,7 @@ import {
   type DoseModel,
   type FeedDecision,
   type FeedPump,
+  type FeedSample,
   type FeedSource,
   type FeedView,
   type Phase,
@@ -75,22 +76,26 @@ export class Feeder {
     return found ? { phase: found.phase, day } : null;
   }
 
-  /** Fitted from finished feeds: pot EC and pH before, and the first reading after it mixed. */
+  /** Fitted from finished feeds: the pot's EC and pH before, what went in, and the first readings after it mixed. */
   model(roomId: string): DoseModel {
-    const pots = new Map(this.store.listPots(roomId).map((p) => [p.id, p]));
-    const nutrient = [];
-    const phDown = [];
+    const room = this.store.getRoom(roomId);
+    const samples: FeedSample[] = [];
     for (const f of this.store.feedSamples(roomId)) {
-      const pot = pots.get(f.potId);
-      if (!pot || !f.ml || !f.batchLiters) continue;
-      const liters = pot.liters;
-      const nutrientMl = NUTRIENTS.reduce((a, n) => a + (f.ml?.[n] ?? 0), 0);
-      if (nutrientMl > 0 && f.ecBefore !== null && f.ecAfter !== null)
-        nutrient.push({ ml: nutrientMl, liters, before: f.ecBefore, after: f.ecAfter });
-      if ((f.ml['phDown'] ?? 0) > 0 && f.phBefore !== null && f.phAfter !== null)
-        phDown.push({ ml: f.ml['phDown']!, liters, before: f.phBefore, after: f.phAfter });
+      if (!f.ml || f.batchLiters === null || f.potLitersBefore === null) continue;
+      samples.push({
+        v0: f.potLitersBefore,
+        water: f.batchLiters,
+        nutrientMl: NUTRIENTS.reduce((a, n) => a + (f.ml?.[n] ?? 0), 0),
+        phDownMl: f.ml['phDown'] ?? 0,
+        waterEc: room.waterEc,
+        waterPh: room.waterPh,
+        ecBefore: f.ecBefore,
+        ecAfter: f.ecAfter,
+        phBefore: f.phBefore,
+        phAfter: f.phAfter,
+      });
     }
-    return fitModel(nutrient, phDown);
+    return fitModel(samples);
   }
 
   /** What a feed of this pot would do now, without running it. */
@@ -126,6 +131,8 @@ export class Feeder {
       potLevelProbeId: this.store.potProbe(pot, 'water_level')?.id ?? null,
       mixEmptyLevel: room.mixEmptyLevel,
       settleSeconds: room.mixSettleSeconds,
+      waterEc: room.waterEc,
+      waterPh: room.waterPh,
     });
     return { ...decision, ec, ph };
   }
@@ -150,6 +157,9 @@ export class Feeder {
       phBefore: null,
       ecAfter: null,
       phAfter: null,
+      potLitersBefore: null,
+      expectedEc: null,
+      expectedPh: null,
     };
     // Whoever asked by hand (or NERV) gets the reason in the answer; an automatic feed that cannot run needs an alert.
     const refuse = (reason: string): FeedView => {
@@ -170,6 +180,7 @@ export class Feeder {
     if (!room.agentId || !this.agents.isOnline(room.agentId)) return refuse('the agent is offline');
     if (this.running.has(room.id)) return refuse('another feed is running in this tent');
 
+    await this.refreshReadings(pot, room.agentId);
     const decision = this.preview(potId, feedId);
     if (!decision.ok) return refuse(decision.reason);
 
@@ -180,6 +191,9 @@ export class Feeder {
       ml: decision.ml,
       ecBefore: decision.ec,
       phBefore: decision.ph,
+      potLitersBefore: decision.potLitersBefore,
+      expectedEc: decision.expected.ec,
+      expectedPh: decision.expected.ph,
     };
     this.store.addFeed(feed);
     this.running.set(room.id, feedId);
@@ -218,6 +232,23 @@ export class Feeder {
         level: 'bad',
         message: `${pot?.name ?? feed.potId}: feed stopped, ${feed.message}. Everything was switched off; check the mixing tank.`,
       });
+  }
+
+  /** Takes new readings of the pot's level, EC and pH when the last ones are older than the mixing time. */
+  private async refreshReadings(pot: Pot, agentId: string): Promise<void> {
+    for (const kind of ['water_level', 'ec', 'ph'] as const) {
+      const probe = this.store.potProbe(pot, kind);
+      if (!probe) continue;
+      const last = this.store.latestReading(probe.id);
+      if (last && this.now() - last.at < this.opts.mixMs) continue;
+      try {
+        const ack = await this.agents.command(agentId, { kind: 'read', probeId: probe.id });
+        // The reading also arrives as an event; store it now so the plan below sees it.
+        if (ack.ok && ack.value !== null) this.store.addReading({ probeId: probe.id, value: ack.value, at: ack.at });
+      } catch {
+        // A probe that cannot be read leaves that value unknown; the plan says what it did without it.
+      }
+    }
   }
 
   private fresh(pot: Pot, kind: 'ec' | 'ph' | 'water_level'): number | null {

@@ -79,6 +79,9 @@ export interface FeedInput {
   potLevelProbeId: string | null;
   mixEmptyLevel: number;
   settleSeconds: number;
+  /** The tent's tap water. */
+  waterEc: number;
+  waterPh: number;
 }
 
 export type FeedDecision =
@@ -88,6 +91,9 @@ export type FeedDecision =
       batchLiters: number;
       ml: Record<'water' | NutrientKey | 'phDown', number>;
       notes: string[];
+      /** Pot volume before the feed and the EC / pH the model expects after it (null when unknown). */
+      potLitersBefore: number;
+      expected: { ec: number | null; ph: number | null };
     }
   | { ok: false; reason: string };
 
@@ -110,85 +116,165 @@ const TANK: Record<NutrientKey | 'phDown' | 'water', TankRole> = {
   phDown: 'ph_down',
 };
 const round1 = (n: number) => Math.round(n * 10) / 10;
+const round2 = (n: number) => Math.round(n * 100) / 100;
 const MIN_BATCH_L = 0.2;
 
+/** Water carried with each additive into the mixing tank: concentrates never meet undiluted. */
+const CARRIER_L = 0.1;
+/** At most this much pH down per litre of pot solution in one feed, whatever the model says. */
+const MAX_PH_DOWN_ML_PER_L = 0.5;
+/** At most this many times the phase's full-strength dose for the pot's volume in one feed. */
+const MAX_DOSE_FACTOR = 2;
+
 /**
- * Plans one feed for one pot, or says why not.
+ * Plans one feed for one pot, or says why not. With V0 the pot's volume now and V1 = V0 + water:
  *
- * - Batch: the pot's `feedLiters`, reduced to what the pot can take (from its level and `litersPerCm`).
- * - Nutrients: the phase dose (mL per 10 L) scaled to the batch; none when flushing or when the pot's EC is
- *   above range (the batch then dilutes); 25 % more when EC is below range.
- * - pH down: the phase's base amount for the batch, plus a correction of the pot's pH towards the middle of the
- *   range through the fitted model (70 % of it, so it undershoots); none when the pot's pH is below range.
- * - Water: the rest of the batch.
+ * 1. Water: top the pot up to the phase's maximum level; more when its EC is above range and needs diluting
+ *    (never more than the pot can take or one batch, `feedLiters`). Without a level reading only a small carrier
+ *    batch is mixed.
+ * 2. Nutrients: enough to take the pot from its EC after dilution to the middle of the EC range (DoseModel),
+ *    split in the phase's grow:micro:bloom:ripen ratio. None while flushing. Without a fresh EC reading, the phase
+ *    dose for the water added.
+ * 3. pH down: from the pH expected after dilution and after the nutrients raise it, down to the middle of the
+ *    pH range. None when that is already at or below it. Without a fresh pH reading, the phase's base amount.
+ * 4. The mixing tank gets water in portions between the additives (water, grow, water, micro, …, pH down,
+ *    water), so concentrates never mix undiluted.
  */
 export function planFeed(input: FeedInput): FeedDecision {
-  const { phase, pot, model } = input;
+  const { phase, pot, model, waterEc, waterPh, ec, ph } = input;
   const notes: string[] = [];
+  const mid = (r: { min: number; max: number }) => (r.min + r.max) / 2;
+  const targetEc = mid(phase.ec);
+  const targetPh = mid(phase.ph);
 
-  // How much the pot can take.
-  let batch = pot.feedLiters;
   if (input.potLevel !== null && input.potLevel >= phase.waterLevel.max)
     return { ok: false, reason: `pot is full (level ${input.potLevel}, phase maximum ${phase.waterLevel.max})` };
-  if (input.potLevel !== null && pot.litersPerCm !== null) {
-    const room = (phase.waterLevel.max - input.potLevel) * pot.litersPerCm;
-    if (room < batch) {
-      batch = room;
-      notes.push(`batch reduced to ${round1(room)} L: that is what the pot can take`);
-    }
-  }
-  if (batch < MIN_BATCH_L) return { ok: false, reason: `pot can take only ${round1(batch)} L` };
+  const known = input.potLevel !== null && pot.litersPerCm !== null;
+  const v0 = known ? input.potLevel! * pot.litersPerCm! : pot.liters;
+  const room = known ? (phase.waterLevel.max - input.potLevel!) * pot.litersPerCm! : null;
+  const capacity = Math.min(pot.feedLiters, room ?? pot.feedLiters);
+  if (!known) notes.push('no pot level (or litres per cm): volume taken as full, only a small carrier batch');
 
-  // Nutrients.
+  // 1. Water.
+  let water = room ?? 0;
+  if (!phase.flushing && ec !== null && ec > phase.ec.max) {
+    if (targetEc > waterEc) {
+      const dilute = (v0 * (ec - targetEc)) / (targetEc - waterEc);
+      if (dilute > water) water = dilute;
+      notes.push(`EC ${ec} above ${phase.ec.max}: water to dilute`);
+    } else notes.push(`EC ${ec} above ${phase.ec.max} and tap water cannot bring it down`);
+  }
+  if (water > capacity) {
+    notes.push(
+      `water limited to ${round1(capacity)} L (${capacity === pot.feedLiters ? 'one batch' : 'what the pot can take'})`,
+    );
+    water = capacity;
+  }
+
+  // 2. Nutrients, for a given amount of water.
+  const doseTotal = NUTRIENTS.reduce((a, n) => a + phase.dose[n], 0);
+  const nutrientFor = (w: number): number => {
+    if (phase.flushing || doseTotal <= 0) return 0;
+    if (ec === null) return (doseTotal * w) / 10;
+    const v1 = v0 + w;
+    const blend = (ec * v0 + waterEc * w) / v1;
+    const n = Math.max(0, ((targetEc - blend) * v1) / model.ecPerMlL);
+    return Math.min(n, (MAX_DOSE_FACTOR * doseTotal * v1) / 10);
+  };
+  let nutrient = nutrientFor(water);
+  // Every additive travels with some water; make room for it.
+  const additives = (n: number, p: boolean) => NUTRIENTS.filter((k) => phase.dose[k] > 0 && n > 0).length + (p ? 1 : 0);
+  const carrierFor = (count: number) => (count > 0 ? CARRIER_L * (count + 1) : 0);
+  const ensureCarrier = (count: number): FeedDecision | null => {
+    const need = carrierFor(count);
+    if (water >= need) return null;
+    if (need > capacity)
+      return { ok: false, reason: `the pot can take only ${round1(capacity)} L, not enough to carry the additives` };
+    water = need;
+    nutrient = nutrientFor(water);
+    return null;
+  };
+  const early = ensureCarrier(additives(nutrient, false));
+  if (early) return early;
+
+  // 3. pH down.
+  const phDownFor = (w: number, n: number): number => {
+    if (phase.flushing) return 0;
+    if (ph === null) return (phase.dose.phDown * w) / 10;
+    const v1 = v0 + w;
+    const expected = (ph * v0 + waterPh * w) / v1 + (model.phRisePerMlL * n) / v1;
+    if (expected <= targetPh) return 0;
+    return Math.min(((expected - targetPh) * v1) / model.phDownPerMlL, MAX_PH_DOWN_ML_PER_L * v1);
+  };
+  let phDown = phDownFor(water, nutrient);
+  if (phDown > 0) {
+    const late = ensureCarrier(additives(nutrient, true));
+    if (late) return late;
+    phDown = phDownFor(water, nutrient);
+  }
+
   const ml: Record<'water' | NutrientKey | 'phDown', number> = {
     water: 0,
     grow: 0,
     micro: 0,
     bloom: 0,
     ripen: 0,
-    phDown: 0,
+    phDown: round1(phDown),
   };
-  let factor = phase.flushing ? 0 : 1;
+  for (const k of NUTRIENTS) ml[k] = doseTotal > 0 ? round1((nutrient * phase.dose[k]) / doseTotal) : 0;
+  const nutrientMl = NUTRIENTS.reduce((a, k) => a + ml[k], 0);
+  ml.water = Math.max(0, Math.round(water * 1000 - nutrientMl - ml.phDown));
+  if (water < MIN_BATCH_L && nutrientMl === 0 && ml.phDown === 0)
+    return {
+      ok: false,
+      reason:
+        !known && ec === null && ph === null
+          ? 'no fresh readings for this pot: read its level, EC and pH first'
+          : 'nothing to do: the pot is at its level and on target',
+    };
+
+  // Notes and the expected result.
+  const v1 = v0 + water;
+  const expEc = ec === null ? null : round2((ec * v0 + waterEc * water) / v1 + (model.ecPerMlL * nutrientMl) / v1);
+  const expPh =
+    ph === null
+      ? null
+      : round2(
+          (ph * v0 + waterPh * water) / v1 + (model.phRisePerMlL * nutrientMl - model.phDownPerMlL * ml.phDown) / v1,
+        );
   if (phase.flushing) notes.push(`${phase.name}: plain water`);
-  else if (input.ec !== null && input.ec > phase.ec.max) {
-    factor = 0;
-    notes.push(`EC ${input.ec} above ${phase.ec.max}: water only, to dilute`);
-  } else if (input.ec !== null && input.ec < phase.ec.min) {
-    factor = 1.25;
-    notes.push(`EC ${input.ec} below ${phase.ec.min}: 25 % more nutrients`);
-  } else if (input.ec === null && !phase.flushing) notes.push('no fresh EC reading: phase dose as is');
-  for (const n of NUTRIENTS) ml[n] = round1(((phase.dose[n] * batch) / 10) * factor);
+  else if (ec === null) notes.push('no fresh EC reading: the phase dose for the water added');
+  else if (nutrientMl > 0) notes.push(`nutrients to bring EC from ${ec} to ${round2(targetEc)}`);
+  if (ph === null && !phase.flushing) notes.push('no fresh pH reading: the phase amount of pH down');
+  else if (ml.phDown > 0) notes.push(`pH down for the nutrients' rise and ${ph}, aiming at ${round2(targetPh)}`);
+  else if (expPh !== null && expPh < phase.ph.min)
+    notes.push(`pH ${expPh} expected below range: no pH-up pump, check by hand`);
+  if (ml.phDown >= round1(MAX_PH_DOWN_ML_PER_L * v1)) notes.push('pH down capped for one feed');
 
-  // pH down.
-  if (!phase.flushing) {
-    if (input.ph !== null && input.ph < phase.ph.min)
-      notes.push(`pH ${input.ph} below ${phase.ph.min}: no pH down (no pH-up pump)`);
-    else {
-      let phDown = (phase.dose.phDown * batch) / 10;
-      if (input.ph !== null && input.ph > phase.ph.max) {
-        const target = (phase.ph.min + phase.ph.max) / 2;
-        phDown += ((input.ph - target) / model.phPerMlL) * (pot.liters + batch) * 0.7;
-        notes.push(`pH ${input.ph} above ${phase.ph.max}: extra pH down`);
-      }
-      ml.phDown = round1(phDown);
-    }
+  // 4. Pump runs: water portions between the additives.
+  const order = [...NUTRIENTS.filter((k) => ml[k] > 0), ...(ml.phDown > 0 ? (['phDown'] as const) : [])];
+  const portions = order.length + 1;
+  const sequence: { key: 'water' | NutrientKey | 'phDown'; ml: number }[] = [];
+  for (const [i, key] of order.entries()) {
+    sequence.push({ key: 'water', ml: Math.round(ml.water / portions) });
+    sequence.push({ key, ml: ml[key] });
+    if (i === order.length - 1)
+      sequence.push({ key: 'water', ml: ml.water - Math.round(ml.water / portions) * order.length });
   }
-  const additives = NUTRIENTS.reduce((a, n) => a + ml[n], 0) + ml.phDown;
-  ml.water = Math.max(0, Math.round(batch * 1000 - additives));
+  if (order.length === 0) sequence.push({ key: 'water', ml: ml.water });
 
-  // Pumps and runs.
   const steps: FeedPlan['steps'] = [];
   const checks: LevelCheck[] = [];
-  for (const key of ['water', ...NUTRIENTS, 'phDown'] as const) {
-    if (ml[key] <= 0) continue;
+  for (const { key, ml: amount } of sequence) {
+    if (amount <= 0) continue;
     const pump = input.pumps[KIND[key]];
     if (!pump)
       return {
         ok: false,
-        reason: `needs ${ml[key]} mL of ${TANK[key].replace('_', ' ')} but the tent has no ${KIND[key]} pump`,
+        reason: `needs ${amount} mL of ${TANK[key].replace('_', ' ')} but the tent has no ${KIND[key]} pump`,
       };
     if (!pump.mlPerSecond) return { ok: false, reason: `${pump.id} is not calibrated (mL per second)` };
-    const total = Math.round((ml[key] / pump.mlPerSecond) * 1000);
+    const total = Math.round((amount / pump.mlPerSecond) * 1000);
     const cap = pump.maxRunMs > 0 ? pump.maxRunMs : total;
     for (let left = total; left > 0; left -= cap) {
       const durationMs = Math.min(cap, left);
@@ -200,7 +286,7 @@ export function planFeed(input: FeedInput): FeedDecision {
       });
     }
     const probe = input.tankProbes[TANK[key]];
-    if (probe && probe.alertBelow !== null)
+    if (probe && probe.alertBelow !== null && !checks.some((c) => c.probeId === probe.id))
       checks.push({ probeId: probe.id, what: TANK[key], min: probe.alertBelow, max: null });
   }
 
@@ -212,14 +298,16 @@ export function planFeed(input: FeedInput): FeedDecision {
   const transfer = input.transfer;
   if (!transfer) return { ok: false, reason: 'the pot has no transfer pump' };
   if (!transfer.mlPerSecond) return { ok: false, reason: `${transfer.id} is not calibrated (mL per second)` };
-  const expectedMs = Math.round(((batch * 1000) / transfer.mlPerSecond) * 1000);
+  const expectedMs = Math.max(1, Math.round(((water * 1000) / transfer.mlPerSecond) * 1000));
   const sliceMs = Math.max(500, Math.min(5000, transfer.maxRunMs > 0 ? transfer.maxRunMs : 5000));
 
   return {
     ok: true,
-    batchLiters: round1(batch),
+    batchLiters: round1(water),
     ml,
     notes,
+    potLitersBefore: round1(v0),
+    expected: { ec: expEc, ph: expPh },
     plan: {
       feedId: input.feedId,
       potId: pot.id,
@@ -228,7 +316,6 @@ export function planFeed(input: FeedInput): FeedDecision {
       settleMs: input.settleSeconds * 1000,
       transfer: {
         actuatorId: transfer.id,
-        // Without a mixing-tank level probe the time is all we have; with one, allow a margin and stop at empty.
         maxMs: mixProbe ? Math.round(expectedMs * 1.5) : expectedMs,
         sliceMs,
         mixProbeId: mixProbe?.id ?? null,

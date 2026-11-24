@@ -57,6 +57,10 @@ export interface FeedView {
   phBefore: number | null;
   ecAfter: number | null;
   phAfter: number | null;
+  /** Pot volume before the feed (L) and what the model expected after it. */
+  potLitersBefore: number | null;
+  expectedEc: number | null;
+  expectedPh: number | null;
 }
 
 /** Live events pushed to clients over the hub WebSocket (/api/live). */

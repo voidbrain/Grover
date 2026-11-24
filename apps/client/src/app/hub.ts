@@ -21,7 +21,16 @@ import type {
 } from '@grover/contracts';
 
 export type FeedPreview =
-  | { ok: true; batchLiters: number; ml: Record<string, number>; notes: string[]; ec: number | null; ph: number | null }
+  | {
+      ok: true;
+      batchLiters: number;
+      ml: Record<string, number>;
+      notes: string[];
+      ec: number | null;
+      ph: number | null;
+      potLitersBefore: number;
+      expected: { ec: number | null; ph: number | null };
+    }
   | { ok: false; reason: string; ec: number | null; ph: number | null };
 
 export interface Snapshot {

@@ -48,6 +48,8 @@ const MIGRATIONS: readonly string[] = [
   ALTER TABLE rooms ADD COLUMN mix_empty_level REAL NOT NULL DEFAULT 1;
   ALTER TABLE rooms ADD COLUMN mix_settle_seconds INTEGER NOT NULL DEFAULT 60;
   ALTER TABLE rooms ADD COLUMN feed_cooldown_minutes INTEGER NOT NULL DEFAULT 60;
+  ALTER TABLE rooms ADD COLUMN water_ec REAL NOT NULL DEFAULT 0.3;
+  ALTER TABLE rooms ADD COLUMN water_ph REAL NOT NULL DEFAULT 7;
   ALTER TABLE pots ADD COLUMN liters REAL NOT NULL DEFAULT 10;
   ALTER TABLE pots ADD COLUMN feed_liters REAL NOT NULL DEFAULT 2;
   ALTER TABLE pots ADD COLUMN liters_per_cm REAL;
@@ -58,7 +60,8 @@ const MIGRATIONS: readonly string[] = [
   CREATE TABLE feeds (
     id TEXT PRIMARY KEY, room_id TEXT NOT NULL, pot_id TEXT NOT NULL, source TEXT NOT NULL, state TEXT NOT NULL,
     message TEXT NOT NULL, requested_at INTEGER NOT NULL, finished_at INTEGER, batch_liters REAL, ml TEXT,
-    ec_before REAL, ph_before REAL, ec_after REAL, ph_after REAL
+    ec_before REAL, ph_before REAL, ec_after REAL, ph_after REAL,
+    pot_liters_before REAL, expected_ec REAL, expected_ph REAL
   );
   CREATE INDEX feeds_by_pot ON feeds(pot_id, requested_at);
   CREATE TABLE alerts (

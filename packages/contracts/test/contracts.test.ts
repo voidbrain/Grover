@@ -8,6 +8,8 @@ import {
   firesAt,
   fitCoefficient,
   fitModel,
+  fitPh,
+  type FeedSample,
   feedReason,
   lightWindow,
   localTime,
@@ -20,7 +22,7 @@ import {
 } from '../src/index.ts';
 
 const veg = DEFAULT_CALENDAR.phases[1]!;
-const prior = { ecPerMlL: 0.4, phPerMlL: 2, ecSamples: 0, phSamples: 0 };
+const prior = { ecPerMlL: 0.4, phRisePerMlL: 0.05, phDownPerMlL: 2, ecSamples: 0, phSamples: 0 };
 
 test('window rules, including one that wraps midnight', () => {
   const day = { kind: 'window', from: '06:00', to: '00:00' } as const;
@@ -77,12 +79,38 @@ test('fit: no data keeps the prior, clean data moves towards the truth, bad data
   const k = fitCoefficient(samples, 0.4);
   assert.ok(Math.abs(k - truth) < 0.1, `k=${k}`);
   assert.equal(fitCoefficient([{ x: 1, y: -1 }], 0.4), 0.4);
-  const m = fitModel(
-    [{ ml: 20, liters: 20, before: 1.0, after: 1.4 }],
-    [{ ml: 2, liters: 20, before: 6.4, after: 6.2 }],
-  );
-  assert.ok(m.ecPerMlL > 0.39 && m.ecPerMlL <= 0.4);
-  assert.equal(m.ecSamples, 1);
+  assert.deepEqual(fitPh([], 0.05, 2), { a: 0.05, b: 2 });
+});
+
+test("fit: the model separates dilution, the nutrients' pH rise and pH down", () => {
+  // Feeds generated from known coefficients: k = 0.5, rise a = 0.1, pH down b = 1.5; tap water EC 0.3, pH 7.
+  const truth = { k: 0.5, a: 0.1, b: 1.5 };
+  const feeds: FeedSample[] = Array.from({ length: 25 }, (_, i) => {
+    const v0 = 8 + (i % 5);
+    const water = 1 + (i % 3) * 0.5;
+    const n = 5 + (i % 7) * 3;
+    const p = (i % 4) * 1.5;
+    const v1 = v0 + water;
+    const ecBefore = 1 + (i % 3) * 0.2;
+    const phBefore = 5.8 + (i % 5) * 0.1;
+    return {
+      v0,
+      water,
+      nutrientMl: n,
+      phDownMl: p,
+      waterEc: 0.3,
+      waterPh: 7,
+      ecBefore,
+      ecAfter: (ecBefore * v0 + 0.3 * water) / v1 + (truth.k * n) / v1,
+      phBefore,
+      phAfter: (phBefore * v0 + 7 * water) / v1 + (truth.a * n - truth.b * p) / v1,
+    };
+  });
+  const m = fitModel(feeds);
+  assert.ok(Math.abs(m.ecPerMlL - truth.k) < 0.05, `k=${m.ecPerMlL}`);
+  assert.ok(Math.abs(m.phRisePerMlL - truth.a) < 0.03, `a=${m.phRisePerMlL}`);
+  assert.ok(Math.abs(m.phDownPerMlL - truth.b) < 0.2, `b=${m.phDownPerMlL}`);
+  assert.equal(m.ecSamples, 25);
 });
 
 const pumps: FeedInput['pumps'] = {
@@ -98,8 +126,8 @@ const feedInput = (over: Partial<FeedInput> = {}): FeedInput => ({
   phase: veg,
   pot: { id: 'pot-1', liters: 15, feedLiters: 2, litersPerCm: 0.5 },
   potLevel: 20,
-  ec: 1.5,
-  ph: 5.8,
+  ec: 1.0,
+  ph: 6.2,
   model: prior,
   pumps,
   transfer: { id: 'pot-1-transfer', mlPerSecond: 25, maxRunMs: 60_000 },
@@ -114,59 +142,86 @@ const feedInput = (over: Partial<FeedInput> = {}): FeedInput => ({
   potLevelProbeId: 'pot-1-level',
   mixEmptyLevel: 1,
   settleSeconds: 60,
+  waterEc: 0.3,
+  waterPh: 7,
   ...over,
 });
 
-test('feed: the phase dose scaled to the batch, water for the rest, checks on what it uses', () => {
+const near = (actual: number | null, expected: number, tol: number, what: string) =>
+  assert.ok(actual !== null && Math.abs(actual - expected) <= tol, `${what}: ${actual}, expected about ${expected}`);
+const total = (ml: Record<string, number>) => ml['grow']! + ml['micro']! + ml['bloom']! + ml['ripen']!;
+
+test('feed: nutrients bring EC to the middle of the range after the water dilutes it', () => {
+  // Pot at 20 cm × 0.5 L/cm = 10 L, room for 35 L but one batch is 2 L. Veg EC 1.3–1.8 → 1.55.
+  // After 2 L of tap water (EC 0.3): (1.0·10 + 0.3·2) / 12 = 0.883; nutrients (1.55 − 0.883) · 12 / 0.4 = 20 mL.
+  const d = planFeed(feedInput());
+  assert.ok(d.ok, JSON.stringify(d));
+  assert.equal(d.batchLiters, 2);
+  assert.equal(d.potLitersBefore, 10);
+  near(total(d.ml), 20, 0.3, 'nutrient mL');
+  assert.deepEqual([d.ml.grow, d.ml.micro, d.ml.bloom, d.ml.ripen], [10, 6.7, 3.3, 0], 'veg ratio 18:12:6');
+  near(d.expected.ec, 1.55, 0.02, 'expected EC');
+});
+
+test('feed: pH down is worked out after the nutrients raise pH', () => {
+  // Expected before pH down: (6.2·10 + 7·2) / 12 + 0.05 · 20 / 12 = 6.417; to 5.75: (6.417 − 5.75) · 12 / 2 = 4 mL.
   const d = planFeed(feedInput());
   assert.ok(d.ok);
-  assert.equal(d.batchLiters, 2);
-  // veg dose per 10 L: grow 18, micro 12, bloom 6, pH down 1
-  assert.deepEqual(d.ml, { water: 1993, grow: 3.6, micro: 2.4, bloom: 1.2, ripen: 0, phDown: 0.2 });
+  near(d.ml.phDown, 4, 0.15, 'pH down mL');
+  near(d.expected.ph, 5.75, 0.03, 'expected pH');
+  const low = planFeed(feedInput({ ph: 5.0, ec: 1.55 }));
+  assert.ok(low.ok);
+  assert.equal(low.ml.phDown, 0, 'already below target after mixing: no pH down');
+});
+
+test('feed: water goes in portions between the additives, pH down last', () => {
+  const d = planFeed(feedInput());
+  assert.ok(d.ok);
   assert.deepEqual(
     d.plan.steps.map((s) => s.tank),
-    ['water', 'water', 'grow', 'micro', 'bloom', 'ph_down'],
-    'water split at its 60 s cap',
+    ['water', 'grow', 'water', 'micro', 'water', 'bloom', 'water', 'ph_down', 'water'],
   );
+  const water = d.plan.steps.filter((s) => s.tank === 'water').reduce((a, s) => a + s.ml, 0);
+  near(water, d.ml.water, 1, 'water portions add up');
   const checks = d.plan.checks.map((c) => `${c.what}:${c.min ?? ''}:${c.max ?? ''}`);
   assert.deepEqual(checks, ['water:5:', 'grow:3:', 'micro:3:', 'bloom:3:', 'ph_down:2:', 'mix::1', 'pot::90']);
   assert.equal(d.plan.transfer.mixProbeId, 'tank-mix');
-  assert.equal(d.plan.transfer.maxMs, Math.round((2000 / 25) * 1000 * 1.5));
   assert.equal(d.plan.settleMs, 60_000);
 });
 
-test('feed: long runs are split at the pump cap', () => {
-  const d = planFeed(
-    feedInput({ pumps: { ...pumps, pump_water: { id: 'pump-water', mlPerSecond: 10, maxRunMs: 60_000 } } }),
-  );
-  assert.ok(d.ok);
-  const water = d.plan.steps.filter((s) => s.tank === 'water');
-  assert.deepEqual(
-    water.map((s) => s.durationMs),
-    [60_000, 60_000, 60_000, 19_300],
-  );
-});
-
-test('feed: EC and pH adjust the batch', () => {
-  const high = planFeed(feedInput({ ec: 2.4 }));
+test('feed: water follows the level, and dilutes when EC is high', () => {
+  const bigBatch = { id: 'pot-1', liters: 15, feedLiters: 50, litersPerCm: 0.5 };
+  const topUp = planFeed(feedInput({ pot: bigBatch, potLevel: 80, ec: 1.55, ph: 5.75 }));
+  assert.ok(topUp.ok);
+  assert.equal(topUp.batchLiters, 5, 'up to the phase maximum: (90 − 80) · 0.5');
+  // Topping up 35 L of tap water dilutes EC 2.4 well below target, so nutrients bring it back to the middle.
+  const high = planFeed(feedInput({ pot: bigBatch, potLevel: 20, ec: 2.4, ph: 5.75 }));
   assert.ok(high.ok);
-  assert.equal(high.ml.grow, 0, 'EC above range: water only');
-  assert.match(high.notes.join(), /dilute/);
-  const low = planFeed(feedInput({ ec: 1.0 }));
-  assert.ok(low.ok);
-  assert.equal(low.ml.grow, 4.5, '25 % more');
-  const acid = planFeed(feedInput({ ph: 6.5 }));
-  assert.ok(acid.ok);
-  assert.ok(acid.ml.phDown > 1, `pH correction for 17 L: ${acid.ml.phDown}`);
-  const sour = planFeed(feedInput({ ph: 5.2 }));
-  assert.ok(sour.ok);
-  assert.equal(sour.ml.phDown, 0, 'never more pH down below range');
+  assert.equal(high.batchLiters, 35);
+  near(high.expected.ec, 1.55, 0.02, 'diluted, then back to target');
+  // With one 2 L batch the water cannot dilute enough: no nutrients at all.
+  const capped = planFeed(feedInput({ potLevel: 20, ec: 2.4, ph: 5.75 }));
+  assert.ok(capped.ok);
+  assert.equal(capped.batchLiters, 2);
+  assert.equal(total(capped.ml), 0, 'no nutrients while EC stays above target');
+  assert.match(capped.notes.join(), /dilute/);
+  assert.match(capped.notes.join(), /limited to 2 L/);
 });
 
-test('feed: ripen alone, then plain water when flushing', () => {
-  const ripen = planFeed(feedInput({ phase: DEFAULT_CALENDAR.phases[4]!, ec: 2.0 }));
+test('feed: without a level only a small carrier batch; without EC the phase dose', () => {
+  const noLevel = planFeed(feedInput({ potLevel: null, potLevelProbeId: null }));
+  assert.ok(noLevel.ok);
+  assert.equal(noLevel.batchLiters, 0.5, '0.1 L with each of 4 additives, plus one');
+  assert.match(noLevel.notes.join(), /no pot level/);
+  const noEc = planFeed(feedInput({ ec: null }));
+  assert.ok(noEc.ok);
+  near(total(noEc.ml), 7.2, 0.05, 'veg dose 36 mL per 10 L, for 2 L');
+});
+
+test('feed: ripen alone, plain water while flushing, long runs split at the pump cap', () => {
+  const ripen = planFeed(feedInput({ phase: DEFAULT_CALENDAR.phases[4]! }));
   assert.ok(ripen.ok);
-  assert.equal(ripen.ml.ripen, 10);
+  assert.ok(ripen.ml.ripen > 0);
   assert.equal(ripen.ml.grow + ripen.ml.micro + ripen.ml.bloom, 0);
   const flush = planFeed(feedInput({ phase: DEFAULT_CALENDAR.phases[5]! }));
   assert.ok(flush.ok);
@@ -174,18 +229,24 @@ test('feed: ripen alone, then plain water when flushing', () => {
     flush.plan.steps.every((s) => s.tank === 'water'),
     'plain water only',
   );
-  assert.equal(flush.ml.water, 2000);
+  const slow = planFeed(
+    feedInput({
+      pumps: { ...pumps, pump_water: { id: 'pump-water', mlPerSecond: 5, maxRunMs: 60_000 } },
+      ec: 1.55,
+      ph: 5.75,
+    }),
+  );
+  assert.ok(slow.ok);
+  assert.ok(slow.plan.steps.filter((s) => s.tank === 'water').every((s) => s.durationMs <= 60_000));
 });
 
-test('feed: refused when the pot cannot take it or a pump is missing', () => {
+test('feed: refused when the pot is full, cannot carry the additives, or a pump is missing', () => {
   const full = planFeed(feedInput({ potLevel: 90 }));
-  assert.equal(full.ok, false);
   assert.match((full as { reason: string }).reason, /pot is full/);
-  const nearly = planFeed(feedInput({ potLevel: 89.7 }));
-  assert.equal(nearly.ok, false, '0.15 L of room is too little');
-  const some = planFeed(feedInput({ potLevel: 88 }));
-  assert.ok(some.ok);
-  assert.equal(some.batchLiters, 1);
+  const tight = planFeed(feedInput({ potLevel: 89.7 }));
+  assert.match((tight as { reason: string }).reason, /not enough to carry/);
+  const blind = planFeed(feedInput({ potLevel: null, potLevelProbeId: null, ec: null, ph: null }));
+  assert.match((blind as { reason: string }).reason, /no fresh readings/);
   const noTransfer = planFeed(feedInput({ transfer: null }));
   assert.match((noTransfer as { reason: string }).reason, /no transfer pump/);
   const { pump_grow: _g, ...noGrow } = pumps;

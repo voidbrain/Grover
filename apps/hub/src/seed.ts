@@ -27,6 +27,8 @@ export function seedDemo(store: Store, agentId = 'pi-1'): void {
       mixEmptyLevel: 1,
       mixSettleSeconds: 60,
       feedCooldownMinutes: 60,
+      waterEc: 0.2,
+      waterPh: 7,
     });
 
     const probe = (id: string, kind: string, name: string, extra: Record<string, unknown> = {}) =>

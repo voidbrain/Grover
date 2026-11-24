@@ -109,6 +109,11 @@
                   Working out the batch…
                 } @else if (pv.ok) {
                   <p>{{ pv.batchLiters }} L: {{ previewLines(pv).join(' · ') }}</p>
+                  <p>
+                    EC {{ pv.ec ?? '?' }} → {{ pv.expected.ec ?? '?' }} · pH {{ pv.ph ?? '?' }} →
+                    {{ pv.expected.ph ?? '?' }}
+                    <span class="muted">(expected)</span>
+                  </p>
                   @for (n of pv.notes; track $index) {
                     <p class="muted">{{ n }}</p>
                   }
