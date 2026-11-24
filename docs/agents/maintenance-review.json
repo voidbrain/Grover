@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-24T15:29:07.242Z",
+  "reviewed": "2026-11-24T15:42:55.262Z",
   "policy": "c9570a34ab0c7e4f1274fe37802a6eff8e7edfb8266c98f0cec7119533729b2b",
   "inputs": {
     "AGENTS.md": "88a2b8a6c7214661b4441a59613a66a38049270505905f1d2874554a8f994044",
     "docs/BACKLOG-RULES.md": "2774fde691339976f30fe4482ddd8242953fc845aa3d3bd77861002137753ab8",
     "docs/agents/architecture-review.md": "5d967314854912b1a5f1446aeab309763b14f9856bceb3c82df5c6c25c166526",
-    "docs/agents/areas.md": "4bfbdf9049c4af87d713f461e79d13e4ab2320d9015b326fb898f717ec4658af",
+    "docs/agents/areas.md": "2937c7c018860cc3cda40afe770bb4f6b513922f4080ec9c5f6add708c330265",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
     "docs/agents/change-impact.md": "dc1c473e274f76bd70a87ff57bbc53fc75dc75a35d121cf67baf163a2fd2e975",
     "docs/agents/coverage-guide.md": "3d539eb8beedfa101a5e47d9973cdf85dce197436fab2ab096f760e12d208106",
@@ -110,6 +110,12 @@
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "B-001 decided 2026-11-24: default branch renamed to main, so the AGENTS project line reading main as master and the .harness.json defaultBranch override were removed; check:rules and check:backlog pass."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "docs/agents/areas.md",
+      "evidence": "F-006: Client and Hub area notes gain the setup-form rules (drafts and schema check, Signal Forms own min/max, select input event in tests) and the delete/409 rules, each covered by the new client and hub tests."
     }
   ]
 }

@@ -233,8 +233,35 @@ export class Store {
     return s;
   }
 
+  /**
+   * Deletes one entity. Schedules that target a deleted probe or actuator (directly, or through a deleted room)
+   * go with it, so no schedule points at nothing. A calendar still used by a room is refused by its foreign key.
+   */
   deleteEntity(table: 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calendars', id: string): boolean {
-    return Number(this.db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id).changes) > 0;
+    return this.tx(() => {
+      const probes = table === 'probes' ? [id] : table === 'rooms' ? this.listProbes(id).map((p) => p.id) : [];
+      const actuators = table === 'actuators' ? [id] : table === 'rooms' ? this.listActuators(id).map((a) => a.id) : [];
+      const deleted = Number(this.db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id).changes) > 0;
+      if (deleted && (probes.length || actuators.length)) {
+        for (const s of this.listSchedules()) {
+          const t = s.target;
+          if (
+            (t.type === 'probe' && probes.includes(t.probeId)) ||
+            (t.type === 'actuator' && actuators.includes(t.actuatorId))
+          )
+            this.db.prepare('DELETE FROM schedules WHERE id = ?').run(s.id);
+        }
+      }
+      return deleted;
+    });
+  }
+
+  /** Forgets an agent: its token stops working and its room is left without one. */
+  deleteAgent(agentId: string): boolean {
+    return this.tx(() => {
+      this.db.prepare('UPDATE rooms SET agent_id = NULL WHERE agent_id = ?').run(agentId);
+      return Number(this.db.prepare('DELETE FROM agents WHERE id = ?').run(agentId).changes) > 0;
+    });
   }
 
   // ── agents ─────────────────────────────────────────────────────────────────

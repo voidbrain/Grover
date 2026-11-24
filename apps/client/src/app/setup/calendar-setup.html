@@ -1,0 +1,134 @@
+<p><a routerLink="/setup">← Setup</a></p>
+
+@if (!snapshot()) {
+  <p role="status">Connecting to the hub…</p>
+} @else if (!isNew() && !calendar()) {
+  <p>There is no calendar "{{ id() }}". <a routerLink="/setup">Back to setup</a></p>
+} @else {
+  <h1>{{ isNew() ? 'New grow calendar' : calendar()!.name }}</h1>
+  <form (submit)="save($event)" novalidate aria-label="Grow calendar">
+    <div class="form-grid">
+      <label class="field">
+        Name
+        <input type="text" [formField]="f.name" />
+        <gr-field-error [state]="f.name()" />
+      </label>
+    </div>
+    <p class="hint">
+      {{ model().phases.length }} phases, {{ totalDays() }} days. Doses are mL per 10 L of reservoir; the dosing model
+      aims for the middle of each range.
+      @if (usedBy().length) {
+        Used by {{ usedBy().length === 1 ? usedBy()[0]!.name : usedBy().length + ' rooms' }}: changes apply from the
+        next reading.
+      }
+    </p>
+
+    @for (phase of model().phases; track $index; let i = $index, first = $first, last = $last) {
+      <section class="phase" [attr.aria-label]="'Phase ' + (i + 1)">
+        <div class="phase-head">
+          <h2>{{ i + 1 }}. {{ phase.name || 'New phase' }}</h2>
+          <button
+            type="button"
+            class="ghost small"
+            [disabled]="first"
+            (click)="movePhase(i, -1)"
+            [attr.aria-label]="'Move phase ' + (i + 1) + ' up'"
+          >
+            ↑
+          </button>
+          <button
+            type="button"
+            class="ghost small"
+            [disabled]="last"
+            (click)="movePhase(i, 1)"
+            [attr.aria-label]="'Move phase ' + (i + 1) + ' down'"
+          >
+            ↓
+          </button>
+          <button
+            type="button"
+            class="danger small"
+            [disabled]="model().phases.length === 1"
+            (click)="removePhase(i)"
+            [attr.aria-label]="'Remove phase ' + (i + 1)"
+          >
+            Remove
+          </button>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            Name
+            <input type="text" [formField]="f.phases[i]!.name" />
+            <gr-field-error [state]="f.phases[i]!.name()" />
+          </label>
+          <label class="field">
+            Days
+            <input type="number" [formField]="f.phases[i]!.days" />
+            <gr-field-error [state]="f.phases[i]!.days()" />
+          </label>
+          <label class="field">
+            Light hours per day
+            <input type="number" step="0.5" [formField]="f.phases[i]!.lightHours" />
+            <gr-field-error [state]="f.phases[i]!.lightHours()" />
+          </label>
+          <label class="field check"><input type="checkbox" [formField]="f.phases[i]!.blooming" /> Blooming</label>
+          <label class="field check"
+            ><input type="checkbox" [formField]="f.phases[i]!.flushing" /> Flushing (no nutrients)</label
+          >
+        </div>
+        <fieldset>
+          <legend>Dose, mL per 10 L</legend>
+          <div class="ranges">
+            @for (d of doseKeys; track d[0]) {
+              <label class="field">
+                {{ d[1] }}
+                <input type="number" step="0.5" [formField]="f.phases[i]!.dose[d[0]]" />
+                <gr-field-error [state]="f.phases[i]!.dose[d[0]]()" />
+              </label>
+            }
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Target ranges (min – max)</legend>
+          <div class="ranges">
+            @for (r of rangeKeys; track r[0]) {
+              <div class="field">
+                <span [id]="'range-' + i + '-' + r[0]">{{ r[1] }}</span>
+                <div class="pair" role="group" [attr.aria-labelledby]="'range-' + i + '-' + r[0]">
+                  <input type="number" step="0.1" [formField]="f.phases[i]![r[0]].min" aria-label="minimum" />
+                  <span aria-hidden="true">–</span>
+                  <input type="number" step="0.1" [formField]="f.phases[i]![r[0]].max" aria-label="maximum" />
+                </div>
+              </div>
+            }
+          </div>
+        </fieldset>
+      </section>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="ghost" (click)="addPhase()">Add phase</button>
+    </div>
+
+    @if (run.errors().length) {
+      <ul class="form-errors" role="alert">
+        @for (e of run.errors(); track $index) {
+          <li>{{ e }}</li>
+        }
+      </ul>
+    }
+    <div class="form-actions">
+      <button type="submit" [disabled]="run.busy()">{{ isNew() ? 'Create calendar' : 'Save calendar' }}</button>
+      <a routerLink="/setup" class="cancel">Cancel</a>
+      <span class="spacer"></span>
+      @if (!isNew()) {
+        <button type="button" class="danger" [disabled]="run.busy() || usedBy().length > 0" (click)="remove()">
+          Delete calendar
+        </button>
+      }
+    </div>
+    @if (!isNew() && usedBy().length) {
+      <p class="hint">A calendar used by a room cannot be deleted.</p>
+    }
+  </form>
+}

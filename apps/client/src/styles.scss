@@ -164,3 +164,119 @@ input[type='number'] {
     border-radius: var(--radius);
   }
 }
+
+/* ── Forms (setup pages) ─────────────────────────────────────────────────── */
+
+input[type='text'],
+input[type='date'],
+input[type='time'],
+select {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: var(--space-1) var(--space-2);
+  min-height: 2.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  width: 100%;
+}
+
+input[aria-invalid='true'],
+select[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--space-3) var(--space-4);
+  align-items: start;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 0.8125rem;
+  color: var(--muted);
+  &.check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.25rem;
+    color: var(--text);
+    font-size: 0.875rem;
+    margin-top: 1.1rem;
+  }
+  &.wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  .spacer {
+    flex: 1;
+  }
+}
+
+.form-errors {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--bad);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--bad) 8%, var(--surface));
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.editor {
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  background: var(--surface);
+  h3 {
+    margin: 0 0 var(--space-3);
+    font-size: 1rem;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--line);
+  }
+  td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  td.actions {
+    text-align: right;
+    white-space: nowrap;
+  }
+  .off {
+    color: var(--muted);
+  }
+}
+
+.table-wrap {
+  overflow-x: auto;
+}

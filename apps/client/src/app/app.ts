@@ -1,14 +1,18 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Hub } from './hub';
 
 @Component({
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   selector: 'gr-root',
   template: `
     <a class="skip" href="#main">Skip to content</a>
     <header class="top">
       <a routerLink="/" class="brand">Grover</a>
+      <nav aria-label="Main">
+        <a routerLink="/" routerLinkActive="current" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Dashboard</a>
+        <a routerLink="/setup" routerLinkActive="current" ariaCurrentWhenActive="page">Setup</a>
+      </nav>
       <span class="conn" [class.down]="!hub.connected()" role="status">
         {{ hub.connected() ? 'Live' : 'Offline: last known data' }}
       </span>
@@ -42,6 +46,23 @@ import { Hub } from './hub';
       color: var(--text);
       text-decoration: none;
       letter-spacing: -0.01em;
+    }
+    nav {
+      display: flex;
+      gap: var(--space-4);
+      margin-right: auto;
+      margin-left: var(--space-5);
+      a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9375rem;
+        padding: var(--space-1) 0;
+        border-bottom: 2px solid transparent;
+        &.current {
+          color: var(--text);
+          border-bottom-color: var(--accent);
+        }
+      }
     }
     .conn {
       font-size: 0.8125rem;

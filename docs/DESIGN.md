@@ -22,7 +22,7 @@ How Grover works today, checked against the code. Planned work lives in the [bac
 - **Contracts** (`packages/contracts`): every shape that crosses a boundary, as zod schemas, plus the pure logic both sides need (schedule rules, the dosing model). `@grover/contracts/kinds` is the zod-free subset the browser imports.
 - **Hub** (`apps/hub`): one process. `Store` (SQLite through `node:sqlite`, migrations in `db.ts`), `AgentLink` (broker, auth, topic ACLs, configs, request/ack commands), `Commands` (the only way to move hardware), `Control` (dose log, model, auto-dose), `http.ts` (API, live socket, MCP, static client).
 - **Agent** (`apps/agent`): one per Raspberry Pi, one room each. `Actuators` (safety), drivers (`drivers/mock.ts`, `drivers/hardware.ts`), `Outbox` (durable event queue), `Agent` (config, schedule runner, commands).
-- **Client** (`apps/client`): dashboard per room (probes against the phase range, switches, pumps, mode, stop, dose suggestion) and a probe history chart. It reads `/api/snapshot` and follows `/api/live`.
+- **Client** (`apps/client`): dashboard per room (probes against the phase range, switches, pumps, mode, stop, dose suggestion), a probe history chart, and Setup: rooms, pots, probes, actuators, schedules, grow calendars and agent registration. It reads `/api/snapshot`, follows `/api/live` and writes through the same `PUT`/`DELETE` routes as any API client; forms are checked with the contracts schemas before sending, and the hub checks again.
 
 Hub and agent are separate processes even on the same Pi, so the agent's safety does not depend on the hub staying up.
 
@@ -68,6 +68,11 @@ Enforced on the agent ([`actuators.ts`](../apps/agent/src/actuators.ts)) whateve
 - **Agent without hub**: keeps its cached config (`<state>/config.json`), runs schedules and windows, queues events in `<state>/outbox.sqlite` (capped at 200 000 events) and sends them when the hub is back. No automatic dosing.
 - **Client without hub**: shows the last snapshot (browser storage) with an "Offline" badge; actions are disabled. Setup is not editable offline.
 - **Hub without agent**: commands answer 503 (agent offline); the dashboard shows when the agent was last seen.
+
+## Setup rules
+
+- Deleting a probe or actuator deletes the schedules that target it; deleting a room deletes its pots, probes, actuators and their schedules (readings and actuations stay in history). A calendar a room uses cannot be deleted (409). An agent runs one room at most (409).
+- Issuing a token for an existing agent replaces it and drops the agent's MQTT connection; removing an agent revokes its token and leaves its room without one.
 
 ## Dosing
 
