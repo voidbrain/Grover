@@ -205,7 +205,7 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#23](https://github.com/voidbrain/Grover/pull/23) (record) |
+| PR / evidence | [#23](https://github.com/voidbrain/Grover/pull/23) (record), [#26](https://github.com/voidbrain/Grover/pull/26) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
