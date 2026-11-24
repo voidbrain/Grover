@@ -214,6 +214,108 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ---
 
+### F-016
+
+**Schedules by day of week, weekends apart**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+
+💻 **→ Human action required: No**<br />Build after F-014.
+
+| | |
+|---|---|
+| **Issue** | Schedule rules (window, every, at, dark) repeat the same every day. The old app (tag `legacy-v1`, `detail-panel/schedule-panel`) had a schedule per weekday with weekends shown apart. Requested by the owner on 2026-11-24. |
+| **Reproduce** | `npm run dev`, Setup → a tent → Schedules: a rule cannot be limited to some days. |
+| **Check** | A schedule rule can name the weekdays it runs on (default every day); the agent applies it in the tent's time zone, also offline; the schedule editor picks days with a weekdays/weekend shortcut and shows the week with weekends apart; light rules from the grow calendar stay daily. `PROTOCOL_VERSION` bumped if the rule shape changes; tests in contracts (which days a rule is due) and the e2e test. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24 ("Day-of-week schedules, weekends separately").
+
+**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### F-017
+
+**Nutrient colours: each supply tank in its nutrient's real colour**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Build after F-014; the colours feed F-014's doses and F-015's map.
+
+| | |
+|---|---|
+| **Issue** | The old app gave each nutrient (Doses page) a colour matching the real product, so doses read at a glance. The new tanks (water, grow, micro, bloom, ripen, pH down) have no colour. Requested by the owner on 2026-11-24 ("colours are nice because they rely on real nutrient colour"). |
+| **Reproduce** | `npm run dev`: supply tanks, their pumps and doses show no colour. |
+| **Check** | Each supply tank has a colour chosen in Setup (a palette of nutrient-like colours plus a custom value, with defaults per role), stored with the tent (a migration), and used for the tank, its pump, dose bars and chart series; text on a colour keeps STYLE-GUIDE contrast in both themes. A client spec covers the editor. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### F-018
+
+**Pumps through an L298N driver (two pins on the MCP23017)**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟢 Small |
+
+🧑 **→ Human action required: Procedure**<br />Confirm the pump wiring (L298N inputs on which MCP23017 pins) and run the device check with the owner's go-ahead.
+
+| | |
+|---|---|
+| **Issue** | The old rig drove each pump through an L298N motor driver: two MCP23017 pins per pump (`pin1`, `pin2` in tag `legacy-v1`). The new `mcp23017` binding drives one pin, which suits a relay but leaves the second L298N input unmanaged. The owner said "L298N probably" on 2026-11-24; the old I²C addresses will be remapped by hand, so no import of them. |
+| **Reproduce** | Bind a pump with `mcp23017`: only one pin is set; nothing holds the other input of the bridge. |
+| **Check** | An `l298n` actuator binding (MCP23017 address, the two input pins, optional enable pin, active level) for pumps only: on is IN1 high and IN2 low, off is both low, and the agent claims both pins low at start and on stop and shutdown; the probe editor offers it; a mock test shows both pins off after stop, a watchdog trip and shutdown; hardware notes in docs/DESIGN.md. Device check: each pump runs forward and stops, recorded here. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Requested 2026-11-24. Wiring to confirm on the device.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-003
 
 **Hardware bring-up on the Raspberry Pi**
