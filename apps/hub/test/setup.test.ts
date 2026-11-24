@@ -187,12 +187,12 @@ test('breeders, strains and plants: saved, read back, and not deleted while in u
     breederId: 'acme',
     generation: 2,
     motherId: 'mother',
-    potId: 'pot-3',
+    potId: 'pot-4', // pot 3 holds the demo plant: one growing plant per pot (F-013)
     startedOn: '2026-11-01',
   });
   assert.equal(plant.status, 200, JSON.stringify(plant.json));
   const snap = (await api('GET', '/api/snapshot')).json;
-  assert.equal(snap.plants.find((p: any) => p.id === 'cutting').potId, 'pot-3');
+  assert.equal(snap.plants.find((p: any) => p.id === 'cutting').potId, 'pot-4');
   assert.deepEqual(snap.strains.find((s: any) => s.id === 'cross').parentIds, ['parent-a']);
 
   assert.equal((await api('DELETE', '/api/strains/parent-a')).status, 409, 'a parent of another strain');
@@ -205,7 +205,7 @@ test('breeders, strains and plants: saved, read back, and not deleted while in u
   // A deleted mother leaves the cutting without one; a deleted pot leaves its plant without a pot.
   assert.equal((await api('DELETE', '/api/plants/mother')).status, 204);
   assert.equal(hub.store.listPlants().find((p) => p.id === 'cutting')!.motherId, null);
-  assert.equal((await api('DELETE', '/api/pots/pot-3')).status, 204);
+  assert.equal((await api('DELETE', '/api/pots/pot-4')).status, 204);
   assert.equal(
     hub.store.listPlants().find((p) => p.id === 'cutting')!.potId,
     null,

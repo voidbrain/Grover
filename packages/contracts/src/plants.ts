@@ -67,3 +67,13 @@ export const Plant = z
     path: ['generation'],
   });
 export type Plant = z.infer<typeof Plant>;
+
+/** Taking cuttings that would be past this generation is allowed, with a warning (the owner's limit, 2026-11-24). */
+export const GENERATION_WARNING = 5;
+
+export const CuttingsRequest = z.object({ count: z.number().int().min(1).max(20) });
+export const HarvestRequest = z.object({
+  date: IsoDate.optional(),
+  yieldGrams: z.number().min(0).nullable().optional(),
+});
+export const PlaceRequest = z.object({ plantId: Id });

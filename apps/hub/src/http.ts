@@ -4,7 +4,16 @@ import fastifyStatic from '@fastify/static';
 import fastifyWebsocket from '@fastify/websocket';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { ZodError } from 'zod';
-import { Id, ModeRequest, PROBE_KINDS, RunRequest, SwitchRequest } from '@grover/contracts';
+import {
+  CuttingsRequest,
+  HarvestRequest,
+  Id,
+  ModeRequest,
+  PROBE_KINDS,
+  PlaceRequest,
+  RunRequest,
+  SwitchRequest,
+} from '@grover/contracts';
 import { AgentOffline, CommandTimeout } from './agents.ts';
 import { Refused } from './commands.ts';
 import type { Hub } from './hub.ts';
@@ -24,7 +33,7 @@ type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calenda
  * so only devices on your tailnet reach it.
  */
 export async function createHttp(hub: Hub): Promise<FastifyInstance> {
-  const { store, agents, commands, feeder, alerts, bus, config } = hub;
+  const { store, agents, commands, feeder, alerts, bus, config, plants } = hub;
   const app = Fastify({ logger: false });
   await app.register(fastifyWebsocket);
 
@@ -96,6 +105,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
   app.get('/api/snapshot', async () => ({
     rooms: store.listRooms().map((room) => ({ ...room, phase: feeder.phase(room) })),
     pots: store.listPots(),
+    potPhases: Object.fromEntries(store.listPots().map((p) => [p.id, feeder.potPhase(p)])),
     probes: store.listProbes(),
     actuators: store.listActuators(),
     schedules: store.listSchedules(),
@@ -139,6 +149,17 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     commands.switch(req.params.id, SwitchRequest.parse(req.body).on, 'manual'),
   );
   app.post<{ Params: { id: string } }>('/api/rooms/:id/stop', async (req) => commands.stopAll(req.params.id, 'manual'));
+  // ── plant cycle (record changes, no hardware) ───────────────────────────
+  app.post<{ Params: { id: string } }>('/api/plants/:id/cuttings', async (req) =>
+    plants.takeCuttings(req.params.id, CuttingsRequest.parse(req.body).count),
+  );
+  app.post<{ Params: { id: string } }>('/api/plants/:id/harvest', async (req) => {
+    const body = HarvestRequest.parse(req.body);
+    return plants.harvest(req.params.id, body.date, body.yieldGrams);
+  });
+  app.post<{ Params: { id: string } }>('/api/pots/:id/place', async (req) =>
+    plants.place(req.params.id, PlaceRequest.parse(req.body).plantId),
+  );
   app.post<{ Params: { id: string } }>('/api/pots/:id/feed', async (req) => feeder.feed(req.params.id, 'manual'));
   app.put<{ Params: { id: string } }>('/api/rooms/:id/mode', async (req) => {
     commands.setMode(req.params.id, ModeRequest.parse(req.body).mode);

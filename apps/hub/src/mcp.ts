@@ -11,7 +11,7 @@ const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON
  * every tool that changes state says so in its description and is annotated as not read-only.
  */
 export function createMcpServer(hub: Hub): McpServer {
-  const { store, commands, feeder, alerts, agents } = hub;
+  const { store, commands, feeder, alerts, agents, plants } = hub;
   const server = new McpServer({ name: 'grover', version: '2.0.0' });
 
   server.registerTool(
@@ -30,6 +30,7 @@ export function createMcpServer(hub: Hub): McpServer {
             phase: feeder.phase(room),
             pots: store.listPots(room.id).map((pot) => ({
               ...pot,
+              phase: feeder.potPhase(pot),
               plants: store.listPlants().filter((p) => p.potId === pot.id && p.harvestedOn === null),
             })),
             alerts: alerts.list().filter((a) => a.roomId === room.id),
@@ -85,6 +86,39 @@ export function createMcpServer(hub: Hub): McpServer {
           }),
       );
     },
+  );
+
+  server.registerTool(
+    'grover_take_cuttings',
+    {
+      description:
+        'Records cuttings taken from a plant: N new plants of the next generation, that plant as mother, growing elsewhere (no pot), started today. Warns past generation 5. Changes records only, no hardware.',
+      inputSchema: { plantId: z.string(), count: z.number().int().min(1).max(20) },
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async ({ plantId, count }) => text(plants.takeCuttings(plantId, count)),
+  );
+
+  server.registerTool(
+    'grover_harvest',
+    {
+      description:
+        "Records a plant's harvest (today unless a YYYY-MM-DD date is given, optional yield in grams) and frees its pot. Records only.",
+      inputSchema: { plantId: z.string(), date: z.string().optional(), yieldGrams: z.number().min(0).optional() },
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async ({ plantId, date, yieldGrams }) => text(plants.harvest(plantId, date, yieldGrams)),
+  );
+
+  server.registerTool(
+    'grover_place_plant',
+    {
+      description:
+        'Records that a plant growing elsewhere was placed in a free pot of the tent. Refused if the pot holds a growing plant. Records only.',
+      inputSchema: { potId: z.string(), plantId: z.string() },
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async ({ potId, plantId }) => text(plants.place(potId, plantId)),
   );
 
   server.registerTool(

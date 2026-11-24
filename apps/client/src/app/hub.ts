@@ -47,6 +47,8 @@ export interface Snapshot {
   latest: Reading[];
   alerts: Alert[];
   feeds: FeedView[];
+  /** The phase each pot is fed for: its plant's own, or the tent's (null: none). */
+  potPhases: Record<string, { phase: Phase; day: number; source: 'plant' | 'tent'; plantId: string | null } | null>;
   breeders: Breeder[];
   strains: Strain[];
   plants: Plant[];
@@ -229,6 +231,30 @@ export class Hub {
       const feed = await firstValueFrom(this.http.post<FeedView>(`/api/pots/${potId}/feed`, {}));
       if (feed.state === 'refused') this.lastError.set(`Feed refused: ${feed.message}`);
       return feed;
+    });
+  }
+  takeCuttings(plantId: string, count: number) {
+    return this.act(`plant:${plantId}`, async () => {
+      const r = await firstValueFrom(
+        this.http.post<{ plants: Plant[]; warning: string | null }>(`/api/plants/${plantId}/cuttings`, { count }),
+      );
+      await this.refresh();
+      if (r.warning) this.lastError.set(`Cuttings recorded. Note: ${r.warning}.`);
+      return r;
+    });
+  }
+  harvest(plantId: string) {
+    return this.act(`plant:${plantId}`, async () => {
+      const r = await firstValueFrom(this.http.post<Plant>(`/api/plants/${plantId}/harvest`, {}));
+      await this.refresh();
+      return r;
+    });
+  }
+  place(potId: string, plantId: string) {
+    return this.act(`pot:${potId}`, async () => {
+      const r = await firstValueFrom(this.http.post<Plant>(`/api/pots/${potId}/place`, { plantId }));
+      await this.refresh();
+      return r;
     });
   }
   readings(probeId: string, since: number) {
