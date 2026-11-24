@@ -284,6 +284,10 @@ export class Hub {
       return r;
     });
   }
+  /** The driver's value before calibration (not stored), with the compensating temperature. */
+  readRaw(probeId: string) {
+    return firstValueFrom(this.http.post<{ raw: number; tempC: number | null }>(`/api/probes/${probeId}/read-raw`, {}));
+  }
   readings(probeId: string, since: number) {
     return firstValueFrom(this.http.get<Reading[]>(`/api/probes/${probeId}/readings`, { params: { since } }));
   }

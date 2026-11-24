@@ -128,3 +128,31 @@ test('a harvest date in the future is refused', async () => {
   assert.equal(res.status, 400);
   assert.match(res.json.error, /future/);
 });
+
+test('an analog pH probe without calibration is not used to plan a feed, and the plan says why', async () => {
+  const ph = hub.store.getProbe('pot-1-ph');
+  hub.store.putProbe({
+    ...ph,
+    binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 0 },
+    calibration: null,
+  });
+  hub.store.addReading({ probeId: 'pot-1-ph', value: 2.03, at: Date.now() }); // volts
+  const preview = (await api('GET', '/api/pots/pot-1/feed')).json;
+  assert.equal(preview.ph, null, 'volts are not a pH');
+  const why = preview.ok ? preview.notes.join(' ') : preview.reason;
+  assert.match(why, /not calibrated/);
+  // Calibrated, it counts again.
+  hub.store.putProbe({
+    ...hub.store.getProbe('pot-1-ph'),
+    calibration: {
+      points: [
+        { raw: 2.53, value: 4, tempC: null, takenOn: '2026-11-24' },
+        { raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' },
+      ],
+      compensation: 'ph',
+      tempProbeId: null,
+    },
+  });
+  hub.store.addReading({ probeId: 'pot-1-ph', value: 6.1, at: Date.now() + 1 });
+  assert.equal((await api('GET', '/api/pots/pot-1/feed')).json.ph, 6.1);
+});

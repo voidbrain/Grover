@@ -133,7 +133,9 @@ Tools that change hardware say so in their description and are annotated `readOn
 
 ## Hardware
 
-Bindings ([`hardware.ts`](../apps/agent/src/drivers/hardware.ts)): `ds18b20` (1-Wire, kernel w1-therm), `ads1115` (analog pH/EC/level over I²C; returns volts), `gpio` (via `pinctrl`), `mcp23017` (I²C expander outputs), `mock`. `hcsr04` is refused (Node cannot time microseconds). None of these has run on a device yet, and analog probes have no calibration from volts to pH/EC yet: see the backlog. Wiring notes and diagrams of the original build: [hardware/](hardware/).
+Bindings ([`hardware.ts`](../apps/agent/src/drivers/hardware.ts)): `ds18b20` (1-Wire, kernel w1-therm), `ads1115` (analog pH/EC/level over I²C; returns volts), `gpio` (via `pinctrl`), `mcp23017` (I²C expander outputs), `mock`. `hcsr04` is refused (Node cannot time microseconds). None of these has run on a device yet (F-003).
+
+**Calibration** ([`calibration.ts`](../packages/contracts/src/calibration.ts), F-004): a probe can carry calibration points (raw driver value → reference value, with the solution's temperature). Two or more points give the least-squares line; one point is a correction (EC scales through zero, anything else is an offset). Compensation uses the latest value of a chosen water temperature probe: pH scales its distance from 7 with absolute temperature (Nernst), EC is referred to 25 °C at 2 %/°C. The agent applies it, so stored readings are in units. Points are taken in the probe editor: *Read now* asks the agent for a raw read (`read` with `raw: true`, not stored), then the reference value is entered. An analog (ADS1115) pH or EC probe without calibration reads volts: feeds never use it, and the plan says so. Wiring notes and diagrams of the original build: [hardware/](hardware/).
 
 ## Configuration
 

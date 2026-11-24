@@ -4,6 +4,7 @@ import mqtt, { type MqttClient } from 'mqtt';
 import {
   AgentCommand,
   AgentConfig,
+  applyCalibration,
   PROTOCOL_VERSION,
   configHash,
   firesAt,
@@ -240,13 +241,22 @@ export class Agent {
   }
 
   /** A reading and its time; the command ack for a read carries the same time, so the hub stores it once. */
-  private async takeReading(probeId: string): Promise<{ value: number; at: number }> {
+  /** Last calibrated value per probe: the temperature a calibration compensates with. */
+  private readonly lastValues = new Map<string, number>();
+
+  private async takeReading(probeId: string, raw = false): Promise<{ value: number; at: number }> {
     const entry = this.probes.get(probeId);
     if (!entry) throw new Error(`unknown or disabled probe ${probeId}`);
     try {
-      const value = await withTimeout(entry.driver.read(), READ_TIMEOUT_MS, `probe ${probeId} timed out`);
-      if (!Number.isFinite(value)) throw new Error(`probe ${probeId} returned ${value}`);
+      const reading = await withTimeout(entry.driver.read(), READ_TIMEOUT_MS, `probe ${probeId} timed out`);
+      if (!Number.isFinite(reading)) throw new Error(`probe ${probeId} returned ${reading}`);
       const at = this.now();
+      // A raw read is for taking calibration points: the driver's value, not stored as a measurement.
+      if (raw) return { value: reading, at };
+      const cal = entry.probe.calibration;
+      const tempC = cal?.tempProbeId ? (this.lastValues.get(cal.tempProbeId) ?? null) : null;
+      const value = cal ? applyCalibration(reading, cal, tempC) : reading;
+      this.lastValues.set(probeId, value);
       this.publishEvent({ type: 'reading', reading: { probeId, value, at } });
       return { value, at };
     } catch (err) {
@@ -290,7 +300,7 @@ export class Agent {
         case 'read':
           if (mode === 'off') return ack(false, 'agent is off');
           {
-            const r = await this.takeReading(cmd.probeId);
+            const r = await this.takeReading(cmd.probeId, cmd.raw);
             return ack(true, null, r.value, r.at);
           }
         case 'run': {

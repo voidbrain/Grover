@@ -21,6 +21,7 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - Any setup write republishes agent configs (`publishAllConfigs`).
 - The HTTP server binds loopback by default; never change the default to a public bind. The `onRequest` guard in `http.ts` (Host, Origin, JSON bodies) is a safeguard: keep it in front of every route, MCP and the live socket included. MCP is stateless (a server per request).
 - The light following the calendar is applied in `AgentLink.buildConfig` through `Lights.apply` (set with `setConfigAdjuster`): the stored schedules are never rewritten. Anything that can move a phase (plant routes, MCP plant tools) must call `publishAllConfigs`; the 10-minute refresh covers days passing.
+- An uncalibrated analog pH/EC probe (`Store.needsCalibration`) is never used to plan a feed (`Feeder.fresh`).
 - A pot holds one growing plant (`Store.putPlant` refuses a second); the plant cycle actions live in `plant-cycle.ts`; the Feeder feeds each pot for `potPhase` (its plant's phase, else the tent's): never use the tent's phase for a pot directly.
 - The legacy importer (`legacy.ts`) only adds missing ids and never overwrites: keep it that way, the owner edits imported records. Its test uses an invented dump; never commit the real one.
 - Feeds: the Feeder reserves the tent before anything is awaited and only releases its own reservation; a feed is closed only when a status from the agent, newer than its answer to the feed and with an empty outbox, says it is not running it; offline and hub restarts keep it open. Lessons (review): without closing, one power cut mid-feed blocked every later feed; closing on disconnect or on any status recorded finished feeds as aborted (a status overtook the queued "done").
@@ -33,6 +34,7 @@ Detailed rules and lessons for each part of the project, kept out of AGENTS.md s
 - `Actuators` owns safety (see DESIGN, "Safety"); the agent ack for `run` means "queued", the actuation events report the real on/off.
 - Drivers must start outputs off and must not throw from `set(false)` past a best effort. A driver that needs the device is in `hardware.ts`; anything for development is in `mock.ts`.
 - State lives in `GROVER_AGENT_STATE`: `config.json` (last config) and `outbox.sqlite`.
+- Calibration is applied in `Agent.takeReading` (compensation from `lastValues` of the temperature probe); a raw read (`raw: true`) returns the driver value and publishes nothing. Never store volts as a measurement.
 - `FeedRunner` owns feed sequencing: checks before anything runs, a tank re-check before each supply run, transfer in short slices with level checks. A cancel (Stop all, mode change, hardware change, shutdown) must reach it before the pumps go off, or a step would start again.
 - `drivers/mock.ts` simulates the rig (tank volumes, mixing, transfer, plants drinking), so feeds can be tested without hardware; keep it in step with `feeding.ts` semantics.
 - Lesson: a pump run by hand (or a feed that filled the pot early) leaves liquid in the mixing tank, and the next feed rightly refuses to start (seen in the e2e test); the dashboard says so under "Pumps, by hand".

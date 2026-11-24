@@ -2,6 +2,7 @@ import { Component, computed, inject, input, linkedSignal, output } from '@angul
 import { FormField, form, max, min, pattern, required, submit } from '@angular/forms/signals';
 import { Probe, type Pot } from '@grover/contracts';
 import { FieldError } from './field-error';
+import { ProbeCalibration } from './probe-calibration';
 import { NUMBER_TEXT, issueLines, probeDraft, slugify, toProbe, uniqueId } from './drafts';
 import { PROBE_DRIVERS, probeKinds, tankRoles } from './labels';
 import { EditorRun } from './editor-run';
@@ -9,7 +10,7 @@ import { SetupApi } from './setup-api';
 
 @Component({
   selector: 'gr-probe-editor',
-  imports: [FormField, FieldError],
+  imports: [FormField, FieldError, ProbeCalibration],
   template: `
     <form class="editor" (submit)="save($event)" novalidate>
       <h3>{{ isNew() ? 'New probe' : 'Edit probe: ' + probe()!.name }}</h3>
@@ -99,6 +100,15 @@ import { SetupApi } from './setup-api';
           }
         }
       </div>
+      @if (!isNew()) {
+        <gr-probe-calibration
+          [probeId]="probe()!.id"
+          [kind]="model().kind"
+          [tempProbes]="tempProbes()"
+          [calibration]="model().calibration"
+          (calibrationChange)="setCalibration($event)"
+        />
+      }
       @if (isNew() && model().name) {
         <p class="hint">Id: {{ newId() }}</p>
       }
@@ -127,6 +137,8 @@ export class ProbeEditor {
   readonly probe = input<Probe | null>(null);
   readonly pots = input<readonly Pot[]>([]);
   readonly takenIds = input<readonly string[]>([]);
+  /** Water temperature probes of the tent, for calibration compensation. */
+  readonly tempProbes = input<readonly Probe[]>([]);
   readonly done = output<void>();
 
   protected readonly kinds = probeKinds;
@@ -151,6 +163,10 @@ export class ProbeEditor {
   protected readonly state = new EditorRun();
   protected readonly errors = this.state.errors;
   protected readonly busy = this.state.busy;
+
+  protected setCalibration(calibration: Probe['calibration']): void {
+    this.model.update((d) => ({ ...d, calibration }));
+  }
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();

@@ -14,6 +14,9 @@ const hub = await startHub(
   loadConfig({ dbPath: 'data/dev/hub.sqlite', allowedOrigins: ['http://localhost:4200', 'http://127.0.0.1:4200'] }),
 );
 if (hub.store.listRooms().length === 0) seedDemo(hub.store, 'pi-1');
+else if (hub.store.listPlants().length === 0 && hub.store.tankProbes('grow-1').mix === undefined)
+  // The demo is only seeded into an empty database: one made by an older version lacks what came since.
+  console.log('note: data/dev holds an older demo (no plants, no tanks). For the current one: stop, rm -rf data/dev, start again.');
 const token = hub.store.issueAgentToken('pi-1');
 
 const agent = new Agent(

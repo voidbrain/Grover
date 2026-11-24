@@ -45,6 +45,7 @@ describe('setup drafts', () => {
         tank: null,
         alertBelow: null,
         alertAbove: 30,
+        calibration: null,
       },
       {
         id: 'b',
@@ -57,6 +58,7 @@ describe('setup drafts', () => {
         tank: null,
         alertBelow: null,
         alertAbove: null,
+        calibration: null,
       },
       {
         id: 'c',
@@ -69,6 +71,7 @@ describe('setup drafts', () => {
         tank: 'grow',
         alertBelow: 3,
         alertAbove: null,
+        calibration: null,
       },
     ];
     for (const p of probes) expect(Probe.parse(toProbe(probeDraft(p), 'r'))).toEqual(p);

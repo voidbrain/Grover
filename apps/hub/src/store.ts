@@ -183,6 +183,7 @@ export class Store {
       tank: r['tank'] ?? null,
       alertBelow: r['alert_below'] ?? null,
       alertAbove: r['alert_above'] ?? null,
+      calibration: r['calibration'] == null ? null : json(r['calibration']),
     });
   }
   listProbes(roomId?: string): Probe[] {
@@ -208,6 +209,20 @@ export class Store {
     if (own || kind === 'water_level') return own ?? null;
     return all.find((p) => p.potId === null) ?? null;
   }
+  /**
+   * An analog pH or EC probe (ADS1115) without calibration reads volts, not pH or mS/cm: it must not be used as a
+   * measurement (F-004).
+   */
+  needsCalibration(p: Probe): boolean {
+    return p.binding.driver === 'ads1115' && (p.kind === 'ph' || p.kind === 'ec') && p.calibration === null;
+  }
+  /** The water temperature probe for a probe's solution: the pot's own, else the tent's (no tank). */
+  roomWaterTemp(p: Probe): string | null {
+    const temps = this.listProbes(p.roomId).filter(
+      (x) => x.kind === 'water_temperature' && x.enabled && x.tank === null,
+    );
+    return (temps.find((x) => x.potId === p.potId) ?? temps.find((x) => x.potId === null))?.id ?? null;
+  }
   /** Level probes of the tent's tanks, by role. */
   tankProbes(roomId: string): Partial<Record<TankRoleId, Probe>> {
     const out: Partial<Record<TankRoleId, Probe>> = {};
@@ -218,10 +233,11 @@ export class Store {
     const p = Probe.parse(input);
     this.db
       .prepare(
-        `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding, tank, alert_below, alert_above) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding, tank, alert_below, alert_above, calibration)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET room_id = excluded.room_id, pot_id = excluded.pot_id, kind = excluded.kind, name = excluded.name,
            enabled = excluded.enabled, binding = excluded.binding, tank = excluded.tank, alert_below = excluded.alert_below,
-           alert_above = excluded.alert_above`,
+           alert_above = excluded.alert_above, calibration = excluded.calibration`,
       )
       .run(
         p.id,
@@ -234,6 +250,7 @@ export class Store {
         p.tank,
         p.alertBelow,
         p.alertAbove,
+        p.calibration ? JSON.stringify(p.calibration) : null,
       );
     return p;
   }

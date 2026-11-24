@@ -56,6 +56,7 @@ describe('ProbeEditor', () => {
       tank: null,
       alertBelow: null,
       alertAbove: null,
+      calibration: null,
     });
   });
 

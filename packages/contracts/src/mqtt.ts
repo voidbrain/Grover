@@ -91,7 +91,8 @@ export const AgentConfig = z.object({
 export type AgentConfig = z.infer<typeof AgentConfig>;
 
 export const AgentCommand = z.discriminatedUnion('kind', [
-  z.object({ id: z.string(), kind: z.literal('read'), probeId: Id }),
+  /** `raw`: the driver's value before calibration, for taking calibration points; not stored as a reading. */
+  z.object({ id: z.string(), kind: z.literal('read'), probeId: Id, raw: z.boolean().default(false) }),
   /** Bounded run. The agent clamps durationMs to the actuator's maxRunMs. */
   z.object({
     id: z.string(),

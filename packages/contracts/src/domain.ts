@@ -19,11 +19,9 @@ export type OperatingMode = z.infer<typeof OperatingMode>;
 
 export const TankRole = z.enum(TANK_ROLES);
 
-export const Id = z
-  .string()
-  .min(1)
-  .max(64)
-  .regex(/^[a-z0-9][a-z0-9_-]*$/, 'lowercase id: a-z, 0-9, _ and -');
+import { Id } from './ids.ts';
+import { Calibration } from './calibration.ts';
+export { Id };
 
 /** How a probe is wired. The agent picks a driver from `driver`. */
 export const ProbeBinding = z.discriminatedUnion('driver', [
@@ -115,6 +113,8 @@ export const Probe = z.object({
   /** Raise an alert below / above these values (for example a supply tank running low). */
   alertBelow: z.number().nullable().default(null),
   alertAbove: z.number().nullable().default(null),
+  /** From driver units to the probe's (F-004). Null: readings are used as the driver gives them. */
+  calibration: Calibration.nullable().default(null),
 });
 export type Probe = z.infer<typeof Probe>;
 

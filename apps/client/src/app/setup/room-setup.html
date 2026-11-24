@@ -216,6 +216,7 @@
                       <gr-probe-editor
                         [roomId]="id()"
                         [probe]="editingProbe()"
+                        [tempProbes]="waterTemps()"
                         [pots]="pots()"
                         (done)="editing.set(null)"
                       />
