@@ -2,7 +2,7 @@
 <section class="room" [attr.aria-labelledby]="'room-' + r.id">
   <header class="room-head">
     <div>
-      <h2 [id]="'room-' + r.id">{{ r.name }}</h2>
+      <h2 [id]="'room-' + r.id">{{ r.name }} <a class="map-link" [routerLink]="['/rooms', r.id, 'map']">Map</a></h2>
       <p class="meta">
         @if (r.phase) {
           {{ r.phase.phase.name }} · day {{ r.phase.day }}
@@ -254,35 +254,7 @@
       <ul class="list">
         @for (a of pumps(); track a.id) {
           <li>
-            <span>
-              {{ a.name }}
-              @if (hub.active().has(a.id)) {
-                <span class="running">running</span>
-              } @else if (hub.pendingRuns().has(a.id)) {
-                <span class="running">waiting</span>
-              }
-            </span>
-            <span class="pump-run">
-              <label class="sr-only" [for]="'amt-' + a.id"
-                >{{ a.name }} amount in {{ a.mlPerSecond ? 'millilitres' : 'seconds' }}</label
-              >
-              <input
-                [id]="'amt-' + a.id"
-                type="number"
-                min="0.1"
-                step="0.5"
-                [value]="amount(a)"
-                (change)="setAmount(a, $any($event.target).value)"
-              />
-              <span class="unit">{{ a.mlPerSecond ? 'mL' : 's' }}</span>
-              <button
-                type="button"
-                [disabled]="!canAct() || busy('act:' + a.id) || hub.active().has(a.id) || hub.pendingRuns().has(a.id)"
-                (click)="runPump(a)"
-              >
-                Run
-              </button>
-            </span>
+            <gr-pump-control [pump]="a" [allowed]="canAct()" />
           </li>
         } @empty {
           <li class="empty">None.</li>
