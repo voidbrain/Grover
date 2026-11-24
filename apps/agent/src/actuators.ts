@@ -11,6 +11,8 @@ interface Slot {
   release: ((ran: boolean) => void) | null;
   /** The last switch-off failed: the relay may still be on, so it stays "on" and the watchdog retries. */
   stuck: boolean;
+  /** A run of this pump is queued or running: another is refused until it ends (B-005). */
+  busy: 'waiting' | 'running' | null;
   source: ActuationSource;
   commandId: string | null;
 }
@@ -51,6 +53,7 @@ export class Actuators {
         timer: null,
         release: null,
         stuck: false,
+        busy: null,
         source: 'safety',
         commandId: null,
       });
@@ -90,9 +93,11 @@ export class Actuators {
     if (!(slot.actuator.maxRunMs > 0)) throw new Error(`${id} has no run cap (maxRunMs): refusing to run it`);
     const stuck = this.stuckPump();
     if (stuck) throw new Error(`${stuck} failed to switch off: no pump runs until it does`);
+    if (slot.busy) throw new Error(`${id} is already ${slot.busy}: wait for it to finish, or Stop all`);
     const ms = Math.max(0, Math.min(durationMs, slot.actuator.maxRunMs));
     const epoch = this.epoch;
-    const done = this.pumpQueue.then(
+    slot.busy = 'waiting';
+    const queued = this.pumpQueue.then(
       () =>
         new Promise<boolean>((resolve) => {
           if (
@@ -104,6 +109,7 @@ export class Actuators {
           )
             return resolve(false);
           slot.release = resolve;
+          slot.busy = 'running';
           this.turnOn(slot, source, commandId, epoch).then(
             (on) => {
               if (on) slot.timer = setTimeout(() => void this.turnOff(slot, source, commandId), ms);
@@ -113,6 +119,9 @@ export class Actuators {
           );
         }),
     );
+    const done = queued.finally(() => {
+      slot.busy = null;
+    });
     this.pumpQueue = done;
     return { durationMs: ms, done };
   }

@@ -75,6 +75,40 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ---
 
+### B-005
+
+**Run on a pump queued another run on each click while it ran**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Let the PR's CI run; it closes on green.
+
+| | |
+|---|---|
+| **Issue** | Reported by the owner on 2026-11-24: Run (Pumps, by hand) stayed enabled while the pump ran, because its request ends as soon as the Pi queues the run. Each extra click queued another run, so a pump could run several times in a row; NERV or a second browser could do the same. |
+| **Reproduce** | `apps/agent/test/actuators.test.ts`, "a pump that is running or waiting cannot be queued again": before the fix the second run was accepted. On the dashboard: click Run twice. |
+| **Check** | The agent refuses a run for a pump that is waiting or running ("already running / waiting"); the dashboard keeps Run disabled, showing "waiting" then "running", from the click until the Pi reports the pump off (or its cap plus a minute, if that report is lost); the test passes. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Fixed 2026-11-24 on `fix/b005-run-once`: `Actuators` tracks a busy state per pump (waiting / running) and refuses another run until the first settles; the client tracks pending runs until the "off" actuation. Other buttons checked: Feed now is disabled while a feed runs, switches and plant actions are disabled while their request is in flight and act once. Closes on the PR's green CI.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
 ### F-011
 
 **Feed cycle per pot: supply tanks, mixing tank, pot pumps**
