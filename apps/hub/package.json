@@ -1,0 +1,17 @@
+{
+  "name": "@grover/hub",
+  "version": "2.0.0-dev",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node src/main.ts" },
+  "dependencies": {
+    "@fastify/static": "^10.1.12",
+    "@fastify/websocket": "^11.3.7",
+    "@grover/contracts": "*",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "aedes": "^1.2.0",
+    "fastify": "^5.12.8",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": { "mqtt": "^5.16.1" }
+}

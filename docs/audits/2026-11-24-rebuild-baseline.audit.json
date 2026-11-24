@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "scoped",
+  "reviewed": "2026-11-24T15:21:39.798Z",
+  "baseline": "5d96c918a010f6d2d63ff295f321725b89d509e0",
+  "report": "docs/audits/2026-11-24-rebuild-baseline.md",
+  "areas": {
+    "code": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: full read of the new tree and local checks", "limits": "Uncommitted rebuild tree; no device." },
+    "logic": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: dosing, safety and protocol findings with tests", "limits": "Mock drivers only." },
+    "tests": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: suites listed and gaps recorded (F-003, F-009)", "limits": "No browser or device tests exist yet." },
+    "documentation": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: docs compared with the code", "limits": "Deploy steps not yet run (F-005)." },
+    "harness": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: adoption at v10.9.0, B-002", "limits": "CI not yet run." },
+    "security": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: design review of exposure and agent auth; e2e topic ACL test", "limits": "Design review only, no penetration test." },
+    "backlog": { "result": "checked", "evidence": "docs/audits/2026-11-24-rebuild-baseline.md: seeded records", "limits": "First ledger." },
+    "delivery": { "result": "blocked", "evidence": "Local build and dev smoke passed; nothing deployed.", "limits": "No Pi, no CI run yet.", "blocker": "Hardware and first PR CI not available in this session (F-003, F-005)." }
+  }
+}

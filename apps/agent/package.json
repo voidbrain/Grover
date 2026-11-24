@@ -1,0 +1,19 @@
+{
+  "name": "@grover/agent",
+  "version": "2.0.0-dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts"
+  },
+  "dependencies": {
+    "@grover/contracts": "*",
+    "mqtt": "^5.16.1"
+  },
+  "optionalDependencies": {
+    "i2c-bus": "^5.2.3"
+  },
+  "devDependencies": {
+    "@types/i2c-bus": "^5.1.2"
+  }
+}

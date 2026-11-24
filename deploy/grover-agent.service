@@ -1,0 +1,23 @@
+# Grover agent: drives the hardware. Needs gpio and i2c group membership for its user.
+# /etc/grover/agent.env holds GROVER_AGENT_ID, GROVER_AGENT_TOKEN and GROVER_DRIVERS=hardware.
+[Unit]
+Description=Grover agent (hardware and safety)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=grover
+SupplementaryGroups=gpio i2c
+WorkingDirectory=/opt/grover
+EnvironmentFile=/etc/grover/agent.env
+Environment=GROVER_AGENT_STATE=/var/lib/grover-agent
+ExecStart=/usr/bin/env node apps/agent/src/main.ts
+# Actuators go off on SIGTERM; give it time to say so.
+KillSignal=SIGTERM
+TimeoutStopSec=10
+Restart=always
+RestartSec=3
+StateDirectory=grover-agent
+
+[Install]
+WantedBy=multi-user.target
