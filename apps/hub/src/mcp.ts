@@ -11,7 +11,7 @@ const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON
  * every tool that changes state says so in its description and is annotated as not read-only.
  */
 export function createMcpServer(hub: Hub): McpServer {
-  const { store, commands, feeder, alerts, agents, plants, lights } = hub;
+  const { store, commands, feeder, alerts, agents, plants, lights, reports } = hub;
   const server = new McpServer({ name: 'grover', version: '2.0.0' });
 
   server.registerTool(
@@ -86,6 +86,20 @@ export function createMcpServer(hub: Hub): McpServer {
             };
           }),
       );
+    },
+  );
+
+  server.registerTool(
+    'grover_plant_report',
+    {
+      description:
+        "A plant's time in the tent: its phases with their EC/pH ranges, statistics (days, finished feeds, water and nutrient mL given, share of EC and pH readings in range, yield), its feeds and its pot's open alerts. Readings are left out (use grover_history). Range: day, week, month or all.",
+      inputSchema: { plantId: z.string(), range: z.enum(['day', 'week', 'month', 'all']).optional() },
+      annotations: { readOnlyHint: true },
+    },
+    async ({ plantId, range }) => {
+      const { series: _series, ...report } = reports.report(plantId, range ?? 'all');
+      return text(report);
     },
   );
 

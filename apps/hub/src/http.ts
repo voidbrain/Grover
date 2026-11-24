@@ -11,6 +11,7 @@ import {
   ModeRequest,
   PROBE_KINDS,
   PlaceRequest,
+  PlantReportRange,
   RunRequest,
   SwitchRequest,
 } from '@grover/contracts';
@@ -33,7 +34,7 @@ type Entity = 'rooms' | 'pots' | 'probes' | 'actuators' | 'schedules' | 'calenda
  * so only devices on your tailnet reach it.
  */
 export async function createHttp(hub: Hub): Promise<FastifyInstance> {
-  const { store, agents, commands, feeder, alerts, bus, config, plants, lights } = hub;
+  const { store, agents, commands, feeder, alerts, bus, config, plants, lights, reports } = hub;
   const app = Fastify({ logger: false });
   await app.register(fastifyWebsocket);
 
@@ -165,6 +166,9 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
     agents.publishAllConfigs();
     return value;
   };
+  app.get<{ Params: { id: string }; Querystring: { range?: string } }>('/api/plants/:id/report', async (req) =>
+    reports.report(req.params.id, PlantReportRange.parse(req.query.range)),
+  );
   app.post<{ Params: { id: string } }>('/api/plants/:id/cuttings', async (req) =>
     thenPublish(plants.takeCuttings(req.params.id, CuttingsRequest.parse(req.body).count)),
   );

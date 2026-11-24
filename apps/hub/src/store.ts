@@ -214,8 +214,10 @@ export class Store {
    * The probe that reads `kind` for a pot: the pot's own, else the tent's shared one (no pot, no tank).
    * Level probes never fall back: a tent-wide level would say nothing about one pot.
    */
-  potProbe(pot: Pot, kind: ProbeKind): Probe | null {
-    const all = this.listProbes(pot.roomId).filter((p) => p.kind === kind && p.enabled && p.tank === null);
+  potProbe(pot: Pot, kind: ProbeKind, opts: { includeDisabled?: boolean } = {}): Probe | null {
+    const all = this.listProbes(pot.roomId).filter(
+      (p) => p.kind === kind && (p.enabled || opts.includeDisabled) && p.tank === null,
+    );
     const own = all.find((p) => p.potId === pot.id);
     if (own || kind === 'water_level') return own ?? null;
     return all.find((p) => p.potId === null) ?? null;
@@ -539,6 +541,7 @@ export class Store {
         trimmedOn: r['trimmed_on'] ?? null,
         bloomOn: r['bloom_on'] ?? null,
         flushOn: r['flush_on'] ?? null,
+        placedOn: r['placed_on'] ?? null,
         harvestedOn: r['harvested_on'] ?? null,
         yieldGrams: r['yield_grams'] ?? null,
         notes: r['notes'],
@@ -566,11 +569,12 @@ export class Store {
     this.db
       .prepare(
         `INSERT INTO plants (id, name, strain_id, breeder_id, generation, mother_id, pot_id, medium, started_on, trimmed_on, bloom_on,
-           flush_on, harvested_on, yield_grams, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           flush_on, harvested_on, yield_grams, notes, placed_on) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET name = excluded.name, strain_id = excluded.strain_id, breeder_id = excluded.breeder_id,
            generation = excluded.generation, mother_id = excluded.mother_id, pot_id = excluded.pot_id, medium = excluded.medium,
            started_on = excluded.started_on, trimmed_on = excluded.trimmed_on, bloom_on = excluded.bloom_on,
-           flush_on = excluded.flush_on, harvested_on = excluded.harvested_on, yield_grams = excluded.yield_grams, notes = excluded.notes`,
+           flush_on = excluded.flush_on, harvested_on = excluded.harvested_on, yield_grams = excluded.yield_grams, notes = excluded.notes,
+           placed_on = excluded.placed_on`,
       )
       .run(
         p.id,
@@ -588,6 +592,7 @@ export class Store {
         p.harvestedOn,
         p.yieldGrams,
         p.notes,
+        p.placedOn,
       );
     return p;
   }

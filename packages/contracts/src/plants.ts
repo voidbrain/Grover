@@ -54,12 +54,22 @@ export const Plant = z
     potId: Id.nullable().default(null),
     medium: Medium.nullable().default(null),
     startedOn: IsoDate.nullable().default(null),
+    /** The day it went into its pot in the tent (F-014); it started elsewhere on `startedOn`. */
+    placedOn: IsoDate.nullable().default(null),
     trimmedOn: IsoDate.nullable().default(null),
     bloomOn: IsoDate.nullable().default(null),
     flushOn: IsoDate.nullable().default(null),
     harvestedOn: IsoDate.nullable().default(null),
     yieldGrams: z.number().min(0).nullable().default(null),
     notes: z.string().default(''),
+  })
+  .refine((p) => !p.placedOn || !p.startedOn || p.placedOn >= p.startedOn, {
+    message: 'it went into the tent before it started',
+    path: ['placedOn'],
+  })
+  .refine((p) => !p.placedOn || !p.harvestedOn || p.placedOn <= p.harvestedOn, {
+    message: 'it went into the tent after its harvest',
+    path: ['placedOn'],
   })
   .refine((p) => p.motherId !== p.id, { message: 'a plant cannot be its own mother', path: ['motherId'] })
   .refine((p) => p.motherId === null || p.generation > 0, {

@@ -28,6 +28,7 @@ describe('plant drafts', () => {
       potId: 'pot-3',
       medium: 'hydro',
       startedOn: '2026-11-01',
+      placedOn: '2026-11-10',
       trimmedOn: null,
       bloomOn: null,
       flushOn: null,

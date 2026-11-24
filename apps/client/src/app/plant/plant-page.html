@@ -1,0 +1,146 @@
+<p><a routerLink="/">← All rooms</a> · <a routerLink="/setup/plants">Plants</a></p>
+@if (plant(); as p) {
+  <header class="head">
+    <h1>{{ p.name }}</h1>
+    @if (header(); as h) {
+      @if (h.facts) {
+        <p class="facts">{{ h.facts }}</p>
+      }
+      <p class="facts">
+        {{ h.origin }}
+        @if (h.pot) {
+          · {{ p.harvestedOn ? 'grew in' : 'in' }} {{ h.pot }}
+        }
+        @if (current(); as c) {
+          · {{ c.name }}, day {{ c.day }}
+        }
+      </p>
+      <dl class="dates">
+        @for (d of h.dates; track d[0]) {
+          <div>
+            <dt>{{ d[0] }}</dt>
+            <dd>{{ d[1] }}</dd>
+          </div>
+        }
+      </dl>
+    }
+  </header>
+
+  @if (report.error()) {
+    <p class="form-errors" role="alert">Could not load this plant's history.</p>
+  }
+  @if (report.value(); as r) {
+    @if (r.alerts.length) {
+      <ul class="alerts" role="status">
+        @for (a of r.alerts; track a.key) {
+          <li [class.bad]="a.level === 'bad'">{{ a.message }}</li>
+        }
+      </ul>
+    }
+
+    <section aria-labelledby="stats-h">
+      <h2 id="stats-h" class="label">In the tent</h2>
+      <div class="tiles">
+        <div class="tile">
+          <span class="value">{{ r.stats.daysInTent ?? '–' }}</span><span class="unit">days</span>
+        </div>
+        <div class="tile">
+          <span class="value">{{ r.stats.feeds }}</span><span class="unit">feeds</span>
+        </div>
+        <div class="tile">
+          <span class="value">{{ r.stats.waterLiters | number: '1.0-1' }}</span><span class="unit">L given</span>
+        </div>
+        <div class="tile">
+          @if (r.stats.ecInRange !== null) {
+            <span class="value">{{ r.stats.ecInRange | percent }}</span>
+          } @else {
+            <span class="value">–</span>
+          }
+          <span class="unit">EC in range</span>
+        </div>
+        <div class="tile">
+          @if (r.stats.phInRange !== null) {
+            <span class="value">{{ r.stats.phInRange | percent }}</span>
+          } @else {
+            <span class="value">–</span>
+          }
+          <span class="unit">pH in range</span>
+        </div>
+        <div class="tile">
+          <span class="value">{{ r.stats.yieldGrams ?? '–' }}</span><span class="unit">g yield</span>
+        </div>
+      </div>
+      @if (doses().length) {
+        <ul class="doses" aria-label="Nutrients given">
+          @for (d of doses(); track d.tank) {
+            <li>
+              <span class="tank">{{ d.tank }}</span>
+              <span class="bar"><span [style.width.%]="d.share * 100"></span></span>
+              <span class="ml">{{ d.ml | number: '1.0-1' }} mL</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section aria-labelledby="charts-h">
+      <div class="bar-row">
+        <h2 id="charts-h" class="label">Its pot</h2>
+        <fieldset class="segmented">
+          <legend class="sr-only">Time range</legend>
+          @for (o of ranges(); track o.id) {
+            <label [class.selected]="range() === o.id">
+              <input
+                type="radio"
+                name="plant-range"
+                [checked]="range() === o.id"
+                (change)="range.set(o.id)"
+              />{{ o.label }}
+            </label>
+          }
+        </fieldset>
+      </div>
+      @if (!r.potId) {
+        <p class="muted">Not placed in a pot yet: nothing measured.</p>
+      } @else if (window(); as w) {
+        <div class="charts">
+          @for (c of charts(); track c.title) {
+            <gr-plant-chart
+              [title]="c.title"
+              [unit]="c.unit"
+              [points]="c.points"
+              [bands]="c.bands"
+              [markers]="c.markers"
+              [from]="w.from"
+              [to]="w.to"
+            />
+          }
+        </div>
+        <p class="hint">Green bands: the phase's range. Dashed lines: feeds, placing, bloom, flush, harvest.</p>
+      }
+    </section>
+
+    <section aria-labelledby="log-h">
+      <h2 id="log-h" class="label">Log</h2>
+      @if (log().length) {
+        <ol class="log">
+          @for (l of log(); track $index) {
+            <li>
+              <time>{{ l.day ?? (l.at | date: 'yyyy-MM-dd HH:mm') }}</time>
+              <span>{{ l.what }}</span>
+              @if (l.detail) {
+                <span class="muted">{{ l.detail }}</span>
+              }
+            </li>
+          }
+        </ol>
+      } @else {
+        <p class="muted">Nothing yet.</p>
+      }
+    </section>
+  } @else if (report.isLoading()) {
+    <p role="status">Loading…</p>
+  }
+} @else {
+  <p>Unknown plant.</p>
+}

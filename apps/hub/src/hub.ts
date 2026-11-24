@@ -9,6 +9,7 @@ import { Alerts } from './alerts.ts';
 import { Feeder } from './feeder.ts';
 import { Lights } from './lights.ts';
 import { PlantCycle } from './plant-cycle.ts';
+import { PlantReports } from './plant-report.ts';
 import { createHttp } from './http.ts';
 import { Store } from './store.ts';
 
@@ -22,6 +23,7 @@ export interface Hub {
   feeder: Feeder;
   plants: PlantCycle;
   lights: Lights;
+  reports: PlantReports;
 }
 
 export interface RunningHub extends Hub {
@@ -46,7 +48,8 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
   const plants = new PlantCycle(store, config.timezone);
   const lights = new Lights(store, feeder);
   agents.setConfigAdjuster((c) => lights.apply(c));
-  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder, plants, lights };
+  const reports = new PlantReports(store, config.timezone);
+  const hub: Hub = { config, store, bus, agents, commands, alerts, feeder, plants, lights, reports };
 
   const mqttPort = await agents.listen(config.mqttHost, config.mqttPort);
   const http = await createHttp(hub);

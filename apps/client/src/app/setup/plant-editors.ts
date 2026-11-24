@@ -299,6 +299,7 @@ export class StrainEditor {
           </select>
         </label>
         <label class="field">Started <input type="date" [formField]="f.startedOn" /></label>
+        <label class="field">Into the tent <input type="date" [formField]="f.placedOn" /></label>
         <label class="field">Trimmed <input type="date" [formField]="f.trimmedOn" /></label>
         <label class="field">Bloom from <input type="date" [formField]="f.bloomOn" /></label>
         <label class="field">Flush from <input type="date" [formField]="f.flushOn" /></label>
