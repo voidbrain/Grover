@@ -7,3 +7,4 @@ export * from './dosing.ts';
 export * from './feeding.ts';
 export * from './plants.ts';
 export * from './lighting.ts';
+export * from './calibration.ts';

@@ -158,6 +158,32 @@ test('agents can only use their own topics', async () => {
   assert.ok(wrong instanceof Error, 'unknown agent / wrong token refused');
 });
 
+test('calibration: a raw read returns the driver value; once saved, the agent applies the calibration', async () => {
+  const raw = await api('POST', '/api/probes/ec/read-raw');
+  assert.equal(raw.status, 200);
+  assert.equal(typeof raw.json.raw, 'number');
+  assert.ok(raw.json.tempC === null || typeof raw.json.tempC === 'number');
+  const ec = hub.store.getProbe('ec');
+  // A deliberately steep line (×10) so the calibrated value cannot be mistaken for the mock's raw one.
+  const calibration = {
+    points: [
+      { raw: 0, value: 0, tempC: null, takenOn: '2026-11-24' },
+      { raw: 1, value: 10, tempC: null, takenOn: '2026-11-24' },
+    ],
+    compensation: 'ec', // EC is always referred to 25 °C; no temperature probe and no point temperatures: unchanged
+    tempProbeId: null,
+  };
+  assert.equal((await api('PUT', '/api/probes/ec', { ...ec, calibration })).status, 200);
+  await until(() => !!agent.state.config?.probes.find((p) => p.id === 'ec')?.calibration, 'agent has the calibration');
+  const read = await api('POST', '/api/probes/ec/read');
+  assert.equal(read.json.ok, true);
+  const again = await api('POST', '/api/probes/ec/read-raw');
+  assert.ok(Math.abs(read.json.value / again.json.raw - 10) < 3, `${read.json.value} vs raw ${again.json.raw}`);
+  await api('PUT', '/api/probes/ec', { ...ec, calibration: null });
+  await until(() => agent.state.config?.probes.find((p) => p.id === 'ec')?.calibration === null, 'calibration removed');
+  await api('POST', '/api/probes/ec/read'); // the tent's latest EC back in range for the feed tests below
+});
+
 test('setup changes are pushed to the agent', async () => {
   const before = hub.agents.view('pi-1').status?.configHash;
   const res = await api('PUT', '/api/actuators/fan', {

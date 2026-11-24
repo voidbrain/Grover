@@ -51,12 +51,13 @@ function rig(answer: () => Promise<CommandAck>) {
   return { store, feeder, sent, agentEvent, bus };
 }
 
-const ok = (): Promise<CommandAck> => Promise.resolve({ id: 'x', ok: true, error: null, value: null, at: Date.now() });
+const ok = (): Promise<CommandAck> =>
+  Promise.resolve({ id: 'x', ok: true, error: null, value: null, at: Date.now(), calibratedAt: null });
 
 test('two feeds requested together: the second is refused, the first stays reserved', async () => {
   const slowOk = () =>
     new Promise<CommandAck>((r) =>
-      setTimeout(() => r({ id: 'x', ok: true, error: null, value: null, at: Date.now() }), 30),
+      setTimeout(() => r({ id: 'x', ok: true, error: null, value: null, at: Date.now(), calibratedAt: null }), 30),
     );
   const { feeder, sent } = rig(slowOk);
   const [a, b] = await Promise.all([feeder.feed('pot-1', 'manual'), feeder.feed('pot-2', 'auto')]);

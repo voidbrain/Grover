@@ -63,6 +63,8 @@ export class Alerts {
     } catch {
       return;
     }
+    // Volts from an uncalibrated analog pH/EC probe say nothing about the solution (F-004).
+    if (this.store.needsCalibration(probe) || r.at < (probe.calibration?.calibratedAt ?? 0)) return;
     const below = `probe:${probe.id}:below`;
     const above = `probe:${probe.id}:above`;
     if (probe.alertBelow !== null && r.value < probe.alertBelow)

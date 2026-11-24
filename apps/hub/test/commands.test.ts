@@ -20,7 +20,7 @@ test('a probe read is stored as soon as the agent answers, and once', async () =
   // A fake agent that answers and never sends the reading event.
   const agents = {
     isOnline: () => true,
-    command: async () => ({ id: 'c', ok: true, error: null, value: 1.23, at }),
+    command: async () => ({ id: 'c', ok: true, error: null, value: 1.23, at, calibratedAt: null }),
   };
   const commands = new Commands(store, agents as never, bus);
   const result = await commands.readProbe('ec');
@@ -29,4 +29,28 @@ test('a probe read is stored as soon as the agent answers, and once', async () =
   assert.deepEqual(announced, [1.23], 'announced to the dashboard');
   // The same reading arriving again (the agent's event) is not stored twice.
   assert.equal(store.addReading({ probeId: 'ec', at, value: 1.23 }), false);
+});
+
+test('a read made with an outdated calibration is reported as such, not shown as a value', async () => {
+  const store = new Store(openDb(':memory:'));
+  seedDemo(store, 'pi-1');
+  const ph = store.getProbe('ph');
+  store.putProbe({
+    ...ph,
+    calibration: {
+      points: [
+        { raw: 2.53, value: 4, tempC: null, takenOn: '2026-11-24' },
+        { raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' },
+      ],
+      compensation: 'ph',
+    },
+  });
+  const agents = {
+    isOnline: () => true,
+    command: async () => ({ id: 'c', ok: true, error: null, value: 2.1, at: Date.now(), calibratedAt: null }),
+  };
+  const result = await new Commands(store, agents as never, new Bus()).readProbe('ph');
+  assert.equal(result.ok, false);
+  assert.equal(result.value, null);
+  assert.match(result.error!, /calibration/);
 });

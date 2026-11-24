@@ -175,6 +175,10 @@ export class Feeder {
     const current = this.potPhase(pot);
     const ec = this.fresh(pot, 'ec');
     const ph = this.fresh(pot, 'ph');
+    const uncalibrated = (['ec', 'ph'] as const)
+      .map((k) => this.store.potProbe(pot, k))
+      .filter((p): p is NonNullable<typeof p> => !!p && this.store.needsCalibration(p))
+      .map((p) => `${p.name} is not calibrated (it reads volts): it was not used`);
     if (!current)
       return {
         ok: false,
@@ -210,6 +214,8 @@ export class Feeder {
       waterEc: room.waterEc,
       waterPh: room.waterPh,
     });
+    if (decision.ok) decision.notes.push(...uncalibrated);
+    else if (uncalibrated.length) decision.reason = `${decision.reason}; ${uncalibrated.join('; ')}`;
     return { ...decision, ec, ph };
   }
 
@@ -343,14 +349,15 @@ export class Feeder {
     for (const kind of ['water_level', 'ec', 'ph'] as const) {
       const probe = this.store.potProbe(pot, kind);
       if (!probe) continue;
-      const last = this.store.latestReading(probe.id);
+      // Only a reading in the probe's current units counts (one from before a calibration change does not).
+      const last = this.store.latestMeasurement(probe);
       if (last && this.now() - last.at < this.opts.mixMs) continue;
       try {
-        const ack = await this.agents.command(agentId, { kind: 'read', probeId: probe.id });
+        const ack = await this.agents.command(agentId, { kind: 'read', probeId: probe.id, raw: false });
         // The reading also arrives as an event; store it now so the plan below sees it.
         if (ack.ok && ack.value !== null) {
           const reading = { probeId: probe.id, value: ack.value, at: ack.at };
-          if (this.store.addReading(reading)) this.bus.emit({ type: 'reading', reading });
+          if (this.store.acceptReading(reading, ack.calibratedAt)) this.bus.emit({ type: 'reading', reading });
         }
       } catch {
         // A probe that cannot be read leaves that value unknown; the plan says what it did without it.
@@ -360,7 +367,9 @@ export class Feeder {
 
   private fresh(pot: Pot, kind: 'ec' | 'ph' | 'water_level'): number | null {
     const probe = this.store.potProbe(pot, kind);
-    const r = probe ? this.store.latestReading(probe.id) : null;
+    // An uncalibrated analog pH/EC probe reads volts: never plan with it (F-004).
+    // A reading from before its calibration changed is in other units.
+    const r = probe ? this.store.latestMeasurement(probe) : null;
     return r && this.now() - r.at <= this.opts.freshMs ? r.value : null;
   }
 

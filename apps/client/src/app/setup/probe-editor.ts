@@ -2,14 +2,16 @@ import { Component, computed, inject, input, linkedSignal, output } from '@angul
 import { FormField, form, max, min, pattern, required, submit } from '@angular/forms/signals';
 import { Probe, type Pot } from '@grover/contracts';
 import { FieldError } from './field-error';
+import { ProbeCalibration } from './probe-calibration';
 import { NUMBER_TEXT, issueLines, probeDraft, slugify, toProbe, uniqueId } from './drafts';
 import { PROBE_DRIVERS, probeKinds, tankRoles } from './labels';
 import { EditorRun } from './editor-run';
 import { SetupApi } from './setup-api';
+import { Hub } from '../hub';
 
 @Component({
   selector: 'gr-probe-editor',
-  imports: [FormField, FieldError],
+  imports: [FormField, FieldError, ProbeCalibration],
   template: `
     <form class="editor" (submit)="save($event)" novalidate>
       <h3>{{ isNew() ? 'New probe' : 'Edit probe: ' + probe()!.name }}</h3>
@@ -99,6 +101,18 @@ import { SetupApi } from './setup-api';
           }
         }
       </div>
+      @if (!isNew() && rewired()) {
+        <p class="hint">Kind or wiring changed: save first, then calibrate again (the old calibration is dropped).</p>
+      } @else if (!isNew()) {
+        <gr-probe-calibration
+          [probeId]="probe()!.id"
+          [kind]="model().kind"
+          [online]="online()"
+          [tempProbes]="compensators()"
+          [calibration]="model().calibration"
+          (calibrationChange)="setCalibration($event)"
+        />
+      }
       @if (isNew() && model().name) {
         <p class="hint">Id: {{ newId() }}</p>
       }
@@ -127,6 +141,8 @@ export class ProbeEditor {
   readonly probe = input<Probe | null>(null);
   readonly pots = input<readonly Pot[]>([]);
   readonly takenIds = input<readonly string[]>([]);
+  /** Water temperature probes of the tent, for calibration compensation. */
+  readonly tempProbes = input<readonly Probe[]>([]);
   readonly done = output<void>();
 
   protected readonly kinds = probeKinds;
@@ -151,6 +167,32 @@ export class ProbeEditor {
   protected readonly state = new EditorRun();
   protected readonly errors = this.state.errors;
   protected readonly busy = this.state.busy;
+
+  private readonly hub = inject(Hub);
+  /** Kind or wiring edited since the save: the hub drops the calibration, so it is not offered until saved. */
+  protected readonly rewired = computed(() => {
+    const p = this.probe();
+    if (!p) return false;
+    const was = probeDraft(p);
+    const now = this.model();
+    const keys = ['kind', 'driver', 'address', 'i2cBus', 'i2cAddress', 'channel', 'triggerPin', 'echoPin'] as const;
+    return keys.some((k) => was[k] !== now[k]);
+  });
+  /** Water temperature probes that measure this probe's solution: its pot's, or the tent's shared ones. */
+  protected readonly compensators = computed(() =>
+    this.tempProbes().filter(
+      (t) =>
+        t.tank === null && t.id !== this.probe()?.id && (t.potId === null || t.potId === (this.model().potId || null)),
+    ),
+  );
+  protected readonly online = computed(() => {
+    const room = this.hub.snapshot()?.rooms.find((r) => r.id === this.roomId());
+    return !!room && !!this.hub.agentFor(room)?.online;
+  });
+
+  protected setCalibration(calibration: Probe['calibration']): void {
+    this.model.update((d) => ({ ...d, calibration }));
+  }
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();

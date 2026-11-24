@@ -228,7 +228,8 @@ export class AgentLink {
       this.store.touchAgent(agentId);
       // Inserts are idempotent, so a replay after an outage is stored and announced once.
       if (ev.type === 'reading') {
-        if (this.store.addReading(ev.reading)) this.bus.emit({ type: 'reading', reading: ev.reading });
+        if (this.store.acceptReading(ev.reading, ev.calibratedAt))
+          this.bus.emit({ type: 'reading', reading: ev.reading });
       } else if (ev.type === 'actuation') {
         if (this.store.addActuation(ev.actuation)) this.bus.emit({ type: 'actuation', actuation: ev.actuation });
       } else if (ev.type === 'feed') {

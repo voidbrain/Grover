@@ -65,6 +65,7 @@ test('scheduled pump runs wait while a feed runs', async () => {
           tank: 'mix',
           alertBelow: null,
           alertAbove: null,
+          calibration: null,
         },
       ],
       actuators: [
@@ -167,5 +168,57 @@ test('a dark rule keeps the light off', async () => {
   // Dark is re-asserted on every tick (review of #20): a light switched on by hand goes off again.
   await agent.tick();
   assert.equal(drivers.states.get('light'), false, 'off before the agent stops');
+  await agent.stop();
+});
+
+test('readings come out calibrated (with temperature compensation); a raw read is the driver value, not stored', async () => {
+  const t = Date.parse('2026-06-01T10:01:00Z');
+  const drivers = new MockDrivers();
+  // The mock pH probe reads the simulated solution; treat that number as "volts" for the test.
+  const probe = (id: string, kind: 'ph' | 'water_temperature', calibration: unknown = null) => ({
+    id,
+    roomId: 'r',
+    potId: 'pot-1',
+    kind,
+    name: id,
+    enabled: true,
+    binding: mock,
+    tank: null,
+    alertBelow: null,
+    alertAbove: null,
+    calibration,
+  });
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [
+        probe('temp', 'water_temperature'),
+        probe('ph', 'ph', {
+          points: [
+            { raw: 0, value: 7, tempC: 25, takenOn: '2026-06-01' },
+            { raw: 1, value: 6, tempC: 25, takenOn: '2026-06-01' },
+          ],
+          compensation: 'ph',
+          tempProbeId: 'temp',
+          calibratedAt: 123,
+        }),
+      ] as never,
+      actuators: [],
+      schedules: [],
+    },
+    drivers,
+    () => t,
+  );
+  const raw = await agent.execute({ id: 'r1', kind: 'read', probeId: 'ph', raw: true });
+  const before = agent.state.queued;
+  // value = 7 - raw at 25 °C; the water temperature (about 21 °C) scales the distance from 7 by 298.15/(T+273.15).
+  await agent.execute({ id: 't', kind: 'read', probeId: 'temp', raw: false });
+  const read = await agent.execute({ id: 'r2', kind: 'read', probeId: 'ph', raw: false });
+  const temp = (await agent.execute({ id: 't2', kind: 'read', probeId: 'temp', raw: true })).value!;
+  const expected = 7 + (7 - raw.value! - 7) * (298.15 / (temp + 273.15));
+  assert.ok(Math.abs(read.value! - expected) < 0.05, `calibrated ${read.value} ≈ ${expected}`);
+  assert.equal(read.calibratedAt, 123, 'the reading names the calibration it applied');
+  assert.equal(raw.calibratedAt, null, 'a raw read applied none');
+  assert.equal(agent.state.queued, before + 2, 'the raw reads queued no event; the two normal reads did');
   await agent.stop();
 });

@@ -80,6 +80,9 @@ export class RoomSetup {
   });
   protected readonly pots = computed(() => (this.snapshot()?.pots ?? []).filter((p) => p.roomId === this.id()));
   protected readonly probes = computed(() => (this.snapshot()?.probes ?? []).filter((p) => p.roomId === this.id()));
+  protected readonly waterTemps = computed(() =>
+    this.probes().filter((p) => p.kind === 'water_temperature' && p.enabled),
+  );
   protected readonly actuators = computed(() =>
     (this.snapshot()?.actuators ?? []).filter((a) => a.roomId === this.id()),
   );

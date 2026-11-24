@@ -4,6 +4,7 @@ import {
   Actuation,
   Actuator,
   AgentStatus,
+  CALIBRATION_PROTOCOL,
   Calendar,
   Phase,
   Pot,
@@ -25,6 +26,12 @@ type Row = Record<string, SQLInputValue>;
 const bool = (v: unknown) => v === 1 || v === 1n;
 const json = (v: unknown) => JSON.parse(String(v));
 const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
+/** Whether temperature probe `t` measures the solution of probe `p`: same pot, or the tent's shared one. */
+const compensates = (t: Probe, p: Probe) =>
+  t.kind === 'water_temperature' &&
+  t.tank === null &&
+  t.roomId === p.roomId &&
+  (t.potId === null || t.potId === p.potId);
 
 export class NotFound extends Error {}
 /** A delete refused because something still refers to it. */
@@ -172,7 +179,7 @@ export class Store {
 
   // ── probes ─────────────────────────────────────────────────────────────────
   private probe(r: Row): Probe {
-    return Probe.parse({
+    const row = {
       id: r['id'],
       roomId: r['room_id'],
       potId: r['pot_id'] ?? null,
@@ -183,7 +190,12 @@ export class Store {
       tank: r['tank'] ?? null,
       alertBelow: r['alert_below'] ?? null,
       alertAbove: r['alert_above'] ?? null,
-    });
+      calibration: r['calibration'] == null ? null : json(r['calibration']),
+    };
+    // A stored calibration the current rules refuse (e.g. one pH point) reads as none: the probe is then treated as
+    // uncalibrated, never as calibrated wrongly.
+    const parsed = Probe.safeParse(row);
+    return parsed.success ? parsed.data : Probe.parse({ ...row, calibration: null });
   }
   listProbes(roomId?: string): Probe[] {
     const rows = (
@@ -208,6 +220,34 @@ export class Store {
     if (own || kind === 'water_level') return own ?? null;
     return all.find((p) => p.potId === null) ?? null;
   }
+  /**
+   * An analog pH or EC probe (ADS1115) without calibration reads volts, not pH or mS/cm: it must not be used as a
+   * measurement (F-004).
+   */
+  needsCalibration(p: Probe): boolean {
+    if (p.binding.driver !== 'ads1115' || (p.kind !== 'ph' && p.kind !== 'ec')) return false;
+    if (!p.calibration) return true;
+    // An agent older than the calibration protocol does not apply it: its readings are still volts.
+    const agentId = this.getRoom(p.roomId).agentId;
+    const status = agentId ? this.listAgents().find((a) => a.id === agentId)?.status : null;
+    return !!status && status.protocol < CALIBRATION_PROTOCOL;
+  }
+  /**
+   * The probe's latest reading if it is a measurement in the probe's unit: not from an uncalibrated analog
+   * probe, and not taken before its calibration last changed.
+   */
+  latestMeasurement(p: Probe): Reading | null {
+    if (this.needsCalibration(p)) return null;
+    const r = this.latestReading(p.id);
+    return r && r.at >= (p.calibration?.calibratedAt ?? 0) ? r : null;
+  }
+  /** The water temperature probe for a probe's solution: the pot's own, else the tent's (no tank). */
+  roomWaterTemp(p: Probe): string | null {
+    const temps = this.listProbes(p.roomId).filter(
+      (x) => x.kind === 'water_temperature' && x.enabled && x.tank === null,
+    );
+    return (temps.find((x) => x.potId === p.potId) ?? temps.find((x) => x.potId === null))?.id ?? null;
+  }
   /** Level probes of the tent's tanks, by role. */
   tankProbes(roomId: string): Partial<Record<TankRoleId, Probe>> {
     const out: Partial<Record<TankRoleId, Probe>> = {};
@@ -215,13 +255,38 @@ export class Store {
     return out;
   }
   putProbe(input: unknown): Probe {
-    const p = Probe.parse(input);
+    let p = Probe.parse(input);
+    const before = this.db.prepare('SELECT * FROM probes WHERE id = ?').get(p.id) as Row | undefined;
+    const old = before ? this.probe(before) : null;
+    const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+    const points = (c: Probe['calibration']) => (c ? { ...c, calibratedAt: null } : null);
+    if (p.calibration && old?.calibration && same(points(p.calibration), points(old.calibration))) {
+      // Unchanged calibration: it no longer applies if the probe was rewired or changed kind.
+      p =
+        old.kind !== p.kind || !same(old.binding, p.binding)
+          ? { ...p, calibration: null }
+          : { ...p, calibration: { ...p.calibration, calibratedAt: old.calibration.calibratedAt } };
+    } else if (p.calibration) {
+      p = { ...p, calibration: { ...p.calibration, calibratedAt: Date.now() } };
+    }
+    const tempId = p.calibration?.tempProbeId;
+    const t = tempId ? this.listProbes().find((x) => x.id === tempId) : undefined;
+    if (p.calibration && tempId && (!t || !compensates(t, p))) {
+      // A new choice must fit; a kept one that no longer fits (this probe moved pot or tent) is released, and the
+      // points still hold. Temperature probes deleted or moved later: releaseTempProbe.
+      if (tempId !== old?.calibration?.tempProbeId)
+        throw new BadReference(
+          `${tempId} cannot compensate ${p.name}: use a water temperature probe in the same pot or the tent's shared one`,
+        );
+      p = { ...p, calibration: { ...p.calibration, tempProbeId: null } };
+    }
     this.db
       .prepare(
-        `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding, tank, alert_below, alert_above) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO probes (id, room_id, pot_id, kind, name, enabled, binding, tank, alert_below, alert_above, calibration)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET room_id = excluded.room_id, pot_id = excluded.pot_id, kind = excluded.kind, name = excluded.name,
            enabled = excluded.enabled, binding = excluded.binding, tank = excluded.tank, alert_below = excluded.alert_below,
-           alert_above = excluded.alert_above`,
+           alert_above = excluded.alert_above, calibration = excluded.calibration`,
       )
       .run(
         p.id,
@@ -234,8 +299,20 @@ export class Store {
         p.tank,
         p.alertBelow,
         p.alertAbove,
+        p.calibration ? JSON.stringify(p.calibration) : null,
       );
+    if (old?.kind === 'water_temperature') this.releaseTempProbe(p.id);
     return p;
+  }
+  /** Clears `tempProbeId` in calibrations that may no longer use this probe (deleted, moved); the points still hold. */
+  private releaseTempProbe(tempId: string): void {
+    const t = this.listProbes().find((x) => x.id === tempId) ?? null;
+    for (const p of this.listProbes()) {
+      if (p.calibration?.tempProbeId !== tempId || (t && compensates(t, p))) continue;
+      this.db
+        .prepare('UPDATE probes SET calibration = ? WHERE id = ?')
+        .run(JSON.stringify({ ...p.calibration, tempProbeId: null }), p.id);
+    }
   }
 
   // ── actuators ──────────────────────────────────────────────────────────────
@@ -352,6 +429,7 @@ export class Store {
         for (const a of actuators) this.db.prepare('DELETE FROM actuators WHERE id = ?').run(a);
       }
       const deleted = Number(this.db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id).changes) > 0;
+      if (deleted) for (const p of probes) this.releaseTempProbe(p);
       if (deleted && (probes.length || actuators.length)) {
         for (const s of this.listSchedules()) {
           const t = s.target;
@@ -549,6 +627,16 @@ export class Store {
   }
 
   // ── telemetry ──────────────────────────────────────────────────────────────
+  /**
+   * Stores a reading the agent made with calibration `calibratedAt` (null: none) only if that is the probe's current
+   * calibration: a reading made before the agent had a new calibration (or after it was removed) is in other units.
+   */
+  acceptReading(reading: Reading, calibratedAt: number | null): boolean {
+    const r = this.db.prepare('SELECT * FROM probes WHERE id = ?').get(reading.probeId) as Row | undefined;
+    // The calibration as the agent's config has it: the same rules as getProbe (a refused one is none).
+    if (r && (this.probe(r).calibration?.calibratedAt ?? null) !== calibratedAt) return false;
+    return this.addReading(reading);
+  }
   /** Idempotent: a replayed reading returns false. */
   addReading(input: unknown): boolean {
     const r = Reading.parse(input);

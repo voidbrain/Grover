@@ -151,6 +151,7 @@ export async function createHttp(hub: Hub): Promise<FastifyInstance> {
 
   // ── commands ─────────────────────────────────────────────────────────────
   app.post<{ Params: { id: string } }>('/api/probes/:id/read', async (req) => commands.readProbe(req.params.id));
+  app.post<{ Params: { id: string } }>('/api/probes/:id/read-raw', async (req) => commands.readRaw(req.params.id));
   app.post<{ Params: { id: string } }>('/api/actuators/:id/run', async (req) =>
     commands.run(req.params.id, RunRequest.parse(req.body), 'manual'),
   );

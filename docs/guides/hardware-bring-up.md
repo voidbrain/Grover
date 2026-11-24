@@ -29,7 +29,13 @@ Expected: `journalctl -u grover-agent -f` shows no `fault` lines after the confi
 curl -X POST localhost:8080/api/probes/water-temp/read
 ```
 
-Expected: `{"ok":true,…,"value":<°C>}` close to a reference thermometer. Analog pH/EC probes return **volts** until F-004 adds calibration: record the volts in pH 4 / pH 7 and in the EC calibration solution.
+Expected: `{"ok":true,…,"value":<°C>}` close to a reference thermometer.
+
+## 3b. Calibrate pH and EC
+
+Analog pH and EC probes read volts until calibrated, and feeds will not use them. In Setup → the tent → Probes → Edit the pH probe → Calibration: rinse the probe, put it in buffer pH 7, **Read now**, enter `7`, **Add point**; rinse, buffer pH 4, **Read now**, enter `4`, **Add point**; choose the water temperature probe; **Save**. For EC: the calibration solution (e.g. 1.413 mS/cm at 25 °C, the value on the bottle), **Read now**, enter its value, **Add point**, **Save**. pH needs both buffers; the editor says when points cannot be saved. After moving a probe to another channel, calibrate it again (the old calibration is dropped).
+
+Expected: back in buffer pH 7 and pH 4, **Read** gives 7 ± 0.1 and 4 ± 0.1; EC in the solution gives its value ± 0.1 mS/cm.
 
 ## 4. Switches
 

@@ -16,7 +16,9 @@ import { FeedPlan } from './feeding.ts';
  *
  * Agents connect with username = agentId and password = agent token.
  */
-export const PROTOCOL_VERSION = 3;
+export const PROTOCOL_VERSION = 4;
+/** The first protocol whose agents apply probe calibrations (v4); an older agent reports volts. */
+export const CALIBRATION_PROTOCOL = 4;
 
 export const topics = {
   status: (agentId: string) => `grover/agents/${agentId}/status`,
@@ -53,7 +55,13 @@ export type AgentStatus = z.infer<typeof AgentStatus>;
 
 /** Agent events carry a per-agent sequence number for ordering; the hub stores each event once (keyed by subject and time). */
 export const AgentEvent = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('reading'), seq: z.number().int(), reading: Reading }),
+  z.object({
+    type: z.literal('reading'),
+    seq: z.number().int(),
+    reading: Reading,
+    /** `calibratedAt` of the calibration the agent applied (null: none); the hub keeps only current ones. */
+    calibratedAt: z.number().int().nullable().default(null),
+  }),
   z.object({ type: z.literal('actuation'), seq: z.number().int(), actuation: Actuation }),
   z.object({
     type: z.literal('fault'),
@@ -91,7 +99,8 @@ export const AgentConfig = z.object({
 export type AgentConfig = z.infer<typeof AgentConfig>;
 
 export const AgentCommand = z.discriminatedUnion('kind', [
-  z.object({ id: z.string(), kind: z.literal('read'), probeId: Id }),
+  /** `raw`: the driver's value before calibration, for taking calibration points; not stored as a reading. */
+  z.object({ id: z.string(), kind: z.literal('read'), probeId: Id, raw: z.boolean().default(false) }),
   /** Bounded run. The agent clamps durationMs to the actuator's maxRunMs. */
   z.object({
     id: z.string(),
@@ -114,6 +123,8 @@ export const CommandAck = z.object({
   /** For a read: the value (and `at` is the reading's time). For a run: the clamped duration. */
   value: z.number().nullable(),
   at: z.number().int(),
+  /** For a read: `calibratedAt` of the calibration applied (null: none, or a raw read). */
+  calibratedAt: z.number().int().nullable().default(null),
 });
 export type CommandAck = z.infer<typeof CommandAck>;
 

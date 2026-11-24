@@ -142,6 +142,8 @@ export interface ProbeDraft {
   /** '' = no alert */
   alertBelow: string;
   alertAbove: string;
+  /** Edited in the probe editor's calibration section, carried as is. */
+  calibration: Probe['calibration'];
 }
 
 export function probeDraft(p?: Probe): ProbeDraft {
@@ -162,6 +164,7 @@ export function probeDraft(p?: Probe): ProbeDraft {
     tank: p?.tank ?? '',
     alertBelow: p?.alertBelow == null ? '' : String(p.alertBelow),
     alertAbove: p?.alertAbove == null ? '' : String(p.alertAbove),
+    calibration: p?.calibration ?? null,
   };
 }
 
@@ -187,6 +190,7 @@ export function toProbe(d: ProbeDraft, roomId: string): Probe {
     tank,
     alertBelow: optionalNumber(d.alertBelow),
     alertAbove: optionalNumber(d.alertAbove),
+    calibration: d.calibration,
   };
 }
 

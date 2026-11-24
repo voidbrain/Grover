@@ -1,4 +1,11 @@
-import { isPump, type ActuationSource, type CommandResult, type OperatingMode } from '@grover/contracts';
+import {
+  COMPENSATION_TEMP_MAX_AGE_MS,
+  isPump,
+  usableTemp,
+  type ActuationSource,
+  type CommandResult,
+  type OperatingMode,
+} from '@grover/contracts';
 import type { AgentLink } from './agents.ts';
 import type { Bus } from './events.ts';
 import type { Store } from './store.ts';
@@ -31,11 +38,39 @@ export class Commands {
     const probe = this.store.getProbe(probeId);
     if (!probe.enabled) throw new Refused(`probe ${probeId} is disabled`);
     if (this.store.getRoom(probe.roomId).mode === 'off') throw new Refused('room is off');
-    const ack = await this.agents.command(this.agentFor(probe.roomId), { kind: 'read', probeId });
+    const ack = await this.agents.command(this.agentFor(probe.roomId), { kind: 'read', probeId, raw: false });
+    // Made with another calibration than the current one (the new one has not reached the agent yet): other units.
+    if (ack.ok && ack.calibratedAt !== (probe.calibration?.calibratedAt ?? null))
+      return {
+        commandId: ack.id,
+        ok: false,
+        error: 'the agent does not have the current calibration yet: read again in a moment',
+        value: null,
+      };
     // Store it now (B-004): the agent's reading event for the same reading may come later, and is then ignored.
-    if (ack.ok && ack.value !== null && this.store.addReading({ probeId, value: ack.value, at: ack.at }))
+    if (
+      ack.ok &&
+      ack.value !== null &&
+      this.store.acceptReading({ probeId, value: ack.value, at: ack.at }, ack.calibratedAt)
+    )
       this.bus.emit({ type: 'reading', reading: { probeId, value: ack.value, at: ack.at } });
     return { commandId: ack.id, ok: ack.ok, error: ack.error, value: ack.value };
+  }
+
+  /**
+   * The driver's value before calibration, for taking a calibration point (F-004), with the latest temperature of
+   * the probe the calibration compensates with. Not stored as a reading.
+   */
+  async readRaw(probeId: string): Promise<{ raw: number; tempC: number | null }> {
+    const probe = this.store.getProbe(probeId);
+    if (!probe.enabled) throw new Refused(`probe ${probeId} is disabled`);
+    if (this.store.getRoom(probe.roomId).mode === 'off') throw new Refused('room is off');
+    const ack = await this.agents.command(this.agentFor(probe.roomId), { kind: 'read', probeId, raw: true });
+    if (!ack.ok || ack.value === null) throw new Refused(ack.error ?? 'the agent could not read the probe');
+    const tempProbe = probe.calibration?.tempProbeId ?? this.store.roomWaterTemp(probe);
+    const temp = tempProbe ? this.store.latestReading(tempProbe) : null;
+    const recent = temp && Date.now() - temp.at <= COMPENSATION_TEMP_MAX_AGE_MS && usableTemp(temp.value);
+    return { raw: ack.value, tempC: recent ? temp.value : null };
   }
 
   /** Bounded run of a pump. Give `ml` (needs a calibrated pump) or `durationMs`. */

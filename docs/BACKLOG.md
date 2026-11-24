@@ -214,32 +214,66 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ---
 
-### F-004
+### F-014
 
-**Calibrate analog probes (volts to pH and EC)**
+**Plant page with statistics, as in the old app**
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔺 P1 | Open | 🟡 Medium |
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
 
-💻 **→ Human action required: No**<br />Add two-point pH and one-point EC calibration with temperature compensation to the probe binding.
+💻 **→ Human action required: No**<br />Build the plant page after F-004.
 
 | | |
 |---|---|
-| **Issue** | The `ads1115` driver returns volts, and the hub treats them as pH or EC: dosing on a real rig would be wrong until calibration exists. |
-| **Reproduce** | Bind a pH probe with `ads1115` and read it: the value is a voltage (about 1.5–2.5), not a pH. |
-| **Check** | A calibrated probe reports pH within ± 0.1 of buffer solutions 4 and 7 and EC within ± 0.1 mS/cm of the calibration solution, compensated to 25 °C with the water temperature probe; calibration can be set from the API and is covered by unit tests. |
+| **Issue** | The old app's plant panel (tag `legacy-v1`, `components/plants/detail-panel/`) had a chart of the plant's probes with the phase's safe band and actuator events, ranges Today / Last week / Last month / From start, a doses bar, phase details, an event log and a table. The new app has only a chart per probe. Requested by the owner on 2026-11-24. |
+| **Reproduce** | `npm run dev`: there is no page for a plant; its readings, feeds and doses cannot be seen together. |
+| **Check** | A plant page (from the pot card and the plants page) shows: header (strain, generation and mother line, breeder, genetics, dates, days, current phase); charts of level, EC, pH and water temperature of its pot with the phase band and markers for feeds, bloom, flush and harvest, over Today / Last week / Last month / From start (from when it went into the pot); total water and nutrients given and the number of feeds; days in the tent, share of EC and pH readings in range, yield; a log of its feeds (EC/pH before and after), phase changes and its pot's alerts. Plants record when they are placed in a pot. Tests cover the statistics. |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Design in contracts (calibration in the binding, conversion as pure functions with tests), apply on the agent so readings are already in units. Until then, keep auto-feed off on a real rig.
+**Next action / closure evidence:** Requested 2026-11-24 ("should also see stats, they were in the old"); scope taken from the legacy plant panel the same day.
 
 **Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
 | PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
+
+### F-004
+
+**Calibrate analog probes (volts to pH and EC)**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
+
+🧑 **→ Human action required: Procedure**<br />Calibrate the real pH and EC probes on the Pi: [hardware bring-up](guides/hardware-bring-up.md), step 3b.
+
+| | |
+|---|---|
+| **Issue** | The `ads1115` driver returns volts, and the hub treats them as pH or EC: dosing on a real rig would be wrong until calibration exists. |
+| **Reproduce** | Bind a pH probe with `ads1115` and read it: the value is a voltage (about 1.5–2.5), not a pH. |
+| **Check** | A calibrated probe reports pH within ± 0.1 of buffer solutions 4 and 7 and EC within ± 0.1 mS/cm of the calibration solution, compensated (pH slope by temperature, EC to 25 °C) with the chosen water temperature probe; calibration points are taken from the probe editor with a raw reading that is not stored as a measurement; an analog pH/EC probe without calibration is never used to plan a feed, and the preview says why; unit tests cover the maths, the agent and the feed guard. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Built 2026-11-24 on `feat/f004-calibration`: `Calibration` on probes (migration 6), the maths in contracts (line through points, one-point correction, pH and EC temperature compensation), applied on the agent with the chosen water temperature probe, raw reads (`read` with `raw: true`, not stored) over MQTT and `POST /api/probes/<id>/read-raw`, the calibration section in the probe editor, and the feed guard for uncalibrated analog pH/EC (the plan says why). Checks: 5 maths tests (buffers read back exactly, compensation, one-point EC and offset), an agent test (calibrated and raw reads), a feed-guard test; 105 backend and 15 client tests, build, lint. Review of #21 (2026-11-24) fixed test-first: pH needs two buffers and degenerate points are refused (schema and editor); EC points away from 25 °C fitted at their temperature; `calibratedAt` so volts read before calibrating are never used by feeds or alerts; calibration dropped on rewiring; compensation temperature checked (water temperature probe of the same pot or tent, at most 15 minutes old, 0–50 °C); `PROTOCOL_VERSION` 4, older agents' analog pH/EC treated as uncalibrated; a stored calibration the rules refuse reads as none; maths moved to zod-free `kinds.ts` for the editor preview; e2e case for `read-raw`; client spec (offline, one buffer, choices before the first point). Second review fixed test-first: EC without a current temperature assumes the calibration temperature (it read low); compensation per kind (EC always through zero to 25 °C; pH 'ph' or none); references at least 1 pH / 0.1 mS/cm apart; readings carry the `calibratedAt` the agent applied and the hub keeps only current ones; a deleted or moved temperature probe is released; the feed's fresh-reading check uses calibrated measurements. Third review: readings are checked against the calibration by the same rules as the probe (a refused stored calibration counts as none, so the probe never goes silent); a probe moved away from its temperature probe releases the link instead of refusing the save; a manual read made before the new calibration reached the agent says so. 120 backend and 18 client tests. Not done: a calibration with real buffers on the device (F-003). Closes when CI passes and the owner has calibrated the real probes.
+
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#21](https://github.com/voidbrain/Grover/pull/21) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

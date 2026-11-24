@@ -99,6 +99,10 @@ export const MIGRATIONS: readonly string[] = [
   UPDATE rooms SET calendar_start = NULL
     WHERE calendar_start IS NOT NULL AND calendar_start NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]';
   `,
+  // 6: probe calibration (F-004), JSON validated by the contracts schema.
+  `
+  ALTER TABLE probes ADD COLUMN calibration TEXT;
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {
