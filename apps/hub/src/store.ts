@@ -369,7 +369,13 @@ export class Store {
   // ── schedules ──────────────────────────────────────────────────────────────
   listSchedules(): Schedule[] {
     return (this.db.prepare('SELECT * FROM schedules ORDER BY id').all() as Row[]).map((r) =>
-      Schedule.parse({ id: r['id'], target: json(r['target']), rule: json(r['rule']), enabled: bool(r['enabled']) }),
+      Schedule.parse({
+        id: r['id'],
+        target: json(r['target']),
+        rule: json(r['rule']),
+        enabled: bool(r['enabled']),
+        days: r['days'] == null ? null : json(r['days']),
+      }),
     );
   }
   /** Schedules whose target belongs to the room. */
@@ -384,9 +390,15 @@ export class Store {
     const s = Schedule.parse(input);
     this.db
       .prepare(
-        'INSERT INTO schedules (id, target, rule, enabled) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET target = excluded.target, rule = excluded.rule, enabled = excluded.enabled',
+        'INSERT INTO schedules (id, target, rule, enabled, days) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET target = excluded.target, rule = excluded.rule, enabled = excluded.enabled, days = excluded.days',
       )
-      .run(s.id, JSON.stringify(s.target), JSON.stringify(s.rule), s.enabled ? 1 : 0);
+      .run(
+        s.id,
+        JSON.stringify(s.target),
+        JSON.stringify(s.rule),
+        s.enabled ? 1 : 0,
+        s.days ? JSON.stringify(s.days) : null,
+      );
     return s;
   }
 

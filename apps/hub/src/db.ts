@@ -107,6 +107,10 @@ export const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE plants ADD COLUMN placed_on TEXT;
   `,
+  // 8: schedules may name their weekdays (F-016); null runs every day.
+  `
+  ALTER TABLE schedules ADD COLUMN days TEXT;
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

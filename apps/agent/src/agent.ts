@@ -12,6 +12,7 @@ import {
   isPump,
   localTime,
   topics,
+  scheduleOnDay,
   windowActive,
   type AgentStatus,
   type CommandAck,
@@ -38,7 +39,11 @@ export class Agent {
   private readonly actuators: Actuators;
   private readonly feeds: FeedRunner;
   private readonly outbox: Outbox;
-  private readonly lastWindow = new Map<string, boolean>();
+  /**
+   * The last edge acted on per window schedule: 'on', 'off', or 'off <day>' on a day the schedule does not run, so
+   * each such day starts with an edge and a switch turned on by hand holds until that day ends, not for days.
+   */
+  private readonly lastWindow = new Map<string, string>();
   private lastMinute = '';
   private ticker: NodeJS.Timeout | null = null;
   private flushing = false;
@@ -190,35 +195,57 @@ export class Agent {
     const newMinute = minuteKey !== this.lastMinute;
     this.lastMinute = minuteKey;
 
+    // Switches some window schedule wants on now: another schedule's "off" edge must not cut that window short
+    // (one light with a weekday and a weekend window, F-016).
+    const wantedOn = new Set<string>();
+    for (const s of config.schedules) {
+      if (!s.enabled || s.target.type !== 'actuator' || s.rule.kind !== 'window') continue;
+      const a = this.actuators.get(s.target.actuatorId);
+      if (!a || !a.enabled || !(config.mode === 'normal' || a.kind === 'light')) continue;
+      if (scheduleOnDay(s, day, minuteOfDay) && windowActive(s.rule, minuteOfDay)) wantedOn.add(a.id);
+    }
+
     for (const s of config.schedules) {
       if (!s.enabled) continue;
+      // Not one of its days (F-016): a window holds off, dark is not held, nothing fires.
+      const onDay = scheduleOnDay(s, day, minuteOfDay);
       if (s.target.type === 'probe') {
-        if (newMinute && firesAt(s.rule, minuteOfDay)) void this.read(s.target.probeId).catch(() => {});
+        if (newMinute && onDay && firesAt(s.rule, minuteOfDay)) void this.read(s.target.probeId).catch(() => {});
         continue;
       }
       const actuator = this.actuators.get(s.target.actuatorId);
       if (!actuator || !actuator.enabled) continue;
       const allowed = config.mode === 'normal' || actuator.kind === 'light';
       if (s.rule.kind === 'window' || s.rule.kind === 'dark') {
-        const want = allowed && s.rule.kind === 'window' && windowActive(s.rule, minuteOfDay);
+        const want = allowed && onDay && s.rule.kind === 'window' && windowActive(s.rule, minuteOfDay);
         // Dark is held, not just switched at an edge: a light switched on by hand goes off again on the next tick.
-        if (s.rule.kind === 'dark' && this.actuators.isOn(actuator.id)) {
+        if (s.rule.kind === 'dark' && onDay && this.actuators.isOn(actuator.id)) {
           await this.actuators
             .switch(actuator.id, false, 'schedule')
             .catch((err) => this.fault(`actuator ${actuator.id}`, err.message));
           continue;
         }
-        // Act on edges only, so a manual switch holds until the next window boundary.
-        if (this.lastWindow.get(s.id) !== want) {
-          this.lastWindow.set(s.id, want);
-          if (this.actuators.isOn(actuator.id) !== want)
+        // Dark on a day it does not run: nothing to hold, nothing to switch.
+        if (s.rule.kind === 'dark' && !onDay) continue;
+        // Act on edges only, so a manual switch holds until the next window boundary (or the end of a day the
+        // window does not run).
+        const edge = want ? 'on' : onDay ? 'off' : `off ${day}`;
+        if (this.lastWindow.get(s.id) !== edge) {
+          this.lastWindow.set(s.id, edge);
+          if (this.actuators.isOn(actuator.id) !== want && (want || !wantedOn.has(actuator.id)))
             await this.actuators.switch(actuator.id, want, 'schedule').catch((err) => {
               // Forget the edge so the next tick tries again (a relay that was busy, a stop in between).
               this.lastWindow.delete(s.id);
               this.fault(`actuator ${actuator.id}`, err.message);
             });
         }
-      } else if (newMinute && allowed && firesAt(s.rule, minuteOfDay) && !(isPump(actuator.kind) && this.feeds.busy)) {
+      } else if (
+        newMinute &&
+        allowed &&
+        onDay &&
+        firesAt(s.rule, minuteOfDay) &&
+        !(isPump(actuator.kind) && this.feeds.busy)
+      ) {
         if (isPump(actuator.kind)) {
           try {
             this.actuators.run(actuator.id, s.rule.durationMs, 'schedule');

@@ -4,7 +4,7 @@
   "parent": "F-016",
   "title": "Weekdays on schedule rules: contracts, agent and editor",
   "goal": "A schedule rule runs only on the weekdays it names, also offline",
-  "status": "ready",
+  "status": "closed",
   "acceptance": [
     "Contracts: a rule names its weekdays (default every day), due-day logic tested, PROTOCOL_VERSION bumped",
     "The agent applies it in the tent's time zone without the hub; e2e case",
@@ -39,11 +39,11 @@
     "A material scope or effort increase goes to the owner"
   ],
   "effort": {
-    "size": "medium",
-    "estimate": "3 h agent",
-    "basis": "Estimated 2026-11-24: 3 h agent; PR #27 (open, another session) carries it.",
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Built and merged in #27 on green CI 2026-11-24 (another session), before this plan merged. No actual: the step was not timed here.",
     "reviewed": "2026-11-24",
-    "agentHours": 3,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 3,
     "estimateAgentHours": 3
@@ -51,7 +51,7 @@
   "prs": [
     {
       "pr": 27,
-      "note": "implementation, open"
+      "note": "implementation"
     }
   ]
 }

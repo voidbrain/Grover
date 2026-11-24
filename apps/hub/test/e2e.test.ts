@@ -207,6 +207,22 @@ test('setup changes are pushed to the agent', async () => {
   );
 });
 
+test('a schedule limited to weekdays reaches the agent with its days (F-016)', async () => {
+  const res = await api('PUT', '/api/schedules/fan-weekdays', {
+    target: { type: 'actuator', actuatorId: 'fan' },
+    rule: { kind: 'window', from: '08:00', to: '20:00' },
+    enabled: false,
+    days: [1, 2, 3, 4, 5],
+  });
+  assert.equal(res.status, 200);
+  await until(
+    () => JSON.stringify(agent.state.config?.schedules.find((s) => s.id === 'fan-weekdays')?.days) === '[1,2,3,4,5]',
+    'agent has the days',
+  );
+  assert.equal((await api('PUT', '/api/schedules/fan-weekdays', { ...res.json, days: [] })).status, 400);
+  await api('DELETE', '/api/schedules/fan-weekdays');
+});
+
 test('a feed runs end to end: supply tanks into the mixing tank, then into the pot', async () => {
   // A preview uses what is known; "Feed now" reads the pot first. Read it so the preview has numbers too.
   for (const probe of ['pot-1-level', 'pot-1-ec', 'pot-1-ph']) await api('POST', `/api/probes/${probe}/read`);

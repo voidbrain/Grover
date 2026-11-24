@@ -1,3 +1,4 @@
+import type { z } from 'zod';
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -22,7 +23,8 @@ const pump = (id: string, kind: Actuator['kind'], potId: string | null = null): 
 
 /** An agent with a cached config and no hub (MQTT to a closed port): enough to drive tick() and execute(). */
 async function agentWith(
-  config: Omit<AgentConfig, 'protocol' | 'agentId' | 'roomId' | 'timezone' | 'issuedAt'>,
+  // The input shape: fields with defaults (a schedule's days) may be left out, as in configs saved before them.
+  config: Omit<z.input<typeof AgentConfig>, 'protocol' | 'agentId' | 'roomId' | 'timezone' | 'issuedAt'>,
   drivers: MockDrivers,
   now: () => number,
 ) {
@@ -220,5 +222,177 @@ test('readings come out calibrated (with temperature compensation); a raw read i
   assert.equal(read.calibratedAt, 123, 'the reading names the calibration it applied');
   assert.equal(raw.calibratedAt, null, 'a raw read applied none');
   assert.equal(agent.state.queued, before + 2, 'the raw reads queued no event; the two normal reads did');
+  await agent.stop();
+});
+
+test('a schedule limited to weekdays does nothing on a Saturday (F-016)', async () => {
+  const saturday = Date.parse('2026-11-28T10:00:00Z');
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [{ ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null }],
+      schedules: [
+        {
+          id: 'w',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '06:00', to: '00:00' },
+          enabled: true,
+          days: [1, 2, 3, 4, 5],
+        },
+      ],
+    },
+    drivers,
+    () => saturday,
+  );
+  await agent.tick();
+  assert.notEqual(drivers.states.get('light'), true, 'off on Saturday');
+  await agent.stop();
+});
+
+// Review of #27: what the tick does on a day a schedule does not run.
+const at = (iso: string) => Date.parse(iso);
+const lightOnly = { ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null };
+
+test('a window past midnight holds into the next day, and ends at its time (in the tick)', async () => {
+  let t = at('2026-11-27T21:59:00Z'); // Friday
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [lightOnly],
+      schedules: [
+        {
+          id: 'w',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '22:00', to: '06:00' },
+          enabled: true,
+          days: [5],
+        },
+      ],
+    },
+    drivers,
+    () => t,
+  );
+  t = at('2026-11-27T22:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'Friday 22:00 on');
+  t = at('2026-11-28T03:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'Saturday 03:00 still Friday night');
+  t = at('2026-11-28T06:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), false, 'Saturday 06:00 off');
+  await agent.stop();
+});
+
+test('on a day it does not run, a switch turned on by hand holds until that day ends, not for days', async () => {
+  let t = at('2026-11-28T12:00:00Z'); // Saturday; the window runs Monday to Friday
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [lightOnly],
+      schedules: [
+        {
+          id: 'w',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '06:00', to: '20:00' },
+          enabled: true,
+          days: [1, 2, 3, 4, 5],
+        },
+      ],
+    },
+    drivers,
+    () => t,
+  );
+  await agent.tick();
+  await agent.execute({ id: 'c', kind: 'switch', actuatorId: 'light', on: true, source: 'manual' });
+  t = at('2026-11-28T18:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'held through Saturday');
+  t = at('2026-11-29T00:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), false, 'off when Sunday starts');
+  await agent.stop();
+});
+
+test('on a day it does not run, dark is not held and timed runs do not fire', async () => {
+  const t = at('2026-11-28T10:00:00Z'); // Saturday
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [lightOnly, pump('pump-water', 'pump_water')],
+      schedules: [
+        {
+          id: 'd',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'dark' },
+          enabled: true,
+          days: [1],
+        },
+        {
+          id: 'e',
+          target: { type: 'actuator', actuatorId: 'pump-water' },
+          rule: { kind: 'every', everyMinutes: 60, durationMs: 1000 },
+          enabled: true,
+          days: [1],
+        },
+      ],
+    },
+    drivers,
+    () => t,
+  );
+  await agent.execute({ id: 'c', kind: 'switch', actuatorId: 'light', on: true, source: 'manual' });
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'dark only on Mondays');
+  assert.notEqual(drivers.states.get('pump-water'), true, 'no Monday run on a Saturday');
+  assert.equal(agent.state.active.includes('pump-water'), false);
+  await agent.stop();
+});
+
+test('a day-start edge does not cut another schedule of the same switch (weekday and weekend windows)', async () => {
+  let t = at('2026-11-28T19:59:00Z'); // Saturday
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [lightOnly],
+      schedules: [
+        {
+          id: 'weekdays',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '06:00', to: '20:00' },
+          enabled: true,
+          days: [1, 2, 3, 4, 5],
+        },
+        {
+          id: 'weekend',
+          target: { type: 'actuator', actuatorId: 'light' },
+          rule: { kind: 'window', from: '20:00', to: '02:00' },
+          enabled: true,
+          days: [6, 7],
+        },
+      ],
+    },
+    drivers,
+    () => t,
+  );
+  await agent.tick();
+  t = at('2026-11-28T20:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'Saturday 20:00 on');
+  t = at('2026-11-29T00:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), true, 'Sunday 00:00: still Saturday night');
+  t = at('2026-11-29T02:00:00Z');
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), false, 'Sunday 02:00 off');
   await agent.stop();
 });

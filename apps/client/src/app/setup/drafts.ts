@@ -273,7 +273,12 @@ export interface ScheduleDraft {
   times: string;
   everyMinutes: number;
   durationSeconds: number;
+  /** Ticked weekdays, 1 Monday … 7 Sunday (F-016); all seven: every day. */
+  days: number[];
 }
+
+const ALL_DAYS = [1, 2, 3, 4, 5, 6, 7];
+export const WEEKDAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export function scheduleDraft(s?: Schedule): ScheduleDraft {
   const r = s?.rule;
@@ -288,6 +293,7 @@ export function scheduleDraft(s?: Schedule): ScheduleDraft {
     times: r?.kind === 'at' ? r.times.join(', ') : '08:00',
     everyMinutes: r?.kind === 'every' ? r.everyMinutes : 5,
     durationSeconds: r && (r.kind === 'at' || r.kind === 'every') ? r.durationMs / 1000 : 0,
+    days: s?.days ? [...s.days] : [...ALL_DAYS],
   };
 }
 
@@ -310,7 +316,20 @@ export function toSchedule(d: ScheduleDraft): Schedule {
           : { kind: 'every', everyMinutes: d.everyMinutes, durationMs };
   const target: Schedule['target'] =
     d.targetType === 'probe' ? { type: 'probe', probeId: d.targetId } : { type: 'actuator', actuatorId: d.targetId };
-  return { id: d.id, target, rule, enabled: d.enabled };
+  const days = [...new Set(d.days)].sort((a, b) => a - b);
+  return { id: d.id, target, rule, enabled: d.enabled, days: days.length === 7 ? null : days };
+}
+
+/** The days of a schedule in words, weekdays and the weekend apart: "Mon–Fri", "Sat, Sun", "Mon, Wed · Sat". */
+export function describeDays(days: readonly number[] | null): string {
+  if (!days || days.length === 7) return 'every day';
+  const words = (group: number[]) => {
+    const sorted = group.filter((d) => days.includes(d));
+    if (sorted.length >= 3 && sorted.every((d, i) => i === 0 || d === sorted[i - 1]! + 1))
+      return `${WEEKDAY_NAMES[sorted[0]! - 1]}–${WEEKDAY_NAMES[sorted.at(-1)! - 1]}`;
+    return sorted.map((d) => WEEKDAY_NAMES[d - 1]).join(', ');
+  };
+  return [words([1, 2, 3, 4, 5]), words([6, 7])].filter(Boolean).join(' · ');
 }
 
 /** One line for a schedule list. */

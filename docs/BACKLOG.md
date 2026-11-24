@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 24 November 2026 against main `af7026c`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `236a17f`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 26.5 h agent + 12.5 h owner across 43 open steps of 17 features and 1 other record. Generated from the task files.
+**Remaining effort:** 25 h agent + 12.5 h owner across 44 open steps of 17 features and 2 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -231,6 +231,44 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="b-006"></a>[🐞 B-006](#top)
+
+**An upgraded agent drops its cached config until the hub answers**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-006-T01 — Failing agent test, then run a cached config of the previous protocol (Ready).
+
+| | |
+|---|---|
+| **Issue** | `AgentConfig.protocol` must equal `PROTOCOL_VERSION`. After an agent upgrade (each protocol bump: 4 for calibration, 5 for weekdays), the agent fails to parse its own cached `config.json` on start and runs nothing (lights, fans, loops, reads) until the hub reconnects and sends a new config. The agent must keep working without the hub (AGENTS.md). Found in the review of #27 on 2026-11-24. |
+| **Reproduce** | Start an agent with a cached config whose `protocol` is one lower and no hub: no schedule runs. |
+| **Check** | An agent test: a cached config of the previous protocol is used (its new fields at their defaults) and the agent's schedules run with no hub; a config of a newer or unknown protocol is still refused with a fault. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status |
+|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-006-t01"></a>B-006-T01 — Failing agent test, then run a cached config of the previous protocol | 1 h | 0 h | 1 h | Ready |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 1 h | 0 of 1 completed |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-006.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ### <a id="f-012"></a>[✨ F-012](#top)
 
 **Plants and strains: origin, generation, breeder, ancestry**
@@ -322,46 +360,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
-### <a id="f-016"></a>[✨ F-016](#top)
-
-**Schedules by day of week, weekends apart**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 3 h agent + 0.25 h owner | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-016-T01 — Weekdays on schedule rules: contracts, agent and editor (Ready).
-
-| | |
-|---|---|
-| **Issue** | Schedule rules (window, every, at, dark) repeat the same every day. The old app (tag `legacy-v1`, `detail-panel/schedule-panel`) had a schedule per weekday with weekends shown apart. Requested by the owner on 2026-11-24. |
-| **Reproduce** | `npm run dev`, Setup → a tent → Schedules: a rule cannot be limited to some days. |
-| **Check** | A schedule rule can name the weekdays it runs on (default every day); the agent applies it in the tent's time zone, also offline; the schedule editor picks days with a weekdays/weekend shortcut and shows the week with weekends apart; light rules from the grow calendar stay daily. `PROTOCOL_VERSION` bumped if the rule shape changes; tests in contracts (which days a rule is due) and the e2e test. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
-|---|---|---|---|---|---|---|---|:---:|---|
-| 🟡 Medium | <a id="f-016-t01"></a>F-016-T01 — Weekdays on schedule rules: contracts, agent and editor | 3 h | 0 h | 3 h | Ready | — | [F-016-T02](#f-016-t02) | 🤖 | [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation, open |
-| 🟢 Small | <a id="f-016-t02"></a>F-016-T02 — Owner tries weekday schedules on the dev stack | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-016-T01](#f-016-t01) | — | ⏳ 🧑‍🔧 | — |
-| 🟡 Medium | **Total** | 3 h | 0 h (0 of 2 steps recorded) | 3 h agent + 0.25 h owner | 0 of 2 completed | | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-016.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-016-T01: [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation, open. [#24](https://github.com/voidbrain/Grover/pull/24) (record) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -610,6 +608,53 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-016"></a>[✨ F-016](#top)
+
+**Schedules by day of week, weekends apart**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | 🧑‍🔧 | — |
+
+🧑 **→** Next: [🧑‍🔧](acceptance/dev-stack.md#weekday-schedules) F-016-T02 — Owner tries weekday schedules on the dev stack (Ready).
+
+| | |
+|---|---|
+| **Issue** | Schedule rules (window, every, at, dark) repeat the same every day. The old app (tag `legacy-v1`, `detail-panel/schedule-panel`) had a schedule per weekday with weekends shown apart. Requested by the owner on 2026-11-24. |
+| **Reproduce** | `npm run dev`, Setup → a tent → Schedules: a rule cannot be limited to some days. |
+| **Check** | A schedule rule can name the weekdays it runs on (default every day); the agent applies it in the tent's time zone, also offline; the schedule editor picks days with a weekdays/weekend shortcut and shows the week with weekends apart; light rules from the grow calendar stay daily. `PROTOCOL_VERSION` bumped if the rule shape changes; tests in contracts (which days a rule is due) and the e2e test. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="f-016-t02"></a>F-016-T02 — Owner tries weekday schedules on the dev stack | 0 h | 0 h | 0 h agent + 0.25 h owner | Ready | — | [F-016-T03](#f-016-t03) | [🧑‍🔧](acceptance/dev-stack.md#weekday-schedules) | — |
+| 🟢 Small | <a id="f-016-t03"></a>F-016-T03 — Record the try of weekday schedules; fix what it found | 0.5 h | 0 h | 0.5 h | Planned | [F-016-T02](#f-016-t02) | — | ⏳ 🤖 | — |
+| 🟢 Small | **Total** | 3.5 h | 0 h (0 of 3 steps recorded) | 0.5 h agent + 0.25 h owner | 1 of 3 completed | | | | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-016-t01"></a>F-016-T01 — Weekdays on schedule rules: contracts, agent and editor | 3 h | 0 h | Completed | [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-016.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-016-T01: [PR #27](https://github.com/voidbrain/Grover/pull/27) implementation. [#24](https://github.com/voidbrain/Grover/pull/24) (record), [#27](https://github.com/voidbrain/Grover/pull/27) |
+| Opened | 2026-11-24 |
+| Verification | 2026-11-24: CI green on #27 after merge; the owner's try is pending. |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ### <a id="b-002"></a>[🐞 B-002](#top)
 
 **`check:conventions` does not see the client in this monorepo**
@@ -814,7 +859,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ## Other changes
 
-**Reconciliation and step plans, 2026-11-24 (main `af7026c`).** PRs #18, #19, #20, #21, #22, #25 and #26 merged on green CI: B-004 and B-005 closed on it; the F- records they carry stay Implemented until the owner tries them. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`).
+**Reconciliation and step plans, 2026-11-24 (main `236a17f`).** PRs #18, #19, #20, #21, #22, #25, #26 and #27 merged on green CI: B-004 and B-005 closed on it; the F- records they carry stay Implemented until the owner tries them; B-006 (from #27) moved to its source. Records moved to source files (`docs/work/records`), and every active record now has its steps in `docs/work/tasks` (owner decision 2026-11-24: `workItems.featurePlans`).
 
 ## How to use this file
 

@@ -59,3 +59,11 @@ Expected: a header with strain, generation, mother and dates; four charts (level
 3. Look at it in a narrow window (or on a phone through `npm run client`), then switch the system to dark mode.
 
 Expected: six supply tanks, the mixing tank, four pots with their pumps, loops, levels, EC, pH and plants, and the tent's lights, fan and air temperature; Run turns to waiting, then running, then back, and stays disabled meanwhile; no sideways scroll at phone width; text stays readable in light and dark.
+
+## Weekday schedules
+
+1. Open http://127.0.0.1:8080/setup, the demo tent, and edit one of the fan's schedules.
+2. Under **Days** press **Weekend**, save; then **Weekdays**, save; then **Every day**, save.
+3. Untick every day and try to save.
+
+Expected: the editor shows Monday to Friday apart from Saturday and Sunday; after each save the schedule list names its days; with no day ticked nothing is saved and a message says why.
