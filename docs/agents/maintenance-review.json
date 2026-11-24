@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-24T19:07:40.900Z",
+  "reviewed": "2026-11-24T19:40:48.937Z",
   "policy": "c9570a34ab0c7e4f1274fe37802a6eff8e7edfb8266c98f0cec7119533729b2b",
   "inputs": {
     "AGENTS.md": "1a21d05cab093092100bf8cb514fe043a5eec2948fa82d6ff74a22f92fe6d22f",
     "docs/BACKLOG-RULES.md": "2774fde691339976f30fe4482ddd8242953fc845aa3d3bd77861002137753ab8",
     "docs/agents/architecture-review.md": "5d967314854912b1a5f1446aeab309763b14f9856bceb3c82df5c6c25c166526",
-    "docs/agents/areas.md": "02811268ca28c3537f7cc5d711bb19d4184fe7399caadd98858113075f9340a2",
+    "docs/agents/areas.md": "5b4cb80c6685e29bd64d06bc0a1db93f6325fc1f0f842d21fcfd74970421b069",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
     "docs/agents/change-impact.md": "dc1c473e274f76bd70a87ff57bbc53fc75dc75a35d121cf67baf163a2fd2e975",
     "docs/agents/coverage-guide.md": "3d539eb8beedfa101a5e47d9973cdf85dce197436fab2ab096f760e12d208106",
@@ -115,7 +115,7 @@
       "kind": "rule",
       "disposition": "implemented",
       "target": "docs/agents/areas.md",
-      "evidence": "F-013: area note: one growing plant per pot, plant cycle in plant-cycle.ts, feeds use potPhase; covered by plant-cycle.test.ts."
+      "evidence": "F-007: area note: the calendar light is applied in buildConfig via Lights.apply, stored schedules untouched, phase-moving changes re-publish configs; covered by lights.test.ts."
     }
   ]
 }

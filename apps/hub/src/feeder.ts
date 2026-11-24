@@ -119,26 +119,28 @@ export class Feeder {
     return localTime(new Date(this.now()), this.opts.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone).day;
   }
 
-  phase(room: Room): { phase: Phase; day: number } | null {
+  phase(room: Room): { phase: Phase; day: number; index: number } | null {
     if (!room.calendarId || !room.calendarStart) return null;
     const calendar = this.store.getCalendar(room.calendarId);
     if (!calendar) return null;
     const day = daysBetween(room.calendarStart.slice(0, 10), this.today());
     const found = phaseForDay(calendar, day);
-    return found ? { phase: found.phase, day } : null;
+    return found ? { phase: found.phase, day, index: found.index } : null;
   }
 
   /**
    * The phase a pot is fed for: its growing plant's own (from the plant's start, bloom and flush dates), else the
    * tent's calendar (F-013: pots can be staggered).
    */
-  potPhase(pot: Pot): { phase: Phase; day: number; source: 'plant' | 'tent'; plantId: string | null } | null {
+  potPhase(
+    pot: Pot,
+  ): { phase: Phase; day: number; index: number; source: 'plant' | 'tent'; plantId: string | null } | null {
     const room = this.store.getRoom(pot.roomId);
     const plant = this.store.plantInPot(pot.id);
     const calendar = room.calendarId ? this.store.getCalendar(room.calendarId) : null;
     if (plant && calendar) {
       const found = phaseForPlant(calendar, plant, this.today());
-      if (found) return { phase: found.phase, day: found.day, source: 'plant', plantId: plant.id };
+      if (found) return { phase: found.phase, day: found.day, index: found.index, source: 'plant', plantId: plant.id };
     }
     const tent = this.phase(room);
     return tent ? { ...tent, source: 'tent', plantId: plant?.id ?? null } : null;

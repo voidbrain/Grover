@@ -150,6 +150,13 @@ describe('setup drafts', () => {
       },
     ];
     for (const s of schedules) expect(Schedule.parse(toSchedule(scheduleDraft(s)))).toEqual(s);
+    const dark: Schedule = {
+      id: 'd',
+      target: { type: 'actuator', actuatorId: 'light' },
+      rule: { kind: 'dark' },
+      enabled: true,
+    };
+    expect(Schedule.parse(toSchedule(scheduleDraft(dark)))).toEqual(dark);
     expect(toSchedule({ ...scheduleDraft(schedules[1]), times: '07:00,19:30  21:00' }).rule).toEqual({
       kind: 'at',
       times: ['07:00', '19:30', '21:00'],
@@ -170,6 +177,9 @@ describe('setup drafts', () => {
       feedCooldownMinutes: 90,
       waterEc: 0.25,
       waterPh: 7.2,
+      lightFrom: 'calendar',
+      lightStart: '07:00',
+      lightPlantId: 'p1',
       calendarId: 'default',
       calendarStart: '2026-11-01',
     };

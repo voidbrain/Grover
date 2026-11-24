@@ -11,6 +11,9 @@
         }
         · auto-feed {{ r.autoFeed ? 'on' : 'off' }}
       </p>
+      @if (lightLabel(); as l) {
+        <p class="meta">{{ l }}</p>
+      }
       <p class="agent" [class.offline]="!online()" role="status">
         <span class="dot" aria-hidden="true"></span>{{ agentLabel() }}
       </p>
@@ -104,6 +107,26 @@
                 <br /><span class="muted">{{ pl.facts }}</span>
               </p>
               <div class="pot-actions">
+                @if (pl.canBloom) {
+                  <button
+                    type="button"
+                    class="ghost small"
+                    [disabled]="!hub.connected() || busy('plant:' + pl.id)"
+                    (click)="bloom(pl.id, pl.name)"
+                  >
+                    Switch to bloom
+                  </button>
+                }
+                @if (pl.canFlush) {
+                  <button
+                    type="button"
+                    class="ghost small"
+                    [disabled]="!hub.connected() || busy('plant:' + pl.id)"
+                    (click)="flush(pl.id, pl.name)"
+                  >
+                    Start flush
+                  </button>
+                }
                 <button
                   type="button"
                   class="ghost small"

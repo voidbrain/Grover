@@ -284,30 +284,30 @@ Bugs (B-) and features (F-) in one list, most urgent first.
 
 ### F-007
 
-**Follow the grow calendar: light hours and phase changes**
+**Lights follow the grow calendar; Switch to bloom**
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Derive the light window from the active phase and apply it when the phase changes.
+🧑 **→ Human action required: Procedure**<br />Try it on the dev stack: [run it](../README.md#run-it), then Switch to bloom on pot 3 and watch the light line change to 12 h.
 
 | | |
 |---|---|
-| **Issue** | Each phase has `lightHours` (18 in veg, 12 in bloom), but the light schedule is a fixed window: moving into bloom needs a manual schedule change. |
+| **Issue** | Each phase has `lightHours` (18 in veg, 12 in bloom) but nothing reads them: the light runs on a fixed schedule edited by hand. Agreed with the owner on 2026-11-24: the light window follows the calendar from a chosen start time; with staggered pots the tent's one light follows the most advanced plant, or a plant the owner picks; a Switch to bloom button (and Start flush) records the date on the plant, which moves its phase and, when it is the one the light follows, the light. |
 | **Reproduce** | Seed the demo tent (`npm run dev`) and move `calendarStart` back past day 42: the phase reads "Early bloom" but the light window stays 06:00–00:00. |
-| **Check** | On the day the phase changes, the agent receives a light window of the new phase's hours without a manual edit, and a test covers the switch. |
+| **Check** | With the tent set to follow the calendar, the agent receives a light window of the followed phase's hours from the chosen start, and the window changes (without a manual edit) when that plant switches to bloom; the most advanced plant is followed by default, a picked plant when set; a phase with 0 light hours keeps the light off; with the tent on its own schedules nothing changes; Switch to bloom and Start flush record today's date; tests cover the choice, the window, the agent and the button. |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Hub-side: a daily phase check that rewrites the room's light schedule (marked as calendar-owned) and republishes the config.
+**Next action / closure evidence:** Built 2026-11-24 on `feat/f007-light-calendar`: tent settings `lightFrom`, `lightStart`, `lightPlantId` (migration 5), `chooseLightPhase` and `lightRule` (contracts), `Lights` on the hub rewriting the light's rule in the agent config, a `dark` schedule rule on the agent, configs re-sent every 10 minutes and after plant changes, Switch to bloom / Start flush (HTTP, MCP, pot card), the light line on the dashboard and the settings in the tent form. The demo tent follows the calendar. Also: the tent calendar's start date must be YYYY-MM-DD (migration 5 trims stored ones). Checks: 7 new tests (lighting, lights, agent dark rule), 94 backend and 15 client tests, build, lint; dev smoke: Switch to bloom moved the light from 06:00-00:00 to 06:00-18:00 and the agent received it within a second. An independent review (2026-11-24) found no blocker; fixed the same day with tests: dark is held on every tick (a light switched on by hand in a 0-hour phase went on staying on), protocol version 3 for the `dark` rule, an e2e case for Switch to bloom reaching the agent, distinct light schedule ids, the dashboard saying when the calendar has nothing to follow, `dark` kept when a schedule is edited, unreadable calendar dates cleared by migration 5. Closes when CI passes and the owner has tried it.
 
-**Estimates:** Medium remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
+**Estimates:** Small remaining effort. Initial estimate; revise from the scoped work and evidence. Estimated 2026-11-24; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#20](https://github.com/voidbrain/Grover/pull/20) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |

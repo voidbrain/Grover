@@ -29,6 +29,9 @@ export function seedDemo(store: Store, agentId = 'pi-1'): void {
       feedCooldownMinutes: 60,
       waterEc: 0.2,
       waterPh: 7,
+      // The light follows the grow calendar (the most advanced plant), on at 06:00.
+      lightFrom: 'calendar',
+      lightStart: '06:00',
     });
 
     const probe = (id: string, kind: string, name: string, extra: Record<string, unknown> = {}) =>

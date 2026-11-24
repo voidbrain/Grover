@@ -11,7 +11,7 @@ const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON
  * every tool that changes state says so in its description and is annotated as not read-only.
  */
 export function createMcpServer(hub: Hub): McpServer {
-  const { store, commands, feeder, alerts, agents, plants } = hub;
+  const { store, commands, feeder, alerts, agents, plants, lights } = hub;
   const server = new McpServer({ name: 'grover', version: '2.0.0' });
 
   server.registerTool(
@@ -28,6 +28,7 @@ export function createMcpServer(hub: Hub): McpServer {
             room,
             agent: room.agentId ? agents.view(room.agentId) : null,
             phase: feeder.phase(room),
+            light: lights.plan(room),
             pots: store.listPots(room.id).map((pot) => ({
               ...pot,
               phase: feeder.potPhase(pot),
@@ -96,7 +97,11 @@ export function createMcpServer(hub: Hub): McpServer {
       inputSchema: { plantId: z.string(), count: z.number().int().min(1).max(20) },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async ({ plantId, count }) => text(plants.takeCuttings(plantId, count)),
+    async ({ plantId, count }) => {
+      const r = plants.takeCuttings(plantId, count);
+      agents.publishAllConfigs();
+      return text(r);
+    },
   );
 
   server.registerTool(
@@ -107,7 +112,40 @@ export function createMcpServer(hub: Hub): McpServer {
       inputSchema: { plantId: z.string(), date: z.string().optional(), yieldGrams: z.number().min(0).optional() },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async ({ plantId, date, yieldGrams }) => text(plants.harvest(plantId, date, yieldGrams)),
+    async ({ plantId, date, yieldGrams }) => {
+      const r = plants.harvest(plantId, date, yieldGrams);
+      agents.publishAllConfigs();
+      return text(r);
+    },
+  );
+
+  server.registerTool(
+    'grover_switch_to_bloom',
+    {
+      description:
+        'Records that a plant switched to flowering today: its phase (and feed) moves to bloom, and the tent light too when it follows this plant (calendar-driven light). Records only.',
+      inputSchema: { plantId: z.string() },
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async ({ plantId }) => {
+      const p = plants.markBloom(plantId);
+      agents.publishAllConfigs();
+      return text(p);
+    },
+  );
+
+  server.registerTool(
+    'grover_start_flush',
+    {
+      description: 'Records that a plant started its flush today (plain water from now on). Records only.',
+      inputSchema: { plantId: z.string() },
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async ({ plantId }) => {
+      const p = plants.markFlush(plantId);
+      agents.publishAllConfigs();
+      return text(p);
+    },
   );
 
   server.registerTool(
@@ -118,7 +156,11 @@ export function createMcpServer(hub: Hub): McpServer {
       inputSchema: { potId: z.string(), plantId: z.string() },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async ({ potId, plantId }) => text(plants.place(potId, plantId)),
+    async ({ potId, plantId }) => {
+      const r = plants.place(potId, plantId);
+      agents.publishAllConfigs();
+      return text(r);
+    },
   );
 
   server.registerTool(

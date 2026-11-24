@@ -121,6 +121,8 @@ export class RoomCard {
               strain: strain?.name ?? null,
               facts: facts.join(' · '),
               generation: p.generation,
+              canBloom: !p.bloomOn,
+              canFlush: !!p.bloomOn && !p.flushOn,
             };
           });
         return {
@@ -215,6 +217,29 @@ export class RoomCard {
 
   protected choose(potId: string, plantId: string): void {
     this.placeChoice.update((m) => ({ ...m, [potId]: plantId }));
+  }
+
+  /** "Light: 12 h from 06:00 · Late bloom of NL5xHaze gen 2", or null on the tent's own schedules. */
+  protected readonly lightLabel = computed(() => {
+    const l = this.room().light;
+    if (!l)
+      return this.room().lightFallback
+        ? 'Light: set to follow the calendar, but there is no phase to follow: its own schedules run'
+        : null;
+    const plant = l.plantId ? (this.snap()?.plants ?? []).find((p) => p.id === l.plantId)?.name : null;
+    const when =
+      l.rule.kind === 'dark' ? 'off all day' : l.hours >= 24 ? 'on all day' : `${l.hours} h from ${l.rule.from}`;
+    return `Light: ${when} · ${l.phaseName}${plant ? ` of ${plant}${l.picked ? '' : ' (most advanced)'}` : ' (tent calendar)'}`;
+  });
+
+  protected async bloom(plantId: string, name: string): Promise<void> {
+    if (confirm(`Record that ${name} switched to bloom today? Its feed moves to the flowering phases.`))
+      await this.hub.markBloom(plantId);
+  }
+
+  protected async flush(plantId: string, name: string): Promise<void> {
+    if (confirm(`Start the flush of ${name} today? It gets plain water from now on.`))
+      await this.hub.markFlush(plantId);
   }
 
   protected busy(key: string): boolean {

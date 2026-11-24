@@ -90,6 +90,15 @@ export const MIGRATIONS: readonly string[] = [
   );
   CREATE INDEX plants_by_pot ON plants(pot_id);
   `,
+  // 5: lights follow the grow calendar (F-007).
+  `
+  ALTER TABLE rooms ADD COLUMN light_from TEXT NOT NULL DEFAULT 'schedule';
+  ALTER TABLE rooms ADD COLUMN light_start TEXT NOT NULL DEFAULT '06:00';
+  ALTER TABLE rooms ADD COLUMN light_plant_id TEXT REFERENCES plants(id) ON DELETE SET NULL;
+  UPDATE rooms SET calendar_start = substr(calendar_start, 1, 10) WHERE calendar_start IS NOT NULL;
+  UPDATE rooms SET calendar_start = NULL
+    WHERE calendar_start IS NOT NULL AND calendar_start NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]';
+  `,
 ];
 
 export function openDb(path: string): DatabaseSync {

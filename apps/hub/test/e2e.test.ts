@@ -259,6 +259,19 @@ test('pumps cannot be run by hand while a feed runs; Stop all ends the feed with
   Object.assign(drivers.world.mix, { liters: 0, nutrientMl: 0, phDownMl: 0 });
 });
 
+test('Switch to bloom reaches the agent as a shorter light window (calendar-driven light)', async () => {
+  const lightRule = () =>
+    agent.state.config?.schedules.find((x) => x.target.type === 'actuator' && x.target.actuatorId === 'light')?.rule;
+  assert.deepEqual(lightRule(), { kind: 'window', from: '06:00', to: '00:00' });
+  const res = await api('POST', '/api/plants/nl5h-gen2/bloom');
+  assert.equal(res.status, 200);
+  await until(
+    () => JSON.stringify(lightRule()) === JSON.stringify({ kind: 'window', from: '06:00', to: '18:00' }),
+    'agent got the bloom window',
+  );
+  assert.equal((await api('POST', '/api/plants/nl5h-gen2/flush')).status, 200);
+});
+
 test('one feed per tent at a time, and none outside normal mode', async () => {
   await api('PUT', '/api/rooms/grow-1/mode', { mode: 'silent' });
   const refused = (await api('POST', '/api/pots/pot-3/feed')).json;
@@ -286,7 +299,15 @@ test('MCP: tools are listed and a read-only tool answers', async () => {
   );
   const tools = await rpc('tools/list', {}, 2);
   const names = tools.result.tools.map((t: any) => t.name);
-  for (const n of ['grover_overview', 'grover_run_pump', 'grover_stop_all', 'grover_feed_pot', 'grover_alerts'])
+  for (const n of [
+    'grover_overview',
+    'grover_run_pump',
+    'grover_stop_all',
+    'grover_feed_pot',
+    'grover_alerts',
+    'grover_switch_to_bloom',
+    'grover_start_flush',
+  ])
     assert.ok(names.includes(n), n);
   const overview = await rpc('tools/call', { name: 'grover_overview', arguments: {} }, 3);
   const rooms = JSON.parse(overview.result.content[0].text);

@@ -74,6 +74,23 @@ export class PlantCycle {
     return this.store.putPlant({ ...p, harvestedOn: date ?? this.today(), yieldGrams: yieldGrams ?? p.yieldGrams });
   }
 
+  /** Records the switch to flowering (today): the plant's phase moves on, and the light if it follows this plant. */
+  markBloom(plantId: string): Plant {
+    const p = this.plant(plantId);
+    if (p.harvestedOn) throw new BadReference(`${p.name} was harvested on ${p.harvestedOn}`);
+    if (p.bloomOn) throw new BadReference(`${p.name} switched to bloom on ${p.bloomOn}`);
+    return this.store.putPlant({ ...p, bloomOn: this.today() });
+  }
+
+  /** Records the start of the flush (today). */
+  markFlush(plantId: string): Plant {
+    const p = this.plant(plantId);
+    if (p.harvestedOn) throw new BadReference(`${p.name} was harvested on ${p.harvestedOn}`);
+    if (!p.bloomOn) throw new BadReference(`${p.name} has not switched to bloom yet`);
+    if (p.flushOn) throw new BadReference(`${p.name} started its flush on ${p.flushOn}`);
+    return this.store.putPlant({ ...p, flushOn: this.today() });
+  }
+
   /** Puts a plant that is growing elsewhere into a free pot. */
   place(potId: string, plantId: string): Plant {
     const p = this.plant(plantId);

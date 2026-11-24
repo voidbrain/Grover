@@ -62,12 +62,25 @@ export const Room = z.object({
   /** Start feeds by themselves when a pot runs low or its EC/pH leaves the phase range. Off by default. */
   autoFeed: z.boolean(),
   calendarId: Id.nullable(),
-  /** Day 0 of the grow calendar (ISO date). */
-  calendarStart: z.string().nullable(),
+  /** Day 0 of the grow calendar (YYYY-MM-DD). */
+  calendarStart: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD')
+    .nullable(),
   /** Mixing tank level (probe units) at or below which it counts as empty. */
   mixEmptyLevel: z.number().min(0).default(1),
   /** Wait after mixing before the transfer, so the batch is even. */
   mixSettleSeconds: z.number().int().min(0).max(3600).default(60),
+  /**
+   * Who sets the light: the tent's own schedules, or the grow calendar (the followed plant's phase gives the hours,
+   * from `lightStart`). With staggered pots the light follows `lightPlantId`, or the most advanced plant when null.
+   */
+  lightFrom: z.enum(['schedule', 'calendar']).default('schedule'),
+  lightStart: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'HH:MM')
+    .default('06:00'),
+  lightPlantId: Id.nullable().default(null),
   /** The tent's tap water, measured once: the feed planner counts its dilution. */
   waterEc: z.number().min(0).max(5).default(0.3),
   waterPh: z.number().min(0).max(14).default(7),
@@ -131,6 +144,8 @@ const HHMM = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'HH:MM');
 export const ScheduleRule = z.discriminatedUnion('kind', [
   /** Keep a switch on between `from` and `to` (wraps midnight when to < from). */
   z.object({ kind: z.literal('window'), from: HHMM, to: HHMM }),
+  /** Keep a switch off all day (a light in a phase with 0 light hours). */
+  z.object({ kind: z.literal('dark') }),
   /** Fire at each listed time; actuators run for `durationMs`. */
   z.object({ kind: z.literal('at'), times: z.array(HHMM).min(1), durationMs: z.number().int().min(0).default(0) }),
   /** Fire every `everyMinutes` minutes, aligned to midnight. */

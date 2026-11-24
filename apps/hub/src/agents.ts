@@ -127,21 +127,29 @@ export class AgentLink {
     return this.store.listAgents().map((a) => this.view(a.id));
   }
 
+  /** Adjusts a config before it is sent (the light following the grow calendar, F-007). */
+  private adjust: (config: AgentConfig) => AgentConfig = (c) => c;
+  setConfigAdjuster(fn: (config: AgentConfig) => AgentConfig): void {
+    this.adjust = fn;
+  }
+
   /** Builds the config an agent runs on. Null when the agent is not attached to a room. */
   buildConfig(agentId: string): AgentConfig | null {
     const room = this.store.roomForAgent(agentId);
     if (!room) return null;
-    return AgentConfig.parse({
-      protocol: PROTOCOL_VERSION,
-      agentId,
-      roomId: room.id,
-      mode: room.mode,
-      probes: this.store.listProbes(room.id),
-      actuators: this.store.listActuators(room.id),
-      schedules: this.store.roomSchedules(room.id),
-      timezone: this.opts.timezone,
-      issuedAt: Date.now(),
-    });
+    return this.adjust(
+      AgentConfig.parse({
+        protocol: PROTOCOL_VERSION,
+        agentId,
+        roomId: room.id,
+        mode: room.mode,
+        probes: this.store.listProbes(room.id),
+        actuators: this.store.listActuators(room.id),
+        schedules: this.store.roomSchedules(room.id),
+        timezone: this.opts.timezone,
+        issuedAt: Date.now(),
+      }),
+    );
   }
 
   /** Publishes (retained) the current config. Call after anything an agent runs on changes. */

@@ -224,3 +224,19 @@ test('references to unknown records are refused as such (400), and a strain cann
   assert.equal(cycle.status, 400);
   assert.match(cycle.json.error, /own ancestor/);
 });
+
+test('migration 5 clears calendar start dates it cannot read', () => {
+  const path = join(mkdtempSync(join(tmpdir(), 'grover-mig5-')), 'hub.sqlite');
+  const db = new DatabaseSync(path);
+  db.exec('CREATE TABLE schema_version (version INTEGER NOT NULL); INSERT INTO schema_version VALUES (4);');
+  for (const m of MIGRATIONS.slice(0, 4)) db.exec(m);
+  db.prepare(
+    "INSERT INTO rooms (id, name, mode, calendar_start) VALUES ('a', 'A', 'normal', '2026-11-01T10:00:00Z')",
+  ).run();
+  db.prepare("INSERT INTO rooms (id, name, mode, calendar_start) VALUES ('b', 'B', 'normal', 'soon')").run();
+  db.close();
+  const store = new Store(openDb(path));
+  assert.equal(store.getRoom('a').calendarStart, '2026-11-01');
+  assert.equal(store.getRoom('b').calendarStart, null);
+  store.db.close();
+});

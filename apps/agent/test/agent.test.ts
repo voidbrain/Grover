@@ -146,3 +146,26 @@ test('a window switch that fails is tried again on the next tick', async () => {
   assert.equal(drivers.states.get('light'), true, 'retried and on');
   await agent.stop();
 });
+
+test('a dark rule keeps the light off', async () => {
+  const t = Date.parse('2026-06-01T10:00:00Z');
+  const drivers = new MockDrivers();
+  const agent = await agentWith(
+    {
+      mode: 'normal',
+      probes: [],
+      actuators: [{ ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null }],
+      schedules: [
+        { id: 'd', target: { type: 'actuator', actuatorId: 'light' }, rule: { kind: 'dark' }, enabled: true },
+      ],
+    },
+    drivers,
+    () => t,
+  );
+  await agent.execute({ id: 'c', kind: 'switch', actuatorId: 'light', on: true, source: 'manual' });
+  assert.equal(drivers.states.get('light'), true, 'switched on by hand');
+  // Dark is re-asserted on every tick (review of #20): a light switched on by hand goes off again.
+  await agent.tick();
+  assert.equal(drivers.states.get('light'), false, 'off before the agent stops');
+  await agent.stop();
+});
