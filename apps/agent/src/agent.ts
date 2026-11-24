@@ -241,11 +241,17 @@ export class Agent {
     return (await this.takeReading(probeId)).value;
   }
 
-  /** A reading and its time; the command ack for a read carries the same time, so the hub stores it once. */
   /** Last calibrated value per probe: the temperature a calibration compensates with. */
   private readonly lastValues = new Map<string, { value: number; at: number }>();
 
-  private async takeReading(probeId: string, raw = false): Promise<{ value: number; at: number }> {
+  /**
+   * A reading, its time and the calibration it applied; the command ack for a read carries the same time, so the hub
+   * stores it once, and the same `calibratedAt`, so the hub keeps only readings made with its current calibration.
+   */
+  private async takeReading(
+    probeId: string,
+    raw = false,
+  ): Promise<{ value: number; at: number; calibratedAt: number | null }> {
     const entry = this.probes.get(probeId);
     if (!entry) throw new Error(`unknown or disabled probe ${probeId}`);
     try {
@@ -253,15 +259,16 @@ export class Agent {
       if (!Number.isFinite(reading)) throw new Error(`probe ${probeId} returned ${reading}`);
       const at = this.now();
       // A raw read is for taking calibration points: the driver's value, not stored as a measurement.
-      if (raw) return { value: reading, at };
+      if (raw) return { value: reading, at, calibratedAt: null };
       const cal = entry.probe.calibration;
       const temp = cal?.tempProbeId ? this.lastValues.get(cal.tempProbeId) : undefined;
       // A stale temperature is not compensated with (applyCalibration also ignores one outside 0–50 °C).
       const tempC = temp && at - temp.at <= COMPENSATION_TEMP_MAX_AGE_MS ? temp.value : null;
       const value = cal ? applyCalibration(reading, cal, tempC) : reading;
       this.lastValues.set(probeId, { value, at });
-      this.publishEvent({ type: 'reading', reading: { probeId, value, at } });
-      return { value, at };
+      const calibratedAt = cal?.calibratedAt ?? null;
+      this.publishEvent({ type: 'reading', reading: { probeId, value, at }, calibratedAt });
+      return { value, at, calibratedAt };
     } catch (err) {
       this.fault(`probe ${probeId}`, (err as Error).message);
       throw err;
@@ -290,13 +297,13 @@ export class Agent {
   }
 
   async execute(cmd: AgentCommand): Promise<CommandAck> {
-    const ack = (ok: boolean, error: string | null, value: number | null = null, at = this.now()): CommandAck => ({
-      id: cmd.id,
-      ok,
-      error,
-      value,
-      at,
-    });
+    const ack = (
+      ok: boolean,
+      error: string | null,
+      value: number | null = null,
+      at = this.now(),
+      calibratedAt: number | null = null,
+    ): CommandAck => ({ id: cmd.id, ok, error, value, at, calibratedAt });
     try {
       const mode = this.config?.mode ?? 'off';
       switch (cmd.kind) {
@@ -304,7 +311,7 @@ export class Agent {
           if (mode === 'off') return ack(false, 'agent is off');
           {
             const r = await this.takeReading(cmd.probeId, cmd.raw);
-            return ack(true, null, r.value, r.at);
+            return ack(true, null, r.value, r.at, r.calibratedAt);
           }
         case 'run': {
           if (mode !== 'normal') return ack(false, `agent is ${mode}`);

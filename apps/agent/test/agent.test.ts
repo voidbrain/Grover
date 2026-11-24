@@ -200,6 +200,7 @@ test('readings come out calibrated (with temperature compensation); a raw read i
           ],
           compensation: 'ph',
           tempProbeId: 'temp',
+          calibratedAt: 123,
         }),
       ] as never,
       actuators: [],
@@ -216,6 +217,8 @@ test('readings come out calibrated (with temperature compensation); a raw read i
   const temp = (await agent.execute({ id: 't2', kind: 'read', probeId: 'temp', raw: true })).value!;
   const expected = 7 + (7 - raw.value! - 7) * (298.15 / (temp + 273.15));
   assert.ok(Math.abs(read.value! - expected) < 0.05, `calibrated ${read.value} ≈ ${expected}`);
+  assert.equal(read.calibratedAt, 123, 'the reading names the calibration it applied');
+  assert.equal(raw.calibratedAt, null, 'a raw read applied none');
   assert.equal(agent.state.queued, before + 2, 'the raw reads queued no event; the two normal reads did');
   await agent.stop();
 });

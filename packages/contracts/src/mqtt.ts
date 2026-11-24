@@ -55,7 +55,13 @@ export type AgentStatus = z.infer<typeof AgentStatus>;
 
 /** Agent events carry a per-agent sequence number for ordering; the hub stores each event once (keyed by subject and time). */
 export const AgentEvent = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('reading'), seq: z.number().int(), reading: Reading }),
+  z.object({
+    type: z.literal('reading'),
+    seq: z.number().int(),
+    reading: Reading,
+    /** `calibratedAt` of the calibration the agent applied (null: none); the hub keeps only current ones. */
+    calibratedAt: z.number().int().nullable().default(null),
+  }),
   z.object({ type: z.literal('actuation'), seq: z.number().int(), actuation: Actuation }),
   z.object({
     type: z.literal('fault'),
@@ -117,6 +123,8 @@ export const CommandAck = z.object({
   /** For a read: the value (and `at` is the reading's time). For a run: the clamped duration. */
   value: z.number().nullable(),
   at: z.number().int(),
+  /** For a read: `calibratedAt` of the calibration applied (null: none, or a raw read). */
+  calibratedAt: z.number().int().nullable().default(null),
 });
 export type CommandAck = z.infer<typeof CommandAck>;
 

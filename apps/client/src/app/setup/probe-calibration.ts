@@ -61,14 +61,17 @@ import { Hub } from '../hub';
         </div>
       }
       <div class="row">
-        <label class="field">
-          Compensation
-          <select [value]="compensation()" (change)="setCompensation($any($event.target).value)">
-            <option value="none">None</option>
-            <option value="ph">pH (electrode slope by temperature)</option>
-            <option value="ec">EC (to 25 °C)</option>
-          </select>
-        </label>
+        @if (kind() === 'ph') {
+          <label class="field">
+            Compensation
+            <select [value]="compensation()" (change)="setCompensation($any($event.target).value)">
+              <option value="ph">pH (electrode slope by temperature)</option>
+              <option value="none">None</option>
+            </select>
+          </label>
+        } @else if (kind() === 'ec') {
+          <span class="hint">EC is referred to 25 °C.</span>
+        }
         @if (compensation() !== 'none') {
           <label class="field">
             Water temperature from

@@ -20,7 +20,7 @@ test('a probe read is stored as soon as the agent answers, and once', async () =
   // A fake agent that answers and never sends the reading event.
   const agents = {
     isOnline: () => true,
-    command: async () => ({ id: 'c', ok: true, error: null, value: 1.23, at }),
+    command: async () => ({ id: 'c', ok: true, error: null, value: 1.23, at, calibratedAt: null }),
   };
   const commands = new Commands(store, agents as never, bus);
   const result = await commands.readProbe('ec');

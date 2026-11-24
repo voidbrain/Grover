@@ -6,6 +6,7 @@ import {
   AgentStatus,
   CALIBRATION_PROTOCOL,
   Calendar,
+  Calibration,
   Phase,
   Pot,
   Probe,
@@ -26,6 +27,13 @@ type Row = Record<string, SQLInputValue>;
 const bool = (v: unknown) => v === 1 || v === 1n;
 const json = (v: unknown) => JSON.parse(String(v));
 const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
+/** Whether temperature probe `t` measures the solution of probe `p`: same pot, or the tent's shared one. */
+const compensates = (t: Probe, p: Probe) =>
+  t.kind === 'water_temperature' &&
+  t.enabled &&
+  t.tank === null &&
+  t.roomId === p.roomId &&
+  (t.potId === null || t.potId === p.potId);
 
 export class NotFound extends Error {}
 /** A delete refused because something still refers to it. */
@@ -264,9 +272,10 @@ export class Store {
       p = { ...p, calibration: { ...p.calibration, calibratedAt: Date.now() } };
     }
     const tempId = p.calibration?.tempProbeId;
-    if (tempId) {
+    // Checked when chosen; a temperature probe deleted or moved later is released (releaseTempProbe).
+    if (tempId && (tempId !== old?.calibration?.tempProbeId || p.potId !== old?.potId)) {
       const t = this.listProbes(p.roomId).find((x) => x.id === tempId);
-      if (!t || t.kind !== 'water_temperature' || t.tank !== null || (t.potId !== null && t.potId !== p.potId))
+      if (!t || !compensates(t, p))
         throw new BadReference(
           `${tempId} cannot compensate ${p.name}: use a water temperature probe in the same pot or the tent's shared one`,
         );
@@ -292,7 +301,18 @@ export class Store {
         p.alertAbove,
         p.calibration ? JSON.stringify(p.calibration) : null,
       );
+    if (old?.kind === 'water_temperature') this.releaseTempProbe(p.id);
     return p;
+  }
+  /** Clears `tempProbeId` in calibrations that may no longer use this probe (deleted, moved); the points still hold. */
+  private releaseTempProbe(tempId: string): void {
+    const t = this.listProbes().find((x) => x.id === tempId) ?? null;
+    for (const p of this.listProbes()) {
+      if (p.calibration?.tempProbeId !== tempId || (t && compensates(t, p))) continue;
+      this.db
+        .prepare('UPDATE probes SET calibration = ? WHERE id = ?')
+        .run(JSON.stringify({ ...p.calibration, tempProbeId: null }), p.id);
+    }
   }
 
   // ── actuators ──────────────────────────────────────────────────────────────
@@ -409,6 +429,7 @@ export class Store {
         for (const a of actuators) this.db.prepare('DELETE FROM actuators WHERE id = ?').run(a);
       }
       const deleted = Number(this.db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id).changes) > 0;
+      if (deleted) for (const p of probes) this.releaseTempProbe(p);
       if (deleted && (probes.length || actuators.length)) {
         for (const s of this.listSchedules()) {
           const t = s.target;
@@ -606,6 +627,18 @@ export class Store {
   }
 
   // ── telemetry ──────────────────────────────────────────────────────────────
+  /**
+   * Stores a reading the agent made with calibration `calibratedAt` (null: none) only if that is the probe's current
+   * calibration: a reading made before the agent had a new calibration (or after it was removed) is in other units.
+   */
+  acceptReading(reading: Reading, calibratedAt: number | null): boolean {
+    const r = this.db.prepare('SELECT calibration FROM probes WHERE id = ?').get(reading.probeId) as Row | undefined;
+    if (r) {
+      const current = r['calibration'] == null ? null : (Calibration.safeParse(json(r['calibration'])).data ?? null);
+      if ((current?.calibratedAt ?? null) !== calibratedAt) return false;
+    }
+    return this.addReading(reading);
+  }
   /** Idempotent: a replayed reading returns false. */
   addReading(input: unknown): boolean {
     const r = Reading.parse(input);

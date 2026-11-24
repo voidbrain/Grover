@@ -92,3 +92,29 @@ test('a temperature outside 0-50 °C is not used for compensation', () => {
   assert.equal(applyCalibration(2.53, c, -127), 4, 'a DS18B20 fault value');
   assert.equal(applyCalibration(2.53, c, 85), 4);
 });
+
+// Second review of #21.
+test('EC without a current temperature reads the bottle value at the calibration temperature', () => {
+  const c = Calibration.parse({ points: [point(0.855, 1.413, 20)], compensation: 'ec' });
+  assert.ok(Math.abs(applyCalibration(0.855, c, null) - 1.413) < 0.002, `${applyCalibration(0.855, c, null)}`);
+});
+
+test('the compensation must suit the probe kind; references must be apart', () => {
+  const base = { id: 'p', roomId: 'r', potId: null, name: 'P', enabled: true, binding: { driver: 'mock' } };
+  const ec1 = { points: [point(1, 1.413)] };
+  assert.equal(
+    Probe.safeParse({ ...base, kind: 'ec', calibration: { ...ec1, compensation: 'none' } }).success,
+    false,
+    'EC is a line through zero, compensated to 25 °C',
+  );
+  assert.equal(Probe.safeParse({ ...base, kind: 'ec', calibration: { ...ec1, compensation: 'ec' } }).success, true);
+  const ph2 = { points: [point(2.53, 4), point(2.03, 7)] };
+  assert.equal(Probe.safeParse({ ...base, kind: 'ph', calibration: { ...ph2, compensation: 'ec' } }).success, false);
+  assert.equal(Probe.safeParse({ ...base, kind: 'ph', calibration: { ...ph2, compensation: 'none' } }).success, true);
+  const close = { points: [point(2.03, 7), point(2.09, 7.01)], compensation: 'ph' };
+  assert.equal(
+    Probe.safeParse({ ...base, kind: 'ph', calibration: close }).success,
+    false,
+    'buffers less than 1 pH apart',
+  );
+});

@@ -150,6 +150,10 @@ export const COMPENSATION_TEMP_RANGE = { min: 0, max: 50 } as const;
 export const COMPENSATION_TEMP_MAX_AGE_MS = 15 * 60_000;
 /** Two points closer than this (in driver units, e.g. volts) cannot fix a line. */
 export const MIN_RAW_SPREAD = 0.05;
+/** Reference solutions closer than this (pH 7 and 4, EC 1.413 and 12.88…) give too uncertain a slope. */
+const MIN_VALUE_SPREAD: Record<string, number> = { ph: 1, ec: 0.1 };
+/** The compensations each kind may use. EC is always referred to 25 °C (and through zero for one point). */
+const COMPENSATIONS: Record<string, readonly CalibrationData['compensation'][]> = { ph: ['ph', 'none'], ec: ['ec'] };
 
 export const usableTemp = (t: number | null | undefined): t is number =>
   typeof t === 'number' && Number.isFinite(t) && t >= COMPENSATION_TEMP_RANGE.min && t <= COMPENSATION_TEMP_RANGE.max;
@@ -165,6 +169,8 @@ const ecAt = (value25: number, tempC: number) => value25 * (1 + 0.02 * (tempC - 
 export function calibrationProblem(c: CalibrationData, kind?: string): string | null {
   const pts = c.points;
   if (!pts.length) return 'no points';
+  if (kind !== undefined && !(COMPENSATIONS[kind] ?? ['none']).includes(c.compensation))
+    return `a ${kind} probe cannot use ${c.compensation} compensation`;
   if (kind === 'ph' && pts.length < 2) return 'pH needs two buffers (pH 7 and pH 4)';
   if (pts.length === 1) {
     if (c.compensation === 'ec' && !(pts[0]!.raw > 0)) return 'an EC point needs a reading above zero';
@@ -174,7 +180,9 @@ export function calibrationProblem(c: CalibrationData, kind?: string): string | 
   const values = pts.map((p) => p.value);
   if (Math.max(...raws) - Math.min(...raws) < MIN_RAW_SPREAD)
     return `the points read almost the same (${Math.min(...raws)} to ${Math.max(...raws)}): use solutions further apart`;
-  if (Math.max(...values) === Math.min(...values)) return 'the points have the same reference value';
+  const spread = Math.max(...values) - Math.min(...values);
+  if (spread === 0 || spread < (kind ? (MIN_VALUE_SPREAD[kind] ?? 0) : 0))
+    return 'the reference solutions are too close together: use ones further apart (pH 7 and 4)';
   return null;
 }
 
@@ -211,16 +219,15 @@ export function calibrationTemp(c: CalibrationData): number {
 
 /**
  * A raw reading in the probe's unit. `tempC`: the solution's temperature now, when known (ignored outside
- * COMPENSATION_TEMP_RANGE).
+ * COMPENSATION_TEMP_RANGE); unknown, the solution is taken to be at the calibration temperature.
  * - 'ph': the electrode slope follows absolute temperature (Nernst), around pH 7;
  * - 'ec': referred to 25 °C at 2 % per °C.
  */
 export function applyCalibration(raw: number, c: CalibrationData, tempC: number | null): number {
   const { slope, intercept } = calibrationLine(c);
   let value = slope * raw + intercept;
-  if (usableTemp(tempC)) {
-    if (c.compensation === 'ph') value = 7 + (value - 7) * ((calibrationTemp(c) + KELVIN) / (tempC + KELVIN));
-    else if (c.compensation === 'ec') value = value / (1 + 0.02 * (tempC - 25));
-  }
+  const t = usableTemp(tempC) ? tempC : calibrationTemp(c);
+  if (c.compensation === 'ph') value = 7 + (value - 7) * ((calibrationTemp(c) + KELVIN) / (t + KELVIN));
+  else if (c.compensation === 'ec') value = value / (1 + 0.02 * (t - 25));
   return Math.round(value * 1000) / 1000;
 }

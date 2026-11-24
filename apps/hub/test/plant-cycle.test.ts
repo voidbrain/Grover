@@ -223,3 +223,66 @@ test('a stored calibration the rules now refuse reads as none', () => {
   assert.equal(p.calibration, null);
   assert.equal(hub.store.needsCalibration(p), true);
 });
+
+test('a reading made with another calibration than the current one is not stored', () => {
+  const ph = hub.store.getProbe('pot-1-ph');
+  const cal = {
+    points: [
+      { raw: 2.53, value: 4, tempC: null, takenOn: '2026-11-24' },
+      { raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' },
+    ],
+    compensation: 'ph' as const,
+    tempProbeId: null,
+    calibratedAt: null,
+  };
+  const saved = hub.store.putProbe({
+    ...ph,
+    binding: { driver: 'ads1115', i2cBus: 1, i2cAddress: 0x48, channel: 0 },
+    calibration: cal,
+  });
+  const at = Date.now() + 5_000;
+  assert.equal(
+    hub.store.acceptReading({ probeId: 'pot-1-ph', value: 2.1, at }, null),
+    false,
+    'volts from an agent without the calibration',
+  );
+  assert.equal(hub.store.acceptReading({ probeId: 'pot-1-ph', value: 6.1, at }, saved.calibration!.calibratedAt), true);
+});
+
+test('a deleted or moved temperature probe is released from calibrations; saving the probe still works', () => {
+  hub.store.putProbe({
+    id: 'pot-1-wt',
+    roomId: 'grow-1',
+    potId: 'pot-1',
+    kind: 'water_temperature',
+    name: 'Pot 1 water',
+    enabled: true,
+    binding: { driver: 'mock' },
+  });
+  const ph = hub.store.getProbe('pot-1-ph');
+  const cal = {
+    points: [
+      { raw: 2.53, value: 4, tempC: null, takenOn: '2026-11-24' },
+      { raw: 2.03, value: 7, tempC: null, takenOn: '2026-11-24' },
+    ],
+    compensation: 'ph' as const,
+    tempProbeId: 'pot-1-wt',
+    calibratedAt: null,
+  };
+  const saved = hub.store.putProbe({ ...ph, calibration: cal });
+  hub.store.putProbe({ ...hub.store.getProbe('pot-1-wt'), potId: 'pot-2' });
+  assert.equal(hub.store.getProbe('pot-1-ph').calibration!.tempProbeId, null, 'moved to another pot');
+  assert.equal(
+    hub.store.getProbe('pot-1-ph').calibration!.calibratedAt,
+    saved.calibration!.calibratedAt,
+    'the points still hold',
+  );
+  hub.store.putProbe({ ...hub.store.getProbe('pot-1-wt'), potId: 'pot-1' });
+  hub.store.putProbe({
+    ...hub.store.getProbe('pot-1-ph'),
+    calibration: { ...cal, calibratedAt: saved.calibration!.calibratedAt },
+  });
+  hub.store.deleteEntity('probes', 'pot-1-wt');
+  assert.equal(hub.store.getProbe('pot-1-ph').calibration!.tempProbeId, null, 'deleted');
+  assert.doesNotThrow(() => hub.store.putProbe({ ...hub.store.getProbe('pot-1-ph'), name: 'Renamed' }));
+});

@@ -170,7 +170,7 @@ test('calibration: a raw read returns the driver value; once saved, the agent ap
       { raw: 0, value: 0, tempC: null, takenOn: '2026-11-24' },
       { raw: 1, value: 10, tempC: null, takenOn: '2026-11-24' },
     ],
-    compensation: 'none',
+    compensation: 'ec', // EC is always referred to 25 °C; no temperature probe and no point temperatures: unchanged
     tempProbeId: null,
   };
   assert.equal((await api('PUT', '/api/probes/ec', { ...ec, calibration })).status, 200);

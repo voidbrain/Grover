@@ -349,14 +349,15 @@ export class Feeder {
     for (const kind of ['water_level', 'ec', 'ph'] as const) {
       const probe = this.store.potProbe(pot, kind);
       if (!probe) continue;
-      const last = this.store.latestReading(probe.id);
+      // Only a reading in the probe's current units counts (one from before a calibration change does not).
+      const last = this.store.latestMeasurement(probe);
       if (last && this.now() - last.at < this.opts.mixMs) continue;
       try {
         const ack = await this.agents.command(agentId, { kind: 'read', probeId: probe.id, raw: false });
         // The reading also arrives as an event; store it now so the plan below sees it.
         if (ack.ok && ack.value !== null) {
           const reading = { probeId: probe.id, value: ack.value, at: ack.at };
-          if (this.store.addReading(reading)) this.bus.emit({ type: 'reading', reading });
+          if (this.store.acceptReading(reading, ack.calibratedAt)) this.bus.emit({ type: 'reading', reading });
         }
       } catch {
         // A probe that cannot be read leaves that value unknown; the plan says what it did without it.

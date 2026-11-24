@@ -40,7 +40,11 @@ export class Commands {
     if (this.store.getRoom(probe.roomId).mode === 'off') throw new Refused('room is off');
     const ack = await this.agents.command(this.agentFor(probe.roomId), { kind: 'read', probeId, raw: false });
     // Store it now (B-004): the agent's reading event for the same reading may come later, and is then ignored.
-    if (ack.ok && ack.value !== null && this.store.addReading({ probeId, value: ack.value, at: ack.at }))
+    if (
+      ack.ok &&
+      ack.value !== null &&
+      this.store.acceptReading({ probeId, value: ack.value, at: ack.at }, ack.calibratedAt)
+    )
       this.bus.emit({ type: 'reading', reading: { probeId, value: ack.value, at: ack.at } });
     return { commandId: ack.id, ok: ack.ok, error: ack.error, value: ack.value };
   }
