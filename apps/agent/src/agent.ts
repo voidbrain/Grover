@@ -186,8 +186,14 @@ export class Agent {
 
   // ── schedule ─────────────────────────────────────────────────────────────
   async tick(): Promise<void> {
+    const stuck = new Set(this.actuators.active().filter((id) => this.actuators.isStuck(id)));
     for (const id of await this.actuators.watchdog())
-      this.fault(`actuator ${id}`, 'ran past its cap: forced off by the watchdog');
+      this.fault(
+        `actuator ${id}`,
+        stuck.has(id)
+          ? 'had failed to switch off: switched off by the watchdog'
+          : 'ran past its cap: forced off by the watchdog',
+      );
     const config = this.config;
     if (!config || config.mode === 'off') return;
     const { day, minuteOfDay } = localTime(new Date(this.now()), config.timezone);
@@ -232,7 +238,11 @@ export class Agent {
         const edge = want ? 'on' : onDay ? 'off' : `off ${day}`;
         if (this.lastWindow.get(s.id) !== edge) {
           this.lastWindow.set(s.id, edge);
-          if (this.actuators.isOn(actuator.id) !== want && (want || !wantedOn.has(actuator.id)))
+          // A stuck switch only may be on: a window that wants it on switches it on for real.
+          if (
+            (this.actuators.isOn(actuator.id) !== want || (want && this.actuators.isStuck(actuator.id))) &&
+            (want || !wantedOn.has(actuator.id))
+          )
             await this.actuators.switch(actuator.id, want, 'schedule').catch((err) => {
               // Forget the edge so the next tick tries again (a relay that was busy, a stop in between).
               this.lastWindow.delete(s.id);

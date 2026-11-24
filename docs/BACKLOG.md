@@ -3,7 +3,7 @@
 Current work ledger, reviewed 24 November 2026 against main `8e5da72`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 19 h agent + 13 h owner across 46 open steps of 17 features and 3 other records. Generated from the task files.
+**Remaining effort:** 18 h agent + 12.75 h owner across 45 open steps of 17 features and 3 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -228,6 +228,52 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="b-007"></a>[🐞 B-007](#top)
+
+**A pump whose switch-on fails is not treated as possibly running**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-007-T02 — Failing test, then a failed switch-on is treated as possibly running (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | When a driver's `set(true)` throws, `Actuators` settles the run as not started: the pump is neither on nor stuck, and the watchdog never retries switching it off. If the write reached the chip although it reported an error, and the driver's own roll-back also failed (a dead I²C bus), the pump could keep running with no cap. Found in the second review of #29 (F-018) on 2026-11-24. Changing `actuators.ts` needs the owner's approval (AGENTS.md safety rules). |
+| **Reproduce** | A driver whose `set(true)` writes the pin, then throws, and whose `set(false)` also throws: after `run()`, `isOn` is false and `stuckPump()` is null. |
+| **Check** | With approval: a failed switch-on tries `set(false)`; if that fails too, the pump is marked stuck (no other pump runs, the watchdog retries off). An actuators test shows it, and the existing limits still hold. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Who | PRs |
+|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="b-007-t02"></a>B-007-T02 — Failing test, then a failed switch-on is treated as possibly running | 1 h | 0 h | 0 h | Implemented; verification pending | 🤖 | [PR #32](https://github.com/voidbrain/Grover/pull/32) failing test, then the change |
+| 🟢 Small | **Total** | 1 h (1 of 2 steps) | 0 h (0 of 2 steps recorded) | 0 h | 1 of 2 completed | | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="b-007-t01"></a>B-007-T01 — Owner decides on changing the safety layer for a failed switch-on | — | 0 h | Completed | — |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-007.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: B-007-T02: [PR #32](https://github.com/voidbrain/Grover/pull/32) failing test, then the change. [#30](https://github.com/voidbrain/Grover/pull/30) (steps) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ### <a id="f-012"></a>[✨ F-012](#top)
 
 **Plants and strains: origin, generation, breeder, ancestry**
@@ -327,45 +373,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="b-007"></a>[🐞 B-007](#top)
-
-**A pump whose switch-on fails is not treated as possibly running**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 1 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
-
-🧑 **→** Next: [🤔](work/records/B-007.md) B-007-T01 — Owner decides on changing the safety layer for a failed switch-on (Ready).
-
-| | |
-|---|---|
-| **Issue** | When a driver's `set(true)` throws, `Actuators` settles the run as not started: the pump is neither on nor stuck, and the watchdog never retries switching it off. If the write reached the chip although it reported an error, and the driver's own roll-back also failed (a dead I²C bus), the pump could keep running with no cap. Found in the second review of #29 (F-018) on 2026-11-24. Changing `actuators.ts` needs the owner's approval (AGENTS.md safety rules). |
-| **Reproduce** | A driver whose `set(true)` writes the pin, then throws, and whose `set(false)` also throws: after `run()`, `isOn` is false and `stuckPump()` is null. |
-| **Check** | With approval: a failed switch-on tries `set(false)`; if that fails too, the pump is marked stuck (no other pump runs, the watchdog retries off). An actuators test shows it, and the existing limits still hold. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="b-007-t01"></a>B-007-T01 — Owner decides on changing the safety layer for a failed switch-on | — | 0 h | 0 h agent + 0.25 h owner | Ready | — | [B-007-T02](#b-007-t02) | [🤔](work/records/B-007.md) |
-| 🟢 Small | <a id="b-007-t02"></a>B-007-T02 — Failing test, then a failed switch-on is treated as possibly running | 1 h | 0 h | 1 h | Planned | [B-007-T01](#b-007-t01) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 1 h (1 of 2 steps) | 0 h (0 of 2 steps recorded) | 1 h agent + 0.25 h owner | 0 of 2 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-007.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) (steps) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
 ### <a id="f-006"></a>[✨ F-006](#top)
 
 **Set-up screens in the client**

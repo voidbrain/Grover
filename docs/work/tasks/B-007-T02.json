@@ -4,7 +4,7 @@
   "parent": "B-007",
   "title": "Failing test, then a failed switch-on is treated as possibly running",
   "goal": "A pump whose switch-on fails is switched off or marked stuck",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
     "An actuators test, committed failing first: set(true) writes then throws and set(false) throws; afterwards the pump is stuck, no other pump runs and the watchdog retries off",
     "The existing limits still hold (actuators.test.ts)"
@@ -32,12 +32,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h agent",
-    "basis": "Estimated 2026-11-24: 1 h agent, test first.",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-24 in #32: failing actuators test committed first, then the change; verification is CI on #32 and its review.",
     "reviewed": "2026-11-24",
-    "agentHours": 1,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 32,
+      "note": "failing test, then the change"
+    }
+  ]
 }

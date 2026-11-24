@@ -11,6 +11,8 @@ interface Slot {
   release: ((ran: boolean) => void) | null;
   /** The last switch-off failed: the relay may still be on, so it stays "on" and the watchdog retries. */
   stuck: boolean;
+  /** Reported on only because a failed switch-on may have reached the relay (B-007): it may never have run. */
+  unconfirmed: boolean;
   /** A run of this pump is queued or running: another is refused until it ends (B-005). */
   busy: 'waiting' | 'running' | null;
   source: ActuationSource;
@@ -25,7 +27,8 @@ interface Slot {
  * - pumps only run in bounded runs, never "on" indefinitely;
  * - a stop (Stop all, mode change, config change, shutdown) switches everything off AND drops every run still
  *   waiting, including one whose relay is still switching on: nothing starts after a stop;
- * - a relay that fails to switch off stays reported on until a retry succeeds.
+ * - a relay that fails to switch off stays reported on until a retry succeeds; so does one whose switch-on failed
+ *   and whose switch-off right after failed too (the failed write may have reached it).
  */
 export class Actuators {
   private readonly slots = new Map<string, Slot>();
@@ -53,6 +56,7 @@ export class Actuators {
         timer: null,
         release: null,
         stuck: false,
+        unconfirmed: false,
         busy: null,
         source: 'safety',
         commandId: null,
@@ -165,6 +169,11 @@ export class Actuators {
     return acted;
   }
 
+  /** Whether a switch-off of this actuator failed (it may still be on; the watchdog retries). */
+  isStuck(id: string): boolean {
+    return this.slots.get(id)?.stuck ?? false;
+  }
+
   /** A pump whose relay failed to switch off, if any. */
   stuckPump(): string | null {
     for (const s of this.slots.values()) if (s.stuck && isPump(s.actuator.kind)) return s.actuator.id;
@@ -179,8 +188,23 @@ export class Actuators {
 
   /** Switches on unless a stop happened meanwhile (then it makes sure the relay is off). True when on. */
   private async turnOn(slot: Slot, source: ActuationSource, commandId: string | null, epoch: number): Promise<boolean> {
-    if (slot.on) return true;
-    await slot.driver.set(true);
+    // A stuck slot only may be on: switching it on is a real write (a schedule or a hand asks for it).
+    if (slot.on && !slot.stuck) return true;
+    try {
+      await slot.driver.set(true);
+    } catch (err) {
+      // The write may have reached the relay although it reported an error (B-007, approved by the owner on
+      // 2026-11-24): switch it off again; if that fails too, treat it like a failed switch-off (reported on, stuck:
+      // no other pump runs, the watchdog retries off).
+      await slot.driver.set(false).catch(() => {
+        if (slot.on) return; // already reported on: it stays as it was
+        slot.stuck = true;
+        slot.on = true;
+        slot.unconfirmed = true;
+        slot.since = this.now();
+      });
+      throw err;
+    }
     if (epoch !== this.epoch || this.slots.get(slot.actuator.id) !== slot) {
       // A stop came in while the relay was switching on: it must not stay on.
       await slot.driver.set(false).catch(() => {
@@ -190,6 +214,8 @@ export class Actuators {
       return false;
     }
     const at = this.now();
+    slot.stuck = false;
+    slot.unconfirmed = false;
     slot.on = true;
     slot.since = at;
     slot.source = source;
@@ -215,7 +241,9 @@ export class Actuators {
     }
     slot.stuck = false;
     const at = this.now();
-    const ranMs = slot.since !== null ? at - slot.since : null;
+    // After a failed switch-on it may never have run: no run time rather than a made-up one.
+    const ranMs = slot.since !== null && !slot.unconfirmed ? at - slot.since : null;
+    slot.unconfirmed = false;
     slot.on = false;
     slot.since = null;
     slot.source = source;
