@@ -210,3 +210,45 @@ test('a pump that is running or waiting cannot be queued again; after it ends it
   assert.equal(await queued.done, true);
   assert.equal(await acts.run('a', 30, 'manual').done, true, 'free again');
 });
+
+// B-007 (approved by the owner on 2026-11-24): a switch-on that fails may have reached the relay.
+test('a failed switch-on is switched off again; if that fails too, the pump counts as stuck until off works', async () => {
+  const r = rig();
+  let failOn = true;
+  let failOff = true;
+  const pins = new Map<string, boolean>();
+  const driver = (id: string) => ({
+    set: async (on: boolean) => {
+      if (on) {
+        pins.set(id, true); // the write reached the chip…
+        if (failOn) throw new Error('i2c write failed'); // …but reported an error
+      } else {
+        if (failOff) throw new Error('i2c write failed');
+        pins.set(id, false);
+      }
+    },
+  });
+  await r.acts.load([
+    { actuator: pump('a', 1000), driver: driver('a') },
+    { actuator: pump('b', 1000), driver: driver('b') },
+  ]);
+  failOff = true;
+  const { done } = r.acts.run('a', 500, 'manual');
+  assert.equal(await done, false, 'the run did not happen cleanly');
+  assert.equal(r.acts.isOn('a'), true, 'reported on: the pump may be running');
+  assert.equal(r.acts.stuckPump(), 'a');
+  assert.throws(() => r.acts.run('b', 100, 'manual'), /a failed to switch off/, 'no other pump runs meanwhile');
+  failOff = false;
+  assert.deepEqual(await r.acts.watchdog(), ['a'], 'the watchdog retries off');
+  assert.equal(pins.get('a'), false);
+  assert.equal(r.acts.stuckPump(), null);
+  assert.equal(r.acts.isOn('a'), false);
+
+  // A failed switch-on whose switch-off works: off, not stuck, the run reported as not done.
+  failOn = true;
+  const second = r.acts.run('b', 100, 'manual');
+  assert.equal(await second.done, false);
+  assert.equal(pins.get('b'), false, 'switched off again');
+  assert.equal(r.acts.stuckPump(), null);
+  failOn = false;
+});
