@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "F-003-T01",
+  "parent": "F-003",
+  "title": "Owner chooses the water-level sensor",
+  "goal": "A level sensor the agent can read replaces the HC-SR04",
+  "status": "ready",
+  "acceptance": [
+    "The owner names an option (or a mix) from the decision page and the part"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/decisions/level-sensor.md",
+    "docs/work/records/F-003.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/decisions/level-sensor.md",
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h owner",
+    "basis": "Estimated 2026-11-24: reading the options and picking a part, about 30 minutes.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0.5,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "decision"
+  }
+}

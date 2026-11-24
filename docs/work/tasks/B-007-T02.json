@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "B-007-T02",
+  "parent": "B-007",
+  "title": "Failing test, then a failed switch-on is treated as possibly running",
+  "goal": "A pump whose switch-on fails is switched off or marked stuck",
+  "status": "implemented",
+  "acceptance": [
+    "An actuators test, committed failing first: set(true) writes then throws and set(false) throws; afterwards the pump is stuck, no other pump runs and the watchdog retries off",
+    "The existing limits still hold (actuators.test.ts)"
+  ],
+  "dependsOn": [
+    "B-007-T01"
+  ],
+  "resources": [
+    "apps/agent/src/actuators.ts",
+    "apps/agent/test/actuators.test.ts",
+    "docs/work/records/B-007.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-24 in #32: failing actuators test committed first, then the change; verification is CI on #32 and its review.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  },
+  "prs": [
+    {
+      "pr": 32,
+      "note": "failing test, then the change"
+    }
+  ]
+}

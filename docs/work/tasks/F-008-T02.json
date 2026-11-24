@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "F-008-T02",
+  "parent": "F-008",
+  "title": "Hysteresis at alert thresholds",
+  "goal": "An alert raised at a threshold clears only past a margin, so a reading at the threshold does not flap",
+  "status": "ready",
+  "acceptance": [
+    "A threshold alert clears only when the reading is back past a margin",
+    "Contracts or hub tests cover raise, hold inside the margin and clear",
+    "docs/DESIGN.md alerts section updated"
+  ],
+  "dependsOn": [
+    "F-008-T01"
+  ],
+  "resources": [
+    "packages/contracts/src/domain.ts",
+    "apps/hub/src/alerts.ts",
+    "apps/hub/test/**",
+    "docs/DESIGN.md",
+    "docs/work/records/F-008.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "Estimated 2026-11-24: 1.5 h agent, a margin per kind or per threshold, no protocol change.",
+    "reviewed": "2026-11-24",
+    "agentHours": 1.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}

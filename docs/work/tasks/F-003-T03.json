@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "F-003-T03",
+  "parent": "F-003",
+  "title": "Driver for the chosen level sensor",
+  "goal": "The agent reads the chosen level sensor in centimetres",
+  "status": "planned",
+  "acceptance": [
+    "A binding variant, its case in drivers/hardware.ts and mock behaviour",
+    "A unit test with the bus mocked",
+    "A note in docs/DESIGN.md \"Hardware\" and a step in the bring-up guide"
+  ],
+  "dependsOn": [
+    "F-003-T01"
+  ],
+  "resources": [
+    "packages/contracts/src/domain.ts",
+    "apps/agent/src/drivers/hardware.ts",
+    "apps/agent/src/drivers/mock.ts",
+    "docs/DESIGN.md",
+    "docs/guides/hardware-bring-up.md",
+    "docs/work/records/F-003.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "hardware-drivers",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h agent",
+    "basis": "Estimated 2026-11-24: 2 h agent for a new I²C driver; option 1 (ADS1115) would need only the volts-to-cm calibration, about 1 h.",
+    "reviewed": "2026-11-24",
+    "agentHours": 2,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  }
+}

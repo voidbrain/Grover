@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "B-007-T01",
+  "parent": "B-007",
+  "title": "Owner decides on changing the safety layer for a failed switch-on",
+  "goal": "The owner approves or declines treating a failed switch-on like a failed switch-off",
+  "status": "closed",
+  "acceptance": [
+    "The owner approves the change described in the record's Check, or declines it with a reason"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/B-007.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/work/records/B-007.md",
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "The owner approved the change on 2026-11-24 (\"ok\"), after asking whether the Pi can tell a failure.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "ownerKind": "decision"
+  }
+}

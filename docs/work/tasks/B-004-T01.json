@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "B-004-T01",
+  "parent": "B-004",
+  "title": "Store a manual probe read from the agent's ack",
+  "goal": "A read is stored and announced when the agent answers",
+  "status": "closed",
+  "acceptance": [
+    "commands.test.ts fake-agent case passes",
+    "CI green on #18"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/src/commands.ts",
+    "apps/hub/test/commands.test.ts",
+    "docs/work/records/B-004.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Fixed in #18, merged on green CI 2026-11-24. No actual: the step was not timed. Closed 2026-11-24.",
+    "reviewed": "2026-11-24",
+    "agentHours": 0,
+    "ownerHours": 0
+  },
+  "prs": [
+    {
+      "pr": 18,
+      "note": "fix"
+    }
+  ]
+}

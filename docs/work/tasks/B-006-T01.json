@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "B-006-T01",
+  "parent": "B-006",
+  "title": "Failing agent test, then run a cached config of the previous protocol",
+  "goal": "An upgraded agent keeps running its cached schedules with no hub",
+  "status": "ready",
+  "acceptance": [
+    "An agent test, committed failing first: a cached config of the previous protocol is used with its new fields at their defaults and schedules run with no hub",
+    "A config of a newer or unknown protocol is still refused with a fault"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/agent/src/agent.ts",
+    "apps/agent/test/agent.test.ts",
+    "packages/contracts/src/mqtt.ts",
+    "docs/work/records/B-006.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "distributed-contracts",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-24: 1 h agent; an upgrade of the cached shape per protocol step, test first.",
+    "reviewed": "2026-11-24",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}
