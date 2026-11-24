@@ -26,14 +26,14 @@ function rig(answer: () => Promise<CommandAck>) {
     },
   };
   const feeder = new Feeder(store, bus, agents as never, alerts, { mixMs: 600_000, freshMs: 3_600_000 });
-  const agentEvent = (online: boolean, feed: string | null, queued = 0, at = Date.now() + 1) =>
+  const agentEvent = (online: boolean, feed: string | null, queued = 0, seen = Date.now() + 1, at = seen) =>
     bus.emit({
       type: 'agent',
       agent: {
         agentId: 'pi-1',
         roomId: 'grow-1',
         online,
-        lastSeen: Date.now(),
+        lastSeen: seen,
         configCurrent: true,
         status: {
           state: online ? 'online' : 'offline',
@@ -87,7 +87,8 @@ test('the agent dropping off keeps the feed open; its status after reconnecting 
   assert.equal(store.getFeed(a.feedId)!.state, 'planned', 'events still queued: they may hold its "done"');
   agentEvent(true, null, 0, Date.now() - 60_000);
   assert.equal(store.getFeed(a.feedId)!.state, 'planned', 'a status from before the agent answered says nothing');
-  agentEvent(true, null, 0);
+  // The Pi's clock may be far behind after a power cut (no RTC): what counts is when the hub received the status.
+  agentEvent(true, null, 0, Date.now() + 1, Date.now() - 3_600_000);
   assert.equal(store.getFeed(a.feedId)!.state, 'aborted');
   const b = await feeder.feed('pot-2', 'manual');
   assert.notEqual(b.state, 'refused', b.message);

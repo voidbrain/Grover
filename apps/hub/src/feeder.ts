@@ -97,7 +97,8 @@ export class Feeder {
     const since = this.settled.get(feedId);
     if (since === undefined) return;
     const s = agent.status;
-    if (s.feed !== feedId && s.queued === 0 && s.at > since)
+    // Hub time (when the status arrived), not the agent's clock: a Pi without a real-time clock can boot hours behind.
+    if (s.feed !== feedId && s.queued === 0 && (agent.lastSeen ?? 0) > since)
       this.close(
         feedId,
         'aborted',
