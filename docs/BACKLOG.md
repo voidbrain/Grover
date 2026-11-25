@@ -3,13 +3,52 @@
 Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 18.25 h agent + 12.75 h owner across 45 open steps of 17 features and 3 other records. Generated from the task files.
+**Remaining effort:** 16.25 h agent + 12.75 h owner across 45 open steps of 17 features and 3 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
 
 Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = remaining agent time (🟢 up to 1 h · 🟡 4 h · 🔴 8 h · 🟣 more); `h` = agent hours, owner time apart; a step status is not the record's acceptance.
 
+### <a id="b-008"></a>[🐞 B-008](#top)
+
+**The feed end-to-end test fails now and then on CI: feed done, mixing tank not emptied**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔺 P1 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-008-T01 — Find why the feed e2e test fails now and then (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | `apps/hub/test/e2e.test.ts`, "a feed runs end to end": the feed ends `done`, yet the simulated mixing tank still holds 0.3 L or more (`mixing tank emptied` fails). PR CI run 45487054804 failed on `a790c83`; run 45487113564 passed on `55c7c70`, a docs-only commit on the same code. Earlier failures of the feed tests (runs 45460424727, 45461154747) were on branches still changing. Not known: a race in the test or the simulated drivers, or a feed reported done before the transfer pump emptied the tank (a product defect). Found by the delivery audit of 2026-11-25. |
+| **Reproduce** | 10 serial local runs all passed. Under load it fails: 2026-11-25, `node --test apps/hub/test/e2e.test.ts` ten at a time with 12 CPU burners failed 3 to 11 of 30 runs, each ending `done (time allowed used)` with 0.35 to 3.7 L in the mixing tank. Deterministic: `apps/hub/test/fast-rig.test.ts`. |
+| **Check** | The cause is named with evidence; if it is the feed logic, a failing test shows it first and the fix makes it pass; the test passes in 30 repeated runs under CPU load (for example `stress` or several runs in parallel) and on the next 10 CI runs. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-008-t01"></a>B-008-T01 — Find why the feed e2e test fails now and then | 1 h | 0 h | 0 h | Implemented; verification pending | — | [B-008-T02](#b-008-t02) | [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix |
+| 🟢 Small | <a id="b-008-t02"></a>B-008-T02 — Failing test if the feed logic is wrong, then the fix | 1 h | 0 h | 0 h | Implemented; verification pending | [B-008-T01](#b-008-t01) | — | [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix |
+| 🟢 Small | **Total** | 2 h | 0 h (0 of 2 steps recorded) | 0 h | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-008.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: B-008-T01: [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix · B-008-T02: [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix. Test: `apps/hub/test/fast-rig.test.ts` (fails without the fix: 5.33 L left). [#38](https://github.com/voidbrain/Grover/pull/38). CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change); [#37](https://github.com/voidbrain/Grover/pull/37) |
+| Opened | 2026-11-25 |
+| Verification | Pending: the next 10 CI runs |
+| Reviewed | 2026-11-25 |
+
+</details>
+
+---
 ### <a id="f-005"></a>[✨ F-005](#top)
 
 **Deploy hub and agent on the Pi behind Tailscale**
@@ -142,45 +181,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="b-008"></a>[🐞 B-008](#top)
-
-**The feed end-to-end test fails now and then on CI: feed done, mixing tank not emptied**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟠 Investigate | 🔺 P1 | 🟡 Medium | 2 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-008-T01 — Find why the feed e2e test fails now and then (Ready).
-
-| | |
-|---|---|
-| **Issue** | `apps/hub/test/e2e.test.ts`, "a feed runs end to end": the feed ends `done`, yet the simulated mixing tank still holds 0.3 L or more (`mixing tank emptied` fails). PR CI run 45487054804 failed on `a790c83`; run 45487113564 passed on `55c7c70`, a docs-only commit on the same code. Earlier failures of the feed tests (runs 45460424727, 45461154747) were on branches still changing. Not known: a race in the test or the simulated drivers, or a feed reported done before the transfer pump emptied the tank (a product defect). Found by the delivery audit of 2026-11-25. |
-| **Reproduce** | Not reproduced locally: 10 of 10 runs of `node --test apps/hub/test/e2e.test.ts` passed on 2026-11-25. Seen on GitHub-hosted runners only. |
-| **Check** | The cause is named with evidence; if it is the feed logic, a failing test shows it first and the fix makes it pass; the test passes in 30 repeated runs under CPU load (for example `stress` or several runs in parallel) and on the next 10 CI runs. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-008-t01"></a>B-008-T01 — Find why the feed e2e test fails now and then | 1 h | 0 h | 1 h | Ready | — | [B-008-T02](#b-008-t02) |
-| 🟢 Small | <a id="b-008-t02"></a>B-008-T02 — Failing test if the feed logic is wrong, then the fix | 1 h | 0 h | 1 h | Planned | [B-008-T01](#b-008-t01) | — |
-| 🟡 Medium | **Total** | 2 h | 0 h (0 of 2 steps recorded) | 2 h | 0 of 2 completed | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-008.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change); [#37](https://github.com/voidbrain/Grover/pull/37) |
-| Opened | 2026-11-25 |
-| Verification | Pending |
-| Reviewed | 2026-11-25 |
-
-</details>
-
----
 ### <a id="f-011"></a>[✨ F-011](#top)
 
 **Feed cycle per pot: supply tanks, mixing tank, pot pumps**
