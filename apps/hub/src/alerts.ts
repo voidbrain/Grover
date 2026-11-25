@@ -72,7 +72,7 @@ export class Alerts {
     const margin = alertMargin(probe);
     if (probe.alertBelow === null) {
       this.clear(below);
-    } else if (r.value < probe.alertBelow || (active.has(below) && r.value < probe.alertBelow + margin)) {
+    } else if (r.value < probe.alertBelow || (active.has(below) && r.value < probe.alertBelow + margin - EPSILON)) {
       this.raise({
         key: below,
         roomId: probe.roomId,
@@ -85,7 +85,7 @@ export class Alerts {
     }
     if (probe.alertAbove === null) {
       this.clear(above);
-    } else if (r.value > probe.alertAbove || (active.has(above) && r.value > probe.alertAbove - margin)) {
+    } else if (r.value > probe.alertAbove || (active.has(above) && r.value > probe.alertAbove - margin + EPSILON)) {
       this.raise({
         key: above,
         roomId: probe.roomId,
@@ -98,6 +98,9 @@ export class Alerts {
     }
   }
 }
+
+/** Threshold ± margin is a float sum (0.2 + 0.1 = 0.30000000000000004): a reading at the clear point clears. */
+const EPSILON = 1e-9;
 
 function lowMessage(probe: Probe, value: number): string {
   if (probe.tank && probe.tank !== 'mix')

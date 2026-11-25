@@ -34,9 +34,9 @@
     "A material scope or effort increase goes to the owner"
   ],
   "effort": {
-    "size": "medium",
+    "size": "small",
     "estimate": "0.25 h agent",
-    "basis": "Implemented 2026-11-25: ALERT_HYSTERESIS and alertMargin in packages/contracts/src/domain.ts, hysteresis clearing in apps/hub/src/alerts.ts, regression tests in apps/hub/test/alerts.test.ts and docs/DESIGN.md update; CI and merge remain. Not a measurement.",
+    "basis": "Implemented 2026-11-25: ALERT_HYSTERESIS and alertMargin (contracts), hysteresis clearing in apps/hub/src/alerts.ts with a float-tolerant clear point (review fix), tests in apps/hub/test/alerts.test.ts; CI and merge remain. Not a measurement.",
     "reviewed": "2026-11-25",
     "agentHours": 0.25,
     "ownerHours": 0,
