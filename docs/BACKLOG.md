@@ -173,7 +173,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change) |
+| PR / evidence | CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change); [#37](https://github.com/voidbrain/Grover/pull/37) |
 | Opened | 2026-11-25 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
@@ -854,7 +854,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#37](https://github.com/voidbrain/Grover/pull/37) |
 | Opened | 2026-11-25 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
