@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "F-020-T06",
+  "parent": "F-020",
+  "title": "Plant page, probe page and rig map on bricks",
+  "goal": "The plant page, probe page and rig map use bricks card, status row and segmented range where it exists; charts and the map drawing stay Grover-only",
+  "status": "planned",
+  "acceptance": [
+    "Headers and parts are bricks cards; alerts are status rows",
+    "Probe and plant charts, nutrient bars, the rig map drawing and pump control are listed Grover-only in docs/STYLE-GUIDE.md",
+    "Client specs pass"
+  ],
+  "dependsOn": [
+    "F-020-T05"
+  ],
+  "resources": [
+    "apps/client/src/app/plant/**",
+    "apps/client/src/app/map/**",
+    "apps/client/src/app/probe-page.ts",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h",
+    "basis": "Estimated 2026-11-25: three screens, about 320 lines of style. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 2,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  }
+}

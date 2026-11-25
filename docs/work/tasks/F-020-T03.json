@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "F-020-T03",
+  "parent": "F-020",
+  "title": "Primitives: buttons, inputs, selects, switch and badges",
+  "goal": "Global button, input, select and .toggle styles are replaced by bricks primitives on every screen",
+  "status": "planned",
+  "acceptance": [
+    "Primary, ghost, danger and small buttons use the bricks button; inputs and selects use bricks input and select; switches use the bricks toggle with role=switch kept; status dots use badge",
+    "The global rules for these in styles.scss are removed; no local override of a bricks component",
+    "Client specs pass; disabled states, focus and aria-invalid still shown"
+  ],
+  "dependsOn": [
+    "F-020-T02"
+  ],
+  "resources": [
+    "apps/client/src/**",
+    "apps/client/package.json",
+    "package-lock.json",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h",
+    "basis": "Estimated 2026-11-25: about 75 buttons, 78 inputs and 23 selects across 15 templates, mostly mechanical. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "F-020-T01",
+  "parent": "F-020",
+  "title": "Check the bricks mapping against its first release",
+  "goal": "The inventory and map in F-020 are checked against the published @voidbrain/bricks API and written into docs/STYLE-GUIDE.md",
+  "status": "planned",
+  "acceptance": [
+    "Waits on bricks' first release (voidbrain/bricks has no release or records on 2026-11-25); once bricks has records, the release step is added to dependsOn as bricks:<STEP-ID>",
+    "docs/STYLE-GUIDE.md has a table: each client piece, its bricks token, component or pattern (by exported name), or Grover-only with the reason",
+    "Pieces bricks lacks are listed for F-020-T07"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h",
+    "basis": "Estimated 2026-11-25: the inventory is already in the record; read bricks' exports and write one table. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}
