@@ -14,6 +14,31 @@ import {
 export const ProbeKind = z.enum(PROBE_KIND_IDS);
 export type ProbeKind = z.infer<typeof ProbeKind>;
 
+/**
+ * Hysteresis margin per probe kind (in the probe's units, F-008-T02): a threshold alert raised below `alertBelow`
+ * (or above `alertAbove`) clears only once the reading is back past the threshold by at least this margin, so a
+ * reading sitting at the threshold does not flap.
+ */
+export const ALERT_HYSTERESIS: Record<ProbeKind, number> = {
+  air_temperature: 0.5,
+  water_temperature: 0.5,
+  water_level: 0.5,
+  ph: 0.1,
+  ec: 0.1,
+};
+
+/**
+ * Effective hysteresis margin for a probe: `ALERT_HYSTERESIS[probe.kind]`, clamped to half the distance between
+ * `alertBelow` and `alertAbove` when both thresholds are set so an active alert can always clear inside a narrow band.
+ */
+export function alertMargin(probe: Pick<Probe, 'kind' | 'alertBelow' | 'alertAbove'>): number {
+  const base = ALERT_HYSTERESIS[probe.kind];
+  if (probe.alertBelow !== null && probe.alertAbove !== null) {
+    return Math.max(0, Math.min(base, (probe.alertAbove - probe.alertBelow) / 2));
+  }
+  return base;
+}
+
 export const ActuatorKind = z.enum(ACTUATOR_KIND_IDS);
 export type ActuatorKind = z.infer<typeof ActuatorKind>;
 
