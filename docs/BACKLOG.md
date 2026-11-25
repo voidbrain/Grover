@@ -3,7 +3,7 @@
 Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 30.5 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
+**Remaining effort:** 31.5 h agent + 13.25 h owner across 53 open steps of 19 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -780,6 +780,44 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-099"></a>[✨ F-099](#top)
+
+**Reconcile project-harness v10.20.0 → v10.21.3**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-099-T01 — Reconcile harness files v10.20.0 -&gt; v10.21.3 (Planned).
+
+| | |
+|---|---|
+| **Issue** | `.harness.json` names v10.20.0 while the template has released up to v10.21.3. Coordinator gap review 2026-11-26, proposal 14 ("Behind the harness"), accepted by the owner. |
+| **Reproduce** | `npm run check:freshness` on `main`: it reports the harness template v10.21.3 and the files to update or reconcile. |
+| **Check** | `.harness.json` names v10.21.3; `check:freshness` reports no harness update; `check:fast` and CI on the PR pass. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status |
+|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-099-t01"></a>F-099-T01 — Reconcile harness files v10.20.0 -&gt; v10.21.3 | 1 h | 0 h | 1 h | Planned |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 1 h | 0 of 1 completed |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-099.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Opened in [#43](https://github.com/voidbrain/Grover/pull/43) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="f-010"></a>[✨ F-010](#top)
 
 **Hub data retention and backups**

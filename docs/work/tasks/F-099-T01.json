@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-099-T01",
+  "parent": "F-099",
+  "title": "Reconcile harness files v10.20.0 -> v10.21.3",
+  "goal": "The project carries every harness change released after v10.20.0 up to v10.21.3",
+  "status": "planned",
+  "acceptance": [
+    "Copied files byte-identical to v10.21.3 (check-harness --strict)",
+    "Adapted files reconciled from the template diff, project lines kept",
+    "version 10.21.3 in .harness.json"
+  ],
+  "dependsOn": [],
+  "resources": [
+    ".harness.json",
+    ".github/workflows/**",
+    "docs/backlog/**",
+    "docs/agents/**",
+    "tools/**",
+    "AGENTS.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Harness documentation and settings only; no personal data.",
+  "validation": [
+    "npm run check:freshness",
+    "npm run check:fast"
+  ],
+  "escalation": [
+    "A rule that conflicts with a project override, or a project-vs-template doubt, goes to the owner before editing"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-26 from earlier reconciles of similar size at agent speed. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}
