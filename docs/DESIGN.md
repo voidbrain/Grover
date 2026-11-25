@@ -116,7 +116,7 @@ The hub listens on loopback; `tailscale serve` publishes it to the tailnet. On t
 
 [`alerts.ts`](../apps/hub/src/alerts.ts). Raised once and kept until the condition clears; listed on the dashboard, at `GET /api/alerts` and through `grover_alerts` (NERV delivers them).
 
-- A reading below a probe's `alertBelow` or above its `alertAbove` (a low supply tank says "refill it"). Once raised, a threshold alert holds until the reading moves back past the threshold by at least the probe kind's hysteresis margin ([`ALERT_HYSTERESIS`](../packages/contracts/src/domain.ts), [`alertMargin`](../packages/contracts/src/domain.ts): clamped to half the band when both thresholds are set), so a reading sitting at the threshold does not flap.
+- A reading below a probe's `alertBelow` or above its `alertAbove` (a low supply tank says "refill it"). Once raised, a threshold alert holds until the reading moves back past the threshold by at least the probe kind's hysteresis margin ([`ALERT_HYSTERESIS`](../packages/contracts/src/domain.ts), [`alertMargin`](../packages/contracts/src/domain.ts): clamped to half the band when both thresholds are set), so a reading sitting at the threshold does not flap; while held inside the margin, its message states the current reading, the threshold and the clear point.
 - A feed that stopped partway, or an automatic feed that was refused (a refused manual feed answers with its reason instead).
 - An agent offline.
 

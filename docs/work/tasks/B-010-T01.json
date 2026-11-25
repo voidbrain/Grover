@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "B-010-T01",
+  "parent": "B-010",
+  "title": "Failing test, then held-alert wording and threshold tolerance",
+  "goal": "Held threshold alerts state the value, threshold and clear point, and threshold checks use a float tolerance",
+  "status": "implemented",
+  "acceptance": [
+    "Committed failing test in apps/hub/test/alerts.test.ts before the fix, unchanged by the fix",
+    "Held messages state the value, threshold and clear point for supply tanks, non-tank below alerts and above alerts",
+    "Threshold and clear-point comparisons use a small tolerance so IEEE-754 rounding noise at the threshold does not trip or misclassify an alert"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/src/alerts.ts",
+    "apps/hub/test/alerts.test.ts",
+    "docs/DESIGN.md",
+    "docs/work/records/B-010.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run test:client",
+    "npm run build",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "Implemented 2026-11-25 in #39 with failing tests committed first; CI and merge remain. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 0.25,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  },
+  "prs": [
+    {
+      "pr": 39
+    }
+  ]
+}

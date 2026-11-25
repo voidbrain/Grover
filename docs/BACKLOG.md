@@ -3,7 +3,7 @@
 Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 16.25 h agent + 12.75 h owner across 45 open steps of 17 features and 3 other records. Generated from the task files.
+**Remaining effort:** 16.5 h agent + 12.75 h owner across 46 open steps of 17 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -263,6 +263,44 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
+
+</details>
+
+---
+### <a id="b-010"></a>[🐞 B-010](#top)
+
+**Held threshold alerts read as if the value were still past the threshold, and threshold checks lack float tolerance**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-010-T01 — Failing test, then held-alert wording and threshold tolerance (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | While a threshold alert is held inside its hysteresis margin (`F-008-T02`), `Alerts` formats the same message as when the reading is past the threshold — for example `Grow tank low (3.4, alert below 3): refill it. Feeds that need it are refused until then.` when `tank-grow` is at `3.4` (`alertBelow: 3`, clear point `3.5`), or `Air temperature at 31.6, above 32.` when `air-temp` is at `31.6` (`alertAbove: 32`, clear point `31.5`). In addition, `r.value < probe.alertBelow` and `r.value > probe.alertAbove` used exact comparisons without floating-point tolerance (`0.7 - 0.4 < 0.3` and `0.1 + 0.2 > 0.3` in IEEE-754). |
+| **Reproduce** | Push `2.9` then `3.4` on `tank-grow` (`alertBelow: 3`, margin `0.5`), or push `0.7 - 0.4` on an EC probe with `alertBelow: 0.3` (`apps/hub/test/alerts.test.ts`). |
+| **Check** | While held inside the hysteresis margin, the alert message states the current value, the threshold, and that the alert is held until the value passes the clear point (`at least <clear>` for `alertBelow`, `at most <clear>` for `alertAbove`); threshold comparisons use a tolerance (`EPSILON`) so floating-point noise at the threshold neither trips nor misclassifies an alert; failing test committed first in `apps/hub/test/alerts.test.ts` and kept unchanged by the fix. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
+|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-010-t01"></a>B-010-T01 — Failing test, then held-alert wording and threshold tolerance | 0.5 h | 0 h | 0.25 h | Implemented; verification pending | [PR #39](https://github.com/voidbrain/Grover/pull/39) |
+| 🟢 Small | **Total** | 0.5 h | 0 h (0 of 1 steps recorded) | 0.25 h | 0 of 1 completed | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-010.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: B-010-T01: [PR #39](https://github.com/voidbrain/Grover/pull/39). Test: `apps/hub/test/alerts.test.ts` (`B-010: held threshold alerts state the value, threshold and clear point…`, `B-010: threshold comparisons use a tolerance…`; committed failing first). [#39](https://github.com/voidbrain/Grover/pull/39) |
+| Opened | 2026-11-25 |
+| Verification | Unit/integration: 2026-11-25, passed locally (`npm test`, `npm run test:client`, `npm run build`); CI pending on [#39](https://github.com/voidbrain/Grover/pull/39) |
+| Reviewed | 2026-11-25 |
 
 </details>
 
