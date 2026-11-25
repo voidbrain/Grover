@@ -114,3 +114,22 @@ test('two-sided thresholds: margin is clamped to half the band so an active aler
   push('ph', 5.85);
   assert.deepEqual(alerts.list(), [], 'at the middle of the narrow band: cleared without tripping above');
 });
+
+test('EC: the clear point is exact even when threshold + margin is not in binary floating point (0.2 + 0.1)', () => {
+  const { store, alerts, events, push } = rig();
+  store.putProbe({ ...store.getProbe('ec'), alertBelow: 0.2, alertAbove: 2.0 });
+  push('ec', 0.1);
+  assert.deepEqual(
+    alerts.list().map((a) => a.key),
+    ['probe:ec:below'],
+  );
+  push('ec', 0.29);
+  assert.equal(alerts.list().length, 1, 'inside the margin: held');
+  push('ec', 0.3);
+  assert.deepEqual(alerts.list(), [], 'at threshold + margin (0.3 mS/cm): cleared');
+  assert.deepEqual(
+    events.map((e) => e.cleared),
+    [false, true],
+    'one raise and one clear: what NERV delivers',
+  );
+});
