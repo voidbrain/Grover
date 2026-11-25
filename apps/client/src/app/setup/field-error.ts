@@ -10,7 +10,7 @@ import { Component, input } from '@angular/core';
   `,
   styles: `
     .field-error {
-      color: var(--bad);
+      color: var(--bx-danger);
       font-size: 0.75rem;
     }
   `,

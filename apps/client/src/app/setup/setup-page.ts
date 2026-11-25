@@ -126,7 +126,7 @@ GROVER_AGENT_TOKEN={{ t.token }}</code></pre>
   styles: `
     :host {
       display: grid;
-      gap: var(--space-6);
+      gap: var(--gr-space-10);
     }
     h1 {
       margin: 0;
@@ -134,7 +134,7 @@ GROVER_AGENT_TOKEN={{ t.token }}</code></pre>
     }
     section {
       display: grid;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
     }
     .section-head {
       display: flex;
@@ -147,10 +147,10 @@ GROVER_AGENT_TOKEN={{ t.token }}</code></pre>
     }
     .button-link {
       font-size: 0.875rem;
-      padding: var(--space-2) var(--space-4);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      color: var(--text);
+      padding: var(--bx-space-2) var(--bx-space-4);
+      border: 1px solid var(--bx-border);
+      border-radius: var(--bx-radius);
+      color: var(--bx-text);
       text-decoration: none;
     }
     .plain {
@@ -158,22 +158,22 @@ GROVER_AGENT_TOKEN={{ t.token }}</code></pre>
       margin: 0;
       padding: 0;
       display: grid;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
       li {
         display: flex;
-        gap: var(--space-3);
+        gap: var(--bx-space-3);
         align-items: baseline;
       }
     }
     .muted,
     .empty {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       font-size: 0.875rem;
       margin: 0;
     }
     .register {
       display: flex;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
       align-items: end;
       max-width: 28rem;
       .field {
@@ -181,18 +181,18 @@ GROVER_AGENT_TOKEN={{ t.token }}</code></pre>
       }
     }
     .token {
-      border: 1px solid var(--accent);
-      border-radius: var(--radius-lg);
-      padding: var(--space-4);
-      background: var(--surface);
+      border: 1px solid var(--bx-accent);
+      border-radius: var(--gr-radius-lg);
+      padding: var(--bx-space-4);
+      background: var(--bx-surface-raised);
       p {
-        margin: 0 0 var(--space-2);
+        margin: 0 0 var(--bx-space-2);
       }
       pre {
         margin: 0;
-        padding: var(--space-3);
-        background: var(--surface-2);
-        border-radius: var(--radius);
+        padding: var(--bx-space-3);
+        background: var(--bx-surface-sunken);
+        border-radius: var(--bx-radius);
         overflow-x: auto;
         font-size: 0.8125rem;
       }

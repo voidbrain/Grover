@@ -15,7 +15,7 @@ type Editing = { kind: 'breeder' | 'strain' | 'plant'; id: string | null } | nul
   styles: `
     :host {
       display: grid;
-      gap: var(--space-6);
+      gap: var(--gr-space-10);
     }
     h1 {
       margin: 0;
@@ -23,7 +23,7 @@ type Editing = { kind: 'breeder' | 'strain' | 'plant'; id: string | null } | nul
     }
     section {
       display: grid;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
     }
     .section-head {
       display: flex;
@@ -36,16 +36,16 @@ type Editing = { kind: 'breeder' | 'strain' | 'plant'; id: string | null } | nul
     }
     .muted,
     .empty {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       font-size: 0.8125rem;
       margin: 0;
     }
     h3 {
-      margin: var(--space-2) 0 0;
+      margin: var(--bx-space-2) 0 0;
       font-size: 0.8125rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--muted);
+      color: var(--bx-text-muted);
     }
     .inline-select {
       width: auto;
@@ -54,7 +54,7 @@ type Editing = { kind: 'breeder' | 'strain' | 'plant'; id: string | null } | nul
     }
     .show {
       display: flex;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
       align-items: center;
       font-size: 0.875rem;
     }

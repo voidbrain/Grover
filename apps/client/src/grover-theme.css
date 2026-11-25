@@ -1,0 +1,46 @@
+/*
+ * Grover theme for 🧱 bricks (F-020): the green palette, light and dark, as bricks semantic tokens only.
+ * Declared on :root too, so the page outside <body data-bx-theme="grover"> (overscroll, html background) has it.
+ * Every colour the client shows comes from here; see docs/STYLE-GUIDE.md, "Colour".
+ */
+:root,
+[data-bx-theme='grover'] {
+  color-scheme: light dark;
+  --bx-surface: #f4f6f3;
+  --bx-surface-raised: #ffffff;
+  --bx-surface-sunken: #f8faf7;
+  --bx-border: #d9e0d6;
+  --bx-text: #17201a;
+  --bx-text-muted: #56635a;
+  --bx-accent: #2f7d4f;
+  --bx-on-accent: #ffffff;
+  --bx-focus: #2f7d4f;
+  --bx-ok: #2f7d4f;
+  --bx-warn: #a86400;
+  --bx-danger: #b3261e;
+  --bx-info: #1f6391;
+  --bx-on-status: #ffffff;
+  --bx-font: 'Inter', var(--bx-font-sans);
+  --bx-radius: 10px;
+  --bx-radius-badge: 999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root,
+  [data-bx-theme='grover'] {
+    --bx-surface: #0f1411;
+    --bx-surface-raised: #161d18;
+    --bx-surface-sunken: #1b241e;
+    --bx-border: #2a352d;
+    --bx-text: #e6ede7;
+    --bx-text-muted: #9aa89e;
+    --bx-accent: #5cc285;
+    --bx-on-accent: #0b1a10;
+    --bx-focus: #5cc285;
+    --bx-ok: #5cc285;
+    --bx-warn: #e3a44a;
+    --bx-danger: #f2867d;
+    --bx-info: #7cc0ea;
+    --bx-on-status: #0b1a10;
+  }
+}

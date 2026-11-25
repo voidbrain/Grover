@@ -162,17 +162,17 @@ export class BreederEditor {
       margin: 0;
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-1) var(--space-3);
+      gap: var(--bx-space-1) var(--bx-space-3);
       legend {
         width: 100%;
-        margin-bottom: var(--space-1);
+        margin-bottom: var(--bx-space-1);
       }
     }
     .check-inline {
       display: inline-flex;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
       align-items: center;
-      color: var(--text);
+      color: var(--bx-text);
       font-size: 0.875rem;
     }
   `,

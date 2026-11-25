@@ -40,28 +40,28 @@ import { Hub } from '../hub';
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
     }
     .state {
       font-size: 0.8125rem;
-      color: var(--muted);
+      color: var(--bx-text-muted);
     }
     .state[data-state='running'],
     .state[data-state='waiting'] {
-      color: var(--accent);
+      color: var(--bx-accent);
       font-weight: 600;
     }
     .run {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
       margin-left: auto;
     }
     input {
       width: 4.5rem;
     }
     .unit {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       font-size: 0.8125rem;
     }
   `,

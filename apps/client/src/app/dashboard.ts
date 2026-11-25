@@ -34,30 +34,30 @@ import { RoomCard } from './room/room-card';
   styles: `
     :host {
       display: grid;
-      gap: var(--space-5);
+      gap: var(--bx-space-6);
     }
     .empty {
-      color: var(--muted);
+      color: var(--bx-text-muted);
     }
     .activity h2 {
       font-size: 1rem;
-      margin: 0 0 var(--space-2);
+      margin: 0 0 var(--bx-space-2);
     }
     ul {
       list-style: none;
       margin: 0;
       padding: 0;
       display: grid;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
       font-size: 0.875rem;
     }
     li {
       display: flex;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
     }
     time,
     .muted {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       font-variant-numeric: tabular-nums;
     }
   `,

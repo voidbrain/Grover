@@ -94,15 +94,15 @@ import { Hub } from '../hub';
   `,
   styles: `
     .cal {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: var(--space-3);
-      margin: var(--space-3) 0 0;
+      border: 1px solid var(--bx-border);
+      border-radius: var(--bx-radius);
+      padding: var(--bx-space-3);
+      margin: var(--bx-space-3) 0 0;
       display: grid;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
       legend {
         font-size: 0.8125rem;
-        color: var(--muted);
+        color: var(--bx-text-muted);
       }
     }
     .points {
@@ -110,10 +110,10 @@ import { Hub } from '../hub';
       margin: 0;
       padding: 0;
       display: grid;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
       li {
         display: flex;
-        gap: var(--space-2);
+        gap: var(--bx-space-2);
         align-items: center;
         font-size: 0.875rem;
       }
@@ -121,7 +121,7 @@ import { Hub } from '../hub';
     .row {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
       align-items: end;
     }
   `,

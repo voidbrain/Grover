@@ -29,24 +29,24 @@ const blankPhase = (): Phase => ({
   styles: `
     :host {
       display: grid;
-      gap: var(--space-4);
+      gap: var(--bx-space-4);
     }
     h1 {
       margin: 0;
       font-size: 1.5rem;
     }
     .phase {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: var(--space-4);
+      background: var(--bx-surface-raised);
+      border: 1px solid var(--bx-border);
+      border-radius: var(--gr-radius-lg);
+      padding: var(--bx-space-4);
       display: grid;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
     }
     .phase-head {
       display: flex;
       align-items: center;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
       h2 {
         margin: 0;
         font-size: 1rem;
@@ -63,17 +63,17 @@ const blankPhase = (): Phase => ({
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--muted);
-      margin-bottom: var(--space-1);
+      color: var(--bx-text-muted);
+      margin-bottom: var(--bx-space-1);
     }
     .ranges {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-      gap: var(--space-2) var(--space-3);
+      gap: var(--bx-space-2) var(--bx-space-3);
     }
     .pair {
       display: flex;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
       align-items: center;
       input {
         width: 100%;
