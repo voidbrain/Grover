@@ -44,13 +44,13 @@ type Editing = { kind: 'pot' | 'probe' | 'actuator' | 'schedule'; id: string | n
     .colour-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-3);
-      margin-top: var(--space-2);
+      gap: var(--bx-space-3);
+      margin-top: var(--bx-space-2);
     }
     .colour {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
       input {
         width: 2.5rem;
         height: 2rem;
@@ -59,7 +59,7 @@ type Editing = { kind: 'pot' | 'probe' | 'actuator' | 'schedule'; id: string | n
     }
     :host {
       display: grid;
-      gap: var(--space-5);
+      gap: var(--bx-space-6);
     }
     h1 {
       margin: 0;
@@ -67,26 +67,26 @@ type Editing = { kind: 'pot' | 'probe' | 'actuator' | 'schedule'; id: string | n
     }
     section {
       display: grid;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
     }
     .section-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
       h2 {
         margin: 0;
         font-size: 1.125rem;
       }
     }
     .card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: var(--space-4);
+      background: var(--bx-surface-raised);
+      border: 1px solid var(--bx-border);
+      border-radius: var(--gr-radius-lg);
+      padding: var(--bx-space-4);
     }
     .empty {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       margin: 0;
     }
   `,

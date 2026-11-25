@@ -32,57 +32,57 @@ import { Hub } from './hub';
       display: block;
       max-width: 72rem;
       margin: 0 auto;
-      padding: var(--space-4) var(--space-4) var(--space-6);
+      padding: var(--bx-space-4) var(--bx-space-4) var(--gr-space-10);
     }
     .top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--space-5);
+      margin-bottom: var(--bx-space-6);
     }
     .brand {
       font-weight: 700;
       font-size: 1.25rem;
-      color: var(--text);
+      color: var(--bx-text);
       text-decoration: none;
       letter-spacing: -0.01em;
     }
     nav {
       display: flex;
-      gap: var(--space-4);
+      gap: var(--bx-space-4);
       margin-right: auto;
-      margin-left: var(--space-5);
+      margin-left: var(--bx-space-6);
       a {
-        color: var(--muted);
+        color: var(--bx-text-muted);
         text-decoration: none;
         font-size: 0.9375rem;
-        padding: var(--space-1) 0;
+        padding: var(--bx-space-1) 0;
         border-bottom: 2px solid transparent;
         &.current {
-          color: var(--text);
-          border-bottom-color: var(--accent);
+          color: var(--bx-text);
+          border-bottom-color: var(--bx-accent);
         }
       }
     }
     .conn {
       font-size: 0.8125rem;
-      padding: var(--space-1) var(--space-3);
+      padding: var(--bx-space-1) var(--bx-space-3);
       border-radius: 999px;
-      background: color-mix(in srgb, var(--ok) 18%, transparent);
+      background: color-mix(in srgb, var(--bx-ok) 18%, transparent);
       &.down {
-        background: color-mix(in srgb, var(--warn) 22%, transparent);
+        background: color-mix(in srgb, var(--bx-warn) 22%, transparent);
       }
     }
     .alert {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: var(--space-3);
-      padding: var(--space-3) var(--space-4);
-      margin-bottom: var(--space-4);
-      border-radius: var(--radius);
-      border: 1px solid var(--bad);
-      background: color-mix(in srgb, var(--bad) 10%, var(--surface));
+      gap: var(--bx-space-3);
+      padding: var(--bx-space-3) var(--bx-space-4);
+      margin-bottom: var(--bx-space-4);
+      border-radius: var(--bx-radius);
+      border: 1px solid var(--bx-danger);
+      background: color-mix(in srgb, var(--bx-danger) 10%, var(--bx-surface-raised));
     }
     main:focus {
       outline: none;

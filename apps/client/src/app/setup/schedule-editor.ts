@@ -149,23 +149,23 @@ const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
     .day-groups {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-4);
+      gap: var(--bx-space-4);
     }
     .day-group {
       display: inline-flex;
       flex-wrap: wrap;
-      gap: var(--space-2);
+      gap: var(--bx-space-2);
     }
     .day {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
     }
     .day-shortcuts {
       display: inline-flex;
       flex-wrap: wrap;
-      gap: var(--space-2);
-      margin-top: var(--space-2);
+      gap: var(--bx-space-2);
+      margin-top: var(--bx-space-2);
     }
   `,
 })

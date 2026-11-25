@@ -55,53 +55,53 @@ const PAD = { l: 44, r: 12, t: 12, b: 24 };
     figure {
       margin: 0;
       display: grid;
-      gap: var(--space-1);
+      gap: var(--bx-space-1);
     }
     figcaption {
       font-size: 0.8125rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--muted);
+      color: var(--bx-text-muted);
       display: flex;
       justify-content: space-between;
     }
     .now {
       text-transform: none;
       letter-spacing: 0;
-      color: var(--text);
+      color: var(--bx-text);
       font-variant-numeric: tabular-nums;
     }
     svg {
       width: 100%;
       height: auto;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
+      background: var(--bx-surface-raised);
+      border: 1px solid var(--bx-border);
+      border-radius: var(--bx-radius);
     }
     .band {
-      fill: var(--ok);
+      fill: var(--bx-ok);
       opacity: 0.12;
     }
     .grid {
-      stroke: var(--line);
+      stroke: var(--bx-border);
     }
     .marker {
-      stroke: var(--muted);
+      stroke: var(--bx-text-muted);
       stroke-dasharray: 3 3;
       vector-effect: non-scaling-stroke;
     }
     text {
-      fill: var(--muted);
+      fill: var(--bx-text-muted);
       font-size: 11px;
     }
     .line {
       fill: none;
-      stroke: var(--accent);
+      stroke: var(--bx-accent);
       stroke-width: 2;
       vector-effect: non-scaling-stroke;
     }
     .muted {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       margin: 0;
       font-size: 0.875rem;
     }

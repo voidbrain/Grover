@@ -4,7 +4,7 @@
   "parent": "F-020",
   "title": "Pin @voidbrain/bricks and adopt its tokens with a Grover theme",
   "goal": "The client takes bricks' tokens and foundations; Grover's green palette, light and dark, is a theme, and the local token block is gone",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "apps/client pins one @voidbrain/bricks release",
     "A Grover theme sets bricks semantic tokens to today's values (light and dark); --bg, --surface, --accent, --ok/--warn/--bad, radii, spacing and font map to bricks tokens and the local definitions are removed",
@@ -39,12 +39,18 @@
   ],
   "effort": {
     "size": "medium",
-    "estimate": "2 h",
-    "basis": "Estimated 2026-11-25: one dependency, one theme file, a token rename across four style sheets. Not a measurement.",
-    "reviewed": "2026-11-25",
-    "agentHours": 2,
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-26: bricks 0.1.0 pinned, Grover theme in apps/client/src/grover-theme.css, every style on bricks or --gr- tokens, theme.spec.ts committed failing first; before/after dashboard and setup screenshots byte-identical at desktop width in light and dark. No actual: the step's start was not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 2,
     "estimateAgentHours": 2
-  }
+  },
+  "prs": [
+    {
+      "pr": 42,
+      "note": "tokens and Grover theme"
+    }
+  ]
 }

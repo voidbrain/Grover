@@ -56,43 +56,43 @@ const PAD = { l: 44, r: 12, t: 12, b: 28 };
   `,
   styles: `
     h1 {
-      margin: 0 0 var(--space-3);
+      margin: 0 0 var(--bx-space-3);
       font-size: 1.5rem;
     }
     .bar {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-3);
+      gap: var(--bx-space-3);
       align-items: center;
-      margin-bottom: var(--space-3);
+      margin-bottom: var(--bx-space-3);
     }
     .stats,
     .muted {
-      color: var(--muted);
+      color: var(--bx-text-muted);
       margin: 0;
       font-size: 0.875rem;
     }
     svg {
       width: 100%;
       height: auto;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
+      background: var(--bx-surface-raised);
+      border: 1px solid var(--bx-border);
+      border-radius: var(--bx-radius);
     }
     .band {
-      fill: var(--ok);
+      fill: var(--bx-ok);
       opacity: 0.12;
     }
     .grid {
-      stroke: var(--line);
+      stroke: var(--bx-border);
     }
     text {
-      fill: var(--muted);
+      fill: var(--bx-text-muted);
       font-size: 11px;
     }
     .line {
       fill: none;
-      stroke: var(--accent);
+      stroke: var(--bx-accent);
       stroke-width: 2;
       vector-effect: non-scaling-stroke;
     }
