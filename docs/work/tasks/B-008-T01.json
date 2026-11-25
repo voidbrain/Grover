@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "B-008-T01",
+  "parent": "B-008",
+  "title": "Find why the feed e2e test fails now and then",
+  "goal": "The cause of the intermittent 'mixing tank emptied' failure is named with evidence",
+  "status": "ready",
+  "acceptance": [
+    "The test is repeated under CPU load until it fails or 30 runs pass, with the mixing tank level and feed state logged at the failure",
+    "The cause is recorded in B-008: a test or simulator race, or the feed reporting done too early"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/test/e2e.test.ts",
+    "apps/hub/src/**",
+    "apps/agent/src/**",
+    "docs/work/records/B-008.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-25 by the delivery audit: repeat under load, read the feed state machine.",
+    "reviewed": "2026-11-25",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

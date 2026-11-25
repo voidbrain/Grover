@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "kind": "scoped",
+  "reviewed": "2026-11-25T11:30:17.000Z",
+  "baseline": "c908fa6513f948cd389dfa576c319be972158eaf",
+  "report": "docs/audits/2026-11-25-delivery.md",
+  "areas": {
+    "delivery": {
+      "result": "checked",
+      "evidence": "docs/audits/2026-11-25-delivery.md: 79 CI runs and their failures read, latest main run step by step, workflows, versions, npm audit, Dependabot, branch settings, deploy units and README read; local npm ci, build and 10 e2e runs; findings B-008, B-009, F-005 note",
+      "limits": "No Pi or live service: the deploy path is read, not run (F-005-T01). Local checks on Node 26, CI on Node 24."
+    }
+  }
+}

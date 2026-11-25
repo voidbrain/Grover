@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 25 November 2026 against main `911544e`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 16 h agent + 12.5 h owner across 41 open steps of 17 features and 1 other record. Generated from the task files.
+**Remaining effort:** 18.25 h agent + 12.75 h owner across 45 open steps of 17 features and 3 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -45,7 +45,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
-| Reviewed | 2026-11-24 |
+| Reviewed | 2026-11-25 |
 
 </details>
 
@@ -142,6 +142,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="b-008"></a>[🐞 B-008](#top)
+
+**The feed end-to-end test fails now and then on CI: feed done, mixing tank not emptied**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟠 Investigate | 🔺 P1 | 🟡 Medium | 2 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-008-T01 — Find why the feed e2e test fails now and then (Ready).
+
+| | |
+|---|---|
+| **Issue** | `apps/hub/test/e2e.test.ts`, "a feed runs end to end": the feed ends `done`, yet the simulated mixing tank still holds 0.3 L or more (`mixing tank emptied` fails). PR CI run 45487054804 failed on `a790c83`; run 45487113564 passed on `55c7c70`, a docs-only commit on the same code. Earlier failures of the feed tests (runs 45460424727, 45461154747) were on branches still changing. Not known: a race in the test or the simulated drivers, or a feed reported done before the transfer pump emptied the tank (a product defect). Found by the delivery audit of 2026-11-25. |
+| **Reproduce** | Not reproduced locally: 10 of 10 runs of `node --test apps/hub/test/e2e.test.ts` passed on 2026-11-25. Seen on GitHub-hosted runners only. |
+| **Check** | The cause is named with evidence; if it is the feed logic, a failing test shows it first and the fix makes it pass; the test passes in 30 repeated runs under CPU load (for example `stress` or several runs in parallel) and on the next 10 CI runs. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
+|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-008-t01"></a>B-008-T01 — Find why the feed e2e test fails now and then | 1 h | 0 h | 1 h | Ready | — | [B-008-T02](#b-008-t02) |
+| 🟢 Small | <a id="b-008-t02"></a>B-008-T02 — Failing test if the feed logic is wrong, then the fix | 1 h | 0 h | 1 h | Planned | [B-008-T01](#b-008-t01) | — |
+| 🟡 Medium | **Total** | 2 h | 0 h (0 of 2 steps recorded) | 2 h | 0 of 2 completed | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-008.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change) |
+| Opened | 2026-11-25 |
+| Verification | Pending |
+| Reviewed | 2026-11-25 |
+
+</details>
+
+---
 ### <a id="f-011"></a>[✨ F-011](#top)
 
 **Feed cycle per pot: supply tanks, mixing tank, pot pumps**
@@ -784,6 +823,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="b-009"></a>[🐞 B-009](#top)
+
+**Eight Dependabot PRs from 2021 to 2023 still open against the removed v1 tree**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 0.25 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
+
+🧑 **→** Next: from tasks.
+
+| | |
+|---|---|
+| **Issue** | PRs #3, #8, #9, #10, #11, #12, #13 and #14 (Dependabot, 2021-08 to 2023-03) bump packages of the v1 app, whose files the v2 rebuild removed (`0762df1`). Each keeps a `dependabot/npm_and_yarn/*` branch. They cannot be merged meaningfully, show up in every open-PR listing and in `gh pr list`, and the last Dependabot security job (2026-11-24, run 45425982568) failed on the removed `/CLIENT-ANGULAR/redneck` directory. All 41 Dependabot alerts are fixed; Dependabot security updates stay enabled for the current tree. Found by the delivery audit of 2026-11-25. |
+| **Reproduce** | `gh pr list -R voidbrain/Grover --state open`: eight Dependabot PRs on the v1 paths. |
+| **Check** | The owner decided; if approved, the eight PRs are closed with a comment naming this record and their branches deleted; `gh pr list` shows no v1 Dependabot PR. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="b-009-t01"></a>B-009-T01 — Owner decides on closing the eight v1 Dependabot PRs | 0 h | 0 h | 0 h agent + 0.25 h owner | Ready | — | [B-009-T02](#b-009-t02) | [🤔](decisions/v1-dependabot-prs.md) |
+| 🟢 Small | <a id="b-009-t02"></a>B-009-T02 — Close the v1 Dependabot PRs and delete their branches | 0.25 h | 0 h | 0.25 h | Planned | [B-009-T01](#b-009-t01) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.25 h | 0 h (0 of 2 steps recorded) | 0.25 h agent + 0.25 h owner | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-009.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-25 |
+| Verification | Pending |
+| Reviewed | 2026-11-25 |
+
+</details>
+
+---
 ### <a id="f-017"></a>[✨ F-017](#top)
 
 **Nutrient colours: each supply tank in its nutrient's real colour**
