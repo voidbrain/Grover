@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "B-009-T01",
+  "parent": "B-009",
+  "title": "Owner decides on closing the eight v1 Dependabot PRs",
+  "goal": "The owner approves or declines closing PRs #3 and #8 to #14 and deleting their branches",
+  "status": "ready",
+  "acceptance": [
+    "The owner approves closing the eight PRs and deleting their branches, or declines with a reason"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/B-009.md",
+    "docs/decisions/v1-dependabot-prs.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/decisions/v1-dependabot-prs.md",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-25 by the delivery audit: one decision.",
+    "reviewed": "2026-11-25",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "decision",
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "B-009-T02",
+  "parent": "B-009",
+  "title": "Close the v1 Dependabot PRs and delete their branches",
+  "goal": "No v1 Dependabot PR or branch remains",
+  "status": "planned",
+  "acceptance": [
+    "PRs #3 and #8 to #14 are closed with a comment naming B-009",
+    "Their dependabot/npm_and_yarn/* branches are deleted",
+    "gh pr list shows no v1 Dependabot PR"
+  ],
+  "dependsOn": [
+    "B-009-T01"
+  ],
+  "resources": [
+    "docs/work/records/B-009.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "Estimated 2026-11-25 by the delivery audit: eight gh commands and the record.",
+    "reviewed": "2026-11-25",
+    "agentHours": 0.25,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25
+  }
+}

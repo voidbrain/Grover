@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "B-008-T02",
+  "parent": "B-008",
+  "title": "Failing test if the feed logic is wrong, then the fix",
+  "goal": "The feed e2e test is reliable on CI",
+  "status": "planned",
+  "acceptance": [
+    "If the feed logic is at fault, a test committed failing first shows it and the fix makes it pass",
+    "The test passes 30 times under load and on the next 10 CI runs"
+  ],
+  "dependsOn": [
+    "B-008-T01"
+  ],
+  "resources": [
+    "apps/hub/test/e2e.test.ts",
+    "apps/hub/src/**",
+    "apps/agent/src/**",
+    "docs/work/records/B-008.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Estimated 2026-11-25 by the delivery audit; depends on what B-008-T01 finds.",
+    "reviewed": "2026-11-25",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}
