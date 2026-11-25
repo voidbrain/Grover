@@ -12,7 +12,10 @@
     "drafts and editor specs pass; .form-grid stays Grover-only"
   ],
   "dependsOn": [
-    "F-020-T03"
+    "F-020-T03",
+    "bricks:F-003-T02",
+    "bricks:F-003-T04",
+    "bricks:F-003-T06"
   ],
   "resources": [
     "apps/client/src/app/setup/**",

@@ -12,7 +12,9 @@
     "Client specs pass"
   ],
   "dependsOn": [
-    "F-020-T04"
+    "F-020-T04",
+    "bricks:F-003-T04",
+    "bricks:F-003-T05"
   ],
   "resources": [
     "apps/client/src/app/dashboard.ts",

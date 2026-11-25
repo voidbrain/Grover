@@ -72,6 +72,42 @@ System UI stack (`--font`: Inter if installed, then the platform font); no web f
 - **Plant page** (`apps/client/src/app/plant/`): header (name, strain · breeder · genetics · THC, origin with its line of mothers, pot, current phase and day, dates), the pot's open alerts, "In the tent" tiles (days, feeds, L given, EC and pH in range, yield), nutrient bars (mL per tank, `--accent` on `--surface-2`), the range control (Today, Last week, Last month, From start), four charts and a log (newest first). Plant names on the pot card and the plants page link to it.
 - **Plant chart** (`plant-chart.ts`): like the probe chart, with one target band per phase (each over its own days) and dashed `--muted` markers for feeds, placing, bloom, flush and harvest; the latest value in the caption.
 
+## Bricks mapping (F-020)
+
+The client is moving to 🧱 bricks (`@voidbrain/bricks`, [F-020](BACKLOG.md#f-020)). Checked on 2026-11-25 against the published 0.1.0 (F-020-T01). What 0.1.0 exports: `@voidbrain/bricks/tokens` (`SEMANTIC_TOKENS`, `COMPONENT_TOKENS`, `cssVar`), `/themes` (`THEMES` base, plain, eva; `THEME_ATTRIBUTE` `data-bx-theme`; `applyTheme`, `isThemeName`), `/foundations` (`SPACE_STEPS`, `TYPE_STEPS`, `space`, `fontSize`), `/components` (`BxBadge` `bx-badge`, `BxCard` `bx-card`), `/patterns` (`PATTERNS`, empty: none has landed), `/surfaces` (NERV's genUI cards) and `/styles/*` (`tokens.css`, `foundations.css`, `themes/*.css`, `bricks.css`). It needs Angular ^22.3. Grover restyles by theme only, never by overriding a bricks component.
+
+| Client piece | Bricks 0.1.0 | Note |
+|---|---|---|
+| `--bg` · `--surface` · `--surface-2` · `--line` | `--bx-surface` · `--bx-surface-raised` · `--bx-surface-sunken` · `--bx-border` | Semantic tokens, set by a Grover theme |
+| `--text` · `--muted` | `--bx-text` · `--bx-text-muted` | |
+| `--accent` · `--on-accent` | `--bx-accent` · `--bx-on-accent`, and `--bx-focus` for the focus ring | |
+| `--ok` · `--warn` · `--bad` | `--bx-ok` · `--bx-warn` · `--bx-danger` | Bricks adds `--bx-info` and `--bx-on-status` (text on a status fill); the Grover theme sets them |
+| `--radius` (10 px) | `--bx-radius` (theme sets 10 px) and `--bx-radius-badge` | |
+| `--radius-lg` (16 px) | none | No large-radius semantic token; `bx-card` reads `--bx-radius`. Grover-only for now |
+| `--space-1`…`--space-4` (4–16 px) | `--bx-space-1`…`--bx-space-4` | Same values on the 4 px grid |
+| `--space-5` (24 px) | `--bx-space-6` | Same value, different step |
+| `--space-6` (40 px) | none | Bricks stops at `--bx-space-8` (32 px) |
+| `--font` | `--bx-font` (theme) | |
+| Font sizes (0.75–1.75 rem) | `--bx-font-size-xs`…`-2xl` (11–23 px) | Primitive scale; not a one-to-one match, so sizes move only when their component does |
+| `:focus-visible` (2 px accent) | `foundations.css`: 3 px `--bx-focus`, 2 px offset | Inside `[data-bx-theme]` |
+| Base `body` (colour, background, font) | `foundations.css` on `[data-bx-theme]` | Bricks sets 14 px body text; Grover keeps 16 px (read on a phone in the tent) |
+| Reduced motion | `foundations.css` | Grover has no motion yet |
+| `.sr-only`, `.skip`, box sizing, `a` colour | none | Not in bricks foundations; Grover-only for now |
+| `button` (primary, `.ghost`, `.danger`, `.small`) | none | Planned in bricks as F-003-T01 |
+| Text, number, date, time inputs; `select` | none | bricks F-003-T01 |
+| `.toggle` switch | none | bricks F-003-T01 |
+| Agent and connection status (`.dot`, `.conn`) | `BxBadge` (`tone` accent, ok, warn, danger, info; `live`) | |
+| `.field`, `.hint`, `field-error`, `.form-errors` | none | bricks F-003-T02 (form field) |
+| Room, pot and plant cards; setup `.editor` | `BxCard` (`label`) | `bx-card` pads 20 px with a 12 px gap and `--bx-radius` corners |
+| `confirm()` before harvest, bloom, flush and delete | none | bricks F-003-T04 (dialog) |
+| Setup `.table`, `.table-wrap` | none | bricks F-003-T06 (data table) |
+| Alert lines (left border `--warn`/`--bad`) | none | bricks F-003-T05 (status row) |
+| `.empty` | none | bricks F-003-T05 (empty state) |
+| `.segmented` (mode, chart range) | none | Not planned in bricks: contributed in F-020-T07 |
+| Probe and tank tiles (value, unit, label, tone) | none | Not planned in bricks: contributed in F-020-T07 |
+| Pump control, rig map, probe and plant charts, nutrient bars and `.swatch`, schedule-days fieldset, `.form-grid` | none | Grover-only: hardware- and grow-specific, or one layout |
+| genUI surfaces (`BxSurface` and the four cards) | — | Not used: the client has no model output to render |
+
 ## Accessibility
 
 - Every interactive element is reachable and operable by keyboard, with a visible focus and an accessible name (`.sr-only` labels on pump amounts and switches).

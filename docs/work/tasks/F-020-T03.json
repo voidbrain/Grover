@@ -11,7 +11,8 @@
     "Client specs pass; disabled states, focus and aria-invalid still shown"
   ],
   "dependsOn": [
-    "F-020-T02"
+    "F-020-T02",
+    "bricks:F-003-T01"
   ],
   "resources": [
     "apps/client/src/**",

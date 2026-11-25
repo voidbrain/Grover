@@ -3,7 +3,7 @@
 Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 33.5 h agent + 13.25 h owner across 54 open steps of 18 features and 4 other records. Generated from the task files.
+**Remaining effort:** 32.5 h agent + 13.25 h owner across 53 open steps of 18 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -867,9 +867,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟣 Very large | 17 h agent + 0.5 h owner | — | — | 🤖 | — | — |
+| 🔴 Open | 🔹 P3 | 🟣 Very large | 16 h agent + 0.5 h owner | `bricks:F-003-T01`, `bricks:F-003-T02`, `bricks:F-003-T04`, `bricks:F-003-T06`, `bricks:F-003-T05` | — | 🤖 | — | — |
 
-💻 **→** Next: F-020-T01 — Check the bricks mapping against its first release (Planned).
+💻 **→** Next: F-020-T02 — Pin @voidbrain/bricks and adopt its tokens with a Grover theme (Planned).
 
 | | |
 |---|---|
@@ -879,17 +879,24 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-020-t01"></a>F-020-T01 — Check the bricks mapping against its first release | 1 h | 0 h | 1 h | Planned | — | [F-020-T02](#f-020-t02) | 🤖 |
-| 🟡 Medium | <a id="f-020-t02"></a>F-020-T02 — Pin @voidbrain/bricks and adopt its tokens with a Grover theme | 2 h | 0 h | 2 h | Planned | [F-020-T01](#f-020-t01) | [F-020-T03](#f-020-t03) | ⏳ 🤖 |
-| 🟡 Medium | <a id="f-020-t03"></a>F-020-T03 — Primitives: buttons, inputs, selects, switch and badges | 3 h | 0 h | 3 h | Planned | [F-020-T02](#f-020-t02) | [F-020-T04](#f-020-t04) | ⏳ 🤖 |
-| 🟡 Medium | <a id="f-020-t04"></a>F-020-T04 — Setup pages: form field, data table, card and confirm dialog | 3 h | 0 h | 3 h | Planned | [F-020-T03](#f-020-t03) | [F-020-T05](#f-020-t05) | ⏳ 🤖 |
-| 🟡 Medium | <a id="f-020-t05"></a>F-020-T05 — Dashboard and room card: card, status rows, empty state, dialog | 3 h | 0 h | 3 h | Planned | [F-020-T04](#f-020-t04) | [F-020-T06](#f-020-t06) | ⏳ 🤖 |
-| 🟡 Medium | <a id="f-020-t06"></a>F-020-T06 — Plant page, probe page and rig map on bricks | 2 h | 0 h | 2 h | Planned | [F-020-T05](#f-020-t05) | [F-020-T07](#f-020-t07) | ⏳ 🤖 |
-| 🟡 Medium | <a id="f-020-t07"></a>F-020-T07 — Contribute segmented control and stat tile to bricks, then use them | 3 h | 0 h | 3 h | Planned | [F-020-T06](#f-020-t06) | [F-020-T08](#f-020-t08) | ⏳ 🤖 |
-| 🟢 Small | <a id="f-020-t08"></a>F-020-T08 — Owner: look at the client on bricks, phone and desktop | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | [F-020-T07](#f-020-t07) | — | ⏳ 🧑‍🔧 |
-| 🟣 Very large | **Total** | 17 h | 0 h (0 of 8 steps recorded) | 17 h agent + 0.5 h owner | 0 of 8 completed | | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟡 Medium | <a id="f-020-t02"></a>F-020-T02 — Pin @voidbrain/bricks and adopt its tokens with a Grover theme | 2 h | 0 h | 2 h | Planned | — | [F-020-T03](#f-020-t03) | 🤖 | — |
+| 🟡 Medium | <a id="f-020-t03"></a>F-020-T03 — Primitives: buttons, inputs, selects, switch and badges | 3 h | 0 h | 3 h | Planned | [F-020-T02](#f-020-t02), `bricks:F-003-T01` | [F-020-T04](#f-020-t04) | ⏳ 🤖 | — |
+| 🟡 Medium | <a id="f-020-t04"></a>F-020-T04 — Setup pages: form field, data table, card and confirm dialog | 3 h | 0 h | 3 h | Planned | [F-020-T03](#f-020-t03), `bricks:F-003-T02`, `bricks:F-003-T04`, `bricks:F-003-T06` | [F-020-T05](#f-020-t05) | ⏳ 🤖 | — |
+| 🟡 Medium | <a id="f-020-t05"></a>F-020-T05 — Dashboard and room card: card, status rows, empty state, dialog | 3 h | 0 h | 3 h | Planned | [F-020-T04](#f-020-t04), `bricks:F-003-T04`, `bricks:F-003-T05` | [F-020-T06](#f-020-t06) | ⏳ 🤖 | — |
+| 🟡 Medium | <a id="f-020-t06"></a>F-020-T06 — Plant page, probe page and rig map on bricks | 2 h | 0 h | 2 h | Planned | [F-020-T05](#f-020-t05) | [F-020-T07](#f-020-t07) | ⏳ 🤖 | — |
+| 🟡 Medium | <a id="f-020-t07"></a>F-020-T07 — Contribute segmented control and stat tile to bricks, then use them | 3 h | 0 h | 3 h | Planned | [F-020-T06](#f-020-t06) | [F-020-T08](#f-020-t08) | ⏳ 🤖 | — |
+| 🟢 Small | <a id="f-020-t08"></a>F-020-T08 — Owner: look at the client on bricks, phone and desktop | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | [F-020-T07](#f-020-t07) | — | ⏳ 🧑‍🔧 | — |
+| 🟣 Very large | **Total** | 17 h | 0 h (0 of 8 steps recorded) | 16 h agent + 0.5 h owner | 1 of 8 completed | | | | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-020-t01"></a>F-020-T01 — Check the bricks mapping against its first release | 1 h | 0 h | Completed | [PR #41](https://github.com/voidbrain/Grover/pull/41) mapping check |
+
+</details>
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -898,7 +905,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#40](https://github.com/voidbrain/Grover/pull/40) (record) |
+| PR / evidence | Steps: F-020-T01: [PR #41](https://github.com/voidbrain/Grover/pull/41) mapping check. [#40](https://github.com/voidbrain/Grover/pull/40) (record) |
 | Opened | 2026-11-25 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |

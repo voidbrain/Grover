@@ -4,9 +4,9 @@
   "parent": "F-020",
   "title": "Check the bricks mapping against its first release",
   "goal": "The inventory and map in F-020 are checked against the published @voidbrain/bricks API and written into docs/STYLE-GUIDE.md",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
-    "Waits on bricks' first release (voidbrain/bricks has no release or records on 2026-11-25); once bricks has records, the release step is added to dependsOn as bricks:<STEP-ID>",
+    "bricks' first release is @voidbrain/bricks 0.1.0 (npm, 2026-11-25); the bricks steps that later client steps need are in their dependsOn as bricks:<STEP-ID>",
     "docs/STYLE-GUIDE.md has a table: each client piece, its bricks token, component or pattern (by exported name), or Grover-only with the reason",
     "Pieces bricks lacks are listed for F-020-T07"
   ],
@@ -29,12 +29,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h",
-    "basis": "Estimated 2026-11-25: the inventory is already in the record; read bricks' exports and write one table. Not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-25: mapping checked against bricks 0.1.0's published exports and written into docs/STYLE-GUIDE.md. No actual: the step's start was not timed.",
     "reviewed": "2026-11-25",
-    "agentHours": 1,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 41,
+      "note": "mapping check"
+    }
+  ]
 }
