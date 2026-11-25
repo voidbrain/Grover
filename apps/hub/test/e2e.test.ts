@@ -9,6 +9,7 @@ import { MockDrivers } from '../../agent/src/drivers/mock.ts';
 import { loadConfig } from '../src/config.ts';
 import { startHub, type RunningHub } from '../src/hub.ts';
 import { seedDemo } from '../src/seed.ts';
+import { speedUpRig } from './fast-rig.ts';
 
 let hub: RunningHub;
 let agent: Agent;
@@ -49,10 +50,7 @@ before(async () => {
     }),
   );
   seedDemo(hub.store, 'pi-1');
-  // Fast rig: a thousand times the real flow, no settling, so a feed takes milliseconds.
-  for (const a of hub.store.listActuators())
-    if (a.mlPerSecond) hub.store.putActuator({ ...a, mlPerSecond: a.mlPerSecond * 1000 });
-  hub.store.putRoom({ ...hub.store.getRoom('grow-1'), mixSettleSeconds: 0 });
+  speedUpRig(hub.store);
   token = hub.store.issueAgentToken('pi-1');
   base = `http://127.0.0.1:${hub.httpPort}`;
   drivers = new MockDrivers();
