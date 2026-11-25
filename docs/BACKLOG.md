@@ -905,7 +905,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-020-T01: [PR #41](https://github.com/voidbrain/Grover/pull/41) mapping check · F-020-T02: [PR #42](https://github.com/voidbrain/Grover/pull/42) tokens and Grover theme. [#40](https://github.com/voidbrain/Grover/pull/40) (record); [#41](https://github.com/voidbrain/Grover/pull/41) |
+| PR / evidence | Steps: F-020-T01: [PR #41](https://github.com/voidbrain/Grover/pull/41) mapping check · F-020-T02: [PR #42](https://github.com/voidbrain/Grover/pull/42) tokens and Grover theme. [#40](https://github.com/voidbrain/Grover/pull/40) (record); [#41](https://github.com/voidbrain/Grover/pull/41); [#42](https://github.com/voidbrain/Grover/pull/42) |
 | Opened | 2026-11-25 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
