@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "F-020-T07",
+  "parent": "F-020",
+  "title": "Contribute segmented control and stat tile to bricks, then use them",
+  "goal": "The two generic pieces bricks lacks are added to bricks by PRs in voidbrain/bricks, released, and the client switches to them",
+  "status": "planned",
+  "acceptance": [
+    "bricks PR 'segmented control' (radio group in a fieldset with a hidden legend; used for mode and chart range) and bricks PR 'stat tile' (label, value, unit, tone) are merged in voidbrain/bricks under that repo's own rules and named here with their numbers",
+    "The client pins the release that has them and replaces .segmented and the probe and tank tiles",
+    "Any piece F-020-T01 found missing beyond these two is listed for the owner, not added silently"
+  ],
+  "dependsOn": [
+    "F-020-T06"
+  ],
+  "resources": [
+    "apps/client/src/**",
+    "apps/client/package.json",
+    "package-lock.json",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h",
+    "basis": "Estimated 2026-11-25: two small components with specs in bricks plus a swap here; bricks review and release waits included. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  }
+}

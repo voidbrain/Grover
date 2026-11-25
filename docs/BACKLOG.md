@@ -3,7 +3,7 @@
 Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 16.5 h agent + 12.75 h owner across 46 open steps of 17 features and 4 other records. Generated from the task files.
+**Remaining effort:** 33.5 h agent + 13.25 h owner across 54 open steps of 18 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -861,6 +861,51 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-020"></a>[✨ F-020](#top)
+
+**Adopt 🧱 bricks in the client**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟣 Very large | 17 h agent + 0.5 h owner | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-020-T01 — Check the bricks mapping against its first release (Planned).
+
+| | |
+|---|---|
+| **Issue** | `apps/client` (Angular 22) styles and builds every control itself: its own tokens in `src/styles.scss`, global buttons, fields, switch and segmented control, and per-page cards and tiles. The solution's shared Angular UI library 🧱 bricks (`voidbrain/bricks`, package `@voidbrain/bricks`: tokens primitive → semantic → component, themes base, plain and eva, foundations, components, patterns, genUI surfaces, a live-view helper) is being built (coordinator [solution:F-012](https://github.com/voidbrain/coordinator/blob/main/docs/BACKLOG.md#f-012)). Owner request 2026-11-25. Rules: Grover restyles by theme, never by overriding a bricks component; a component joins bricks only once a project needs it; one-offs stay here. |
+| **Reproduce** | `apps/client/src/styles.scss` defines `--bg`, `--surface`, `--accent`, `--ok`/`--warn`/`--bad`, radii, spacing and font locally; `package.json` has no `@voidbrain/bricks`. |
+| **Check** | The client pins one `@voidbrain/bricks` release and takes its tokens with a Grover theme (light and dark, the current green palette); every piece mapped below uses its bricks token, component or pattern, with no local override of a bricks component; Grover-only pieces stay and are listed in `docs/STYLE-GUIDE.md`; each generic piece bricks lacked is a merged bricks PR that the client then uses; client specs, build and CI pass; the owner's look on phone and desktop. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="f-020-t01"></a>F-020-T01 — Check the bricks mapping against its first release | 1 h | 0 h | 1 h | Planned | — | [F-020-T02](#f-020-t02) | 🤖 |
+| 🟡 Medium | <a id="f-020-t02"></a>F-020-T02 — Pin @voidbrain/bricks and adopt its tokens with a Grover theme | 2 h | 0 h | 2 h | Planned | [F-020-T01](#f-020-t01) | [F-020-T03](#f-020-t03) | ⏳ 🤖 |
+| 🟡 Medium | <a id="f-020-t03"></a>F-020-T03 — Primitives: buttons, inputs, selects, switch and badges | 3 h | 0 h | 3 h | Planned | [F-020-T02](#f-020-t02) | [F-020-T04](#f-020-t04) | ⏳ 🤖 |
+| 🟡 Medium | <a id="f-020-t04"></a>F-020-T04 — Setup pages: form field, data table, card and confirm dialog | 3 h | 0 h | 3 h | Planned | [F-020-T03](#f-020-t03) | [F-020-T05](#f-020-t05) | ⏳ 🤖 |
+| 🟡 Medium | <a id="f-020-t05"></a>F-020-T05 — Dashboard and room card: card, status rows, empty state, dialog | 3 h | 0 h | 3 h | Planned | [F-020-T04](#f-020-t04) | [F-020-T06](#f-020-t06) | ⏳ 🤖 |
+| 🟡 Medium | <a id="f-020-t06"></a>F-020-T06 — Plant page, probe page and rig map on bricks | 2 h | 0 h | 2 h | Planned | [F-020-T05](#f-020-t05) | [F-020-T07](#f-020-t07) | ⏳ 🤖 |
+| 🟡 Medium | <a id="f-020-t07"></a>F-020-T07 — Contribute segmented control and stat tile to bricks, then use them | 3 h | 0 h | 3 h | Planned | [F-020-T06](#f-020-t06) | [F-020-T08](#f-020-t08) | ⏳ 🤖 |
+| 🟢 Small | <a id="f-020-t08"></a>F-020-T08 — Owner: look at the client on bricks, phone and desktop | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | [F-020-T07](#f-020-t07) | — | ⏳ 🧑‍🔧 |
+| 🟣 Very large | **Total** | 17 h | 0 h (0 of 8 steps recorded) | 17 h agent + 0.5 h owner | 0 of 8 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-020.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#40](https://github.com/voidbrain/Grover/pull/40) (record) |
+| Opened | 2026-11-25 |
+| Verification | Pending |
+| Reviewed | 2026-11-25 |
+
+</details>
+
+---
 ### <a id="b-009"></a>[🐞 B-009](#top)
 
 **Eight Dependabot PRs from 2021 to 2023 still open against the removed v1 tree**

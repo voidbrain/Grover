@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "F-020-T05",
+  "parent": "F-020",
+  "title": "Dashboard and room card: card, status rows, empty state, dialog",
+  "goal": "The dashboard and room card use bricks card, status row, empty state and dialog",
+  "status": "planned",
+  "acceptance": [
+    "Room and pot cards are bricks cards; alert lines are status rows with the warn or bad tone; empty lists use the empty-state pattern",
+    "Harvest, bloom and flush confirmations use the bricks dialog",
+    "Pump control and probe tiles stay as they are until F-020-T07; room-card styles shrink to Grover-only layout",
+    "Client specs pass"
+  ],
+  "dependsOn": [
+    "F-020-T04"
+  ],
+  "resources": [
+    "apps/client/src/app/dashboard.ts",
+    "apps/client/src/app/room/**",
+    "apps/client/src/styles.scss",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h",
+    "basis": "Estimated 2026-11-25: room-card.scss is 285 lines with the most status logic. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  }
+}

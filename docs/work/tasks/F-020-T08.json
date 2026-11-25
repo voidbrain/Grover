@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-020-T08",
+  "parent": "F-020",
+  "title": "Owner: look at the client on bricks, phone and desktop",
+  "goal": "The owner checks the dashboard, a plant page, the rig map and setup in light and dark on the phone and a desktop browser",
+  "status": "planned",
+  "acceptance": [
+    "The owner says it looks right, or lists what differs; differences become steps or records"
+  ],
+  "dependsOn": [
+    "F-020-T07"
+  ],
+  "resources": [
+    "apps/client/src/**",
+    "apps/client/package.json",
+    "package-lock.json",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "evidence-review"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "Owner check, recorded in F-020"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h owner",
+    "basis": "Estimated 2026-11-25: half an hour on two devices; its page is written by F-020-T07.",
+    "reviewed": "2026-11-25",
+    "agentHours": 0,
+    "ownerHours": 0.5,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

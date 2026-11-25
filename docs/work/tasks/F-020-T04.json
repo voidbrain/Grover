@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "F-020-T04",
+  "parent": "F-020",
+  "title": "Setup pages: form field, data table, card and confirm dialog",
+  "goal": "The setup pages use bricks form field, data table, card and dialog",
+  "status": "planned",
+  "acceptance": [
+    "Every .field/.hint/field-error/.form-errors uses the bricks form field (errors still shown once touched, hub refusals above the buttons)",
+    "Setup tables use the data table pattern; the inline .editor is a bricks card",
+    "Delete confirmations use the bricks dialog instead of confirm()",
+    "drafts and editor specs pass; .form-grid stays Grover-only"
+  ],
+  "dependsOn": [
+    "F-020-T03"
+  ],
+  "resources": [
+    "apps/client/src/app/setup/**",
+    "apps/client/src/styles.scss",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h",
+    "basis": "Estimated 2026-11-25: nine editors and four tables share the same markup. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  }
+}

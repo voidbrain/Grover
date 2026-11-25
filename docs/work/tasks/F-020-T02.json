@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "F-020-T02",
+  "parent": "F-020",
+  "title": "Pin @voidbrain/bricks and adopt its tokens with a Grover theme",
+  "goal": "The client takes bricks' tokens and foundations; Grover's green palette, light and dark, is a theme, and the local token block is gone",
+  "status": "planned",
+  "acceptance": [
+    "apps/client pins one @voidbrain/bricks release",
+    "A Grover theme sets bricks semantic tokens to today's values (light and dark); --bg, --surface, --accent, --ok/--warn/--bad, radii, spacing and font map to bricks tokens and the local definitions are removed",
+    "Foundations (.sr-only, skip link, focus ring, base body) come from bricks",
+    "Screens look unchanged: client specs and build pass; a before/after screenshot of the dashboard in light and dark is in the PR"
+  ],
+  "dependsOn": [
+    "F-020-T01"
+  ],
+  "resources": [
+    "apps/client/src/**",
+    "apps/client/package.json",
+    "package-lock.json",
+    "docs/STYLE-GUIDE.md",
+    "docs/work/records/F-020.md"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work",
+    "npm run test:client",
+    "npm run build"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "A bricks component that cannot take Grover's look through the theme goes to bricks as a proposal, never a local override"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h",
+    "basis": "Estimated 2026-11-25: one dependency, one theme file, a token rename across four style sheets. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 2,
+    "ownerHours": 0,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  }
+}
