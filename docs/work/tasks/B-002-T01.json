@@ -11,7 +11,7 @@
   ],
   "dependsOn": [],
   "resources": [
-    "docs/work/records/B-002.md"
+    "docs/archive/backlog-2026.md"
   ],
   "capabilities": [
     "bounded-edit"
@@ -23,7 +23,7 @@
   "escalation": [
     "A material scope or effort increase goes to the owner"
   ],
-  "ownerLink": "docs/work/records/B-002.md",
+  "ownerLink": "docs/archive/backlog-2026.md",
   "effort": {
     "size": "small",
     "estimate": "0 remaining",

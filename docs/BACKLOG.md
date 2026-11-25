@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 25 November 2026 against main `b62a29b`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 25 November 2026 against main `911544e`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 16.75 h agent + 12.75 h owner across 44 open steps of 17 features and 2 other records. Generated from the task files.
+**Remaining effort:** 16 h agent + 12.5 h owner across 41 open steps of 17 features and 1 other record. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -234,9 +234,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.25 h owner | [F-005-T01](#f-005-t01) | — | — | — | — |
 
-💻 **→** Next: F-008-T02 — Hysteresis at alert thresholds (Implemented; verification pending).
+💻 **→** Next: F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) (Planned).
 
 | | |
 |---|---|
@@ -248,15 +248,15 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
 |---|---|---|---|---|---|---|---|:---:|---|
-| 🟢 Small | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | 0.25 h | Implemented; verification pending | — | [F-008-T03](#f-008-t03) | 🤖 | — |
-| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-008-T02](#f-008-t02), [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
-| 🟢 Small | **Total** | 1.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.25 h agent + 0.25 h owner | 1 of 3 completed | | | | |
+| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
+| 🟢 Small | **Total** | 1.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.25 h owner | 2 of 3 completed | | | | |
 
-<details><summary>Done steps (1)</summary>
+<details><summary>Done steps (2)</summary>
 
 | Effort | Step | Estimate | Actual | Status | PRs |
 |---|---|---|---|---|---|
 | — | <a id="f-008-t01"></a>F-008-T01 — Build Grover-side alerts (thresholds, feeds, offline agents) | — | 0 h | Completed | [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation |
+| — | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | Completed | [PR #35](https://github.com/voidbrain/Grover/pull/35) feature |
 
 </details>
 
@@ -267,7 +267,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35) |
+| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
@@ -784,54 +784,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="b-002"></a>[🐞 B-002](#top)
-
-**`check:conventions` does not see the client in this monorepo**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | 0.5 h agent + 0.25 h owner | — | — | ⏳ | 🧑‍🔧 | — |
-
-🧑 **→** Next: [🧑‍🔧](work/records/B-002.md) B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T01 (released)) (Planned).
-
-| | |
-|---|---|
-| **Issue** | `tools/check-conventions.mjs` walks `src/`, `tools/` and `e2e/` under the repository root; Grover's Angular code is under `apps/client/src`, so the convention check passes without checking it. |
-| **Reproduce** | `npm run check:conventions` reports no problems even after adding `standalone: true` to a client component. |
-| **Check** | The check finds the planted problem in `apps/client/src`. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="b-002-t03"></a>B-002-T03 — Template release with a configurable convention source is out (waits on project-harness:F-098-T01 (released)) | — | 0 h | 0 h agent + 0.25 h owner | Planned | — | [B-002-T02](#b-002-t02) | [🧑‍🔧](work/records/B-002.md) |
-| 🟢 Small | <a id="b-002-t02"></a>B-002-T02 — Adopt the template release whose convention check reads apps/client/src | 0.5 h | 0 h | 0.5 h | Planned | [B-002-T03](#b-002-t03) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.5 h (1 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.5 h agent + 0.25 h owner | 1 of 3 completed | | | |
-
-<details><summary>Done steps (1)</summary>
-
-| Effort | Step | Estimate | Actual | Status |
-|---|---|---|---|---|
-| — | <a id="b-002-t01"></a>B-002-T01 — Owner agrees the template change and has it recorded in project-harness | — | 0 h | Completed |
-
-</details>
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-002.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33); [#34](https://github.com/voidbrain/Grover/pull/34) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
 ### <a id="f-017"></a>[✨ F-017](#top)
 
 **Nutrient colours: each supply tank in its nutrient's real colour**
@@ -882,7 +834,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 ---
 ## Other changes
 
-**Reconciliation, 2026-11-25 (main `b62a29b`).** PRs #30, #31 and #32 merged with green PR CI and green main runs after merge: B-007 closed (#32); F-019 stays Implemented until the owner installs the app. B-002-T01 closed on the owner's decision; B-002-T02 waits on project-harness:F-098-T01 (released).
+**Reconciliation, 2026-11-25 (main `911544e`).** PRs #33, #34 and #35 merged with green PR CI and green main runs after merge: F-008-T02 closed (#35). Harness reconciled from v10.9.0 to v10.20.0 (#36, owner-approved 2026-11-25; built backlog views not adopted), which sets `conventions.sourceDirs` to `apps/client/src`: B-002 closed.
 
 Earlier entries: [reconciliation log](archive/reconciliation-2026.md).
 

@@ -49,7 +49,7 @@ npm run test:client       # Angular unit tests (Vitest)
 npm run build             # Angular client build (what the hub serves)
 npm run typecheck         # tsc for backend and client
 npm run check:backlog     # active record layout and lifecycle cues
-npm run check:conventions # stack conventions (docs/agents/angular.md) and unused exports; see B-003 for its monorepo limit
+npm run check:conventions # stack conventions (docs/agents/angular.md) and unused exports; the client through `conventions.sourceDirs` <!-- project -->
 npm run format:check      # Prettier; `npm run format` fixes it
 npm run check:tooling     # a formatter check and a linter exist and run in CI (required for every stack)
 npm run check:fast        # pre-push bundle: format, lint, typecheck, backlog, rules <!-- project -->
