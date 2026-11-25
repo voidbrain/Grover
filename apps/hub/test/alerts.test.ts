@@ -133,3 +133,55 @@ test('EC: the clear point is exact even when threshold + margin is not in binary
     'one raise and one clear: what NERV delivers',
   );
 });
+
+test('B-010: held threshold alerts state the value, threshold and clear point instead of claiming the value is past the threshold', () => {
+  const { store, alerts, push } = rig();
+
+  // Supply tank (alertBelow: 3, margin: 0.5 -> clear point 3.5): below vs held inside hysteresis margin.
+  push('tank-grow', 2.9);
+  assert.equal(
+    alerts.list()[0]!.message,
+    'Grow tank low (2.9, alert below 3): refill it. Feeds that need it are refused until then.',
+  );
+  push('tank-grow', 3.4);
+  assert.equal(alerts.list()[0]!.message, 'Grow tank at 3.4 (threshold 3, alert held until at least 3.5): refill it.');
+  push('tank-grow', 3.5);
+  assert.deepEqual(alerts.list(), []);
+
+  // Non-tank below alert with binary float sum at the clear point (0.2 + 0.1 = 0.3).
+  store.putProbe({ ...store.getProbe('ec'), alertBelow: 0.2, alertAbove: 2.0 });
+  push('ec', 0.1);
+  assert.equal(alerts.list()[0]!.message, 'EC (shared) at 0.1, below 0.2.');
+  push('ec', 0.25);
+  assert.equal(alerts.list()[0]!.message, 'EC (shared) at 0.25 (threshold 0.2, alert held until at least 0.3).');
+  push('ec', 0.3);
+  assert.deepEqual(alerts.list(), []);
+
+  // Above alert (air-temp alertAbove: 32, margin: 0.5 -> clear point 31.5): above vs held inside hysteresis margin.
+  push('air-temp', 32.2);
+  assert.equal(alerts.list()[0]!.message, 'Air temperature at 32.2, above 32.');
+  push('air-temp', 31.6);
+  assert.equal(alerts.list()[0]!.message, 'Air temperature at 31.6 (threshold 32, alert held until at most 31.5).');
+  push('air-temp', 31.5);
+  assert.deepEqual(alerts.list(), []);
+});
+
+test('B-010: threshold comparisons use a tolerance so floating-point noise at the threshold does not trip or misclassify alerts', () => {
+  const { store, alerts, push } = rig();
+
+  store.putProbe({ ...store.getProbe('ec'), alertBelow: 0.3, alertAbove: 0.3 });
+  push('ec', 0.7 - 0.4);
+  assert.deepEqual(alerts.list(), [], 'within tolerance below alertBelow: does not trip');
+  push('ec', 0.1 + 0.2);
+  assert.deepEqual(alerts.list(), [], 'within tolerance above alertAbove: does not trip');
+
+  store.putProbe({ ...store.getProbe('ec'), alertBelow: 0.3, alertAbove: 2.0 });
+  push('ec', 0.2);
+  assert.equal(alerts.list()[0]!.message, 'EC (shared) at 0.2, below 0.3.');
+  push('ec', 0.7 - 0.4);
+  assert.equal(
+    alerts.list()[0]!.message,
+    'EC (shared) at 0.3 (threshold 0.3, alert held until at least 0.4).',
+    'reading at the threshold within tolerance is held, not reported as below',
+  );
+});
