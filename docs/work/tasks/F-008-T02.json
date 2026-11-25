@@ -4,7 +4,7 @@
   "parent": "F-008",
   "title": "Hysteresis at alert thresholds",
   "goal": "An alert raised at a threshold clears only past a margin, so a reading at the threshold does not flap",
-  "status": "ready",
+  "status": "implemented",
   "acceptance": [
     "A threshold alert clears only when the reading is back past a margin",
     "Contracts or hub tests cover raise, hold inside the margin and clear",
@@ -34,11 +34,11 @@
     "A material scope or effort increase goes to the owner"
   ],
   "effort": {
-    "size": "medium",
-    "estimate": "1.5 h agent",
-    "basis": "Estimated 2026-11-24: 1.5 h agent, a margin per kind or per threshold, no protocol change.",
-    "reviewed": "2026-11-24",
-    "agentHours": 1.5,
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "Implemented 2026-11-25: ALERT_HYSTERESIS and alertMargin (contracts), hysteresis clearing in apps/hub/src/alerts.ts with a float-tolerant clear point (review fix), tests in apps/hub/test/alerts.test.ts; CI and merge remain. Not a measurement.",
+    "reviewed": "2026-11-25",
+    "agentHours": 0.25,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,
     "estimateAgentHours": 1.5

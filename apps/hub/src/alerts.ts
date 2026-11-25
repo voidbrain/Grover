@@ -1,4 +1,4 @@
-import { TANK_TITLES, type Alert, type Probe, type Reading } from '@grover/contracts';
+import { TANK_TITLES, alertMargin, type Alert, type Probe, type Reading } from '@grover/contracts';
 import type { Bus } from './events.ts';
 import type { Store } from './store.ts';
 
@@ -6,8 +6,9 @@ import type { Store } from './store.ts';
  * Keeps the list of things that need the owner, and announces each change on the bus (the client shows them,
  * NERV picks them up over MCP and delivers them). An alert is raised once and stays until its condition clears.
  *
- * Sources: probe thresholds (`alertBelow` / `alertAbove`, e.g. a supply tank running low), feeds that were
- * refused or aborted (raised by the Feeder), and agents that go offline.
+ * Sources: probe thresholds (`alertBelow` / `alertAbove`, e.g. a supply tank running low; clears only past the
+ * probe kind's hysteresis margin so a reading at the threshold does not flap), feeds that were refused or aborted
+ * (raised by the Feeder), and agents that go offline.
  */
 export class Alerts {
   private readonly store: Store;
@@ -67,7 +68,11 @@ export class Alerts {
     if (this.store.needsCalibration(probe) || r.at < (probe.calibration?.calibratedAt ?? 0)) return;
     const below = `probe:${probe.id}:below`;
     const above = `probe:${probe.id}:above`;
-    if (probe.alertBelow !== null && r.value < probe.alertBelow)
+    const active = new Set(this.store.alerts().map((a) => a.key));
+    const margin = alertMargin(probe);
+    if (probe.alertBelow === null) {
+      this.clear(below);
+    } else if (r.value < probe.alertBelow || (active.has(below) && r.value < probe.alertBelow + margin - EPSILON)) {
       this.raise({
         key: below,
         roomId: probe.roomId,
@@ -75,8 +80,12 @@ export class Alerts {
         level: 'warn',
         message: lowMessage(probe, r.value),
       });
-    else this.clear(below);
-    if (probe.alertAbove !== null && r.value > probe.alertAbove)
+    } else {
+      this.clear(below);
+    }
+    if (probe.alertAbove === null) {
+      this.clear(above);
+    } else if (r.value > probe.alertAbove || (active.has(above) && r.value > probe.alertAbove - margin + EPSILON)) {
       this.raise({
         key: above,
         roomId: probe.roomId,
@@ -84,9 +93,14 @@ export class Alerts {
         level: 'warn',
         message: `${probe.name} at ${r.value}, above ${probe.alertAbove}.`,
       });
-    else this.clear(above);
+    } else {
+      this.clear(above);
+    }
   }
 }
+
+/** Threshold ± margin is a float sum (0.2 + 0.1 = 0.30000000000000004): a reading at the clear point clears. */
+const EPSILON = 1e-9;
 
 function lowMessage(probe: Probe, value: number): string {
   if (probe.tank && probe.tank !== 'mix')
