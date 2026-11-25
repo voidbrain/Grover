@@ -41,6 +41,23 @@ jobs:
       - name: Optional integration recommendation metadata
         run: npm run check:integrations
 
+      - name: Source-owned records, steps and model profiles
+        # Before every step that reads docs/BACKLOG.md: with workItems.views "built" it writes the fresh ledger (F-096).
+        run: npm run check:work
+
+      - name: Which backlog views
+        id: views
+        run: echo "built=$(node -p "const w = require('./.harness.json').workItems; Boolean(w?.enabled && w.views === 'built')")" >> "$GITHUB_OUTPUT"
+
+      - name: Built backlog views, attached to the run (F-096)
+        if: steps.views.outputs.built == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backlog-views
+          path: docs/BACKLOG.md
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Required maintenance evidence
         run: node tools/maintenance.mjs check
 
@@ -54,9 +71,6 @@ jobs:
 
       - name: Backlog records and layout
         run: npm run check:backlog
-
-      - name: Source-owned records, steps and model profiles
-        run: npm run check:work
 
       - name: Harness template, for the release check below
         run: |
@@ -75,7 +89,7 @@ jobs:
         run: npm run check:freshness -- --github
 
       - name: AGENTS conventions and unused exports
-        # B-002: the check does not yet look at apps/client/src.
+        # Reads apps/client/src through conventions.sourceDirs in .harness.json (B-002).
         run: npm run check:conventions
 
       - name: Lint

@@ -4,7 +4,7 @@
   "parent": "F-008",
   "title": "Hysteresis at alert thresholds",
   "goal": "An alert raised at a threshold clears only past a margin, so a reading at the threshold does not flap",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "A threshold alert clears only when the reading is back past a margin",
     "Contracts or hub tests cover raise, hold inside the margin and clear",
@@ -35,12 +35,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.25 h agent",
-    "basis": "Implemented 2026-11-25: ALERT_HYSTERESIS and alertMargin (contracts), hysteresis clearing in apps/hub/src/alerts.ts with a float-tolerant clear point (review fix), tests in apps/hub/test/alerts.test.ts; CI and merge remain. Not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-25: merged in #35 on green PR CI and green main run 45579936376 (contracts and hub alert tests, check:fast). No actual: the step was not timed.",
     "reviewed": "2026-11-25",
-    "agentHours": 0.25,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,
     "estimateAgentHours": 1.5
-  }
+  },
+  "prs": [
+    {
+      "pr": 35,
+      "note": "feature"
+    }
+  ]
 }

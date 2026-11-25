@@ -4,7 +4,7 @@
   "parent": "B-002",
   "title": "Adopt the template release whose convention check reads apps/client/src",
   "goal": "check:conventions checks the Angular client in this monorepo",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "A planted `standalone: true` in an apps/client/src component makes `npm run check:conventions` fail",
     "The planted problem is removed before merge"
@@ -16,7 +16,7 @@
   "resources": [
     "tools/check-conventions.mjs",
     ".harness.json",
-    "docs/work/records/B-002.md"
+    "docs/archive/backlog-2026.md"
   ],
   "capabilities": [
     "bounded-edit"
@@ -32,12 +32,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.5 h agent",
-    "basis": "Estimated 2026-11-24: a reconcile of one copied tool and its setting (`conventions.sourceDirs`). Waits on project-harness:F-098-T01 (released), through B-002-T03. Corrected 2026-11-25 from F-098-T03 (coordinator).",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-25 in the harness v10.20.0 reconcile: tools/check-conventions.mjs copied and conventions.sourceDirs set to apps/client/src; a planted standalone: true in apps/client/src/app/dashboard.ts made npm run check:conventions exit 1 (removed before commit). Closes on this PR green CI. No actual: not timed.",
     "reviewed": "2026-11-25",
-    "agentHours": 0.5,
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 0.5,
     "estimateAgentHours": 0.5
-  }
+  },
+  "prs": [
+    {
+      "pr": 36,
+      "note": "harness v10.20.0 reconcile"
+    }
+  ]
 }

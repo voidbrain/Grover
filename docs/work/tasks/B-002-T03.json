@@ -4,14 +4,14 @@
   "parent": "B-002",
   "title": "Template release with a configurable convention source is out (waits on project-harness:F-098-T01 (released))",
   "goal": "A project-harness release makes the convention check's source folder configurable",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "Waits on project-harness:F-098-T01 (released): the step that adds `conventions.sourceDirs` and the check change, shipped in a template release",
     "The owner or the coordinator confirms the release tag here, which makes B-002-T02 ready"
   ],
   "dependsOn": [],
   "resources": [
-    "docs/work/records/B-002.md"
+    "docs/archive/backlog-2026.md"
   ],
   "capabilities": [
     "bounded-edit"
@@ -23,14 +23,14 @@
   "escalation": [
     "A material scope or effort increase goes to the owner"
   ],
-  "ownerLink": "docs/work/records/B-002.md",
+  "ownerLink": "docs/archive/backlog-2026.md",
   "effort": {
     "size": "small",
-    "estimate": "0.25 h owner",
-    "basis": "Estimated 2026-11-25: 15 minutes to confirm the release tag. Stands for project-harness:F-098-T01 (released) until Grover is on a harness release with cross-repository dependsOn (v10.10.0), when B-002-T02 can depend on it directly with externalMet and this step closes as superseded.",
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-25 as superseded, as its basis planned: the release is out (project-harness v10.11.0 ships conventions.sourceDirs; owner approved reconciling to v10.20.0 on 2026-11-25) and Grover is now on a harness with cross-repository dependsOn. No actual: not timed.",
     "reviewed": "2026-11-25",
     "agentHours": 0,
-    "ownerHours": 0.25,
+    "ownerHours": 0,
     "ownerKind": "procedure"
   }
 }

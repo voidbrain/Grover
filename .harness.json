@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "10.9.0",
+  "version": "10.20.0",
   "stacks": [
     "core",
     "angular"
@@ -69,7 +69,9 @@
     "docs/agents/work-usage-sources.md": "core/docs/agents/work-usage-sources.md",
     "docs/agents/work-usage-effectiveness.md": "core/docs/agents/work-usage-effectiveness.md",
     "docs/agents/work-usage-launch.md": "core/docs/agents/work-usage-launch.md",
-    "tools/check-conventions.mjs": "angular/tools/check-conventions.mjs"
+    "tools/check-conventions.mjs": "angular/tools/check-conventions.mjs",
+    "docs/agents/solution-dashboard.md": "core/docs/agents/solution-dashboard.md",
+    "docs/agents/solution-gaps.md": "core/docs/agents/solution-gaps.md"
   },
   "forked": {},
   "freshness": {
@@ -323,7 +325,10 @@
     "pauseGapMinutes": 15
   },
   "conventions": {
-    "pureDirs": []
+    "pureDirs": [],
+    "sourceDirs": [
+      "apps/client/src"
+    ]
   },
   "codeMap": {
     "folders": [
