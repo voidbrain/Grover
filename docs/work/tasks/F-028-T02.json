@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-028-T02",
+  "parent": "F-028",
+  "title": "Hub timers: store, revert, cancel, restart",
+  "goal": "A timed switch reverts on time from the hub alone",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"yes to both\", including a timed switch in Grover (\"spegni il ventilatore per 2 ore\") via MCP behind NERV's approval. Italian is required for every model-facing feature.",
+    "A switch_timers table and a scheduler in the hub; Commands.switch takes an optional duration and records the timer; revert goes through Commands with source timer, logged like any actuation",
+    "Tests with a fake clock and mock drivers: revert on time with NERV absent, overdue revert after a hub restart, cancel on a later switch, stop-all and mode change, agent offline at revert → retry and an alert, refusal of a duration on a pump"
+  ],
+  "dependsOn": [
+    "F-028-T01"
+  ],
+  "resources": [
+    "apps/hub/src/**",
+    "apps/hub/test/**",
+    "docs/work/records/F-028.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm test",
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h agent",
+    "basis": "Estimated 2026-11-26: a table, a scheduler and the restart path in the hub, with fake-clock tests. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 2.0,
+    "baselineAgentHours": 2.0,
+    "estimateAgentHours": 2.0
+  },
+  "prs": []
+}

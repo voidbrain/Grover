@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "F-028-T03",
+  "parent": "F-028",
+  "title": "MCP argument, REST and client: set, show and cancel a timer",
+  "goal": "NERV and the client can set a timed switch and see or cancel it",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"yes to both\", including a timed switch in Grover (\"spegni il ventilatore per 2 ore\") via MCP behind NERV's approval. Italian is required for every model-facing feature.",
+    "grover_switch inputSchema gains durationMinutes (zod int, bounded); the description still starts \"CHANGES HARDWARE STATE\" and names the revert; annotations unchanged so NERV asks the owner first as today",
+    "The REST switch route takes the same field; the client shows the remaining time on the actuator with a cancel button (style guide tokens, Italian and English); the DESIGN.md tool table and the e2e MCP test updated"
+  ],
+  "dependsOn": [
+    "F-028-T02"
+  ],
+  "resources": [
+    "apps/hub/src/mcp.ts",
+    "apps/hub/src/http.ts",
+    "apps/client/src/**",
+    "apps/hub/test/**",
+    "docs/DESIGN.md",
+    "docs/work/records/F-028.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "typescript",
+    "api-contracts",
+    "accessibility"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm test",
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "Estimated 2026-11-26: one schema field, one route and a client badge with cancel. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  },
+  "prs": []
+}

@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 46.75 h agent + 14 h owner across 73 open steps of 25 features and 5 other records. Generated from the task files.
+**Remaining effort:** 51.25 h agent + 14 h owner across 77 open steps of 26 features and 5 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -229,6 +229,46 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-027"></a>[✨ F-027](#top)
+
+**Gauntlet pack for the hub's MCP tools (grover-v1), Italian and English**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 3.25 h | — | [F-028-T04](#f-028-t04) | 🤖 | — | — |
+
+💻 **→** Next: F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips (Planned).
+
+| | |
+|---|---|
+| **Issue** | NERV's models call 19 Grover tools, four of which move hardware, and no case checks that a model picks the right tool and arguments, leaves hardware to approval and answers from the tool result. The tool-use general pack uses invented tools only. The owner uses NERV and all modules in Italian, so every case set includes Italian phrasings. Owner decision 2026-11-26 in chat: "ok to all" (accepts proposal 1 of the shared-asset review, solution:F-016-T04); same message: "nerv and all modules will need to work with Italian". |
+| **Reproduce** | `ls evals/gauntlet` finds nothing; `grep gauntlet package.json` finds no pin; `apps/hub/src/mcp.ts` registers 19 tools with no case naming any. |
+| **Check** | `evals/gauntlet/grover-v1.json`, model layer, regression and holdout splits, Italian and English requests, exact-json (json-match once released), invented data; `gauntlet validate` runs in CI from a pinned `@voidbrain/gauntlet-protocol` devDependency; a test fails when a case names a tool or argument that `mcp.ts` does not register; the skips are recorded in `docs/DESIGN.md`, "NERV"; NERV runs the pack against its models (nerv:F-120-T11). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-027-t01"></a>F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips | 0.75 h | 0 h | 0.75 h | Planned | — | [F-027-T02](#f-027-t02) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟡 Medium | <a id="f-027-t02"></a>F-027-T02 — Tool-choice, approval and argument cases, Italian and English | 1.5 h | 0 h | 1.5 h | Planned | [F-027-T01](#f-027-t01) | [F-027-T03](#f-027-t03), [F-028-T04](#f-028-t04) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟢 Small | <a id="f-027-t03"></a>F-027-T03 — Answer-from-result cases on overview and alerts payloads, Italian and English | 1 h | 0 h | 1 h | Planned | [F-027-T02](#f-027-t02) | — | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟡 Medium | **Total** | 3.25 h | 0 h (0 of 3 steps recorded) | 3.25 h | 0 of 3 completed | | | |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-027.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="b-006"></a>[🐞 B-006](#top)
 
 **An upgraded agent drops its cached config until the hub answers**
@@ -443,46 +483,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="f-027"></a>[✨ F-027](#top)
-
-**Gauntlet pack for the hub's MCP tools (grover-v1), Italian and English**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 3.25 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips (Planned).
-
-| | |
-|---|---|
-| **Issue** | NERV's models call 19 Grover tools, four of which move hardware, and no case checks that a model picks the right tool and arguments, leaves hardware to approval and answers from the tool result. The tool-use general pack uses invented tools only. The owner uses NERV and all modules in Italian, so every case set includes Italian phrasings. Owner decision 2026-11-26 in chat: "ok to all" (accepts proposal 1 of the shared-asset review, solution:F-016-T04); same message: "nerv and all modules will need to work with Italian". |
-| **Reproduce** | `ls evals/gauntlet` finds nothing; `grep gauntlet package.json` finds no pin; `apps/hub/src/mcp.ts` registers 19 tools with no case naming any. |
-| **Check** | `evals/gauntlet/grover-v1.json`, model layer, regression and holdout splits, Italian and English requests, exact-json (json-match once released), invented data; `gauntlet validate` runs in CI from a pinned `@voidbrain/gauntlet-protocol` devDependency; a test fails when a case names a tool or argument that `mcp.ts` does not register; the skips are recorded in `docs/DESIGN.md`, "NERV"; NERV runs the pack against its models (nerv:F-120-T11). |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
-|---|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-027-t01"></a>F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips | 0.75 h | 0 h | 0.75 h | Planned | — | [F-027-T02](#f-027-t02) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
-| 🟡 Medium | <a id="f-027-t02"></a>F-027-T02 — Tool-choice, approval and argument cases, Italian and English | 1.5 h | 0 h | 1.5 h | Planned | [F-027-T01](#f-027-t01) | [F-027-T03](#f-027-t03) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
-| 🟢 Small | <a id="f-027-t03"></a>F-027-T03 — Answer-from-result cases on overview and alerts payloads, Italian and English | 1 h | 0 h | 1 h | Planned | [F-027-T02](#f-027-t02) | — | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
-| 🟡 Medium | **Total** | 3.25 h | 0 h (0 of 3 steps recorded) | 3.25 h | 0 of 3 completed | | | |
-
-<details>
-<summary>Next action, estimates and evidence</summary>
-
-[Full notes & evidence](work/records/F-027.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
-| Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
 ### <a id="f-026"></a>[✨ F-026](#top)
 
 **Hub backup schedule, off-host copy and restore drill**
@@ -1171,6 +1171,47 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | Steps: F-024-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-024-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+### <a id="f-028"></a>[✨ F-028](#top)
+
+**Timed switch: "spegni il ventilatore per 2 ore", reverted by the hub**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🔴 Large | 4.5 h | [F-027-T02](#f-027-t02) | — | 🤖 | — | — |
+
+💻 **→** Next: F-028-T01 — Design the timed switch in docs/DESIGN.md (Planned).
+
+| | |
+|---|---|
+| **Issue** | Owner decision 2026-11-26 in chat: "yes to both", including a timed switch in Grover ("spegni il ventilatore per 2 ore") via MCP behind NERV's approval. `grover_switch` takes only `actuatorId` and `on` (`apps/hub/src/mcp.ts`), so a timed request can only switch and leave it. The owner uses all modules in Italian. |
+| **Reproduce** | Ask NERV "spegni il ventilatore per 2 ore": at best the fan goes off and stays off; nothing turns it back on. |
+| **Check** | A written design (F-028-T01); the hub stores the timer and reverts on time even with NERV offline and after a hub restart, cancels on a later command, retries and alerts when the agent is offline (F-028-T02); `grover_switch` gains an optional bounded `durationMinutes`, still a hardware tool behind NERV's approval, with the timer shown and cancellable in the client (F-028-T03); grover-v1 cases in Italian and English (F-028-T04). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
+|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-028-t01"></a>F-028-T01 — Design the timed switch in docs/DESIGN.md | 0.5 h | 0 h | 0.5 h | Planned | — | [F-028-T02](#f-028-t02) |
+| 🟡 Medium | <a id="f-028-t02"></a>F-028-T02 — Hub timers: store, revert, cancel, restart | 2 h | 0 h | 2 h | Planned | [F-028-T01](#f-028-t01) | [F-028-T03](#f-028-t03) |
+| 🟡 Medium | <a id="f-028-t03"></a>F-028-T03 — MCP argument, REST and client: set, show and cancel a timer | 1.5 h | 0 h | 1.5 h | Planned | [F-028-T02](#f-028-t02) | [F-028-T04](#f-028-t04) |
+| 🟢 Small | <a id="f-028-t04"></a>F-028-T04 — grover-v1 timed cases, Italian and English | 0.5 h | 0 h | 0.5 h | Planned | [F-028-T03](#f-028-t03), [F-027-T02](#f-027-t02) | — |
+| 🔴 Large | **Total** | 4.5 h | 0 h (0 of 4 steps recorded) | 4.5 h | 0 of 4 completed | | |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-028.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Plan: PR pending |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
