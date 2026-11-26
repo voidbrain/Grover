@@ -63,7 +63,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | **Issue** | systemd units and deploy steps exist (`deploy/`, README) but have not been run on a Pi: the hub goes on Calvary (NERV-03), the agent on a small second Pi in the tent. |
 | **Reproduce** | README, "Deploying on a Raspberry Pi", steps 1 to 6. |
-| **Check** | Both services start at boot; `https://<pi>.<tailnet>.ts.net` opens the dashboard from a phone on the tailnet and not from outside it; NERV lists the Grover tools at `/mcp`. |
+| **Check** | The hub starts at boot on Calvary and the agent on the tent Pi; `https://<pi>.<tailnet>.ts.net` opens the dashboard from a phone on the tailnet and not from outside it; NERV lists the Grover tools at `/mcp`. |
 
 **Feature steps**
 
@@ -82,7 +82,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30), [#60](https://github.com/voidbrain/Grover/pull/60) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
