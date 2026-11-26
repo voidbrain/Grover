@@ -39,5 +39,11 @@
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 44,
+      "note": "cached config of the previous protocol; refusal fault"
+    }
+  ]
 }

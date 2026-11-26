@@ -247,10 +247,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status |
-|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-006-t01"></a>B-006-T01 — Failing agent test, then run a cached config of the previous protocol | 1 h | 0 h | 0 h | Implemented; verification pending |
-| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 0 h | 0 of 1 completed |
+| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
+|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-006-t01"></a>B-006-T01 — Failing agent test, then run a cached config of the previous protocol | 1 h | 0 h | 0 h | Implemented; verification pending | [PR #44](https://github.com/voidbrain/Grover/pull/44) cached config of the previous protocol; refusal fault |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 0 h | 0 of 1 completed | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -259,7 +259,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#44](https://github.com/voidbrain/Grover/pull/44) |
+| PR / evidence | Steps: B-006-T01: [PR #44](https://github.com/voidbrain/Grover/pull/44) cached config of the previous protocol; refusal fault. [#30](https://github.com/voidbrain/Grover/pull/30); [#44](https://github.com/voidbrain/Grover/pull/44) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
