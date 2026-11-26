@@ -11,6 +11,7 @@ import {
   firesAt,
   isPump,
   localTime,
+  parseCachedConfig,
   topics,
   scheduleOnDay,
   windowActive,
@@ -72,11 +73,7 @@ export class Agent {
   }
 
   async start(): Promise<void> {
-    try {
-      await this.apply(AgentConfig.parse(JSON.parse(readFileSync(this.configPath, 'utf8'))), false);
-    } catch {
-      // No cached config yet: wait for the hub.
-    }
+    await this.loadCachedConfig();
     this.ticker = setInterval(() => void this.tick(), 1000);
 
     const will = this.statusPayload('offline');
@@ -95,6 +92,25 @@ export class Agent {
     });
     this.client.on('message', (topic, payload) => void this.onMessage(topic, payload.toString()));
     this.client.on('error', (err) => console.error(`mqtt: ${err.message}`));
+  }
+
+  /** Runs the config cached by the last run, so the agent works before (and without) the hub. */
+  private async loadCachedConfig(): Promise<void> {
+    let text: string;
+    try {
+      text = readFileSync(this.configPath, 'utf8');
+    } catch {
+      return; // No cached config yet: wait for the hub.
+    }
+    let data: unknown;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      return this.fault('config', `cached config is not JSON: ${(err as Error).message}`);
+    }
+    const parsed = parseCachedConfig(data);
+    if (!parsed.success) return this.fault('config', `cached config refused: ${parsed.error.message}`);
+    await this.apply(parsed.data, false);
   }
 
   async stop(): Promise<void> {

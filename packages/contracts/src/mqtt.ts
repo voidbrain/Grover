@@ -130,6 +130,18 @@ export const AgentConfig = z
   });
 export type AgentConfig = z.infer<typeof AgentConfig>;
 
+/**
+ * The agent's own cached `config.json` at start (B-006): a config of the previous protocol is still run, with the
+ * fields that protocol added at their defaults, so an upgraded agent keeps its schedules until the hub sends a new one.
+ * Every bump so far only added fields with defaults; a bump that changes what an older field means must upgrade it
+ * here. A newer or unknown protocol is refused, as over MQTT.
+ */
+export function parseCachedConfig(data: unknown): ReturnType<typeof AgentConfig.safeParse> {
+  const previous =
+    typeof data === 'object' && data !== null && (data as { protocol?: unknown }).protocol === PROTOCOL_VERSION - 1;
+  return AgentConfig.safeParse(previous ? { ...data, protocol: PROTOCOL_VERSION } : data);
+}
+
 export const AgentCommand = z.discriminatedUnion('kind', [
   /** `raw`: the driver's value before calibration, for taking calibration points; not stored as a reading. */
   z.object({ id: z.string(), kind: z.literal('read'), probeId: Id, raw: z.boolean().default(false) }),
