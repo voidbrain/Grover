@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { backupDb } from './backup.ts';
 import { loadConfig } from './config.ts';
 import { openDb } from './db.ts';
 import { startHub } from './hub.ts';
@@ -16,6 +17,15 @@ if (process.argv[2] === 'import-legacy') {
   for (const line of r.skipped) console.log(`  note: ${line}`);
   console.log('If the hub is running, reload the client to see them.');
   store.db.close();
+  process.exit(0);
+}
+
+// `npm run hub -- backup <file>`: a consistent copy of the database, also while the hub runs.
+if (process.argv[2] === 'backup') {
+  const file = process.argv[3];
+  if (!file) throw new Error('usage: npm run hub -- backup <file>');
+  const config = loadConfig();
+  console.log(`backed up ${config.dbPath} to ${backupDb(config.dbPath, file)}`);
   process.exit(0);
 }
 

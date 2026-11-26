@@ -35,6 +35,8 @@ One Pi runs the hub and the agent as two services (so the agent's safety does no
 6. Open the client's **Setup** page: add the room, its probes, pumps and switches with their wiring, and schedules. (The same is possible through the API, `PUT /api/<rooms|probes|actuators|schedules>/<id>` with the bodies in `packages/contracts/src/domain.ts`; `apps/hub/src/seed.ts` is a full example.)
 7. Publish the hub on your tailnet: `sudo tailscale serve --bg 8080`, and put `GROVER_ALLOWED_HOSTS=<pi-name>.<tailnet>.ts.net` in `/etc/grover/hub.env` (the hub refuses host names it does not know). Open `https://<pi-name>.<tailnet>.ts.net` from any device on the tailnet. NERV connects to `https://<pi-name>.<tailnet>.ts.net/mcp`.
 
+**Backups.** `npm run hub -- backup <file>` (with the hub's `GROVER_DB`, also while the hub runs) writes a consistent copy of the database with SQLite `VACUUM INTO`; it refuses a file that already exists. Keep the copy off the Pi's SD card. To restore, stop the hub and put the copy at `GROVER_DB`. Readings older than 30 days are kept hourly ([design](docs/DESIGN.md#data-retention)).
+
 The hub listens on loopback only; `tailscale serve` is what makes it reachable, and only from your tailnet. A second Pi runs only the agent, with `GROVER_HUB_MQTT=mqtt://<hub-pi>:1883` and the hub's `GROVER_MQTT_HOST` set to its Tailscale IP.
 
 ## Where things are
