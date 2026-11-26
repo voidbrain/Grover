@@ -4,10 +4,9 @@
   "parent": "F-005",
   "title": "Owner checks NERV lists the Grover tools (waits on nerv:F-123-T02)",
   "goal": "NERV reaches the deployed hub over MCP",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
-    "Step 6 of the Calvary page gives its expected result",
-    "Waits on nerv:F-123-T02 (NERV's owner check that it lists the Grover tools); done together with it"
+    "Step 6 of the Calvary page gave its expected result (2026-11-26, with nerv:F-123-T02)"
   ],
   "dependsOn": [
     "F-005-T01"
@@ -29,11 +28,11 @@
   "ownerLink": "docs/acceptance/hub-on-calvary.md#6-nerv-on-the-mac-running-nerv",
   "effort": {
     "size": "small",
-    "estimate": "0.25 h owner",
-    "basis": "Estimated 2026-11-24: 15 minutes, shared with nerv:F-123-T02. Waits on nerv:F-123-T02 (NERV PR #730); the local prerequisite is the deployed hub (F-005-T01).",
-    "reviewed": "2026-11-24",
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-26: the owner ran NERV's `nerv tools add` and `nerv tools` against the hub on Calvary: 19 tools listed. Evidence on the Calvary page. No actual: not timed.",
+    "reviewed": "2026-11-26",
     "agentHours": 0,
-    "ownerHours": 0.25,
+    "ownerHours": 0,
     "ownerKind": "procedure"
   }
 }

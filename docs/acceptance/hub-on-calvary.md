@@ -65,9 +65,9 @@ curl -s https://<DNS>/mcp -H 'content-type: application/json' -H 'accept: applic
 
 Expected: the health JSON, then an MCP answer naming the server. From a phone with Tailscale off, `https://<DNS>` does not load. If `tailscale serve` asks to enable HTTPS for the tailnet, report it.
 
-## 6. NERV on the Mac running NERV (open: F-005-T02)
+## 6. NERV on the Mac running NERV (done 2026-11-26, F-005-T02)
 
-Waits on nerv:F-123-T02; F-005-T02 is done together with it. Add an MCP connection in NERV to `https://<DNS>/mcp` and list its tools.
+Done together with nerv:F-123-T02. Add an MCP connection in NERV to `https://<DNS>/mcp` and list its tools.
 
 Expected: the `grover_...` tools are listed (for example `grover_overview`, `grover_alerts`, `grover_plants`).
 
@@ -95,7 +95,7 @@ Done by the agent over SSH as the user `db`, not by the owner at the keyboard: t
 
 **Reboot (step 7), about 20:30Z:** owner OK in chat ("yep"); the agent ran `sudo systemctl reboot` over SSH. After boot (uptime 0 min): `grover-hub` active, NERV-03 active, `tailscale serve` restored (tailnet only, proxy to `127.0.0.1:8080`), and `/api/health` from the Mac gave `{"ok":true,"agents":[]}`.
 
-**Still open:** step 6 (NERV lists the Grover tools: F-005-T02, nerv:F-123-T02, the owner's `nerv tools add`).
+**NERV lists the tools (step 6), 2026-11-26 about 20:37Z:** the owner ran `nerv tools add grover https://<calvary>.ts.net/mcp` on NERV-01, then `nerv tools`: `grover · https://<calvary>.ts.net/mcp · 19 tool(s)`, each marked read-only or not, `grover_run_pump` marked destructive, none granted. With the hub stopped on Calvary, `nerv tools` showed `could not list its tools: MCP server <calvary>.ts.net answered initialize with HTTP 502.`; started again, it listed 19 tools. (The same session granted `grover/grover_alerts`; NERV answered "no active alarms" through it, see nerv:F-123-T02.)
 
 ## Stop or undo
 
