@@ -770,7 +770,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46) |
+| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
