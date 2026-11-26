@@ -59,7 +59,7 @@ export function createMcpServer(hub: Hub): McpServer {
     'grover_plants',
     {
       description:
-        'Plants with their strain (breeder, sativa/indica, THC/CBD, flowering days, ancestry), generation (0 from seed, 1 first cutting…), line of mothers, pot and dates. Optionally only plants in a pot, or still growing.',
+        'Plants with their strain (breeder, sativa/indica, THC/CBD, flowering days, ancestry), generation (0 from seed, 1 first cutting…), line of mothers, pot and dates. Optionally only plants in a pot (its id, from grover_overview), or still growing. Answers "quali piante ho?", "che genetica è nel vaso 3?", "da dove viene questa talea?".',
       inputSchema: { potId: z.string().optional(), growingOnly: z.boolean().optional() },
       annotations: { readOnlyHint: true },
     },
@@ -85,6 +85,29 @@ export function createMcpServer(hub: Hub): McpServer {
               mothers: lineage(p.id, plants).map((m) => ({ id: m.id, name: m.name, generation: m.generation })),
             };
           }),
+      );
+    },
+  );
+
+  server.registerTool(
+    'grover_strains',
+    {
+      description:
+        'Strains, also those no plant grows now: breeder, sativa/indica, THC/CBD, flowering days, autoflower, notes with sources, ancestry, and the ids of the plants of that strain. Answers "quali genetiche ho?", "chi è il breeder della Northern Lights?", "quanti giorni di fioritura ha?".',
+      annotations: { readOnlyHint: true },
+    },
+    async () => {
+      const strains = store.listStrains();
+      const breeders = new Map(store.listBreeders().map((b) => [b.id, b]));
+      const plants = store.listPlants();
+      return text(
+        strains.map((strain) => ({
+          ...strain,
+          genetics: geneticsLabel(strain.sativaPercent),
+          breeder: strain.breederId ? (breeders.get(strain.breederId)?.name ?? strain.breederId) : null,
+          ancestry: ancestry(strain.id, strains),
+          plantIds: plants.filter((p) => p.strainId === strain.id).map((p) => p.id),
+        })),
       );
     },
   );

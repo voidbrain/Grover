@@ -4,7 +4,7 @@
   "parent": "F-012",
   "title": "Owner imports the old records on the Pi and enters the generation-2 plant",
   "goal": "The real plants and strains are on the deployed hub",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "The import reports breeders, strains and plants",
     "NL5xHaze generation 2 is in pot 3 with its mother",
@@ -31,11 +31,11 @@
   "ownerLink": "README.md#deploying-on-a-raspberry-pi",
   "effort": {
     "size": "small",
-    "estimate": "0.5 h owner",
-    "basis": "Estimated 2026-11-24: about 30 minutes.",
-    "reviewed": "2026-11-24",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26 on the Calvary hub by an agent over SSH with the owner's OK, then the owner added NL5xHaze in Setup (generation 0, no pot: deliberate). Not timed.",
+    "reviewed": "2026-11-26",
     "agentHours": 0,
-    "ownerHours": 0.5,
+    "ownerHours": 0,
     "baselineAgentHours": 0,
     "estimateAgentHours": 0,
     "ownerKind": "procedure"
