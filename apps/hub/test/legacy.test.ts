@@ -100,7 +100,7 @@ test('names that make the same id are kept apart, and reported', () => {
   );
 });
 
-test('a placeholder name with no letters or digits gets an id from its old id, not "item" (F-012-T03)', () => {
+test('a placeholder name with no letters or digits gets an id from its old id, not "item" (F-012-T03, B-013)', () => {
   // The real dump has a strain named '–' that plants use; it was imported as id "item".
   const store = new Store(openDb(':memory:'));
   importLegacy(
@@ -111,11 +111,29 @@ test('a placeholder name with no letters or digits gets an id from its old id, n
   );
   assert.deepEqual(
     store.listStrains().map((s) => [s.id, s.name]),
-    [['legacy-strain-20', '–']],
+    [['legacy-strain-20', 'Unknown (old record)']],
   );
   assert.deepEqual(
     store.listBreeders().map((b) => [b.id, b.name]),
     [['legacy-breeder-5', '?']],
   );
   assert.equal(store.listPlants()[0]!.strainId, 'legacy-strain-20');
+});
+
+test('a lineage naming the placeholder strain means no recorded parents, and a second import adds nothing (B-013)', () => {
+  // In the real dump most strains have lineage '20', the placeholder '–': the old app's "parent not known".
+  const store = new Store(openDb(':memory:'));
+  const dump =
+    "INSERT INTO `grover_strains` (`id`, `name`, `lineage`, `percentSativa`, `deleted`) VALUES (20, '–', '0', NULL, 0), (21, 'Red Comet', '20', 50, 0), (22, 'Red Comet x Mist', '21,20', 50, 0);\n" +
+    'INSERT INTO `grover_plants` (`id`, `idStrain`, `idCompany`, `generation`, `deleted`) VALUES (1, 20, NULL, 0, 0);';
+  importLegacy(store, dump);
+  assert.deepEqual(
+    store.listStrains().map((s) => [s.id, s.parentIds]),
+    [
+      ['red-comet', []],
+      ['red-comet-x-mist', ['red-comet']],
+      ['legacy-strain-20', []],
+    ],
+  );
+  assert.deepEqual(importLegacy(store, dump), { breeders: 0, strains: 0, plants: 0, skipped: [] });
 });

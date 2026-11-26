@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52.25 h agent + 13.25 h owner across 79 open steps of 26 features and 7 other records. Generated from the task files.
+**Remaining effort:** 52 h agent + 13 h owner across 79 open steps of 26 features and 7 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -907,6 +907,53 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="b-013"></a>[🐞 B-013](#top)
+
+**Two imported old records on the Calvary hub need the owner's word: the placeholder strain '–' and Dos Si Dos 33's dates**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-013-T02 — Apply the owner's choice on the Calvary hub and read it back (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | Found by the owner's import on the Calvary hub, 2026-11-26 ([F-012](work/records/F-012.md), F-012-T02). (1) The old dump has a strain named '–' (old id 20), a placeholder; it was imported as a strain with id `item` and name '–', and two old plants use it: legacy-1 and legacy-4 (both started 2021-10-01, bloom 2022-01-30), whose old breeder id 89 is unknown. The import now names such a strain `legacy-strain-20` (F-012-T03), but the hub already holds `item`. (2) Old plant legacy-8, Dos Si Dos 33, has bloom 2022-04-01 before its start 2022-06-04: the old record says so; nothing was invented. Nothing was changed on the hub. |
+| **Reproduce** | On the hub, Setup → Plants and strains: the strain '–' and the plants "– (old #1)" and "– (old #4)"; the plant "Dos Si Dos 33 (old #8)" with its dates. Or the MCP tool `grover_plants`. |
+| **Check** | The owner's choice for each question is recorded here; if it changes data, a backup of the hub database is taken first and the change is applied and read back (`grover_plants`). |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Who |
+|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="b-013-t02"></a>B-013-T02 — Apply the owner's choice on the Calvary hub and read it back | 0.25 h | 0 h | 0 h | Implemented; verification pending | 🤖 |
+| 🟢 Small | <a id="b-013-t03"></a>B-013-T03 — Importer: the placeholder strain is never a parent and is named "Unknown (old record)"; failing test first | 0.5 h | 0 h | 0 h | Implemented; verification pending | 🤖 |
+| 🟢 Small | **Total** | 0.75 h | 0 h (0 of 3 steps recorded) | 0 h | 1 of 3 completed | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status |
+|---|---|---|---|---|
+| — | <a id="b-013-t01"></a>B-013-T01 — Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates | 0 h | 0 h | Completed |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-013.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Opened with the F-012-T03 fixes; [#65](https://github.com/voidbrain/Grover/pull/65); [#68](https://github.com/voidbrain/Grover/pull/68) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="f-010"></a>[✨ F-010](#top)
 
 **Hub data retention and backups**
@@ -1353,45 +1400,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Opened | 2026-11-25 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
-
-</details>
-
----
-### <a id="b-013"></a>[🐞 B-013](#top)
-
-**Two imported old records on the Calvary hub need the owner's word: the placeholder strain '–' and Dos Si Dos 33's dates**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | 0.25 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
-
-🧑 **→** Next: [🤔](work/records/B-013.md) B-013-T01 — Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates (Planned).
-
-| | |
-|---|---|
-| **Issue** | Found by the owner's import on the Calvary hub, 2026-11-26 ([F-012](work/records/F-012.md), F-012-T02). (1) The old dump has a strain named '–' (old id 20), a placeholder; it was imported as a strain with id `item` and name '–', and two old plants use it: legacy-1 and legacy-4 (both started 2021-10-01, bloom 2022-01-30), whose old breeder id 89 is unknown. The import now names such a strain `legacy-strain-20` (F-012-T03), but the hub already holds `item`. (2) Old plant legacy-8, Dos Si Dos 33, has bloom 2022-04-01 before its start 2022-06-04: the old record says so; nothing was invented. Nothing was changed on the hub. |
-| **Reproduce** | On the hub, Setup → Plants and strains: the strain '–' and the plants "– (old #1)" and "– (old #4)"; the plant "Dos Si Dos 33 (old #8)" with its dates. Or the MCP tool `grover_plants`. |
-| **Check** | The owner's choice for each question is recorded here; if it changes data, a backup of the hub database is taken first and the change is applied and read back (`grover_plants`). |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="b-013-t01"></a>B-013-T01 — Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | — | [B-013-T02](#b-013-t02) | [🤔](work/records/B-013.md) |
-| 🟢 Small | <a id="b-013-t02"></a>B-013-T02 — Apply the owner's choice on the Calvary hub and read it back | 0.25 h | 0 h | 0.25 h | Planned | [B-013-T01](#b-013-t01) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.25 h | 0 h (0 of 2 steps recorded) | 0.25 h agent + 0.25 h owner | 0 of 2 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-013.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Opened with the F-012-T03 fixes; [#65](https://github.com/voidbrain/Grover/pull/65) |
-| Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
 
 </details>
 
