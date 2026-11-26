@@ -40,6 +40,17 @@ One Pi runs the hub and the agent as two services (so the agent's safety does no
 
 The hub listens on loopback only; `tailscale serve` is what makes it reachable, and only from your tailnet. A second Pi runs only the agent, with `GROVER_HUB_MQTT=mqtt://<hub-pi>:1883` and the hub's `GROVER_MQTT_HOST` set to its Tailscale IP.
 
+## Updating the hub on a Raspberry Pi
+
+The hub serves a prebuilt client (`apps/client/dist`). Pulling new code without `npm run build` leaves the old screens served, and the update looks applied when it is not.
+
+1. Back up the database: `GROVER_DB=/var/lib/grover/hub.sqlite npm run hub -- backup ~/grover-backups/hub-before-update-<date>.sqlite`.
+2. Get the code: `git pull --ff-only`. If the Pi has no DNS, bundle it on another machine: `git bundle create grover.bundle <old>..origin/main`, copy the file to the Pi, then `git fetch grover.bundle refs/remotes/origin/main` and `git merge --ff-only <new>`.
+3. `npm ci`, only if `package-lock.json` changed.
+4. `npm run build` (about 35 s on a CM4).
+5. `sudo systemctl restart grover-hub`.
+6. Check: `systemctl is-active grover-hub` prints `active`; reload the app and force-refresh, because the app caches its files.
+
 ## Where things are
 
 | Path | What |
