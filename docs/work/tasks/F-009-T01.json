@@ -32,11 +32,17 @@
   "effort": {
     "size": "medium",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26: `npm run e2e` (Playwright 1.65.1, e2e/), passed headless locally on macOS with Chromium.",
+    "basis": "Done 2026-11-26 in #48: `npm run e2e` (Playwright 1.65.1, e2e/), passed headless locally on macOS with Chromium.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 2,
     "estimateAgentHours": 2
-  }
+  },
+  "prs": [
+    {
+      "pr": 48,
+      "note": "npm run e2e and the dashboard test"
+    }
+  ]
 }
