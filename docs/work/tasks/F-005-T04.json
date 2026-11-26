@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-005-T04",
+  "parent": "F-005",
+  "title": "Owner installs the agent on a small second Pi in the tent (later)",
+  "goal": "The agent runs at boot on the tent Pi, wired to the sensors and relays, and talks to the hub on Calvary over the tailnet",
+  "status": "planned",
+  "acceptance": [
+    "Steps 1-4 of the page give their expected result, or the difference is reported",
+    "Owner go-ahead for each run on the real rig (AGENTS.md, Hardware); the agent never switches hardware itself",
+    "Needs the second Pi bought and set up first (the page lists what Grover documents)"
+  ],
+  "dependsOn": [
+    "F-005-T01"
+  ],
+  "resources": [
+    "docs/acceptance/pi-deploy.md",
+    "README.md",
+    "deploy/grover-agent.service",
+    "docs/work/records/F-005.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/acceptance/pi-deploy.md",
+  "effort": {
+    "size": "small",
+    "estimate": "1 h owner",
+    "basis": "Estimated 2026-11-26: about 1 h on the tent Pi once it has the OS and Tailscale; buying and setting up the Pi is not included.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 1,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  }
+}

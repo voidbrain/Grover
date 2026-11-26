@@ -2,18 +2,20 @@
   "version": 1,
   "id": "F-005-T03",
   "parent": "F-005",
-  "title": "Fix the README and service files from the first install",
-  "goal": "The deploy steps match what the first install needed",
+  "title": "Fix the README and service files from the first installs (hub on Calvary, agent on the tent Pi)",
+  "goal": "The deploy steps match what the first installs needed",
   "status": "planned",
   "acceptance": [
-    "Every difference the owner reported is fixed in README, deploy/ or the acceptance page"
+    "Every difference the owner reported on either page is fixed in README, deploy/ or the acceptance pages"
   ],
   "dependsOn": [
-    "F-005-T01"
+    "F-005-T01",
+    "F-005-T04"
   ],
   "resources": [
     "README.md",
     "deploy/**",
+    "docs/acceptance/hub-on-calvary.md",
     "docs/acceptance/pi-deploy.md",
     "docs/work/records/F-005.md"
   ],

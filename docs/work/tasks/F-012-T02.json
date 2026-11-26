@@ -7,7 +7,8 @@
   "status": "planned",
   "acceptance": [
     "The import reports breeders, strains and plants",
-    "NL5xHaze generation 2 is in pot 3 with its mother"
+    "NL5xHaze generation 2 is in pot 3 with its mother",
+    "Needs only the hub on Calvary (F-005-T01); no agent"
   ],
   "dependsOn": [
     "F-012-T01",

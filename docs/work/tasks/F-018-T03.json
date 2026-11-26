@@ -7,12 +7,13 @@
   "status": "planned",
   "acceptance": [
     "Each pump runs forward and stops, recorded in the record",
-    "Owner go-ahead for every run on the real rig (AGENTS.md, Hardware); the agent never switches hardware itself."
+    "Owner go-ahead for every run on the real rig (AGENTS.md, Hardware); the agent never switches hardware itself.",
+    "Runs on the tent Pi (F-005-T04), not on Calvary; the hub is on Calvary (owner decision 2026-11-26)"
   ],
   "dependsOn": [
     "F-018-T01",
     "F-018-T02",
-    "F-005-T01"
+    "F-005-T04"
   ],
   "resources": [
     "docs/guides/hardware-bring-up.md",
