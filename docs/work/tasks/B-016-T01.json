@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "B-016-T01",
+  "parent": "B-016",
+  "title": "Write the README section for updating the hub on a Raspberry Pi",
+  "goal": "README tells how to update the hub so the new client is served",
+  "status": "closed",
+  "acceptance": [
+    "README has \"Updating the hub on a Raspberry Pi\" with backup, code, npm ci when the lockfile changed, build, restart and check steps"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "README.md",
+    "docs/work/records/B-016.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:fast"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-27: one README section. Not timed.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25
+  },
+  "prs": []
+}

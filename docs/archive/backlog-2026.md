@@ -9,7 +9,7 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 
 | Closing week | Features closed | Bugs closed |
 |---|---:|---:|
-| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 8 |
+| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 10 |
 <!-- archive-recap:end -->
 
 <a id="archive-week-2026-11-23"></a>
@@ -395,6 +395,76 @@ Answer in chat, for example: "1b: Northern Lights, Sensi Seeds; 2 leave". You ca
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
+
+</details>
+
+---
+
+## Closed 2026-11-27
+
+### B-015
+
+**The number fields of a grow calendar phase overlap each other (Setup → Default photoperiod, doses and ranges)**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: Closed 2026-11-27: PR #70 merged (failing e2e test, fix); owner visual check B-015-T02 passed on the Calvary hub at 114188b with the client rebuilt, 'grover ok' ~00:05 CET.
+
+| | |
+|---|---|
+| **Issue** | Owner report 2026-11-26: in the hub client, Setup → the "Default photoperiod" calendar, the dose fields ("selects" in the report: number inputs with spinners) overlap each other. Cause: Grover's own layout, not a 🧱 bricks component (the page uses plain inputs and Grover's `.field` / `.ranges` grid in `apps/client/src/styles.scss` and `calendar-setup.ts`; bricks supplies only tokens here). A grid or flex item keeps `min-width: auto`, so a number input (intrinsic width about 20 characters, and no `width: 100%` unlike text inputs) stayed wider than its 9rem column and spilled into the next one; the same hit Days and Light hours in the 12rem form grid. |
+| **Reproduce** | `npm run e2e -- calendar-setup` on a `main` before the fix: `e2e/calendar-setup.spec.ts` finds overlapping input boxes in Phase 1. By hand: [owner check page](../acceptance/b-015-calendar-fields.md). |
+| **Check** | No two number inputs of a calendar phase overlap at desktop width (`e2e/calendar-setup.spec.ts`, committed failing first); the owner sees the dose fields and range pairs side by side without overlap, at desktop and phone width, on the hub. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: Closed 2026-11-27: PR #70 merged (failing e2e test, fix); owner visual check B-015-T02 passed on the Calvary hub at 114188b with the client rebuilt, 'grover ok' ~00:05 CET. 2026-11-26: B-015-T01 done: failing e2e test committed first (6 overlapping pairs on Phase 1), then `.field { min-width: 0 }` and `.field input[type='number'] { width: 100%; min-width: 0 }` in `apps/client/src/styles.scss`; `npm run e2e` passes locally. The e2e suite does not run in CI, so CI does not guard this test. 2026-11-27: B-015-T02 done: after the hub was updated to 114188b and the client rebuilt (`npm run build`), the owner checked the calendar on the Calvary hub at about 00:05 CET and answered "grover ok": no overlapping fields. Hub-side visual check passed (desktop width; phone width not separately reported).
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#70](https://github.com/voidbrain/Grover/pull/70) (failing e2e test, fix, owner check page) |
+| Opened | 2026-11-26 |
+| Verification | Owner visual check on the Calvary hub, 2026-11-27 ("grover ok") |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+
+### B-016
+
+**README does not say how to update the hub on a Raspberry Pi: pulling code without `npm run build` keeps serving the old client**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: Closed 2026-11-27: README section added in this docs-only PR; green CI on it is the check.
+
+| | |
+|---|---|
+| **Issue** | Found 2026-11-27 while updating the Calvary hub: the hub serves the prebuilt client in `apps/client/dist`, so two updates by pulling code without `npm run build` looked applied but kept serving the old screens. README had a deploy section and no update section. |
+| **Reproduce** | `grep -n "Updating the hub" README.md` finds nothing on a `main` before the fix. |
+| **Check** | README has an "Updating the hub on a Raspberry Pi" section next to "Deploying on a Raspberry Pi": backup, get the code (also by git bundle without DNS), `npm ci` only if the lockfile changed, `npm run build`, restart, check and force-refresh. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: Closed 2026-11-27: README section added in this docs-only PR; green CI on it is the check. 2026-11-27: B-016-T01 done: the README section is written. A documentation gap, not a rule.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | PR pending |
+| Opened | 2026-11-27 |
+| Verification | Pending |
+| Reviewed | 2026-11-27 |
 
 </details>
 

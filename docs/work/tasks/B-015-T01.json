@@ -4,7 +4,7 @@
   "parent": "B-015",
   "title": "Failing e2e test for overlapping calendar fields, then the layout fix",
   "goal": "No two number inputs of a calendar phase overlap",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "e2e/calendar-setup.spec.ts is committed first and fails on main before the fix (overlapping input boxes in Phase 1)",
     "apps/client/src/styles.scss lets .field and its number inputs shrink to their column; the test passes; no other page changes layout"

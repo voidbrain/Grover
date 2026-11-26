@@ -4,7 +4,7 @@
   "parent": "B-015",
   "title": "Owner looks at a calendar's dose and range fields on the Mac and on the hub",
   "goal": "The owner confirms the fields no longer overlap on the hub",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "The owner follows docs/acceptance/b-015-calendar-fields.md: on the Mac (A) and, after the bundle update, on the hub (B), the dose fields and range pairs sit side by side without overlap at desktop and phone width",
     "The result (and a screenshot if anything still overlaps) is recorded in B-015"
@@ -31,20 +31,18 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.25 h agent, 0.25 h owner",
-    "basis": "One page look after the hub update. Estimated 2026-11-26. Not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-27: owner looked on the Calvary hub (114188b, client rebuilt) and said \"grover ok\" at about 00:05 CET. Not timed.",
     "reviewed": "2026-11-26",
-    "agentHours": 0.25,
-    "ownerHours": 0.25,
+    "agentHours": 0,
+    "ownerHours": 0,
     "baselineAgentHours": 0.25,
-    "estimateAgentHours": 0.25,
-    "ownerKind": "procedure"
+    "estimateAgentHours": 0.25
   },
   "prs": [
     {
       "pr": 70,
       "note": "owner check page"
     }
-  ],
-  "ownerLink": "docs/acceptance/b-015-calendar-fields.md"
+  ]
 }
