@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52.25 h agent + 13.25 h owner across 79 open steps of 26 features and 7 other records. Generated from the task files.
+**Remaining effort:** 55.25 h agent + 13.25 h owner across 81 open steps of 27 features and 7 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -1257,6 +1257,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | Steps: F-024-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-024-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+### <a id="f-029"></a>[✨ F-029](#top)
+
+**Use the 🧱 bricks charts: probe readings, feeds and doses, plant report**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 3 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-029-T01 — Upgrade bricks and replace plant-chart.ts with the bricks line chart (Planned).
+
+| | |
+|---|---|
+| **Issue** | Owner request 2026-11-26 (late evening): bricks plans shared chart components (line, bar, stacked bar, donut) in 🧱 bricks:F-014; Grover is a consumer and owns its adoption here. Grover draws its plant chart by hand (`apps/client/src/app/plant/plant-chart.ts`, SVG) and is on `@voidbrain/bricks` 0.1.0. Waits on the bricks release with the charts (bricks:F-014-T07). |
+| **Reproduce** | `apps/client/src/app/plant/plant-chart.ts` draws readings, target bands and markers in its own SVG; feeds and doses show as lists only. |
+| **Check** | Grover is on the bricks release with the charts; the plant page's readings chart is a bricks line chart with the same bands and markers and plant-chart.ts is removed with its tests (F-029-T01); feeds and doses per day show as a bricks bar or stacked bar chart (F-029-T02); e2e and axe pass in light and dark. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟡 Medium | <a id="f-029-t01"></a>F-029-T01 — Upgrade bricks and replace plant-chart.ts with the bricks line chart | 2 h | 0 h | 2 h | Planned | — | [F-029-T02](#f-029-t02) | [PR #71](https://github.com/voidbrain/Grover/pull/71) plan |
+| 🟢 Small | <a id="f-029-t02"></a>F-029-T02 — Feeds and doses per day as a bricks bar or stacked bar chart | 1 h | 0 h | 1 h | Planned | [F-029-T01](#f-029-t01) | — | [PR #71](https://github.com/voidbrain/Grover/pull/71) plan |
+| 🟡 Medium | **Total** | 3 h | 0 h (0 of 2 steps recorded) | 3 h | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-029.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-029-T01: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan · F-029-T02: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan. Plan: [#71](https://github.com/voidbrain/Grover/pull/71) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
