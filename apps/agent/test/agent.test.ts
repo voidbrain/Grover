@@ -7,6 +7,7 @@ import { test } from 'node:test';
 import { AgentConfig, PROTOCOL_VERSION, type Actuator } from '@grover/contracts';
 import { Agent } from '../src/agent.ts';
 import { MockDrivers } from '../src/drivers/mock.ts';
+import { Outbox } from '../src/outbox.ts';
 
 const mock = { driver: 'mock' as const };
 const pump = (id: string, kind: Actuator['kind'], potId: string | null = null): Actuator => ({
@@ -435,3 +436,86 @@ test('a light window is not lost while its switch was stuck after a failed switc
   assert.equal(drivers.states.get('light'), true, 'on inside its window once the bus works again');
   await agent.stop();
 });
+
+// B-006: a cached config.json saved by the previous agent version must not leave the agent idle until the hub answers.
+async function agentWithCachedJson(cached: unknown, drivers: MockDrivers, now: () => number) {
+  const dir = mkdtempSync(join(tmpdir(), 'grover-agent-'));
+  writeFileSync(join(dir, 'config.json'), JSON.stringify(cached));
+  const agent = new Agent(
+    { agentId: 'pi-1', token: 't', hubUrl: 'mqtt://127.0.0.1:9', stateDir: dir, drivers: 'mock', version: 't' },
+    drivers,
+    now,
+  );
+  await agent.start();
+  return { agent, dir };
+}
+
+/** The events the agent queued for the hub, read back from its outbox after it stopped. */
+function queuedEvents(dir: string) {
+  const outbox = new Outbox(join(dir, 'outbox.sqlite'));
+  try {
+    return outbox.peek();
+  } finally {
+    outbox.close();
+  }
+}
+
+const cachedWindow = (protocol: unknown) => ({
+  protocol,
+  agentId: 'pi-1',
+  roomId: 'r',
+  mode: 'normal',
+  probes: [],
+  actuators: [{ ...pump('light', 'light'), maxRunMs: 0, mlPerSecond: null }],
+  // Saved before the schedule had `days`: the field takes its default.
+  schedules: [
+    {
+      id: 'w',
+      target: { type: 'actuator', actuatorId: 'light' },
+      rule: { kind: 'window', from: '06:00', to: '20:00' },
+      enabled: true,
+    },
+  ],
+  timezone: 'UTC',
+  issuedAt: 1,
+});
+
+test('a cached config of the previous protocol runs its schedules with no hub (B-006)', async () => {
+  const t = Date.parse('2026-06-01T10:00:00Z');
+  const drivers = new MockDrivers();
+  const { agent, dir } = await agentWithCachedJson(cachedWindow(PROTOCOL_VERSION - 1), drivers, () => t);
+  try {
+    assert.ok(agent.state.config, 'the cached config is in use');
+    assert.equal(agent.state.config.schedules[0]!.days, null, 'a new field takes its default');
+    await agent.tick();
+    assert.equal(drivers.states.get('light'), true, 'the light window runs without the hub');
+  } finally {
+    await agent.stop();
+  }
+  assert.deepEqual(
+    queuedEvents(dir).filter((e) => e.type === 'fault'),
+    [],
+    'no fault for an older cached config',
+  );
+});
+
+for (const [name, protocol] of [
+  ['a newer', PROTOCOL_VERSION + 1],
+  ['an unknown', 'v6'],
+] as const) {
+  test(`a cached config of ${name} protocol is refused with a fault (B-006)`, async () => {
+    const t = Date.parse('2026-06-01T10:00:00Z');
+    const drivers = new MockDrivers();
+    const { agent, dir } = await agentWithCachedJson(cachedWindow(protocol), drivers, () => t);
+    try {
+      assert.equal(agent.state.config, null, 'not used');
+      await agent.tick();
+      assert.notEqual(drivers.states.get('light'), true, 'nothing runs');
+    } finally {
+      await agent.stop();
+    }
+    const faults = queuedEvents(dir).filter((e) => e.type === 'fault');
+    assert.equal(faults.length, 1, 'one fault for the hub');
+    assert.equal(faults[0]!.type === 'fault' && faults[0]!.subject, 'config');
+  });
+}
