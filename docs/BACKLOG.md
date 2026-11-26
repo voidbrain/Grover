@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52.25 h agent + 13.5 h owner across 78 open steps of 26 features and 6 other records. Generated from the task files.
+**Remaining effort:** 52.25 h agent + 13.25 h owner across 79 open steps of 26 features and 7 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -391,6 +391,57 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="f-012"></a>[✨ F-012](#top)
+
+**Plants and strains: origin, generation, breeder, ancestry**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-012-T03 — Record the try of the import; fix what it found (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | The rebuild dropped the plant records of the old Grover (tables `grover_plants`, `grover_strains`, `grover_companies` at tag `legacy-v1`). The owner needs each plant's origin: strain, breeder, generation (0 from seed, 1 first cutting, 2 cutting of a cutting…) and the plant it was cut from, which pot it is in, its dates; and each strain's breeder, ancestry (parent strains), indica/sativa split, THC (and CBD) when known. Example from the owner, 2026-11-24: Northern Lights #5 x Haze, generation 2, in pot 3; legacy: Sensi Seeds, parents Northern Lights #5 and Haze, 50 % sativa. |
+| **Reproduce** | `git show legacy-v1:Documentation/MYSQL-DB/Sql_backup_2024_07_25.sql`, tables above; the new hub has no plants. |
+| **Check** | Breeders, strains (parents, sativa %, THC/CBD %, flowering days, notes) and plants (strain, breeder, generation, mother plant, pot, dates, yield, notes) can be added and edited in Setup; a pot card shows its plant; the legacy strains, breeders and plants import once (`npm run hub -- import-legacy`) without guessing pots; NERV can read them (MCP); tests cover the schemas, the import and the API. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Who | PRs |
+|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="f-012-t03"></a>F-012-T03 — Record the try of the import; fix what it found | 0.25 h | 0 h | 0 h | Implemented; verification pending | 🤖 | — |
+| 🟢 Small | **Total** | 0.25 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0 h | 2 of 3 completed | | |
+
+<details><summary>Done steps (2)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-012-t01"></a>F-012-T01 — Build plants, strains and the legacy import | — | 0 h | Completed | [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation |
+| — | <a id="f-012-t02"></a>F-012-T02 — Owner imports the old records on the Pi and enters the generation-2 plant | 0 h | 0 h | Completed | — |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-012.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02) |
+| Opened | 2026-11-24 |
+| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. 2026-11-26: the import on the Calvary hub (F-012-T02, see the closure evidence above), and a read-only `grover_plants` MCP call there returned its 17 plants. |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+
+
+
+
 ### <a id="f-008"></a>[✨ F-008](#top)
 
 **Alerts for NERV: out-of-range values, offline agent, faults**
@@ -577,57 +628,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
-
-### <a id="f-012"></a>[✨ F-012](#top)
-
-**Plants and strains: origin, generation, breeder, ancestry**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | — | — | ⏳ | 🧑‍🔧 | — |
-
-🧑 **→** Next: [🧑‍🔧](../README.md#deploying-on-a-raspberry-pi) F-012-T02 — Owner imports the old records on the Pi and enters the generation-2 plant (Planned).
-
-| | |
-|---|---|
-| **Issue** | The rebuild dropped the plant records of the old Grover (tables `grover_plants`, `grover_strains`, `grover_companies` at tag `legacy-v1`). The owner needs each plant's origin: strain, breeder, generation (0 from seed, 1 first cutting, 2 cutting of a cutting…) and the plant it was cut from, which pot it is in, its dates; and each strain's breeder, ancestry (parent strains), indica/sativa split, THC (and CBD) when known. Example from the owner, 2026-11-24: Northern Lights #5 x Haze, generation 2, in pot 3; legacy: Sensi Seeds, parents Northern Lights #5 and Haze, 50 % sativa. |
-| **Reproduce** | `git show legacy-v1:Documentation/MYSQL-DB/Sql_backup_2024_07_25.sql`, tables above; the new hub has no plants. |
-| **Check** | Breeders, strains (parents, sativa %, THC/CBD %, flowering days, notes) and plants (strain, breeder, generation, mother plant, pot, dates, yield, notes) can be added and edited in Setup; a pot card shows its plant; the legacy strains, breeders and plants import once (`npm run hub -- import-legacy`) without guessing pots; NERV can read them (MCP); tests cover the schemas, the import and the API. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
-|---|---|---|---|---|---|---|---|:---:|---|
-| 🟢 Small | <a id="f-012-t02"></a>F-012-T02 — Owner imports the old records on the Pi and enters the generation-2 plant | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | — | [F-012-T03](#f-012-t03) | [🧑‍🔧](../README.md#deploying-on-a-raspberry-pi) | — |
-| 🟢 Small | <a id="f-012-t03"></a>F-012-T03 — Record the try of the import; fix what it found | 0.25 h | 0 h | 0.25 h | Planned | [F-012-T02](#f-012-t02) | — | ⏳ 🤖 | — |
-| 🟢 Small | **Total** | 0.25 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.25 h agent + 0.5 h owner | 1 of 3 completed | | | | |
-
-<details><summary>Done steps (1)</summary>
-
-| Effort | Step | Estimate | Actual | Status | PRs |
-|---|---|---|---|---|---|
-| — | <a id="f-012-t01"></a>F-012-T01 — Build plants, strains and the legacy import | — | 0 h | Completed | [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation |
-
-</details>
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-012.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. The owner's import is pending. |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
-
-
 
 ### <a id="f-013"></a>[✨ F-013](#top)
 
@@ -1353,6 +1353,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Opened | 2026-11-25 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
+
+</details>
+
+---
+### <a id="b-013"></a>[🐞 B-013](#top)
+
+**Two imported old records on the Calvary hub need the owner's word: the placeholder strain '–' and Dos Si Dos 33's dates**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 0.25 h agent + 0.25 h owner | — | — | ⏳ | — | 🤔 |
+
+🧑 **→** Next: [🤔](work/records/B-013.md) B-013-T01 — Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates (Planned).
+
+| | |
+|---|---|
+| **Issue** | Found by the owner's import on the Calvary hub, 2026-11-26 ([F-012](work/records/F-012.md), F-012-T02). (1) The old dump has a strain named '–' (old id 20), a placeholder; it was imported as a strain with id `item` and name '–', and two old plants use it: legacy-1 and legacy-4 (both started 2021-10-01, bloom 2022-01-30), whose old breeder id 89 is unknown. The import now names such a strain `legacy-strain-20` (F-012-T03), but the hub already holds `item`. (2) Old plant legacy-8, Dos Si Dos 33, has bloom 2022-04-01 before its start 2022-06-04: the old record says so; nothing was invented. Nothing was changed on the hub. |
+| **Reproduce** | On the hub, Setup → Plants and strains: the strain '–' and the plants "– (old #1)" and "– (old #4)"; the plant "Dos Si Dos 33 (old #8)" with its dates. Or the MCP tool `grover_plants`. |
+| **Check** | The owner's choice for each question is recorded here; if it changes data, a backup of the hub database is taken first and the change is applied and read back (`grover_plants`). |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="b-013-t01"></a>B-013-T01 — Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | — | [B-013-T02](#b-013-t02) | [🤔](work/records/B-013.md) |
+| 🟢 Small | <a id="b-013-t02"></a>B-013-T02 — Apply the owner's choice on the Calvary hub and read it back | 0.25 h | 0 h | 0.25 h | Planned | [B-013-T01](#b-013-t01) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.25 h | 0 h (0 of 2 steps recorded) | 0.25 h agent + 0.25 h owner | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-013.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Opened with the F-012-T03 fixes |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
 
 </details>
 
