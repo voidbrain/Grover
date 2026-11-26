@@ -7,7 +7,7 @@
   "status": "planned",
   "acceptance": [
     "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T04); same message: \"nerv and all modules will need to work with Italian\".",
-    "Cases cover read-tool choice and arguments (\"what's the pH in pot 2\", \"quanto ha bevuto ieri la pianta 3\"), a hardware tool proposed for approval and never run silently (owner's phrases: \"accendi la luce\" -> grover_switch on, \"spegni il ventilatore per 2 ore\" -> grover_switch off with no invented duration argument, since grover_switch takes only actuatorId and on: the case expects the off call and a reply or question about the timer, decided in this step), \"controlla se è richiesta un'altra dose\" -> grover_feed_preview (read, not grover_feed_pot), grover_stop_all on an emergency phrase in both languages, record tools with the right plant and pot, and an unknown pump or pot asked back, never invented",
+    "Cases cover read-tool choice and arguments (\"what's the pH in pot 2\", \"quanto ha bevuto ieri la pianta 3\"), a hardware tool proposed for approval and never run silently (owner's phrases: \"accendi la luce\" -> grover_switch on, \"spegni il ventilatore per 2 ore\" -> grover_switch off with no invented duration argument, since grover_switch takes only actuatorId and on: the case expects the off call and a reply or question about the timer; the owner wants a timed switch (\"yes to both\", 2026-11-26): F-028 adds durationMinutes, and F-028-T04 adds the timed case once it lands), \"controlla se è richiesta un'altra dose\" -> grover_feed_preview (read, not grover_feed_pot), grover_stop_all on an emergency phrase in both languages, record tools with the right plant and pot, and an unknown pump or pot asked back, never invented",
     "Each capability has at least one Italian and one English request; regression and holdout splits"
   ],
   "dependsOn": [
@@ -43,6 +43,10 @@
     {
       "pr": 54,
       "note": "plan"
+    },
+    {
+      "pr": 56,
+      "note": "timed-switch case note"
     }
   ]
 }

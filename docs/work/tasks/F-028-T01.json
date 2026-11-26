@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "F-028-T01",
+  "parent": "F-028",
+  "title": "Design the timed switch in docs/DESIGN.md",
+  "goal": "How a timed switch is asked, stored, reverted and cancelled is written before code",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"yes to both\", including a timed switch in Grover (\"spegni il ventilatore per 2 ore\") via MCP behind NERV's approval. Italian is required for every model-facing feature.",
+    "Shape: grover_switch gains an optional durationMinutes (integer, 1 to 720 by default) rather than a new tool, so one hardware tool keeps one approval; the reply names the revert time",
+    "The hub enforces the revert: the timer is stored in the hub's SQLite, survives a hub restart (an overdue revert runs at start), and runs whether or not NERV is online; if the agent is offline at revert time the hub retries and raises an alert (alerts/1) instead of dropping it",
+    "Defaults stated for the owner to change: revert to the state before the timed switch, or, for a light that follows the calendar, to what the calendar says at revert time; a later manual switch, stop-all or mode change cancels the timer; pumps keep their bounded runs and never take a duration",
+    "Option recorded for later: also hand the deadline to the agent so it reverts if the hub is down"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/DESIGN.md",
+    "docs/work/records/F-028.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "architecture-review",
+    "distributed-contracts"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "Estimated 2026-11-26 at agent speed: one design section from commands.ts, lights.ts and alerts.ts. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  },
+  "prs": [
+    {
+      "pr": 56,
+      "note": "plan"
+    }
+  ]
+}

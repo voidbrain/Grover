@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "F-028-T04",
+  "parent": "F-028",
+  "title": "grover-v1 timed cases, Italian and English",
+  "goal": "The model's use of the duration is measured",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"yes to both\", including a timed switch in Grover (\"spegni il ventilatore per 2 ore\") via MCP behind NERV's approval. Italian is required for every model-facing feature.",
+    "\"spegni il ventilatore per 2 ore\" → grover_switch {on: false, durationMinutes: 120} proposed for approval; \"turn the light on for 30 minutes\" → durationMinutes 30; a duration over the maximum or an unclear one (\"per un po'\") is asked back, never invented; a pump with a duration refused; regression and holdout splits"
+  ],
+  "dependsOn": [
+    "F-028-T03",
+    "F-027-T02"
+  ],
+  "resources": [
+    "evals/gauntlet/grover-v1.json",
+    "docs/work/records/F-028.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm test",
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "Estimated 2026-11-26: about 5 cases added to the F-027 pack. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  },
+  "prs": [
+    {
+      "pr": 56,
+      "note": "plan"
+    }
+  ]
+}
