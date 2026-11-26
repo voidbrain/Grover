@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 25 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
+**Remaining effort:** 30 h agent + 13.25 h owner across 55 open steps of 19 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -305,54 +305,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
-### <a id="f-008"></a>[✨ F-008](#top)
-
-**Alerts for NERV: out-of-range values, offline agent, faults**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0.25 h owner | [F-005-T01](#f-005-t01) | — | — | — | — |
-
-💻 **→** Next: F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) (Planned).
-
-| | |
-|---|---|
-| **Issue** | Nothing tells the owner when pH, EC, temperature or level leave the phase range, when an agent goes offline or a driver faults; NERV can only poll `grover_overview`. |
-| **Reproduce** | Stop the agent or push a reading outside the range: nothing is raised. |
-| **Check** | The hub raises and clears alerts with hysteresis, lists them in the client and through an MCP tool, and NERV can deliver them (its own pack, recorded in NERV's backlog). |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
-|---|---|---|---|---|---|---|---|:---:|---|
-| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
-| 🟢 Small | **Total** | 1.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.25 h owner | 2 of 3 completed | | | | |
-
-<details><summary>Done steps (2)</summary>
-
-| Effort | Step | Estimate | Actual | Status | PRs |
-|---|---|---|---|---|---|
-| — | <a id="f-008-t01"></a>F-008-T01 — Build Grover-side alerts (thresholds, feeds, offline agents) | — | 0 h | Completed | [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation |
-| — | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | Completed | [PR #35](https://github.com/voidbrain/Grover/pull/35) feature |
-
-</details>
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-008.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-25 |
-
-</details>
-
----
-
 ### <a id="f-012"></a>[✨ F-012](#top)
 
 **Plants and strains: origin, generation, breeder, ancestry**
@@ -403,6 +355,55 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 
 
+
+### <a id="f-008"></a>[✨ F-008](#top)
+
+**Alerts for NERV: out-of-range values, offline agent, faults**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
+
+💻 **→** Next: F-008-T04 — Write the alert contract for NERV (Planned).
+
+| | |
+|---|---|
+| **Issue** | Nothing tells the owner when pH, EC, temperature or level leave the phase range, when an agent goes offline or a driver faults; NERV can only poll `grover_overview`. |
+| **Reproduce** | Stop the agent or push a reading outside the range: nothing is raised. |
+| **Check** | The hub raises and clears alerts with hysteresis, lists them in the client and through an MCP tool, and NERV can deliver them (its own pack, recorded in NERV's backlog). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟡 Medium | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | 1.5 h | Planned | — | — | 🤖 | — |
+| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
+| 🟡 Medium | **Total** | 3 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.25 h owner | 2 of 4 completed | | | | |
+
+<details><summary>Done steps (2)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-008-t01"></a>F-008-T01 — Build Grover-side alerts (thresholds, feeds, offline agents) | — | 0 h | Completed | [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation |
+| — | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | Completed | [PR #35](https://github.com/voidbrain/Grover/pull/35) feature |
+
+</details>
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-008.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-25 |
+
+</details>
+
+---
 
 ### <a id="f-006"></a>[✨ F-006](#top)
 
@@ -861,6 +862,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-021"></a>[✨ F-021](#top)
+
+**Full audit and audit enforcement**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 3.5 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-021-T01 — Next audit as kind full (Planned).
+
+| | |
+|---|---|
+| **Issue** | Grover has a rebuild baseline (2026-11-24) and a delivery report (2026-11-25, scoped), but no report of manifest kind `full`, and `audit.enforce` is off. The 2026-11-26 cross-project audit (coordinator, docs/audits/2026-11-26-cross-project.md, proposal 16) proposes a full audit, then enforcement. |
+| **Reproduce** | No `docs/audits/*.audit.json` has `"kind": "full"`; `.harness.json` has `"audit": {"enforce": false}`. |
+| **Check** | A report with manifest `kind: full` passes `npm run check:audits`, and `audit.enforce` is true. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
+|---|---|---|---|---|---|---|---|
+| 🟡 Medium | <a id="f-021-t01"></a>F-021-T01 — Next audit as kind full | 3 h | 0 h | 3 h | Planned | — | [F-021-T02](#f-021-t02) |
+| 🟢 Small | <a id="f-021-t02"></a>F-021-T02 — Turn audit.enforce on | 0.5 h | 0 h | 0.5 h | Planned | [F-021-T01](#f-021-t01) | — |
+| 🟡 Medium | **Total** | 3.5 h | 0 h (0 of 2 steps recorded) | 3.5 h | 0 of 2 completed | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-021.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#49](https://github.com/voidbrain/Grover/pull/49) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="f-020"></a>[✨ F-020](#top)
 
 **Adopt 🧱 bricks in the client**

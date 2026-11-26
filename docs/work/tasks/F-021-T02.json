@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-021-T02",
+  "parent": "F-021",
+  "title": "Turn audit.enforce on",
+  "goal": "audit.enforce is true after a valid full baseline exists",
+  "status": "planned",
+  "acceptance": [
+    "`audit.enforce` is `true` in .harness.json (a project setting) once F-021-T01's full manifest passes `npm run check:audits`",
+    "`npm run check:freshness` still passes with enforcement on"
+  ],
+  "dependsOn": [
+    "F-021-T01"
+  ],
+  "resources": [
+    "docs/audits/**",
+    ".harness.json",
+    "docs/work/records/F-021.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm run check:audits",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "Planned 2026-11-26 from cross-project audit proposal 16, accepted by the owner in chat 2026-11-26 (\"accept all 17 proposals\"). Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5,
+    "days": 0,
+    "baselineDays": 0
+  }
+}
