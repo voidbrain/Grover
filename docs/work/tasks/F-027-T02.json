@@ -43,6 +43,10 @@
     {
       "pr": 54,
       "note": "plan"
+    },
+    {
+      "pr": 56,
+      "note": "timed-switch case note"
     }
   ]
 }

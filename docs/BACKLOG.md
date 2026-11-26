@@ -250,7 +250,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
 |---|---|---|---|---|---|---|---|---|
 | 🟢 Small | <a id="f-027-t01"></a>F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips | 0.75 h | 0 h | 0.75 h | Planned | — | [F-027-T02](#f-027-t02) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
-| 🟡 Medium | <a id="f-027-t02"></a>F-027-T02 — Tool-choice, approval and argument cases, Italian and English | 1.5 h | 0 h | 1.5 h | Planned | [F-027-T01](#f-027-t01) | [F-027-T03](#f-027-t03), [F-028-T04](#f-028-t04) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟡 Medium | <a id="f-027-t02"></a>F-027-T02 — Tool-choice, approval and argument cases, Italian and English | 1.5 h | 0 h | 1.5 h | Planned | [F-027-T01](#f-027-t01) | [F-027-T03](#f-027-t03), [F-028-T04](#f-028-t04) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan; [PR #56](https://github.com/voidbrain/Grover/pull/56) timed-switch case note |
 | 🟢 Small | <a id="f-027-t03"></a>F-027-T03 — Answer-from-result cases on overview and alerts payloads, Italian and English | 1 h | 0 h | 1 h | Planned | [F-027-T02](#f-027-t02) | — | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
 | 🟡 Medium | **Total** | 3.25 h | 0 h (0 of 3 steps recorded) | 3.25 h | 0 of 3 completed | | | |
 
@@ -261,7 +261,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan; [PR #56](https://github.com/voidbrain/Grover/pull/56) timed-switch case note · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
@@ -1196,13 +1196,13 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-028-t01"></a>F-028-T01 — Design the timed switch in docs/DESIGN.md | 0.5 h | 0 h | 0.5 h | Planned | — | [F-028-T02](#f-028-t02) |
-| 🟡 Medium | <a id="f-028-t02"></a>F-028-T02 — Hub timers: store, revert, cancel, restart | 2 h | 0 h | 2 h | Planned | [F-028-T01](#f-028-t01) | [F-028-T03](#f-028-t03) |
-| 🟡 Medium | <a id="f-028-t03"></a>F-028-T03 — MCP argument, REST and client: set, show and cancel a timer | 1.5 h | 0 h | 1.5 h | Planned | [F-028-T02](#f-028-t02) | [F-028-T04](#f-028-t04) |
-| 🟢 Small | <a id="f-028-t04"></a>F-028-T04 — grover-v1 timed cases, Italian and English | 0.5 h | 0 h | 0.5 h | Planned | [F-028-T03](#f-028-t03), [F-027-T02](#f-027-t02) | — |
-| 🔴 Large | **Total** | 4.5 h | 0 h (0 of 4 steps recorded) | 4.5 h | 0 of 4 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-028-t01"></a>F-028-T01 — Design the timed switch in docs/DESIGN.md | 0.5 h | 0 h | 0.5 h | Planned | — | [F-028-T02](#f-028-t02) | [PR #56](https://github.com/voidbrain/Grover/pull/56) plan |
+| 🟡 Medium | <a id="f-028-t02"></a>F-028-T02 — Hub timers: store, revert, cancel, restart | 2 h | 0 h | 2 h | Planned | [F-028-T01](#f-028-t01) | [F-028-T03](#f-028-t03) | [PR #56](https://github.com/voidbrain/Grover/pull/56) plan |
+| 🟡 Medium | <a id="f-028-t03"></a>F-028-T03 — MCP argument, REST and client: set, show and cancel a timer | 1.5 h | 0 h | 1.5 h | Planned | [F-028-T02](#f-028-t02) | [F-028-T04](#f-028-t04) | [PR #56](https://github.com/voidbrain/Grover/pull/56) plan |
+| 🟢 Small | <a id="f-028-t04"></a>F-028-T04 — grover-v1 timed cases, Italian and English | 0.5 h | 0 h | 0.5 h | Planned | [F-028-T03](#f-028-t03), [F-027-T02](#f-027-t02) | — | [PR #56](https://github.com/voidbrain/Grover/pull/56) plan |
+| 🔴 Large | **Total** | 4.5 h | 0 h (0 of 4 steps recorded) | 4.5 h | 0 of 4 completed | | | |
 
 <details>
 <summary>Next action, estimates and evidence</summary>
@@ -1211,7 +1211,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Plan: PR pending |
+| PR / evidence | Steps: F-028-T01: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T02: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T03: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T04: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan. Plan: [#56](https://github.com/voidbrain/Grover/pull/56) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
