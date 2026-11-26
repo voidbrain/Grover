@@ -4,7 +4,7 @@
   "parent": "F-008",
   "title": "Write the alert contract for NERV",
   "goal": "NERV and any other consumer can read Grover's alert format, key grammar and level meaning from DESIGN.md, and a test pins them",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
     "docs/DESIGN.md \"NERV\" (or \"Alerts\") gains the alert shape (`key`, `roomId`, `potId`, `level` `warn|bad`, `message`, `since`), the key grammar (`probe:<id>:below`, `probe:<id>:above`, `feed:<pot>`, `agent:<id>`; stable while the condition lasts, so `(key, since)` names an episode), and what each level means (`warn` when a feed is refused or a probe leaves its range, `bad` when a feed stopped partway or an agent is offline), as the hub raises them today",
     "A hub or contracts test pins the key shapes and levels the hub emits for each condition, so a change to them fails a test",
@@ -34,8 +34,8 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1.5 h agent",
-    "basis": "Planned 2026-11-26 from cross-project audit proposal 10, accepted by the owner in chat 2026-11-26 (\"accept all 17 proposals\"): the contract is written on the NERV side and in a code comment in packages/contracts/src/api.ts only. Not a measurement.",
+    "estimate": "0.25 h agent remaining (CI and landing)",
+    "basis": "Implemented 2026-11-26: alert contract in docs/DESIGN.md and apps/hub/test/alert-contract.test.ts, which pins the behaviour as it is (no runtime change, so no test failed first). Not a measurement.",
     "reviewed": "2026-11-26",
     "agentHours": 1.5,
     "ownerHours": 0,
@@ -43,5 +43,11 @@
     "estimateAgentHours": 1.5,
     "days": 0,
     "baselineDays": 0
-  }
+  },
+  "prs": [
+    {
+      "pr": 53,
+      "note": "feature"
+    }
+  ]
 }

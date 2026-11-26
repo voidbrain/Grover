@@ -402,7 +402,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|---|---|---|---|:---:|:---:|:---:|
 | 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | [F-005-T01](#f-005-t01) | — | 🤖 | — | — |
 
-💻 **→** Next: F-008-T04 — Write the alert contract for NERV (Planned).
+💻 **→** Next: F-008-T04 — Write the alert contract for NERV (Implemented; verification pending).
 
 | | |
 |---|---|
@@ -414,7 +414,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
 |---|---|---|---|---|---|---|---|:---:|---|
-| 🟡 Medium | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | 1.5 h | Planned | — | — | 🤖 | — |
+| 🟡 Medium | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | 1.5 h | Implemented; verification pending | — | — | 🤖 | [PR #53](https://github.com/voidbrain/Grover/pull/53) feature |
 | 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 | — |
 | 🟡 Medium | **Total** | 3 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.25 h owner | 2 of 4 completed | | | | |
 
@@ -434,7 +434,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35) |
+| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature · F-008-T04: [PR #53](https://github.com/voidbrain/Grover/pull/53) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35); [#53](https://github.com/voidbrain/Grover/pull/53) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
