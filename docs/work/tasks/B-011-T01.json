@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "B-011-T01",
+  "parent": "B-011",
+  "title": "Spec type check and contract-derived probe kinds in the hysteresis test",
+  "goal": "typecheck covers client specs; the test iterates the contract's kinds",
+  "status": "implemented",
+  "acceptance": [
+    "`typecheck` runs `apps/client/tsconfig.spec.json`",
+    "The hysteresis test iterates `PROBE_KIND_IDS` and checks the margin map has exactly those keys"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "package.json",
+    "apps/hub/test/alerts.test.ts",
+    "docs/work/records/B-011.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run typecheck",
+    "npm test",
+    "CI"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26 in one PR. Not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5,
+    "days": 0,
+    "baselineDays": 0
+  },
+  "prs": [
+    {
+      "pr": 50,
+      "note": "spec type check, contract kinds"
+    }
+  ]
+}

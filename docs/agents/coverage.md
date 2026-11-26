@@ -6,12 +6,11 @@ How much of the code the unit tests run, per folder. It says what ran, not that 
 
 | Folder | Files | Lines | Statements | Branches | Functions |
 |---|---|---|---|---|---|
-| `packages/contracts/src/` | 7 | 100.0 % | 100.0 % | 95.8 % | 100.0 % |
-| `apps/hub/src/` | 12 | 91.8 % | 91.8 % | 75.0 % | 80.8 % |
-| `apps/agent/src/` | 8 | 73.6 % | 73.6 % | 77.8 % | 82.8 % |
-| **all** | 27 | 88.6 % | 88.6 % | 78.5 % | 83.4 % |
+| `packages/contracts/src/` | 13 | 100.0 % | 100.0 % | 93.6 % | 99.1 % |
+| `apps/hub/src/` | 19 | 96.4 % | 96.4 % | 86.3 % | 90.2 % |
+| `apps/agent/src/` | 9 | 88.5 % | 88.5 % | 91.1 % | 85.2 % |
+| **all** | 41 | 95.8 % | 95.8 % | 89.0 % | 90.7 % |
 
 ## Files no unit test runs
 
-- `apps/hub/src/`: `main.ts`
-- `apps/agent/src/`: `config.ts`, `main.ts`, `drivers/hardware.ts`, `drivers/types.ts`
+- `apps/agent/src/`: `config.ts`, `main.ts`, `drivers/types.ts`
