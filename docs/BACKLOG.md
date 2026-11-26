@@ -3,7 +3,7 @@
 Current work ledger, reviewed 25 November 2026 against main `c908fa6`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 31.5 h agent + 13.25 h owner across 53 open steps of 19 features and 4 other records. Generated from the task files.
+**Remaining effort:** 30.5 h agent + 13.25 h owner across 53 open steps of 19 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -235,9 +235,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
 
-💻 **→** Next: B-006-T01 — Failing agent test, then run a cached config of the previous protocol (Ready).
+💻 **→** Next: B-006-T01 — Failing agent test, then run a cached config of the previous protocol (Implemented; verification pending).
 
 | | |
 |---|---|
@@ -249,8 +249,8 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status |
 |---|---|---|---|---|---|
-| 🟢 Small | <a id="b-006-t01"></a>B-006-T01 — Failing agent test, then run a cached config of the previous protocol | 1 h | 0 h | 1 h | Ready |
-| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 1 h | 0 of 1 completed |
+| 🟢 Small | <a id="b-006-t01"></a>B-006-T01 — Failing agent test, then run a cached config of the previous protocol | 1 h | 0 h | 0 h | Implemented; verification pending |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 0 h | 0 of 1 completed |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -262,7 +262,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
-| Reviewed | 2026-11-24 |
+| Reviewed | 2026-11-26 |
 
 </details>
 

@@ -4,7 +4,7 @@
   "parent": "B-006",
   "title": "Failing agent test, then run a cached config of the previous protocol",
   "goal": "An upgraded agent keeps running its cached schedules with no hub",
-  "status": "ready",
+  "status": "implemented",
   "acceptance": [
     "An agent test, committed failing first: a cached config of the previous protocol is used with its new fields at their defaults and schedules run with no hub",
     "A config of a newer or unknown protocol is still refused with a fault"
@@ -32,10 +32,10 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h agent",
-    "basis": "Estimated 2026-11-24: 1 h agent; an upgrade of the cached shape per protocol step, test first.",
-    "reviewed": "2026-11-24",
-    "agentHours": 1,
+    "estimate": "0 remaining",
+    "basis": "Implemented 2026-11-26: parseCachedConfig (packages/contracts/src/mqtt.ts) runs a cached config of the previous protocol with new fields at their defaults; a newer, unknown or unreadable cached config is refused with a config fault. Test: apps/agent/test/agent.test.ts (B-006 tests), committed failing first. Closes on green CI. No actual: the step's start was not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
