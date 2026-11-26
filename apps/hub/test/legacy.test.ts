@@ -99,3 +99,23 @@ test('names that make the same id are kept apart, and reported', () => {
     0,
   );
 });
+
+test('a placeholder name with no letters or digits gets an id from its old id, not "item" (F-012-T03)', () => {
+  // The real dump has a strain named '–' that plants use; it was imported as id "item".
+  const store = new Store(openDb(':memory:'));
+  importLegacy(
+    store,
+    "INSERT INTO `grover_companies` (`id`, `name`, `deleted`) VALUES (5, '?', 0);\n" +
+      "INSERT INTO `grover_strains` (`id`, `name`, `lineage`, `percentSativa`, `deleted`) VALUES (20, '–', '0', NULL, 0);\n" +
+      'INSERT INTO `grover_plants` (`id`, `idStrain`, `idCompany`, `generation`, `deleted`) VALUES (1, 20, 5, 0, 0);',
+  );
+  assert.deepEqual(
+    store.listStrains().map((s) => [s.id, s.name]),
+    [['legacy-strain-20', '–']],
+  );
+  assert.deepEqual(
+    store.listBreeders().map((b) => [b.id, b.name]),
+    [['legacy-breeder-5', '?']],
+  );
+  assert.equal(store.listPlants()[0]!.strainId, 'legacy-strain-20');
+});
