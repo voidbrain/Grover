@@ -35,11 +35,17 @@
   "effort": {
     "size": "medium",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26: Store.downsampleReadings and the hourly retention job in the hub, with apps/hub/test/retention.test.ts.",
+    "basis": "Done 2026-11-26 in #46: Store.downsampleReadings and the hourly retention job in the hub, with apps/hub/test/retention.test.ts.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,
     "estimateAgentHours": 1.5
-  }
+  },
+  "prs": [
+    {
+      "pr": 46,
+      "note": "downsampling job and tests"
+    }
+  ]
 }
