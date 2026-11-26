@@ -167,6 +167,9 @@ select[aria-invalid='true'] {
 .field {
   display: grid;
   gap: var(--bx-space-1);
+  /* A grid or flex item never shrinks below its content by default; a number input's intrinsic width (about 20
+     characters) then spills into the next column (B-015). */
+  min-width: 0;
   font-size: 0.8125rem;
   color: var(--bx-text-muted);
   &.check {
@@ -180,6 +183,10 @@ select[aria-invalid='true'] {
   }
   &.wide {
     grid-column: 1 / -1;
+  }
+  input[type='number'] {
+    width: 100%;
+    min-width: 0;
   }
 }
 
