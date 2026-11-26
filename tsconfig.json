@@ -14,6 +14,6 @@
     "types": ["node"],
     "lib": ["ES2023"]
   },
-  "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "apps/hub/**/*.ts", "apps/agent/**/*.ts", "tools/**/*.ts"],
+  "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "apps/hub/**/*.ts", "apps/agent/**/*.ts", "tools/**/*.ts", "e2e/**/*.ts"],
   "exclude": ["**/node_modules"]
 }

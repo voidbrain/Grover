@@ -19,9 +19,10 @@ npm run client     # optional: Angular dev server on :4200 with live reload, pro
 npm test           # backend suites, including hub + agent end to end over MQTT
 npm run test:client
 npm run build      # client build the hub serves
+npm run e2e        # browser tests: builds the client, starts the dev stack on a free port with a fresh data folder
 ```
 
-`npm run dev` keeps its state in `data/dev/`; delete it to start over.
+`npm run dev` keeps its state in `data/dev/` (`GROVER_DEV_DIR` for another folder); delete it to start over. `npm run e2e` needs Playwright's Chromium once: `npx playwright install chromium`.
 
 ## Deploying on a Raspberry Pi
 

@@ -4,7 +4,7 @@
   "parent": "F-009",
   "title": "Playwright against the dev stack: the dashboard renders the demo tent",
   "goal": "A browser test starts the dev stack and sees the demo tent",
-  "status": "ready",
+  "status": "implemented",
   "acceptance": [
     "`npm run e2e` starts `npm run dev` on a free port with a fresh data folder and checks the dashboard renders the demo tent",
     "Runs locally headless"
@@ -31,10 +31,10 @@
   ],
   "effort": {
     "size": "medium",
-    "estimate": "2 h agent",
-    "basis": "Estimated 2026-11-24: 2 h agent including the browser install and a stable start/stop of the dev stack.",
-    "reviewed": "2026-11-24",
-    "agentHours": 2,
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26: `npm run e2e` (Playwright 1.65.1, e2e/), passed headless locally on macOS with Chromium.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 2,
     "estimateAgentHours": 2

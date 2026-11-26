@@ -20,6 +20,7 @@
     "build": "npm --workspace apps/client run build",
     "test": "node --test --test-reporter=./tools/quiet-reporter.mjs --test-reporter-destination=stdout --test-reporter=spec --test-reporter-destination=.test-report.txt 'packages/*/test/*.test.ts' 'apps/hub/test/*.test.ts' 'apps/agent/test/*.test.ts'",
     "test:client": "npm --workspace apps/client test -- --watch=false",
+    "e2e": "npm run build && playwright test -c e2e/playwright.config.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p apps/client/tsconfig.app.json --noEmit",
     "test:coverage": "mkdir -p coverage && node --test --experimental-test-coverage --test-coverage-include='packages/*/src/**' --test-coverage-include='apps/hub/src/**' --test-coverage-include='apps/agent/src/**' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info 'packages/*/test/*.test.ts' 'apps/hub/test/*.test.ts' 'apps/agent/test/*.test.ts' && node tools/lcov-summary.mjs",
     "coverage": "npm run test:coverage && node tools/coverage-table.mjs --write",
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.65.1",
     "@types/node": "^24.0.0",
     "angular-eslint": "22.8.0",
     "eslint": "10.15.0",
