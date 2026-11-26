@@ -461,14 +461,14 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟡 Medium | <a id="f-026-t01"></a>F-026-T01 — Scheduled backup with retention | 2 h | 0 h | 2 h | Planned | — | [F-026-T02](#f-026-t02), [F-026-T03](#f-026-t03) | 🤖 |
-| 🟡 Medium | <a id="f-026-t02"></a>F-026-T02 — Restore drill as an automated test | 1.5 h | 0 h | 1.5 h | Planned | [F-026-T01](#f-026-t01) | [F-026-T05](#f-026-t05) | ⏳ 🤖 |
-| 🟢 Small | <a id="f-026-t03"></a>F-026-T03 — Owner: choose where the off-host copy goes | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-026-T01](#f-026-t01) | [F-026-T04](#f-026-t04) | ⏳ 🤔 |
-| 🟡 Medium | <a id="f-026-t04"></a>F-026-T04 — Off-host copy of the backup | 1.5 h | 0 h | 1.5 h | Planned | [F-026-T03](#f-026-t03) | [F-026-T05](#f-026-t05) | ⏳ 🤖 |
-| 🟢 Small | <a id="f-026-t05"></a>F-026-T05 — Owner: restore once on the Pi from the off-host copy | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | [F-026-T02](#f-026-t02), [F-026-T04](#f-026-t04) | — | ⏳ 🧑‍🔧 |
-| 🔴 Large | **Total** | 5 h | 0 h (0 of 5 steps recorded) | 5 h agent + 0.75 h owner | 0 of 5 completed | | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟡 Medium | <a id="f-026-t01"></a>F-026-T01 — Scheduled backup with retention | 2 h | 0 h | 2 h | Planned | — | [F-026-T02](#f-026-t02), [F-026-T03](#f-026-t03) | 🤖 | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟡 Medium | <a id="f-026-t02"></a>F-026-T02 — Restore drill as an automated test | 1.5 h | 0 h | 1.5 h | Planned | [F-026-T01](#f-026-t01) | [F-026-T05](#f-026-t05) | ⏳ 🤖 | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟢 Small | <a id="f-026-t03"></a>F-026-T03 — Owner: choose where the off-host copy goes | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-026-T01](#f-026-t01) | [F-026-T04](#f-026-t04) | ⏳ 🤔 | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟡 Medium | <a id="f-026-t04"></a>F-026-T04 — Off-host copy of the backup | 1.5 h | 0 h | 1.5 h | Planned | [F-026-T03](#f-026-t03) | [F-026-T05](#f-026-t05) | ⏳ 🤖 | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟢 Small | <a id="f-026-t05"></a>F-026-T05 — Owner: restore once on the Pi from the off-host copy | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | [F-026-T02](#f-026-t02), [F-026-T04](#f-026-t04) | — | ⏳ 🧑‍🔧 | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🔴 Large | **Total** | 5 h | 0 h (0 of 5 steps recorded) | 5 h agent + 0.75 h owner | 0 of 5 completed | | | | |
 
 <details>
 <summary>Next action, estimates and evidence</summary>
@@ -477,7 +477,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-026-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T03: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T04: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T05: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
@@ -960,10 +960,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status |
-|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-025-t01"></a>F-025-T01 — arm64 CI job for apps/agent | 1 h | 0 h | 1 h | Planned |
-| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 1 h | 0 of 1 completed |
+| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
+|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-025-t01"></a>F-025-T01 — arm64 CI job for apps/agent | 1 h | 0 h | 1 h | Planned | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 1 h | 0 of 1 completed | |
 
 <details>
 <summary>Next action, estimates and evidence</summary>
@@ -972,7 +972,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-025-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
@@ -1078,11 +1078,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟡 Medium | <a id="f-023-t01"></a>F-023-T01 — Axe pass per main route in the Playwright e2e | 2.5 h | 0 h | 2.5 h | Planned | — | [F-023-T02](#f-023-t02) |
-| 🟡 Medium | <a id="f-023-t02"></a>F-023-T02 — Put the e2e suite, with axe, into CI | 1.5 h | 0 h | 1.5 h | Planned | [F-023-T01](#f-023-t01) | — |
-| 🟡 Medium | **Total** | 4 h | 0 h (0 of 2 steps recorded) | 4 h | 0 of 2 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟡 Medium | <a id="f-023-t01"></a>F-023-T01 — Axe pass per main route in the Playwright e2e | 2.5 h | 0 h | 2.5 h | Planned | — | [F-023-T02](#f-023-t02) | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟡 Medium | <a id="f-023-t02"></a>F-023-T02 — Put the e2e suite, with axe, into CI | 1.5 h | 0 h | 1.5 h | Planned | [F-023-T01](#f-023-t01) | — | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟡 Medium | **Total** | 4 h | 0 h (0 of 2 steps recorded) | 4 h | 0 of 2 completed | | | |
 
 <details>
 <summary>Next action, estimates and evidence</summary>
@@ -1091,7 +1091,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-023-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-023-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
@@ -1117,11 +1117,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-024-t01"></a>F-024-T01 — Threat-map checker with the closed-gap rule | 1 h | 0 h | 1 h | Planned | — | [F-024-T02](#f-024-t02) |
-| 🟡 Medium | <a id="f-024-t02"></a>F-024-T02 — Write the threat map | 1.5 h | 0 h | 1.5 h | Planned | [F-024-T01](#f-024-t01) | — |
-| 🟡 Medium | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 2.5 h | 0 of 2 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-024-t01"></a>F-024-T01 — Threat-map checker with the closed-gap rule | 1 h | 0 h | 1 h | Planned | — | [F-024-T02](#f-024-t02) | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟡 Medium | <a id="f-024-t02"></a>F-024-T02 — Write the threat map | 1.5 h | 0 h | 1.5 h | Planned | [F-024-T01](#f-024-t01) | — | [PR #52](https://github.com/voidbrain/Grover/pull/52) plan |
+| 🟡 Medium | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 2.5 h | 0 of 2 completed | | | |
 
 <details>
 <summary>Next action, estimates and evidence</summary>
@@ -1130,7 +1130,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-024-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-024-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
