@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52 h agent + 13 h owner across 77 open steps of 26 features and 6 other records. Generated from the task files.
+**Remaining effort:** 52.25 h agent + 13.25 h owner across 79 open steps of 26 features and 7 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -528,6 +528,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | PR / evidence | Steps: F-026-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T03: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T04: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T05: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+### <a id="b-015"></a>[🐞 B-015](#top)
+
+**The number fields of a grow calendar phase overlap each other (Setup → Default photoperiod, doses and ranges)**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.25 h owner | — | — | 🤖 | 🧑‍🔧 | — |
+
+🧑 **→** [Look at a calendar's dose fields](acceptance/b-015-calendar-fields.md) on the Mac or, once updated, on the hub.
+
+| | |
+|---|---|
+| **Issue** | Owner report 2026-11-26: in the hub client, Setup → the "Default photoperiod" calendar, the dose fields ("selects" in the report: number inputs with spinners) overlap each other. Cause: Grover's own layout, not a 🧱 bricks component (the page uses plain inputs and Grover's `.field` / `.ranges` grid in `apps/client/src/styles.scss` and `calendar-setup.ts`; bricks supplies only tokens here). A grid or flex item keeps `min-width: auto`, so a number input (intrinsic width about 20 characters, and no `width: 100%` unlike text inputs) stayed wider than its 9rem column and spilled into the next one; the same hit Days and Light hours in the 12rem form grid. |
+| **Reproduce** | `npm run e2e -- calendar-setup` on a `main` before the fix: `e2e/calendar-setup.spec.ts` finds overlapping input boxes in Phase 1. By hand: [owner check page](acceptance/b-015-calendar-fields.md). |
+| **Check** | No two number inputs of a calendar phase overlap at desktop width (`e2e/calendar-setup.spec.ts`, committed failing first); the owner sees the dose fields and range pairs side by side without overlap, at desktop and phone width, on the hub. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="b-015-t01"></a>B-015-T01 — Failing e2e test for overlapping calendar fields, then the layout fix | 0.5 h | 0 h | 0 h | Implemented; verification pending | — | [B-015-T02](#b-015-t02) | 🤖 | [PR #70](https://github.com/voidbrain/Grover/pull/70) fix |
+| 🟢 Small | <a id="b-015-t02"></a>B-015-T02 — Owner looks at a calendar's dose and range fields on the Mac and on the hub | 0.25 h | 0 h | 0.25 h agent + 0.25 h owner | Planned | [B-015-T01](#b-015-t01) | — | ⏳ 🤖 ⏳ 🧑‍🔧 | [PR #70](https://github.com/voidbrain/Grover/pull/70) owner check page |
+| 🟢 Small | **Total** | 0.75 h | 0 h (0 of 2 steps recorded) | 0.25 h agent + 0.25 h owner | 0 of 2 completed | | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-015.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: B-015-T01: [PR #70](https://github.com/voidbrain/Grover/pull/70) fix · B-015-T02: [PR #70](https://github.com/voidbrain/Grover/pull/70) owner check page. [#70](https://github.com/voidbrain/Grover/pull/70) (failing e2e test, fix, owner check page) |
+| Opened | 2026-11-26 |
+| Verification | Pending (owner look, B-015-T02) |
 | Reviewed | 2026-11-26 |
 
 </details>
