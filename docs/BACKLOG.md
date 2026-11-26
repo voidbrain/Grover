@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 51.25 h agent + 14 h owner across 77 open steps of 26 features and 5 other records. Generated from the task files.
+**Remaining effort:** 52.25 h agent + 14 h owner across 79 open steps of 26 features and 6 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -856,6 +856,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: PR CI green on #29 and the main run after merge (8e5da72) green; the device check is pending. |
 | Reviewed | 2026-11-24 |
+
+</details>
+
+---
+### <a id="b-012"></a>[🐞 B-012](#top)
+
+**The hub republishes every agent config every 10 minutes, and DESIGN.md says it does not; four API routes are documented nowhere**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: B-012-T01 — Find why the 10-minute config republish exists and pin the chosen behaviour with a failing-first test (Planned).
+
+| | |
+|---|---|
+| **Issue** | Found by the coordinator's hidden-code sweep, 2026-11-26 ([page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-hidden-code.md)); owner decision in chat 2026-11-26: "2 ok". `apps/hub/src/hub.ts:63` runs `setInterval(() => agents.publishAllConfigs(), 10 * 60_000)`, while `docs/DESIGN.md:60` says the config topic is "Republished on every connect and setup change". The code comment says why: phases move with the days, so a light following the calendar changes on its own (F-007, commit `fed6e9f`, 2026-11-24; the F-007 record says "configs re-sent every 10 minutes and after plant changes"). So the job is deliberate and F-007 documents it; DESIGN.md was not updated. Open question: whether the 10-minute resend is also needed for recovery after a lost retained message or a restarted broker. Separately, `/api/actuations`, `/api/faults`, `/api/feeds` and `/api/health` (`apps/hub/src/http.ts`) are typed in `packages/contracts/src/api.ts` but listed in no document: DESIGN draws "HTTP /api" as one box. |
+| **Reproduce** | Read `apps/hub/src/hub.ts` lines 61-64 against `docs/DESIGN.md` line 60; `grep -n "/api/actuations\|/api/faults\|/api/feeds\|/api/health" docs/DESIGN.md` finds nothing. |
+| **Check** | The behaviour DESIGN states is the behaviour the code has, and a test pins it (the periodic resend, with fake timers, republishes every config once per interval and an unchanged config changes nothing on the agent; or, if the resend is dropped, the calendar-driven light change still reaches the agent by another path); DESIGN's Protocol section says when the config is republished and why; the four routes are listed in DESIGN with their query parameters and response types. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-012-t01"></a>B-012-T01 — Find why the 10-minute config republish exists and pin the chosen behaviour with a failing-first test | 0.5 h | 0 h | 0.5 h | Planned | — | [B-012-T02](#b-012-t02) | [PR #57](https://github.com/voidbrain/Grover/pull/57) plan |
+| 🟢 Small | <a id="b-012-t02"></a>B-012-T02 — Fix the code or update DESIGN.md to match, and document the four undocumented API routes | 0.5 h | 0 h | 0.5 h | Planned | [B-012-T01](#b-012-t01) | — | [PR #57](https://github.com/voidbrain/Grover/pull/57) plan |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 2 steps recorded) | 1 h | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-012.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: B-012-T01: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan · B-012-T02: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan. [#57](https://github.com/voidbrain/Grover/pull/57) (plan); owner decision 2026-11-26 "2 ok" |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
 
 </details>
 
