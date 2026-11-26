@@ -760,7 +760,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Effort | Step | Estimate | Actual | Remaining | Status | PRs |
 |---|---|---|---|---|---|---|
 | 🟢 Small | <a id="f-010-t01"></a>F-010-T01 — Downsample old readings | 1.5 h | 0 h | 0 h | Implemented; verification pending | [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests |
-| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 0 h | Implemented; verification pending | — |
+| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 0 h | Implemented; verification pending | [PR #47](https://github.com/voidbrain/Grover/pull/47) backup command and tests |
 | 🟢 Small | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 0 h | 0 of 2 completed | |
 
 <details>
@@ -770,7 +770,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
+| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests · F-010-T02: [PR #47](https://github.com/voidbrain/Grover/pull/47) backup command and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |

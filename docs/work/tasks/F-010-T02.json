@@ -34,11 +34,17 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26: `npm run hub -- backup <file>` (apps/hub/src/backup.ts, VACUUM INTO), tested in apps/hub/test/backup.test.ts.",
+    "basis": "Done 2026-11-26 in #47: `npm run hub -- backup <file>` (apps/hub/src/backup.ts, VACUUM INTO), tested in apps/hub/test/backup.test.ts.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 47,
+      "note": "backup command and tests"
+    }
+  ]
 }
