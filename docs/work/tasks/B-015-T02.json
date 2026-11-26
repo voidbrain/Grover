@@ -39,5 +39,10 @@
     "baselineAgentHours": 0.25,
     "estimateAgentHours": 0.25
   },
-  "prs": []
+  "prs": [
+    {
+      "pr": 70,
+      "note": "owner check page"
+    }
+  ]
 }

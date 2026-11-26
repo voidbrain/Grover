@@ -551,11 +551,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-015-t01"></a>B-015-T01 — Failing e2e test for overlapping calendar fields, then the layout fix | 0.5 h | 0 h | 0 h | Implemented; verification pending | — | [B-015-T02](#b-015-t02) |
-| 🟢 Small | <a id="b-015-t02"></a>B-015-T02 — Owner looks at a calendar's dose and range fields on the Mac and on the hub | 0.25 h | 0 h | 0.25 h agent + 0.25 h owner | Planned | [B-015-T01](#b-015-t01) | — |
-| 🟢 Small | **Total** | 0.75 h | 0 h (0 of 2 steps recorded) | 0.25 h agent + 0.25 h owner | 0 of 2 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="b-015-t01"></a>B-015-T01 — Failing e2e test for overlapping calendar fields, then the layout fix | 0.5 h | 0 h | 0 h | Implemented; verification pending | — | [B-015-T02](#b-015-t02) | [PR #70](https://github.com/voidbrain/Grover/pull/70) fix |
+| 🟢 Small | <a id="b-015-t02"></a>B-015-T02 — Owner looks at a calendar's dose and range fields on the Mac and on the hub | 0.25 h | 0 h | 0.25 h agent + 0.25 h owner | Planned | [B-015-T01](#b-015-t01) | — | [PR #70](https://github.com/voidbrain/Grover/pull/70) owner check page |
+| 🟢 Small | **Total** | 0.75 h | 0 h (0 of 2 steps recorded) | 0.25 h agent + 0.25 h owner | 0 of 2 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -564,7 +564,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | pending |
+| PR / evidence | Steps: B-015-T01: [PR #70](https://github.com/voidbrain/Grover/pull/70) fix · B-015-T02: [PR #70](https://github.com/voidbrain/Grover/pull/70) owner check page. [#70](https://github.com/voidbrain/Grover/pull/70) (failing e2e test, fix, owner check page) |
 | Opened | 2026-11-26 |
 | Verification | Pending (owner look, B-015-T02) |
 | Reviewed | 2026-11-26 |
