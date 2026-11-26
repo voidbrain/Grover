@@ -461,7 +461,7 @@ Answer in chat, for example: "1b: Northern Lights, Sensi Seeds; 2 leave". You ca
 
 | Field | Value |
 |---|---|
-| PR / evidence | PR pending |
+| PR / evidence | [#72](https://github.com/voidbrain/Grover/pull/72) (README section; also closes B-015) |
 | Opened | 2026-11-27 |
 | Verification | Pending |
 | Reviewed | 2026-11-27 |
