@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ALERT_HYSTERESIS, type LiveEvent } from '@grover/contracts';
+import { ALERT_HYSTERESIS, PROBE_KIND_IDS, type LiveEvent } from '@grover/contracts';
 import { Alerts } from '../src/alerts.ts';
 import { openDb } from '../src/db.ts';
 import { Bus } from '../src/events.ts';
@@ -27,7 +27,10 @@ function rig() {
 }
 
 test('threshold alerts have a positive hysteresis margin for every probe kind', () => {
-  for (const kind of ['air_temperature', 'water_temperature', 'water_level', 'ph', 'ec'] as const) {
+  // The kinds come from the contract, so a new probe kind is checked without editing this test.
+  assert.ok(PROBE_KIND_IDS.length > 0);
+  assert.deepEqual(Object.keys(ALERT_HYSTERESIS).sort(), [...PROBE_KIND_IDS].sort());
+  for (const kind of PROBE_KIND_IDS) {
     assert.ok(ALERT_HYSTERESIS[kind] > 0, kind);
   }
 });

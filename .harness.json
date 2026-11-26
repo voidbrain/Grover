@@ -302,7 +302,8 @@
     }
   },
   "behaviour": {
-    "times": 3
+    "times": 3,
+    "runner": "claude -p --permission-mode acceptEdits --allowedTools \"Bash(git:*)\" \"Bash(npm:*)\" \"Bash(node:*)\" -- \"$(cat \"$HARNESS_TASK_FILE\")\""
   },
   "verification": {
     "enabled": false
@@ -321,7 +322,7 @@
     "repository": "voidbrain/Grover"
   },
   "workUsage": {
-    "enabled": false,
+    "enabled": true,
     "pauseGapMinutes": 15
   },
   "conventions": {
@@ -347,6 +348,17 @@
       "apps/agent/src/"
     ],
     "drop": 2,
-    "enforce": false
+    "enforce": true
+  },
+  "reviews": {
+    "token": {
+      "days": 30
+    },
+    "architecture": {
+      "days": 30
+    },
+    "skills": {
+      "days": 30
+    }
   }
 }
