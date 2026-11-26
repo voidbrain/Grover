@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "F-029-T02",
+  "parent": "F-029",
+  "title": "Feeds and doses per day as a bricks bar or stacked bar chart",
+  "goal": "The owner sees what each pump gave per day at a glance",
+  "status": "planned",
+  "acceptance": [
+    "The plant or room page shows mL per nutrient per day (stacked bar) from the feed history the hub already serves",
+    "Empty state when there are no feeds; e2e checks the chart and its table"
+  ],
+  "dependsOn": [
+    "F-029-T01"
+  ],
+  "resources": [
+    "apps/client/src/app/plant/**",
+    "apps/client/src/app/room/**",
+    "e2e/**",
+    "docs/work/records/F-029.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral invented data only; no personal data, tokens or private reports in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm run test:client",
+    "npm run e2e",
+    "CI"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Data exists (/api/feeds); one chart. Estimated 2026-11-26. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  },
+  "prs": []
+}

@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "F-029-T01",
+  "parent": "F-029",
+  "title": "Upgrade bricks and replace plant-chart.ts with the bricks line chart",
+  "goal": "The plant page's readings chart comes from bricks",
+  "status": "planned",
+  "acceptance": [
+    "@voidbrain/bricks moves from 0.1.0 to the chart release (bricks:F-014-T07); the token mapping in docs/STYLE-GUIDE.md is checked against it",
+    "The plant page shows readings with target bands and markers through the bricks line chart; plant-chart.ts and its now-unused code and tests are removed",
+    "e2e covers the chart's presence and its data-table alternative"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/client/package.json",
+    "apps/client/src/app/plant/**",
+    "docs/STYLE-GUIDE.md",
+    "e2e/**",
+    "docs/work/records/F-029.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "typescript",
+    "angular"
+  ],
+  "privacy": "Neutral invented data only; no personal data, tokens or private reports in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm run test:client",
+    "npm run e2e",
+    "CI"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h agent",
+    "basis": "A bricks upgrade over three minor releases plus one chart swap. Estimated 2026-11-26. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 2,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  },
+  "prs": []
+}
