@@ -91,11 +91,16 @@ const live = (r: Record<string, Value>) => r['deleted'] !== 1;
 
 /**
  * The id for an imported name: an existing record with the same name is the same thing (id reused, nothing added);
- * otherwise the name's slug, with -2, -3… when another name already has it.
+ * otherwise the name's slug (or the fallback built from the old id), with -2, -3… when another name already has it.
  */
-function idFor(name: string, existing: Map<string, string>): { id: string; exists: boolean; renamed: boolean } {
+function idFor(
+  name: string,
+  fallback: string,
+  existing: Map<string, string>,
+): { id: string; exists: boolean; renamed: boolean } {
   for (const [id, n] of existing) if (n === name) return { id, exists: true, renamed: false };
-  const base = slug(name);
+  // A placeholder name with no letters or digits (the old dump has a strain named '–') would slug to "item".
+  const base = /[\p{L}\p{N}]/u.test(name) ? slug(name) : fallback;
   if (!existing.has(base)) return { id: base, exists: false, renamed: false };
   for (let k = 2; ; k++) if (!existing.has(`${base}-${k}`)) return { id: `${base}-${k}`, exists: false, renamed: true };
 }
@@ -121,7 +126,7 @@ export function importLegacy(store: Store, sql: string): LegacyImport {
     const breeders = new Map(store.listBreeders().map((b) => [b.id, b.name]));
     for (const r of parseInserts(sql, 'grover_companies').filter(live)) {
       const name = String(r['name']);
-      const { id, exists, renamed } = idFor(name, breeders);
+      const { id, exists, renamed } = idFor(name, `legacy-breeder-${r['id']}`, breeders);
       breederIds.set(Number(r['id']), id);
       if (exists) continue;
       if (renamed) result.skipped.push(`breeder "${name}" imported as ${id}: its plain id was taken`);
@@ -138,7 +143,7 @@ export function importLegacy(store: Store, sql: string): LegacyImport {
     const toCreate: { id: string; r: Record<string, Value> }[] = [];
     for (const r of strainRows) {
       const name = String(r['name']);
-      const { id, exists, renamed } = idFor(name, strains);
+      const { id, exists, renamed } = idFor(name, `legacy-strain-${r['id']}`, strains);
       strainIds.set(Number(r['id']), id);
       if (exists) continue;
       if (renamed) result.skipped.push(`strain "${name}" imported as ${id}: its plain id was taken`);
