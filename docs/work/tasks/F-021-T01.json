@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-021-T01",
+  "parent": "F-021",
+  "title": "Next audit as kind full",
+  "goal": "A full audit report with a valid manifest",
+  "status": "planned",
+  "acceptance": [
+    "The next audit (the 2026-11-25 delivery audit is scoped; due 2026-12-02) is run as `kind: full` per docs/agents/audit.md: all eight areas checked, report and manifest in docs/audits/",
+    "Actionable findings are recorded on the owning backlog"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/audits/**",
+    ".harness.json",
+    "docs/work/records/F-021.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm run check:audits",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "3 h agent",
+    "basis": "Planned 2026-11-26 from cross-project audit proposal 16, accepted by the owner in chat 2026-11-26 (\"accept all 17 proposals\"). Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3,
+    "days": 0,
+    "baselineDays": 0
+  }
+}
