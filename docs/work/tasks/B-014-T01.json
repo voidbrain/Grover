@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "id": "B-014-T01",
+  "parent": "B-014",
+  "title": "A test that no user-facing string names a backlog ID, failing first; remove the two found",
+  "goal": "No user-facing text names a backlog ID, and a test fails on a new one",
+  "status": "implemented",
+  "acceptance": [
+    "apps/hub/test/user-text-ids.test.ts committed first, failing on the two F-004 hints",
+    "The hints keep their meaning without the ID and the test passes",
+    "Comments may name IDs"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/test/user-text-ids.test.ts",
+    "apps/client/src/app/setup/probe-editor.ts",
+    "apps/client/src/app/setup/room-setup.html",
+    "docs/work/records/B-014.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26: one test ported from nerv:B-102 and two text edits. Not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  }
+}
