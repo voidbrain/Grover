@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "B-012-T01",
+  "parent": "B-012",
+  "title": "Find why the 10-minute config republish exists and pin the chosen behaviour with a failing-first test",
+  "goal": "The reason is recorded and a test that fails without the chosen behaviour is committed first",
+  "status": "planned",
+  "acceptance": [
+    "Why: git log -S publishAllConfigs on apps/hub/src/hub.ts (F-007, fed6e9f) and the F-007 record are cited in B-012; the comment's reason (calendar-driven light phases) is confirmed against Lights",
+    "Decision recorded in B-012: keep the periodic resend (and whether it also covers recovery after a lost retained message or broker restart, tested if so) or replace it; the owner is asked only if recovery behaviour is unclear",
+    "A test is committed first that fails without the chosen behaviour (fake timers: after one interval every agent's config is republished; or the replacement path delivers a phase change to the agent) and passes with the code"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/src/hub.ts",
+    "apps/hub/test/**",
+    "docs/work/records/B-012.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run typecheck",
+    "npm test",
+    "CI"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "If the resend turns out to be needed for recovery in a way the design does not cover, the owner decides the behaviour before the test is written"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "One interval test with fake timers plus reading one commit. Estimated 2026-11-26. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  },
+  "prs": [
+    {
+      "pr": 57,
+      "note": "plan"
+    }
+  ]
+}
