@@ -946,7 +946,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Opened with the F-012-T03 fixes; [#65](https://github.com/voidbrain/Grover/pull/65) |
+| PR / evidence | Opened with the F-012-T03 fixes; [#65](https://github.com/voidbrain/Grover/pull/65); [#68](https://github.com/voidbrain/Grover/pull/68) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
