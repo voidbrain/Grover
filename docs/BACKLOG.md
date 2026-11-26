@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 29.5 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
+**Remaining effort:** 28 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -739,6 +739,46 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="f-010"></a>[✨ F-010](#top)
+
+**Hub data retention and backups**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-010-T01 — Downsample old readings (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | Readings every 5 minutes for 5 probes grow the SQLite file on the Pi's SD card without bound, and there is no backup. |
+| **Reproduce** | `npm run dev` for a while, then inspect `data/dev/hub.sqlite`. |
+| **Check** | Old readings are downsampled (for example hourly after 30 days), a `backup` command writes a consistent copy, and both are tested. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status |
+|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-010-t01"></a>F-010-T01 — Downsample old readings | 1.5 h | 0 h | 0 h | Implemented; verification pending |
+| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 1 h | Ready |
+| 🟢 Small | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 1 h | 0 of 2 completed |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-010.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+
 ### <a id="f-019"></a>[✨ F-019](#top)
 
 **Install Grover as a web app on the phone**
@@ -774,46 +814,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | PR / evidence | Steps: F-019-T01: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes · F-019-T02: [PR #31](https://github.com/voidbrain/Grover/pull/31) implementation and review fixes. [#25](https://github.com/voidbrain/Grover/pull/25) (record); [#30](https://github.com/voidbrain/Grover/pull/30); [#33](https://github.com/voidbrain/Grover/pull/33) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-25: PR CI green on #31 and the main run after merge (1e892b4) green; the owner's install on the phone is pending. |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
-
-### <a id="f-010"></a>[✨ F-010](#top)
-
-**Hub data retention and backups**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | 2.5 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-010-T01 — Downsample old readings (Ready).
-
-| | |
-|---|---|
-| **Issue** | Readings every 5 minutes for 5 probes grow the SQLite file on the Pi's SD card without bound, and there is no backup. |
-| **Reproduce** | `npm run dev` for a while, then inspect `data/dev/hub.sqlite`. |
-| **Check** | Old readings are downsampled (for example hourly after 30 days), a `backup` command writes a consistent copy, and both are tested. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status |
-|---|---|---|---|---|---|
-| 🟡 Medium | <a id="f-010-t01"></a>F-010-T01 — Downsample old readings | 1.5 h | 0 h | 1.5 h | Ready |
-| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 1 h | Ready |
-| 🟡 Medium | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 2.5 h | 0 of 2 completed |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-010.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
 | Reviewed | 2026-11-24 |
 
 </details>

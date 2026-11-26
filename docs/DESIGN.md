@@ -91,6 +91,10 @@ The hub listens on loopback; `tailscale serve` publishes it to the tailnet. On t
 - **Client without hub**: shows the last snapshot (browser storage) with an "Offline" badge; actions are disabled. Setup is not editable offline.
 - **Hub without agent**: commands answer 503 (agent offline); the dashboard shows when the agent was last seen. A feed stays open while the agent is offline or the hub restarts (the agent may still be running it); it is closed when a status from the agent, newer than its answer to the feed and with an empty outbox, says it is not running it.
 
+## Data retention
+
+- **Readings** of the last 30 days stay as they came (every 5 minutes or so). Older ones are downsampled to one per probe per clock hour (UTC), the hour's first reading with its own value ([`retention.ts`](../apps/hub/src/retention.ts), `Store.downsampleReadings`): the hub runs it when it starts and every hour. History charts and plant reports read the same table, so a range older than 30 days has hourly points. A reading the agent replays from its outbox after that is stored again and removed on the next run. Actuations, faults, doses and feeds are kept in full.
+
 ## Setup rules
 
 - Deleting a probe or actuator deletes the schedules that target it; deleting a room deletes its pots, probes, actuators and their schedules (readings and actuations stay in history). A calendar a room uses cannot be deleted (409). An agent runs one room at most (409).
