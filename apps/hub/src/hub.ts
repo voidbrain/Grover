@@ -11,6 +11,7 @@ import { Lights } from './lights.ts';
 import { PlantCycle } from './plant-cycle.ts';
 import { PlantReports } from './plant-report.ts';
 import { createHttp } from './http.ts';
+import { startRetention } from './retention.ts';
 import { Store } from './store.ts';
 
 export interface Hub {
@@ -36,6 +37,7 @@ export interface RunningHub extends Hub {
 export async function startHub(config: HubConfig): Promise<RunningHub> {
   const store = new Store(openDb(config.dbPath));
   if (store.listCalendars().length === 0) store.putCalendar(DEFAULT_CALENDAR);
+  const stopRetention = startRetention(store);
   const bus = new Bus();
   const agents = new AgentLink(store, bus, { timezone: config.timezone, commandTimeoutMs: config.commandTimeoutMs });
   const commands = new Commands(store, agents, bus);
@@ -68,6 +70,7 @@ export async function startHub(config: HubConfig): Promise<RunningHub> {
     mqttPort,
     async close() {
       clearInterval(refresh);
+      stopRetention();
       feeder.stop();
       alerts.stop();
       await http.close();

@@ -715,6 +715,20 @@ export class Store {
       value: Number(r['value']),
     }));
   }
+  /**
+   * Keeps one reading per probe per clock hour (UTC; the hour's first) of the readings taken before `before`, and
+   * deletes the rest. Returns how many it deleted. Idempotent; a replayed old reading goes on the next run.
+   */
+  downsampleReadings(before: number): number {
+    return Number(
+      this.db
+        .prepare(
+          `DELETE FROM readings WHERE at < ? AND (probe_id, at) NOT IN (
+             SELECT probe_id, MIN(at) FROM readings WHERE at < ? GROUP BY probe_id, at / 3600000)`,
+        )
+        .run(before, before).changes,
+    );
+  }
   latestReadings(): Reading[] {
     return (
       this.db.prepare('SELECT probe_id, MAX(at) AS at, value FROM readings GROUP BY probe_id').all() as Row[]
