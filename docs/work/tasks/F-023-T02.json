@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-023-T02",
+  "parent": "F-023",
+  "title": "Put the e2e suite, with axe, into CI",
+  "goal": "The Playwright e2e (including axe) runs on every PR, which also closes dormant check T3",
+  "status": "planned",
+  "acceptance": [
+    "`ci.yml` installs the Playwright browser and runs `npm run e2e`; the existing flaky feed e2e (B-008) stays reliable over three consecutive runs",
+    "The coverage table and the CI step list name the suite"
+  ],
+  "dependsOn": [
+    "F-023-T01"
+  ],
+  "resources": [
+    ".github/workflows/ci.yml",
+    "e2e/**",
+    "package.json",
+    "docs/work/records/F-023.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "One workflow step, a browser install and three green runs; the e2e is not in CI today, so first runs may expose environment differences. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}

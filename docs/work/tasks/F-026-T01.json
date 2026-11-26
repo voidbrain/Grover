@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "F-026-T01",
+  "parent": "F-026",
+  "title": "Scheduled backup with retention",
+  "goal": "The hub backs itself up on a schedule and prunes old copies",
+  "status": "planned",
+  "acceptance": [
+    "The hub (or a documented systemd timer/cron entry shipped in the repository) runs the backup daily to a configured directory and keeps the last N copies (N configurable, default 7); a failed backup is logged and raises a hub alert",
+    "Documentation names the schedule, directory and retention",
+    "Failing test committed first: a test that advances the clock and expects a copy per day and at most N copies fails before the scheduler exists; the change never edits that test to pass"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/src/**",
+    "README.md",
+    "docs/work/records/F-026.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2 h agent",
+    "basis": "A scheduler, retention and an alert on failure; the backup command exists. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 2,
+    "baselineAgentHours": 2,
+    "estimateAgentHours": 2
+  }
+}

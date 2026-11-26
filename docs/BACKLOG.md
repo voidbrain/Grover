@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 31 h agent + 13.25 h owner across 60 open steps of 20 features and 5 other records. Generated from the task files.
+**Remaining effort:** 43.5 h agent + 14 h owner across 70 open steps of 24 features and 5 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -443,6 +443,48 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-026"></a>[✨ F-026](#top)
+
+**Hub backup schedule, off-host copy and restore drill**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🔴 Large | 5 h agent + 0.75 h owner | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-026-T01 — Scheduled backup with retention (Planned).
+
+| | |
+|---|---|
+| **Issue** | F-010 gave the hub a `backup` command (`apps/hub/src/backup.ts`) but nothing runs it: no schedule, the copy lives on the same SD card as the database, and no restore has ever been tried outside a unit test. A dead SD card loses the grow history. NERV has a tested restore drill (`test/restore-drill.test.ts`); Grover has none. The coordinator's durable-data table (F-021) reads this record. Evidence: [NERV practices transfer report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md), class C item C4; missing practices M8 and M10 (soak not proposed); situation-gap row X3. Owner decision 2026-11-26 in chat: "NERV practices inventory accept all" (all 22 proposals of the [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); this record is proposal 20). |
+| **Reproduce** | `npm run hub -- backup <file>` works on demand; search the repository for a timer, cron or scheduled job that calls it: none. No file documents where a copy goes or how to restore. |
+| **Check** | A scheduled backup with retention runs on the Pi (F-026-T01); a test restores the newest copy into a running hub and reads its rooms and readings (F-026-T02); the owner chooses where the off-host copy goes (F-026-T03) and the copy happens (F-026-T04); the owner restores once on the Pi from the off-host copy and the date is recorded (F-026-T05). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟡 Medium | <a id="f-026-t01"></a>F-026-T01 — Scheduled backup with retention | 2 h | 0 h | 2 h | Planned | — | [F-026-T02](#f-026-t02), [F-026-T03](#f-026-t03) | 🤖 |
+| 🟡 Medium | <a id="f-026-t02"></a>F-026-T02 — Restore drill as an automated test | 1.5 h | 0 h | 1.5 h | Planned | [F-026-T01](#f-026-t01) | [F-026-T05](#f-026-t05) | ⏳ 🤖 |
+| 🟢 Small | <a id="f-026-t03"></a>F-026-T03 — Owner: choose where the off-host copy goes | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [F-026-T01](#f-026-t01) | [F-026-T04](#f-026-t04) | ⏳ 🤔 |
+| 🟡 Medium | <a id="f-026-t04"></a>F-026-T04 — Off-host copy of the backup | 1.5 h | 0 h | 1.5 h | Planned | [F-026-T03](#f-026-t03) | [F-026-T05](#f-026-t05) | ⏳ 🤖 |
+| 🟢 Small | <a id="f-026-t05"></a>F-026-T05 — Owner: restore once on the Pi from the off-host copy | 0 h | 0 h | 0 h agent + 0.5 h owner | Planned | [F-026-T02](#f-026-t02), [F-026-T04](#f-026-t04) | — | ⏳ 🧑‍🔧 |
+| 🔴 Large | **Total** | 5 h | 0 h (0 of 5 steps recorded) | 5 h agent + 0.75 h owner | 0 of 5 completed | | | |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-026.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="f-006"></a>[✨ F-006](#top)
 
 **Set-up screens in the client**
@@ -900,6 +942,44 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 </details>
 
 ---
+### <a id="f-025"></a>[✨ F-025](#top)
+
+**Second-platform CI: an arm64 job for the Pi agent**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-025-T01 — arm64 CI job for apps/agent (Planned).
+
+| | |
+|---|---|
+| **Issue** | The Grover agent runs on a Raspberry Pi (arm64), while CI runs on Ubuntu x64 only, so a native-module or architecture difference reaches the Pi unseen. NERV runs Windows and macOS jobs; no other repository tests a second platform. Evidence: [NERV practices transfer report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md), inventory 11; class B item B2. Owner decision 2026-11-26 in chat: "NERV practices inventory accept all" (all 22 proposals of the [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); this record is proposal 20). |
+| **Reproduce** | Read `.github/workflows/ci.yml`: every job has `runs-on: ubuntu-latest`. |
+| **Check** | An `ubuntu-24.04-arm` job installs dependencies and runs the `apps/agent` tests on every PR, and a job failure fails CI (F-025-T01). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status |
+|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-025-t01"></a>F-025-T01 — arm64 CI job for apps/agent | 1 h | 0 h | 1 h | Planned |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 1 h | 0 of 1 completed |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-025.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="f-009"></a>[✨ F-009](#top)
 
 **Browser tests and accessibility checks for the client**
@@ -973,6 +1053,84 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | [#49](https://github.com/voidbrain/Grover/pull/49) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+### <a id="f-023"></a>[✨ F-023](#top)
+
+**Axe accessibility pass per main route in the browser suite**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-023-T01 — Axe pass per main route in the Playwright e2e (Planned).
+
+| | |
+|---|---|
+| **Issue** | NERV, bricks and openbando run axe in browser tests; Grover has no accessibility check beyond contrast, so a missing label, a keyboard trap or a bad ARIA role would pass CI. The Playwright suite exists (`e2e/dashboard.spec.ts`) but is not in CI (dormant check T3 of the 2026-11-26 sweep, "already known"). Evidence: [NERV practices transfer report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md), inventory 13; class A item A10; missing practice M12. Owner decision 2026-11-26 in chat: "NERV practices inventory accept all" (all 22 proposals of the [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); this record is proposal 17). |
+| **Reproduce** | Read the CI workflow and the test scripts of Grover: no axe run. Main routes: `/`, `probes/:id`, `rooms/:id/map`, `plants/:id`, `setup`, `setup/rooms/:id`, `setup/calendars/:id`, `setup/plants`. |
+| **Check** | One axe pass per main route (`/`, `probes/:id`, `rooms/:id/map`, `plants/:id`, `setup`, `setup/rooms/:id`, `setup/calendars/:id`, `setup/plants`) fails on serious and critical violations and reports moderate ones, proved by a seeded-violation fixture that fails first (F-023-T01); CI runs it on every PR (F-023-T02). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
+|---|---|---|---|---|---|---|---|
+| 🟡 Medium | <a id="f-023-t01"></a>F-023-T01 — Axe pass per main route in the Playwright e2e | 2.5 h | 0 h | 2.5 h | Planned | — | [F-023-T02](#f-023-t02) |
+| 🟡 Medium | <a id="f-023-t02"></a>F-023-T02 — Put the e2e suite, with axe, into CI | 1.5 h | 0 h | 1.5 h | Planned | [F-023-T01](#f-023-t01) | — |
+| 🟡 Medium | **Total** | 4 h | 0 h (0 of 2 steps recorded) | 4 h | 0 of 2 completed | | |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-023.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+### <a id="f-024"></a>[✨ F-024](#top)
+
+**Threat map with the NERV checker**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 2.5 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-024-T01 — Threat-map checker with the closed-gap rule (Planned).
+
+| | |
+|---|---|
+| **Issue** | Grover: an agent app: the hub reads probe data and an LLM-facing MCP server is planned (nerv:F-123), so external input can reach a model or a tool. NERV keeps a threat map (OWASP Agentic, LLM and MCP top 10 rows, each citing a test or a gap record) and a checker (`tools/check-threat-map.mjs`, `docs/security/agentic-threats.md`); no other repository has either. NERV's map still cites closed records as gaps (report N6), so the checker here also fails on a gap that cites a closed record. Evidence: [NERV practices transfer report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md), inventory 10; class B item B1; N6. Owner decision 2026-11-26 in chat: "NERV practices inventory accept all" (all 22 proposals of the [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); this record is proposal 18). |
+| **Reproduce** | Search Grover for a threat map or a security page naming prompt injection, tool or key misuse: none. |
+| **Check** | A short threat map lists each applicable Agentic, LLM and MCP top 10 risk with the test or the gap record that covers it, and a checker in CI fails on a row without either and on a gap that cites a closed record (F-024-T01, F-024-T02). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
+|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-024-t01"></a>F-024-T01 — Threat-map checker with the closed-gap rule | 1 h | 0 h | 1 h | Planned | — | [F-024-T02](#f-024-t02) |
+| 🟡 Medium | <a id="f-024-t02"></a>F-024-T02 — Write the threat map | 1.5 h | 0 h | 1.5 h | Planned | [F-024-T01](#f-024-t01) | — |
+| 🟡 Medium | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 2.5 h | 0 of 2 completed | | |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-024.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
