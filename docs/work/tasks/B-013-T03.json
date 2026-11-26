@@ -4,7 +4,7 @@
   "parent": "B-013",
   "title": "Importer: the placeholder strain is never a parent and is named \"Unknown (old record)\"; failing test first",
   "goal": "A lineage naming the old placeholder strain imports as no recorded parents, and importing again after the rename adds nothing",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "apps/hub/test/legacy.test.ts committed first, failing",
     "On the real legacy-v1 dump: no strain lists the placeholder as a parent, and a second import adds nothing"
@@ -35,7 +35,7 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Found and done 2026-11-26 while applying B-013-T02. Not timed.",
+    "basis": "Found and done 2026-11-26 while applying B-013-T02. Not timed. Closed 2026-11-26.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,

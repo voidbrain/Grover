@@ -21,7 +21,7 @@
   "id": "B-013-T02",
   "title": "Apply the owner's choice on the Calvary hub and read it back",
   "goal": "The hub holds what the owner chose, or nothing changes if he chose to leave it",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "A backup of the hub database is taken before any change",
     "The change is made in Setup or the API (no hand-written SQL unless renaming the id needs it, with the owner's OK) and read back with grover_plants",
@@ -30,7 +30,7 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26 through the hub API after a backup; read back over MCP. Not timed.",
+    "basis": "Done 2026-11-26 through the hub API after a backup; read back over MCP. Not timed. Closed 2026-11-26.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,

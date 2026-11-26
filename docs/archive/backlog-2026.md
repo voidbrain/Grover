@@ -9,7 +9,7 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 
 | Closing week | Features closed | Bugs closed |
 |---|---:|---:|
-| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 7 |
+| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 8 |
 <!-- archive-recap:end -->
 
 <a id="archive-week-2026-11-23"></a>
@@ -353,6 +353,47 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 | PR / evidence | Test first, then the fix, in one PR; [#66](https://github.com/voidbrain/Grover/pull/66) |
 | Opened | 2026-11-26 |
 | Verification | 2026-11-26: PR #66 CI green; the test fails on a backlog ID in a user-facing string or template and shows file and line |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+
+### B-013
+
+**Two imported old records on the Calvary hub need the owner's word: the placeholder strain '–' and Dos Si Dos 33's dates**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-26: #68 merged on green CI (importer fix with its failing-first test, B-013-T03); the owner's answer applied on the Calvary hub through its API after a backup and read back over MCP (B-013-T02).
+
+| | |
+|---|---|
+| **Issue** | Found by the owner's import on the Calvary hub, 2026-11-26 ([F-012](../work/records/F-012.md), F-012-T02). (1) The old dump has a strain named '–' (old id 20), a placeholder; it was imported as a strain with id `item` and name '–', and two old plants use it: legacy-1 and legacy-4 (both started 2021-10-01, bloom 2022-01-30), whose old breeder id 89 is unknown. The import now names such a strain `legacy-strain-20` (F-012-T03), but the hub already holds `item`. (2) Old plant legacy-8, Dos Si Dos 33, has bloom 2022-04-01 before its start 2022-06-04: the old record says so; nothing was invented. Nothing was changed on the hub. |
+| **Reproduce** | On the hub, Setup → Plants and strains: the strain '–' and the plants "– (old #1)" and "– (old #4)"; the plant "Dos Si Dos 33 (old #8)" with its dates. Or the MCP tool `grover_plants`. |
+| **Check** | The owner's choice for each question is recorded here; if it changes data, a backup of the hub database is taken first and the change is applied and read back (`grover_plants`). |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-26: #68 merged on green CI (importer fix with its failing-first test, B-013-T03); the owner's answer applied on the Calvary hub through its API after a backup and read back over MCP (B-013-T02). 2026-11-26, owner's answer (B-013-T01, in chat): 1 → (c) keep plants legacy-1 and legacy-4, rename the strain '–' (id `item`) to "Unknown (old record)" with id `legacy-strain-20`; 2 → leave legacy-8's dates as imported. B-013-T02, same day, on the Calvary hub by an agent over SSH with the owner's OK: backup first (`hub-before-b013-20261126-2214.sqlite`), then through the hub's own API: strain `legacy-strain-20` "Unknown (old record)" created with `item`'s fields, plants legacy-1 and legacy-4 moved to it, `item` deleted (no SQL, hub kept running). Finding (B-013-T03): 20 other strains (Acapulco, Hawaii 93, Mango 2001, KC36, White Gorilla Haze, Dos Si Dos 33 and 14 more) had parent `item`. Not an id collision: in the old dump their lineage is '20', the placeholder, which the old app used for "parents not known" (strains 21–40 were created right after it with lineage 20), so the import turned "unknown" into a fake parent. Fixed in the importer (failing test committed first): a placeholder strain is never a parent, and it is imported as "Unknown (old record)", so importing again after the rename adds nothing (dry run on the legacy-v1 dump: 6/33/16, then 0/0/0). On the hub the same 20 strains were saved with no parents through the API. Read back the same day with MCP `grover_strains` and `grover_plants`: 33 strains, 17 plants, no `item` anywhere; `legacy-strain-20` "Unknown (old record)" with plants legacy-1 and legacy-4; the only parents left are the real ones (Brain Damage, Cheese, Frosted Guava, Lava Cake, Runtz, Northern Lights lines, Skunk #1, Amnesia Haze); legacy-8 unchanged (start 2022-06-04, bloom 2022-04-01). The plant names "– (old #1)" and "– (old #4)" were left as they are (not part of the answer; the owner can rename them in Setup). Assumption, cheap to undo: the importer uses the owner's name for the placeholder too.
+
+2026-11-26: opened from F-012-T03. Questions for the owner, in plain words (B-013-T01):
+
+1. The two old plants #1 and #4 have no strain name in the old records (just a dash). What should they be? (a) leave them as they are; (b) you tell me which strain they were (and the breeder, if you know), I set it and remove the empty '–' strain; (c) keep them but call the strain "Unknown (old record)", and rename its id to `legacy-strain-20`.
+2. Old plant #8, Dos Si Dos 33, says it started flowering (2022-04-01) two months before it was started (2022-06-04). Do you remember the right dates? If not, I leave them as the old records say.
+
+Answer in chat, for example: "1b: Northern Lights, Sensi Seeds; 2 leave". You can also fix both yourself in Setup → Plants and strains.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Opened with the F-012-T03 fixes; [#65](https://github.com/voidbrain/Grover/pull/65); [#68](https://github.com/voidbrain/Grover/pull/68) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
 | Reviewed | 2026-11-26 |
 
 </details>
