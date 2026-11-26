@@ -6,7 +6,7 @@
   "goal": "A model reads a tool result correctly",
   "status": "planned",
   "acceptance": [
-    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T04); same message: \"nerv and all modules will need to work with Italian\".",
+    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, coordinator:F-016-T04); same message: \"nerv and all modules will need to work with Italian\".",
     "Cases give a grover_overview or grover_alerts payload in the prompt and ask which pot is out of its phase range, since when, in Italian (\"quale vaso è fuori range e da quando?\") and English; exact-json on the pot, probe and level",
     "The pack is tagged so NERV can run it (nerv:F-120-T11)"
   ],
@@ -32,7 +32,7 @@
   "effort": {
     "size": "small",
     "estimate": "1.0 h agent",
-    "basis": "Payload fixtures plus about 6 cases. Estimated 2026-11-26 at agent speed from the solution:F-016 shared-asset review. Not a measurement.",
+    "basis": "Payload fixtures plus about 6 cases. Estimated 2026-11-26 at agent speed from the coordinator:F-016 shared-asset review. Not a measurement.",
     "reviewed": "2026-11-26",
     "agentHours": 1.0,
     "baselineAgentHours": 1.0,
