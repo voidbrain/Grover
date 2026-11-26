@@ -4,7 +4,7 @@
   "parent": "B-014",
   "title": "A test that no user-facing string names a backlog ID, failing first; remove the two found",
   "goal": "No user-facing text names a backlog ID, and a test fails on a new one",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "apps/hub/test/user-text-ids.test.ts committed first, failing on the two F-004 hints",
     "The hints keep their meaning without the ID and the test passes",
@@ -35,7 +35,7 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26: one test ported from nerv:B-102 and two text edits. Not timed.",
+    "basis": "Done 2026-11-26: one test ported from nerv:B-102 and two text edits. Not timed. Closed 2026-11-26.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,

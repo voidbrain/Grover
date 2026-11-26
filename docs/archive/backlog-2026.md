@@ -9,7 +9,7 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 
 | Closing week | Features closed | Bugs closed |
 |---|---:|---:|
-| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 6 |
+| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 7 |
 <!-- archive-recap:end -->
 
 <a id="archive-week-2026-11-23"></a>
@@ -319,6 +319,40 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 | PR / evidence | Opened in [#43](https://github.com/voidbrain/Grover/pull/43) |
 | Opened | 2026-11-26 |
 | Verification | check:freshness and check:harness clean 2026-11-26 |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+
+### B-014
+
+**User-facing text names backlog IDs: two calibration hints in Setup say "(backlog F-004)"**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-26: Merged in #66 on green CI (main d57d5c2 green; #66 PR checks green): the user-text-ids test, committed failing first, passes and guards new strings.
+
+| | |
+|---|---|
+| **Issue** | Reported by the owner through the coordinator, 2026-11-26: "this happened on nerv too many times". Backlog IDs are for the repository, not for the owner. The probe editor's hint (`apps/client/src/app/setup/probe-editor.ts`, "Analog probes report volts until calibration exists (backlog F-004).") and the room's auto-feed hint (`apps/client/src/app/setup/room-setup.html`, "Leave it off until the probes are calibrated (backlog F-004).") showed one. Nothing stopped a new one: 𖣂 nerv guards this with a test (nerv:B-102, `test/user-text-ids.test.ts`). |
+| **Reproduce** | Setup → a room → an analog pH or EC probe, and the room's auto-feed switch on: the hints end with "(backlog F-004)". |
+| **Check** | No string or template literal in `apps/*/src`, `packages/*/src` or the client's public scripts, and no Angular template, names a backlog ID (F- or B- and three digits) outside comments; a test fails on a new one and shows file and line; the two hints keep their meaning without the ID. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-26: Merged in #66 on green CI (main d57d5c2 green; #66 PR checks green): the user-text-ids test, committed failing first, passes and guards new strings. 2026-11-26: opened and fixed. `apps/hub/test/user-text-ids.test.ts` ports nerv:B-102's idea: it parses every TypeScript and JavaScript source with the TypeScript compiler and checks string and template literals (inline Angular templates included; HTML comments ignored), and checks every `.html` template with its comments stripped; code comments may name IDs. Committed failing first: it found exactly the two hints above (the sweep found no others: hub messages, alerts and MCP tool descriptions were already clean). The hints now read "…until they are calibrated." and "…until the probes are calibrated."
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Test first, then the fix, in one PR; [#66](https://github.com/voidbrain/Grover/pull/66) |
+| Opened | 2026-11-26 |
+| Verification | 2026-11-26: PR #66 CI green; the test fails on a backlog ID in a user-facing string or template and shows file and line |
 | Reviewed | 2026-11-26 |
 
 </details>

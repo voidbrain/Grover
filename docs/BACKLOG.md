@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52.25 h agent + 13.25 h owner across 80 open steps of 26 features and 8 other records. Generated from the task files.
+**Remaining effort:** 52.25 h agent + 13.25 h owner across 79 open steps of 26 features and 7 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -430,7 +430,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02); [#65](https://github.com/voidbrain/Grover/pull/65) |
+| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02); [#65](https://github.com/voidbrain/Grover/pull/65); [#67](https://github.com/voidbrain/Grover/pull/67) |
 | Opened | 2026-11-24 |
 | Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. 2026-11-26: the import on the Calvary hub (F-012-T02, see the closure evidence above), and a read-only `grover_plants` MCP call there returned its 17 plants. |
 | Reviewed | 2026-11-26 |
@@ -902,44 +902,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | PR / evidence | Steps: B-012-T01: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan · B-012-T02: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan. [#57](https://github.com/voidbrain/Grover/pull/57) (plan); owner decision 2026-11-26 "2 ok" |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
-### <a id="b-014"></a>[🐞 B-014](#top)
-
-**User-facing text names backlog IDs: two calibration hints in Setup say "(backlog F-004)"**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-014-T01 — A test that no user-facing string names a backlog ID, failing first; remove the two found (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | Reported by the owner through the coordinator, 2026-11-26: "this happened on nerv too many times". Backlog IDs are for the repository, not for the owner. The probe editor's hint (`apps/client/src/app/setup/probe-editor.ts`, "Analog probes report volts until calibration exists (backlog F-004).") and the room's auto-feed hint (`apps/client/src/app/setup/room-setup.html`, "Leave it off until the probes are calibrated (backlog F-004).") showed one. Nothing stopped a new one: 𖣂 nerv guards this with a test (nerv:B-102, `test/user-text-ids.test.ts`). |
-| **Reproduce** | Setup → a room → an analog pH or EC probe, and the room's auto-feed switch on: the hints end with "(backlog F-004)". |
-| **Check** | No string or template literal in `apps/*/src`, `packages/*/src` or the client's public scripts, and no Angular template, names a backlog ID (F- or B- and three digits) outside comments; a test fails on a new one and shows file and line; the two hints keep their meaning without the ID. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status |
-|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-014-t01"></a>B-014-T01 — A test that no user-facing string names a backlog ID, failing first; remove the two found | 0.5 h | 0 h | 0 h | Implemented; verification pending |
-| 🟢 Small | **Total** | 0.5 h | 0 h (0 of 1 steps recorded) | 0 h | 0 of 1 completed |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-014.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Test first, then the fix, in one PR; [#66](https://github.com/voidbrain/Grover/pull/66) |
-| Opened | 2026-11-26 |
-| Verification | Pending: CI on the PR |
 | Reviewed | 2026-11-26 |
 
 </details>
