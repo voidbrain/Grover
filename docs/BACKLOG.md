@@ -937,7 +937,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Test first, then the fix, in one PR |
+| PR / evidence | Test first, then the fix, in one PR; [#66](https://github.com/voidbrain/Grover/pull/66) |
 | Opened | 2026-11-26 |
 | Verification | Pending: CI on the PR |
 | Reviewed | 2026-11-26 |
