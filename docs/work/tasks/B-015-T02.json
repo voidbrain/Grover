@@ -37,12 +37,14 @@
     "agentHours": 0.25,
     "ownerHours": 0.25,
     "baselineAgentHours": 0.25,
-    "estimateAgentHours": 0.25
+    "estimateAgentHours": 0.25,
+    "ownerKind": "procedure"
   },
   "prs": [
     {
       "pr": 70,
       "note": "owner check page"
     }
-  ]
+  ],
+  "ownerLink": "docs/acceptance/b-015-calendar-fields.md"
 }
