@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "B-012-T02",
+  "parent": "B-012",
+  "title": "Fix the code or update DESIGN.md to match, and document the four undocumented API routes",
+  "goal": "DESIGN.md and the code agree on when a config is republished; every /api route is listed",
+  "status": "planned",
+  "acceptance": [
+    "docs/DESIGN.md Protocol section states when the config is republished (on connect, on setup change and every 10 minutes for the grow calendar, or whatever T01 chose) and why; or the code is changed to match the document, with T01's test",
+    "docs/DESIGN.md lists GET /api/actuations, /api/faults, /api/feeds and /api/health with their query parameters and response types from packages/contracts/src/api.ts; the other /api routes in apps/hub/src/http.ts are checked against it and any further missing one is added",
+    "No behaviour change beyond what T01 chose"
+  ],
+  "dependsOn": [
+    "B-012-T01"
+  ],
+  "resources": [
+    "docs/DESIGN.md",
+    "apps/hub/src/hub.ts",
+    "apps/hub/src/http.ts",
+    "docs/work/records/B-012.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "CI"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner",
+    "If the resend turns out to be needed for recovery in a way the design does not cover, the owner decides the behaviour before the test is written"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "One paragraph and one route table, plus a check of the remaining routes. Estimated 2026-11-26. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  },
+  "prs": [
+    {
+      "pr": 57,
+      "note": "plan"
+    }
+  ]
+}
