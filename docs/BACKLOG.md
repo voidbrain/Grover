@@ -1282,11 +1282,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟡 Medium | <a id="f-029-t01"></a>F-029-T01 — Upgrade bricks and replace plant-chart.ts with the bricks line chart | 2 h | 0 h | 2 h | Planned | — | [F-029-T02](#f-029-t02) |
-| 🟢 Small | <a id="f-029-t02"></a>F-029-T02 — Feeds and doses per day as a bricks bar or stacked bar chart | 1 h | 0 h | 1 h | Planned | [F-029-T01](#f-029-t01) | — |
-| 🟡 Medium | **Total** | 3 h | 0 h (0 of 2 steps recorded) | 3 h | 0 of 2 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟡 Medium | <a id="f-029-t01"></a>F-029-T01 — Upgrade bricks and replace plant-chart.ts with the bricks line chart | 2 h | 0 h | 2 h | Planned | — | [F-029-T02](#f-029-t02) | [PR #71](https://github.com/voidbrain/Grover/pull/71) plan |
+| 🟢 Small | <a id="f-029-t02"></a>F-029-T02 — Feeds and doses per day as a bricks bar or stacked bar chart | 1 h | 0 h | 1 h | Planned | [F-029-T01](#f-029-t01) | — | [PR #71](https://github.com/voidbrain/Grover/pull/71) plan |
+| 🟡 Medium | **Total** | 3 h | 0 h (0 of 2 steps recorded) | 3 h | 0 of 2 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -1295,7 +1295,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | pending |
+| PR / evidence | Steps: F-029-T01: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan · F-029-T02: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan. Plan: [#71](https://github.com/voidbrain/Grover/pull/71) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
