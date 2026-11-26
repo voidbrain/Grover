@@ -397,7 +397,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | — | — | 🤖 | 🧑‍🔧 | — |
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | `nerv:F-122-T02` | — | 🤖 | — | — |
 
 💻 **→** Next: F-008-T04 — Write the alert contract for NERV (Implemented; verification pending).
 
@@ -409,11 +409,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Who | PRs |
-|---|---|---|---|---|---|:---:|---|
-| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | 🧑‍🔧 | — |
-| 🟡 Medium | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | 1.5 h | Implemented; verification pending | 🤖 | [PR #53](https://github.com/voidbrain/Grover/pull/53) feature |
-| 🟡 Medium | **Total** | 3 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.25 h owner | 2 of 4 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟡 Medium | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | 1.5 h | Implemented; verification pending | — | — | 🤖 | [PR #53](https://github.com/voidbrain/Grover/pull/53) feature |
+| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | `nerv:F-122-T02` | — | ⏳ 🧑‍🔧 | — |
+| 🟡 Medium | **Total** | 3 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.25 h owner | 2 of 4 completed | | | | |
 
 <details><summary>Done steps (2)</summary>
 
