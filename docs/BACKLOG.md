@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52.25 h agent + 14 h owner across 79 open steps of 26 features and 6 other records. Generated from the task files.
+**Remaining effort:** 52.25 h agent + 15 h owner across 80 open steps of 26 features and 6 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -55,24 +55,25 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 1.5 h owner | — | [F-003-T02](#f-003-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | — |
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 2.5 h owner | — | [F-003-T02](#f-003-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | — |
 
-🧑 **→** Next: [🧑‍🔧](acceptance/pi-deploy.md) F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale (Ready).
+🧑 **→** Next: [🧑‍🔧](acceptance/hub-on-calvary.md) F-005-T01 — Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale (Ready).
 
 | | |
 |---|---|
-| **Issue** | systemd units and deploy steps exist (`deploy/`, README) but have not been run on a Pi. |
+| **Issue** | systemd units and deploy steps exist (`deploy/`, README) but have not been run on a Pi: the hub goes on Calvary (NERV-03), the agent on a small second Pi in the tent. |
 | **Reproduce** | README, "Deploying on a Raspberry Pi", steps 1 to 6. |
-| **Check** | Both services start at boot; `https://<pi>.<tailnet>.ts.net` opens the dashboard from a phone on the tailnet and not from outside it; NERV lists the Grover tools at `/mcp`. |
+| **Check** | The hub starts at boot on Calvary and the agent on the tent Pi; `https://<pi>.<tailnet>.ts.net` opens the dashboard from a phone on the tailnet and not from outside it; NERV lists the Grover tools at `/mcp`. |
 
 **Feature steps**
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs hub and agent on the Pi behind Tailscale | 0 h | 0 h | 0 h agent + 1.25 h owner | Ready | — | [F-003-T02](#f-003-t02), [F-005-T02](#f-005-t02), [F-005-T03](#f-005-t03), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/pi-deploy.md) |
+| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale | 0 h | 0 h | 0 h agent + 1.25 h owner | Ready | — | [F-005-T02](#f-005-t02), [F-005-T03](#f-005-t03), [F-005-T04](#f-005-t04), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/hub-on-calvary.md) |
 | 🟢 Small | <a id="f-005-t02"></a>F-005-T02 — Owner checks NERV lists the Grover tools (waits on nerv:F-123-T02) | — | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 |
-| 🟢 Small | <a id="f-005-t03"></a>F-005-T03 — Fix the README and service files from the first install | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.5 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0.5 h agent + 1.5 h owner | 0 of 3 completed | | | |
+| 🟢 Small | <a id="f-005-t04"></a>F-005-T04 — Owner installs the agent on a small second Pi in the tent (later) | 0 h | 0 h | 0 h agent + 1 h owner | Planned | [F-005-T01](#f-005-t01) | [F-003-T02](#f-003-t02), [F-005-T03](#f-005-t03), [F-018-T03](#f-018-t03) | ⏳ 🧑‍🔧 |
+| 🟢 Small | <a id="f-005-t03"></a>F-005-T03 — Fix the README and service files from the first installs (hub on Calvary, agent on the tent Pi) | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01), [F-005-T04](#f-005-t04) | — | ⏳ 🤖 |
+| 🟢 Small | **Total** | 0.5 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 0.5 h agent + 2.5 h owner | 0 of 4 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -81,7 +82,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30), [#60](https://github.com/voidbrain/Grover/pull/60) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
@@ -96,7 +97,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔺 P1 | 🟡 Medium | 2.5 h agent + 4.5 h owner | [F-005-T01](#f-005-t01) | [F-004-T02](#f-004-t02) | ⏳ | — | 🤔 |
+| 🔴 Open | 🔺 P1 | 🟡 Medium | 2.5 h agent + 4.5 h owner | [F-005-T04](#f-005-t04) | [F-004-T02](#f-004-t02) | ⏳ | — | 🤔 |
 
 🧑 **→** Next: [🤔](decisions/level-sensor.md) F-003-T01 — Owner chooses the water-level sensor (Ready).
 
@@ -111,7 +112,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
 | 🟢 Small | <a id="f-003-t01"></a>F-003-T01 — Owner chooses the water-level sensor | 0 h | 0 h | 0 h agent + 0.5 h owner | Ready | — | [F-003-T03](#f-003-t03) | [🤔](decisions/level-sensor.md) |
-| 🟢 Small | <a id="f-003-t02"></a>F-003-T02 — Owner runs bring-up steps 1–4 on the Pi (buses, bindings, reads, switches) | 0 h | 0 h | 0 h agent + 2 h owner | Planned | [F-005-T01](#f-005-t01) | [F-003-T04](#f-003-t04), [F-004-T02](#f-004-t02) | ⏳ 🧑‍🔧 |
+| 🟢 Small | <a id="f-003-t02"></a>F-003-T02 — Owner runs bring-up steps 1–4 on the Pi (buses, bindings, reads, switches) | 0 h | 0 h | 0 h agent + 2 h owner | Planned | [F-005-T04](#f-005-t04) | [F-003-T04](#f-003-t04), [F-004-T02](#f-004-t02) | ⏳ 🧑‍🔧 |
 | 🟡 Medium | <a id="f-003-t03"></a>F-003-T03 — Driver for the chosen level sensor | 2 h | 0 h | 2 h | Planned | [F-003-T01](#f-003-t01) | [F-003-T04](#f-003-t04) | ⏳ 🤖 |
 | 🟢 Small | <a id="f-003-t04"></a>F-003-T04 — Owner runs bring-up steps 5–6 on the Pi (pump calibration, levels, a first feed, safety) | 0 h | 0 h | 0 h agent + 2 h owner | Planned | [F-003-T02](#f-003-t02), [F-003-T03](#f-003-t03) | [F-003-T05](#f-003-t05) | ⏳ 🧑‍🔧 |
 | 🟢 Small | <a id="f-003-t05"></a>F-003-T05 — Record the bring-up results; open B- records for driver faults | 0.5 h | 0 h | 0.5 h | Planned | [F-003-T04](#f-003-t04) | — | ⏳ 🤖 |
@@ -818,7 +819,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 1.5 h owner | [F-005-T01](#f-005-t01) | — | ⏳ | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 1.5 h owner | [F-005-T04](#f-005-t04) | — | ⏳ | 🧑‍🔧 | — |
 
 🧑 **→** Next: [🧑‍🔧](acceptance/pump-wiring.md) F-018-T01 — Owner writes down the pump wiring (L298N inputs on MCP23017 pins) (Ready).
 
@@ -833,7 +834,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
 |---|---|---|---|---|---|---|---|:---:|---|
 | 🟢 Small | <a id="f-018-t01"></a>F-018-T01 — Owner writes down the pump wiring (L298N inputs on MCP23017 pins) | 0 h | 0 h | 0 h agent + 0.5 h owner | Ready | — | [F-018-T03](#f-018-t03) | [🧑‍🔧](acceptance/pump-wiring.md) | — |
-| 🟢 Small | <a id="f-018-t03"></a>F-018-T03 — Owner runs each pump forward and stops it on the Pi | 0 h | 0 h | 0 h agent + 1 h owner | Planned | [F-018-T01](#f-018-t01), [F-005-T01](#f-005-t01) | [F-018-T04](#f-018-t04) | ⏳ 🧑‍🔧 | — |
+| 🟢 Small | <a id="f-018-t03"></a>F-018-T03 — Owner runs each pump forward and stops it on the Pi | 0 h | 0 h | 0 h agent + 1 h owner | Planned | [F-018-T01](#f-018-t01), [F-005-T04](#f-005-t04) | [F-018-T04](#f-018-t04) | ⏳ 🧑‍🔧 | — |
 | 🟢 Small | <a id="f-018-t04"></a>F-018-T04 — Record the pump device check; fix what it found | 0.25 h | 0 h | 0.25 h | Planned | [F-018-T03](#f-018-t03) | — | ⏳ 🤖 | — |
 | 🟢 Small | **Total** | 2.25 h | 0 h (0 of 4 steps recorded) | 0.25 h agent + 1.5 h owner | 1 of 4 completed | | | | |
 

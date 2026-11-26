@@ -7,7 +7,8 @@
   "status": "planned",
   "acceptance": [
     "A low supply tank on the deployed hub reaches the owner through NERV",
-    "Waits on nerv:F-122-T02 (NERV delivers Grover alerts)"
+    "Waits on nerv:F-122-T02 (NERV delivers Grover alerts)",
+    "Needs only the hub on Calvary (F-005-T01); no agent"
   ],
   "dependsOn": [
     "F-008-T02",

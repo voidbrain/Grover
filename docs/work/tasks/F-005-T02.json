@@ -6,14 +6,14 @@
   "goal": "NERV reaches the deployed hub over MCP",
   "status": "planned",
   "acceptance": [
-    "Step 6 of the page gives its expected result",
+    "Step 6 of the Calvary page gives its expected result",
     "Waits on nerv:F-123-T02 (NERV's owner check that it lists the Grover tools); done together with it"
   ],
   "dependsOn": [
     "F-005-T01"
   ],
   "resources": [
-    "docs/acceptance/pi-deploy.md",
+    "docs/acceptance/hub-on-calvary.md",
     "docs/work/records/F-005.md"
   ],
   "capabilities": [
@@ -26,7 +26,7 @@
   "escalation": [
     "A material scope or effort increase goes to the owner"
   ],
-  "ownerLink": "docs/acceptance/pi-deploy.md#6-nerv-on-the-mac-running-nerv",
+  "ownerLink": "docs/acceptance/hub-on-calvary.md#6-nerv-on-the-mac-running-nerv",
   "effort": {
     "size": "small",
     "estimate": "0.25 h owner",
