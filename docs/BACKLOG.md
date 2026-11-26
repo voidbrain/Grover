@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 43.5 h agent + 14 h owner across 70 open steps of 24 features and 5 other records. Generated from the task files.
+**Remaining effort:** 46.75 h agent + 14 h owner across 73 open steps of 25 features and 5 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -443,6 +443,46 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
+### <a id="f-027"></a>[✨ F-027](#top)
+
+**Gauntlet pack for the hub's MCP tools (grover-v1), Italian and English**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 3.25 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips (Planned).
+
+| | |
+|---|---|
+| **Issue** | NERV's models call 19 Grover tools, four of which move hardware, and no case checks that a model picks the right tool and arguments, leaves hardware to approval and answers from the tool result. The tool-use general pack uses invented tools only. The owner uses NERV and all modules in Italian, so every case set includes Italian phrasings. Owner decision 2026-11-26 in chat: "ok to all" (accepts proposal 1 of the shared-asset review, solution:F-016-T04); same message: "nerv and all modules will need to work with Italian". |
+| **Reproduce** | `ls evals/gauntlet` finds nothing; `grep gauntlet package.json` finds no pin; `apps/hub/src/mcp.ts` registers 19 tools with no case naming any. |
+| **Check** | `evals/gauntlet/grover-v1.json`, model layer, regression and holdout splits, Italian and English requests, exact-json (json-match once released), invented data; `gauntlet validate` runs in CI from a pinned `@voidbrain/gauntlet-protocol` devDependency; a test fails when a case names a tool or argument that `mcp.ts` does not register; the skips are recorded in `docs/DESIGN.md`, "NERV"; NERV runs the pack against its models (nerv:F-120-T11). |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-027-t01"></a>F-027-T01 — Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips | 0.75 h | 0 h | 0.75 h | Planned | — | [F-027-T02](#f-027-t02) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟡 Medium | <a id="f-027-t02"></a>F-027-T02 — Tool-choice, approval and argument cases, Italian and English | 1.5 h | 0 h | 1.5 h | Planned | [F-027-T01](#f-027-t01) | [F-027-T03](#f-027-t03) | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟢 Small | <a id="f-027-t03"></a>F-027-T03 — Answer-from-result cases on overview and alerts payloads, Italian and English | 1 h | 0 h | 1 h | Planned | [F-027-T02](#f-027-t02) | — | [PR #54](https://github.com/voidbrain/Grover/pull/54) plan |
+| 🟡 Medium | **Total** | 3.25 h | 0 h (0 of 3 steps recorded) | 3.25 h | 0 of 3 completed | | | |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-027.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ### <a id="f-026"></a>[✨ F-026](#top)
 
 **Hub backup schedule, off-host copy and restore drill**

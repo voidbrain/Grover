@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "F-027-T01",
+  "parent": "F-027",
+  "title": "Pin gauntlet-protocol, validate in CI, tool-name test and recorded skips",
+  "goal": "The pack's frame exists and cannot drift from mcp.ts",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T04); same message: \"nerv and all modules will need to work with Italian\".",
+    "@voidbrain/gauntlet-protocol is a pinned devDependency; `gauntlet validate` runs in CI; a failing test first: a case naming a tool or argument mcp.ts does not register fails (uses `gauntlet validate --tools` instead if gauntlet-protocol releases it first)",
+    "docs/DESIGN.md, \"NERV\", records the skips: alerts raised, held and cleared (deterministic, apps/hub/test/alerts.test.ts), feed planning, calibration, lights and schedules (deterministic), client screens (UI)"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "package.json",
+    "apps/hub/test/**",
+    "docs/DESIGN.md",
+    "evals/gauntlet/**",
+    ".github/workflows/**",
+    "docs/work/records/F-027.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.75 h agent",
+    "basis": "A pin, a CI step, one drift test and a doc section. Estimated 2026-11-26 at agent speed from the solution:F-016 shared-asset review. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.75,
+    "baselineAgentHours": 0.75,
+    "estimateAgentHours": 0.75
+  },
+  "prs": [
+    {
+      "pr": 54,
+      "note": "plan"
+    }
+  ]
+}
