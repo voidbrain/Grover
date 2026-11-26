@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "id": "B-013-T03",
+  "parent": "B-013",
+  "title": "Importer: the placeholder strain is never a parent and is named \"Unknown (old record)\"; failing test first",
+  "goal": "A lineage naming the old placeholder strain imports as no recorded parents, and importing again after the rename adds nothing",
+  "status": "implemented",
+  "acceptance": [
+    "apps/hub/test/legacy.test.ts committed first, failing",
+    "On the real legacy-v1 dump: no strain lists the placeholder as a parent, and a second import adds nothing"
+  ],
+  "dependsOn": [
+    "B-013-T01"
+  ],
+  "resources": [
+    "apps/hub/src/legacy.ts",
+    "apps/hub/test/legacy.test.ts",
+    "docs/work/records/B-013.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test",
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Found and done 2026-11-26 while applying B-013-T02. Not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  }
+}

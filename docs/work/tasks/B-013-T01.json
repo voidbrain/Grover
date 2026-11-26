@@ -19,7 +19,7 @@
   "id": "B-013-T01",
   "title": "Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates",
   "goal": "The owner's answer to both questions is recorded in B-013",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "Question 1 (plants #1 and #4, strain '–') has an answer: leave, set the real strain, or rename",
     "Question 2 (plant #8 dates) has an answer: leave or the right dates"
@@ -27,11 +27,11 @@
   "ownerLink": "docs/work/records/B-013.md",
   "effort": {
     "size": "small",
-    "estimate": "0.25 h owner",
-    "basis": "Two short questions. Estimated 2026-11-26.",
+    "estimate": "0 remaining",
+    "basis": "Answered by the owner in chat 2026-11-26: 1 (c), 2 leave. Closed 2026-11-26.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
-    "ownerHours": 0.25,
+    "ownerHours": 0,
     "baselineAgentHours": 0,
     "estimateAgentHours": 0,
     "ownerKind": "decision"
