@@ -71,7 +71,7 @@ Waits on nerv:F-123-T02; F-005-T02 is done together with it. Add an MCP connecti
 
 Expected: the `grover_...` tools are listed (for example `grover_overview`, `grover_alerts`, `grover_plants`).
 
-## 7. Reboot (on Calvary) (open)
+## 7. Reboot (on Calvary) (done 2026-11-26)
 
 ```bash
 sudo reboot
@@ -93,7 +93,9 @@ Done by the agent over SSH as the user `db`, not by the owner at the keyboard: t
 
 **Differences from this page** (input for F-005-T03): the agent ran the steps over SSH instead of the owner at the keyboard (owner-authorised); the `sudoedit` steps were done with `sed` and `tee`; the machine is Debian 11, not Bookworm. Not checked here: that the page is unreachable from a phone with Tailscale off (the serve is tailnet-only by design).
 
-**Still open:** step 6 (NERV lists the Grover tools: F-005-T02, nerv:F-123-T02) and step 7 (the reboot test), so F-005-T01 stays Implemented until the reboot is done.
+**Reboot (step 7), about 20:30Z:** owner OK in chat ("yep"); the agent ran `sudo systemctl reboot` over SSH. After boot (uptime 0 min): `grover-hub` active, NERV-03 active, `tailscale serve` restored (tailnet only, proxy to `127.0.0.1:8080`), and `/api/health` from the Mac gave `{"ok":true,"agents":[]}`.
+
+**Still open:** step 6 (NERV lists the Grover tools: F-005-T02, nerv:F-123-T02, the owner's `nerv tools add`).
 
 ## Stop or undo
 
