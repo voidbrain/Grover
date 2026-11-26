@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "parent": "B-013",
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/B-013.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral, invented test data only; no Tailscale names, IPs, agent tokens or personal data in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "id": "B-013-T01",
+  "title": "Owner decides what to do with the placeholder strain '–' and Dos Si Dos 33's dates",
+  "goal": "The owner's answer to both questions is recorded in B-013",
+  "status": "planned",
+  "acceptance": [
+    "Question 1 (plants #1 and #4, strain '–') has an answer: leave, set the real strain, or rename",
+    "Question 2 (plant #8 dates) has an answer: leave or the right dates"
+  ],
+  "ownerLink": "docs/work/records/B-013.md",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Two short questions. Estimated 2026-11-26.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "decision"
+  }
+}

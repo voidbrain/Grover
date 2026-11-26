@@ -162,7 +162,7 @@ NERV drives Grover through the hub's MCP endpoint (`/mcp`, streamable HTTP, stat
 | Tool | Changes hardware |
 |---|---|
 | `grover_overview`: rooms, agents, phase, pots, probes with latest readings, actuators, alerts | no |
-| `grover_readings`, `grover_history`, `grover_alerts`, `grover_feeds`, `grover_feed_preview`, `grover_plants` (strain, ancestry, generation, mothers, pot), `grover_plant_report` (a plant's phases, statistics, feeds and its pot's alerts) | no |
+| `grover_readings`, `grover_history`, `grover_alerts`, `grover_feeds`, `grover_feed_preview`, `grover_plants` (strain, ancestry, generation, mothers, pot), `grover_strains` (every strain with breeder, genetics, ancestry and its plants), `grover_plant_report` (a plant's phases, statistics, feeds and its pot's alerts) | no |
 | `grover_take_cuttings`, `grover_harvest`, `grover_place_plant`, `grover_switch_to_bloom`, `grover_start_flush` | no (records only; bloom can move a calendar-driven light) |
 | `grover_read_probe` | takes a reading |
 | `grover_run_pump`, `grover_switch`, `grover_feed_pot`, `grover_set_mode` | yes |

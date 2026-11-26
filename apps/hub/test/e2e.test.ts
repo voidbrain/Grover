@@ -347,8 +347,33 @@ test('MCP: tools are listed and a read-only tool answers', async () => {
     'grover_alerts',
     'grover_switch_to_bloom',
     'grover_start_flush',
+    'grover_plants',
+    'grover_strains',
   ])
     assert.ok(names.includes(n), n);
+  // NERV reads plants and strains (F-012-T03); the owner asks in Italian, so the descriptions carry his phrasings.
+  const described = (n: string) => tools.result.tools.find((t: any) => t.name === n).description as string;
+  assert.match(described('grover_plants'), /quali piante ho\?/);
+  assert.match(described('grover_plants'), /che genetica è nel vaso 3\?/);
+  assert.match(described('grover_strains'), /quali genetiche ho\?/);
+  const inPot3 = JSON.parse(
+    (await rpc('tools/call', { name: 'grover_plants', arguments: { potId: 'pot-3' } }, 5)).result.content[0].text,
+  );
+  assert.deepEqual(
+    inPot3.map((p: any) => [p.plant.id, p.strain.name, p.strain.breeder]),
+    [['nl5h-gen2', 'Northern Lights #5 x Haze', 'Sensi Seeds']],
+  );
+  const strains = JSON.parse(
+    (await rpc('tools/call', { name: 'grover_strains', arguments: {} }, 6)).result.content[0].text,
+  );
+  const haze = strains.find((x: any) => x.id === 'haze');
+  assert.deepEqual(haze.plantIds, [], 'a strain no plant grows is still readable');
+  const cross = strains.find((x: any) => x.id === 'northern-lights-5-x-haze');
+  assert.equal(cross.genetics, '70 % sativa / 30 % indica');
+  assert.deepEqual(
+    cross.ancestry.parents.map((x: any) => x.strain.id),
+    ['northern-lights-5', 'haze'],
+  );
   const overview = await rpc('tools/call', { name: 'grover_overview', arguments: {} }, 3);
   const rooms = JSON.parse(overview.result.content[0].text);
   assert.equal(rooms[0].room.id, 'grow-1');
