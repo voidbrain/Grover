@@ -2,25 +2,25 @@
  "packages/contracts/src/": {
   "lines": 100,
   "statements": 100,
-  "branches": 95.8,
-  "functions": 100
+  "branches": 93.6,
+  "functions": 99.1
  },
  "apps/hub/src/": {
-  "lines": 91.8,
-  "statements": 91.8,
-  "branches": 75,
-  "functions": 80.8
+  "lines": 96.4,
+  "statements": 96.4,
+  "branches": 86.3,
+  "functions": 90.2
  },
  "apps/agent/src/": {
-  "lines": 73.6,
-  "statements": 73.6,
-  "branches": 77.8,
-  "functions": 82.8
+  "lines": 88.5,
+  "statements": 88.5,
+  "branches": 91.1,
+  "functions": 85.2
  },
  "all": {
-  "lines": 88.6,
-  "statements": 88.6,
-  "branches": 78.5,
-  "functions": 83.4
+  "lines": 95.8,
+  "statements": 95.8,
+  "branches": 89,
+  "functions": 90.7
  }
 }
