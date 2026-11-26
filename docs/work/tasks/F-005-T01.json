@@ -4,9 +4,9 @@
   "parent": "F-005",
   "title": "Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale",
   "goal": "The hub (no agent) runs on Calvary at boot and is reachable over MCP and HTTP only from the tailnet",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
-    "Steps 1-5 and 7 of the page give their expected result, or the difference is reported (done 2026-11-26); step 6 is F-005-T02",
+    "Steps 1-7 of the page gave their expected result, or the difference was reported (steps 1-5 and 7 on 2026-11-26; step 6 via F-005-T02, same day)",
     "Owner decision 2026-11-26: hub on Calvary now; the agent comes later on a small second Pi in the tent (F-005-T04)"
   ],
   "dependsOn": [],
@@ -30,7 +30,7 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Implemented 2026-11-26: steps 1-5 (about 19:30Z) and step 7, the reboot (about 20:30Z), done by the agent over SSH with the owner's authorisation; evidence on the page. Step 6 is F-005-T02. Closes with the record. Estimated 2026-11-26: about 1.25 h on Calvary, hub only.",
+    "basis": "Closed 2026-11-26: all 7 steps done (steps 1-5 about 19:30Z, 7 about 20:30Z by the agent over SSH with the owner's authorisation; step 6 via F-005-T02). Estimated 2026-11-26: about 1.25 h on Calvary, hub only. No actual: not timed.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,
