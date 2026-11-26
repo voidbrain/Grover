@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 31 h agent + 13.25 h owner across 59 open steps of 20 features and 5 other records. Generated from the task files.
+**Remaining effort:** 31.25 h agent + 13.25 h owner across 60 open steps of 20 features and 5 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -859,46 +859,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="f-022"></a>[✨ F-022](#top)
-
-**Turn on the dormant procedure settings: reviews, coverage enforcement, work usage, behaviour runner**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | The 2026-11-26 dormant-checks sweep (coordinator `docs/audits/2026-11-26-dormant-checks.md`, rows S1, S2, S3, S5) found no periodic reviews (`reviews` unset), coverage regressions that only warn (`coverage.enforce: false`), work-usage measurement off and no `behaviour.runner`. |
-| **Reproduce** | `.harness.json` on `main` `080194c`: no `reviews`, `coverage.enforce: false`, `workUsage.enabled: false`, `behaviour` `{times: 3}`. |
-| **Check** | `.harness.json` sets `reviews` (token, architecture, skills at 30 days), `coverage.enforce: true`, `workUsage.enabled: true` and `behaviour.runner`; the first architecture review with its outside-landscape comparison is `docs/reviews/architecture/2026-11-26.md`; CI passes with enforcement on (or a real drop is fixed or recorded). First token and skills reviews: F-022-T03. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
-|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-022-t01"></a>F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings | 0.25 h | 0 h | 0 h | Implemented; verification pending | [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on |
-| 🟢 Small | <a id="f-022-t02"></a>F-022-T02 — First architecture review with outside-landscape comparison | 0.5 h | 0 h | 0 h | Implemented; verification pending | [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review |
-| 🟢 Small | <a id="f-022-t03"></a>F-022-T03 — First token and skills reviews | 1 h | 0 h | 1 h | Planned | — |
-| 🟢 Small | **Total** | 1.75 h | 0 h (0 of 3 steps recorded) | 1 h | 0 of 3 completed | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-022.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-022-T01: [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on · F-022-T02: [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review. [#50](https://github.com/voidbrain/Grover/pull/50) |
-| Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
 ### <a id="f-009"></a>[✨ F-009](#top)
 
 **Browser tests and accessibility checks for the client**
@@ -972,6 +932,47 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Field | Value |
 |---|---|
 | PR / evidence | [#49](https://github.com/voidbrain/Grover/pull/49) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
+### <a id="f-022"></a>[✨ F-022](#top)
+
+**Turn on the dormant procedure settings: reviews, coverage enforcement, work usage, behaviour runner**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 1.25 h | — | — | 🤖 | — | — |
+
+💻 **→** Next: F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings (Implemented; verification pending).
+
+| | |
+|---|---|
+| **Issue** | The 2026-11-26 dormant-checks sweep (coordinator `docs/audits/2026-11-26-dormant-checks.md`, rows S1, S2, S3, S5) found no periodic reviews (`reviews` unset), coverage regressions that only warn (`coverage.enforce: false`), work-usage measurement off and no `behaviour.runner`. |
+| **Reproduce** | `.harness.json` on `main` `080194c`: no `reviews`, `coverage.enforce: false`, `workUsage.enabled: false`, `behaviour` `{times: 3}`. |
+| **Check** | `.harness.json` sets `reviews` (token, architecture, skills at 30 days), `coverage.enforce: true` (switched on by F-022-T04 once a current baseline is on `main`: under enforce the check reads the baseline from `origin/main`, so the PR that refreshes it cannot enforce it), `workUsage.enabled: true` and `behaviour.runner`; the first architecture review with its outside-landscape comparison is `docs/reviews/architecture/2026-11-26.md`; CI passes with enforcement on (or a real drop is fixed or recorded). First token and skills reviews: F-022-T03. |
+
+**Feature steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-022-t01"></a>F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings | 0.25 h | 0 h | 0 h | Implemented; verification pending | — | [F-022-T04](#f-022-t04) | [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on |
+| 🟢 Small | <a id="f-022-t02"></a>F-022-T02 — First architecture review with outside-landscape comparison | 0.5 h | 0 h | 0 h | Implemented; verification pending | — | — | [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review |
+| 🟢 Small | <a id="f-022-t03"></a>F-022-T03 — First token and skills reviews | 1 h | 0 h | 1 h | Planned | — | — | — |
+| 🟢 Small | <a id="f-022-t04"></a>F-022-T04 — Turn coverage.enforce on | 0.25 h | 0 h | 0.25 h | Planned | [F-022-T01](#f-022-t01) | — | — |
+| 🟡 Medium | **Total** | 2 h | 0 h (0 of 4 steps recorded) | 1.25 h | 0 of 4 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-022.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Steps: F-022-T01: [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on · F-022-T02: [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review. [#50](https://github.com/voidbrain/Grover/pull/50) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |

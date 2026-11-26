@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-022-T04",
+  "parent": "F-022",
+  "title": "Turn coverage.enforce on",
+  "goal": "coverage.enforce true once the refreshed baseline is on main",
+  "status": "planned",
+  "acceptance": [
+    "`coverage.enforce` is true",
+    "CI's coverage table passes against the baseline on `main`"
+  ],
+  "dependsOn": [
+    "F-022-T01"
+  ],
+  "resources": [
+    ".harness.json",
+    "docs/work/records/F-022.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "CI"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "One setting in a follow-up PR after the baseline lands. Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.25,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25,
+    "days": 0,
+    "baselineDays": 0
+  }
+}

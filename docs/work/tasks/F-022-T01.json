@@ -7,7 +7,7 @@
   "status": "implemented",
   "acceptance": [
     "`reviews` token, architecture, skills at 30 days",
-    "`coverage.enforce` true",
+    "`coverage.enforce` stays false until the baseline on `main` is current; F-022-T04 turns it on",
     "`workUsage.enabled` true",
     "`behaviour.runner` is the Claude Code `claude -p` command from rule-review, no campaign run"
   ],
