@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 26 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
+**Remaining effort:** 25 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -745,7 +745,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
+| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
 
 💻 **→** Next: F-010-T01 — Downsample old readings (Implemented; verification pending).
 
@@ -760,8 +760,8 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 | Effort | Step | Estimate | Actual | Remaining | Status | PRs |
 |---|---|---|---|---|---|---|
 | 🟢 Small | <a id="f-010-t01"></a>F-010-T01 — Downsample old readings | 1.5 h | 0 h | 0 h | Implemented; verification pending | [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests |
-| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 1 h | Ready | — |
-| 🟢 Small | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 1 h | 0 of 2 completed | |
+| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 0 h | Implemented; verification pending | [PR #47](https://github.com/voidbrain/Grover/pull/47) backup command and tests |
+| 🟢 Small | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 0 h | 0 of 2 completed | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -770,7 +770,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46) |
+| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests · F-010-T02: [PR #47](https://github.com/voidbrain/Grover/pull/47) backup command and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
