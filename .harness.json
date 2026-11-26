@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "10.21.4",
+  "version": "10.24.1",
   "stacks": [
     "core",
     "angular"
@@ -63,6 +63,7 @@
     "tools/rule-load.mjs": "core/tools/rule-load.mjs",
     "docs/agents/claims.md": "core/docs/agents/claims.md",
     "docs/agents/rule-review.md": "core/docs/agents/rule-review.md",
+    "docs/agents/behaviour-checks.md": "core/docs/agents/behaviour-checks.md",
     "docs/agents/mcp-commands.md": "core/docs/agents/mcp-commands.md",
     "docs/agents/solution-refresh.md": "core/docs/agents/solution-refresh.md",
     "docs/agents/audit-findings.md": "core/docs/agents/audit-findings.md",

@@ -60,7 +60,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:fast": "npm run format:check && npm run lint && npm run typecheck && npm run check:backlog && npm run check:work && npm run check:rules"
+    "check:fast": "npm run format:check && npm run lint && npm run typecheck && npm run check:backlog && npm run check:work && npm run check:rules",
+    "work:pr": "node tools/work-items.mjs pr"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

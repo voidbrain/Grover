@@ -14,6 +14,8 @@ data/
 playwright-report/
 test-results/
 .harness/friction.jsonl
+# Optional local agent-behaviour run counts (tools/behaviour.mjs); never automatic telemetry.
+.harness/behaviour.jsonl
 .harness/friction-session.json
 .harness/review-outcomes.json
 # The complete test report the quiet reporter pairs with (tools/quiet-reporter.mjs).
