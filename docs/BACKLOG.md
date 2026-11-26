@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 52.25 h agent + 15 h owner across 80 open steps of 26 features and 6 other records. Generated from the task files.
+**Remaining effort:** 52.25 h agent + 14 h owner across 80 open steps of 26 features and 6 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -55,9 +55,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 2.5 h owner | — | [F-003-T02](#f-003-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | — |
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.5 h agent + 1.5 h owner | — | [F-003-T02](#f-003-t02), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-018-T03](#f-018-t03), [F-019-T03](#f-019-t03) | ⏳ | 🧑‍🔧 | — |
 
-🧑 **→** Next: [🧑‍🔧](acceptance/hub-on-calvary.md) F-005-T01 — Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale (Ready).
+🧑 **→** Next: [🧑‍🔧](acceptance/hub-on-calvary.md) F-005-T01 — Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale (Implemented; verification pending).
 
 | | |
 |---|---|
@@ -69,11 +69,11 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
 |---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale | 0 h | 0 h | 0 h agent + 1.25 h owner | Ready | — | [F-005-T02](#f-005-t02), [F-005-T03](#f-005-t03), [F-005-T04](#f-005-t04), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/hub-on-calvary.md) |
+| 🟢 Small | <a id="f-005-t01"></a>F-005-T01 — Owner installs the Grover hub on Calvary (NERV-03) behind Tailscale | 0 h | 0 h | 0 h agent + 0.25 h owner | Implemented; verification pending | — | [F-005-T02](#f-005-t02), [F-005-T03](#f-005-t03), [F-005-T04](#f-005-t04), [F-008-T03](#f-008-t03), [F-012-T02](#f-012-t02), [F-019-T03](#f-019-t03) | [🧑‍🔧](acceptance/hub-on-calvary.md) |
 | 🟢 Small | <a id="f-005-t02"></a>F-005-T02 — Owner checks NERV lists the Grover tools (waits on nerv:F-123-T02) | — | 0 h | 0 h agent + 0.25 h owner | Planned | [F-005-T01](#f-005-t01) | — | ⏳ 🧑‍🔧 |
 | 🟢 Small | <a id="f-005-t04"></a>F-005-T04 — Owner installs the agent on a small second Pi in the tent (later) | 0 h | 0 h | 0 h agent + 1 h owner | Planned | [F-005-T01](#f-005-t01) | [F-003-T02](#f-003-t02), [F-005-T03](#f-005-t03), [F-018-T03](#f-018-t03) | ⏳ 🧑‍🔧 |
 | 🟢 Small | <a id="f-005-t03"></a>F-005-T03 — Fix the README and service files from the first installs (hub on Calvary, agent on the tent Pi) | 0.5 h | 0 h | 0.5 h | Planned | [F-005-T01](#f-005-t01), [F-005-T04](#f-005-t04) | — | ⏳ 🤖 |
-| 🟢 Small | **Total** | 0.5 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 0.5 h agent + 2.5 h owner | 0 of 4 completed | | | |
+| 🟢 Small | **Total** | 0.5 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 0.5 h agent + 1.5 h owner | 0 of 4 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -82,7 +82,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30), [#60](https://github.com/voidbrain/Grover/pull/60) |
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30), [#60](https://github.com/voidbrain/Grover/pull/60); [#61](https://github.com/voidbrain/Grover/pull/61) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-25 |
