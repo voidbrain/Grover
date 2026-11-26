@@ -124,6 +124,37 @@ The hub listens on loopback; `tailscale serve` publishes it to the tailnet. On t
 - A feed that stopped partway, or an automatic feed that was refused (a refused manual feed answers with its reason instead).
 - An agent offline.
 
+### Alert contract
+
+What NERV reads from `grover_alerts` and classifies by (nerv:F-122, [grover-alert-delivery](https://github.com/voidbrain/nerv/blob/f71140b4/docs/decisions/grover-alert-delivery.md); the shared form is `alerts/1`, coordinator:F-018, "Alert contract" in its `docs/SOLUTION.md`). Pinned by `apps/hub/test/alert-contract.test.ts`. **A change to the shape, the key grammar, the level meanings or the lifecycle below names nerv:F-122 and coordinator:F-018 in its PR**, and updates the producer table in `SOLUTION.md` in the same coordination change.
+
+**Shape.** `grover_alerts` answers a JSON array of the open alerts, newest `since` first (empty when none), exactly these fields ([`Alert`](../packages/contracts/src/api.ts)):
+
+| Field | Meaning |
+|---|---|
+| `key` | Names the condition; stable while it lasts. Grammar below. |
+| `roomId` | The tent it happens in. Always set. |
+| `potId` | The pot, or `null` (agent alerts; a probe not tied to a pot). |
+| `level` | `warn` or `bad`. |
+| `message` | Plain English text for the owner. Free text: never parse it. |
+| `since` | Integer ms since the Unix epoch when this episode was raised; stored, so it survives a hub restart. |
+
+**Key grammar.** Ids are the contracts `Id` (`[a-z0-9][a-z0-9_-]*`, at most 64 characters), so a key has no whitespace and is well under 200 characters.
+
+| Key | Raised when | `level` |
+|---|---|---|
+| `probe:<probeId>:below` | a reading is below the probe's `alertBelow` | `warn` |
+| `probe:<probeId>:above` | a reading is above the probe's `alertAbove` | `warn` |
+| `feed:<potId>` | an automatic feed was refused (agent offline, tent not in normal mode, another feed running, a failed check, the agent refused it) | `warn` |
+| `feed:<potId>` | a feed stopped partway; everything was switched off | `bad` |
+| `agent:<agentId>` | a registered agent in a tent went offline | `bad` |
+
+**Levels.** `warn`: something needs attention but nothing is running unsafely (a value left its range, or an automatic feed did not start). `bad`: something stopped that the owner must look at (a feed stopped partway with everything switched off, an agent offline so the tent runs on its own schedules). `level` is Grover's severity, not NERV's night class: NERV decides serious or minor from the key shape and the probe kind (nerv:F-122). A new key shape or a changed level changes that classification, hence the rule above.
+
+**Lifecycle.** An episode is `(key, since)`. Raise: the key appears with a new `since`. Refresh: the same key keeps its `since`; its `message` and `level` update (a refused feed followed by a stopped one under `feed:<potId>` rises from `warn` to `bad` in the same episode; a threshold alert's message tracks the latest reading while held). Clear: the row is deleted when the condition clears (a threshold alert only past its hysteresis margin; `feed:<potId>` when a feed for the pot finishes; `agent:<agentId>` when the agent is back online). There is no history: a clear is the key's absence, and the same key raised later is a new episode with a new `since`. A refused manual feed raises nothing (its reason is the answer).
+
+**Mapping onto `alerts/1`.** Today the tool answers the bare array above, which a consumer reads as the legacy form of `alerts/1` from producer `grover`: `roomId` becomes `scope`; `potId` becomes `subject` `{type: "pot", id}` when set, else `{type: "probe"}` or `{type: "agent"}` from the key; `roomId` and `potId` also go in `context`; `repeat` is never sent; `announceClear` is `true`. `key`, `since`, `level` and `message` are the same fields. Answering with the envelope (`contract`, `producer: "grover"`, `alerts`) is optional and not built; doing so is a change under the rule above.
+
 ## NERV
 
 NERV drives Grover through the hub's MCP endpoint (`/mcp`, streamable HTTP, stateless) on the tailnet. Tools ([`mcp.ts`](../apps/hub/src/mcp.ts)):
@@ -153,6 +184,6 @@ Hub: `GROVER_DB`, `GROVER_HTTP_HOST` (default 127.0.0.1), `GROVER_ALLOWED_HOSTS`
 
 - `packages/contracts/test`: schedule rules and time zones, topics, config hash, model fitting, feed planning (batch, doses, EC/pH adjustments, ripen and flush, splitting at caps, refusals), feed reasons, phase lookup.
 - `apps/agent/test`: actuator safety (cap, one pump at a time, stop releases the queue, reload drops queued runs, watchdog); feed runs on the simulated rig (full feed, low tank, mixing tank not empty, pot full, cancel, unknown pump).
-- `apps/hub/test/e2e.test.ts`: a real hub and a real agent with mock drivers over MQTT: config delivery, reads, bounded runs, refusals, mode changes, topic and credential checks, setup pushes, a feed end to end, a low tank aborting a feed with alerts, auto-feed and its cooldown, one feed per tent, MCP listing and a tool call, outbox drain. `apps/hub/test/alerts.test.ts`: threshold alert raise, hold inside the hysteresis margin and clear. `apps/hub/test/setup.test.ts`: delete cascades and 409s, plants and strains through the API. `apps/hub/test/legacy.test.ts`: the old dump format and the import. `packages/contracts/test/plants.test.ts`: plant rules, labels, ancestry and lineage, phase per plant. `apps/hub/test/lights.test.ts`: the light window following a plant, bloom, staggered pots, picked plant, own schedules, dark phases. `packages/contracts/test/lighting.test.ts`: the choice and the window. `apps/hub/test/plant-cycle.test.ts`: cuttings, the generation warning, one plant per pot, harvest and placing, staggered pots fed for their own phase.
+- `apps/hub/test/e2e.test.ts`: a real hub and a real agent with mock drivers over MQTT: config delivery, reads, bounded runs, refusals, mode changes, topic and credential checks, setup pushes, a feed end to end, a low tank aborting a feed with alerts, auto-feed and its cooldown, one feed per tent, MCP listing and a tool call, outbox drain. `apps/hub/test/alerts.test.ts`: threshold alert raise, hold inside the hysteresis margin and clear. `apps/hub/test/alert-contract.test.ts`: the alert shape, key grammar and levels NERV reads. `apps/hub/test/setup.test.ts`: delete cascades and 409s, plants and strains through the API. `apps/hub/test/legacy.test.ts`: the old dump format and the import. `packages/contracts/test/plants.test.ts`: plant rules, labels, ancestry and lineage, phase per plant. `apps/hub/test/lights.test.ts`: the light window following a plant, bloom, staggered pots, picked plant, own schedules, dark phases. `packages/contracts/test/lighting.test.ts`: the choice and the window. `apps/hub/test/plant-cycle.test.ts`: cuttings, the generation warning, one plant per pot, harvest and placing, staggered pots fed for their own phase.
 - `apps/client`: shell rendering and the formatting helpers.
 - Not covered: real drivers on a Pi, browser tests of the client, accessibility checks with a tool, long outages and reboots on a device.
