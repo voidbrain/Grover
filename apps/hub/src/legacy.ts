@@ -8,6 +8,8 @@ import type { Store } from './store.ts';
  * - Only adds what is missing (by id): running it again changes nothing, and edits made since are kept.
  * - Old pot ids do not match the new pots, so imported plants start without a pot; the old pot is in the notes.
  * - The old placeholder strain "Landrace" (id 0) is not imported; a lineage of "0" means no recorded parents.
+ * - A strain whose name has no letters or digits (the old dump's '–', id 20) was the old app's "not known": it is
+ *   imported as "Unknown (old record)" for the plants that use it, and as a parent it means no recorded parents.
  * - Deleted rows are skipped. Dates were epoch milliseconds (0 = not set).
  * - Old strains had no breeder, only their plants did: a strain imported now takes the breeder all its imported
  *   plants share (unknown breeders ignored).
@@ -88,22 +90,25 @@ export function parseInserts(sql: string, table: string): Record<string, Value>[
 const day = (ms: Value): string | null =>
   typeof ms === 'number' && ms > 0 ? new Date(ms).toISOString().slice(0, 10) : null;
 const live = (r: Record<string, Value>) => r['deleted'] !== 1;
+const placeholder = (name: string) => !/[\p{L}\p{N}]/u.test(name);
+const PLACEHOLDER_STRAIN = 'Unknown (old record)';
 
 /**
  * The id for an imported name: an existing record with the same name is the same thing (id reused, nothing added);
- * otherwise the name's slug (or the fallback built from the old id), with -2, -3… when another name already has it.
+ * otherwise `base`, with -2, -3… when another name already has it.
  */
 function idFor(
   name: string,
-  fallback: string,
+  base: string,
   existing: Map<string, string>,
 ): { id: string; exists: boolean; renamed: boolean } {
   for (const [id, n] of existing) if (n === name) return { id, exists: true, renamed: false };
-  // A placeholder name with no letters or digits (the old dump has a strain named '–') would slug to "item".
-  const base = /[\p{L}\p{N}]/u.test(name) ? slug(name) : fallback;
   if (!existing.has(base)) return { id: base, exists: false, renamed: false };
   for (let k = 2; ; k++) if (!existing.has(`${base}-${k}`)) return { id: `${base}-${k}`, exists: false, renamed: true };
 }
+
+/** The id base for an old name: its slug, or (a placeholder with no letters or digits would slug to "item") one built from the old id. */
+const baseFor = (name: string, fallback: string) => (placeholder(name) ? fallback : slug(name));
 
 const TABLES = ['grover_companies', 'grover_strains', 'grover_plants'] as const;
 
@@ -126,7 +131,7 @@ export function importLegacy(store: Store, sql: string): LegacyImport {
     const breeders = new Map(store.listBreeders().map((b) => [b.id, b.name]));
     for (const r of parseInserts(sql, 'grover_companies').filter(live)) {
       const name = String(r['name']);
-      const { id, exists, renamed } = idFor(name, `legacy-breeder-${r['id']}`, breeders);
+      const { id, exists, renamed } = idFor(name, baseFor(name, `legacy-breeder-${r['id']}`), breeders);
       breederIds.set(Number(r['id']), id);
       if (exists) continue;
       if (renamed) result.skipped.push(`breeder "${name}" imported as ${id}: its plain id was taken`);
@@ -140,15 +145,18 @@ export function importLegacy(store: Store, sql: string): LegacyImport {
       .filter((r) => Number(r['id']) !== 0);
     const strains = new Map(store.listStrains().map((x) => [x.id, x.name]));
     const strainIds = new Map<number, string>();
+    const placeholderIds = new Set<string>();
     const toCreate: { id: string; r: Record<string, Value> }[] = [];
     for (const r of strainRows) {
-      const name = String(r['name']);
-      const { id, exists, renamed } = idFor(name, `legacy-strain-${r['id']}`, strains);
+      const old = String(r['name']);
+      const name = placeholder(old) ? PLACEHOLDER_STRAIN : old;
+      const { id, exists, renamed } = idFor(name, baseFor(old, `legacy-strain-${r['id']}`), strains);
       strainIds.set(Number(r['id']), id);
+      if (name === PLACEHOLDER_STRAIN) placeholderIds.add(id);
       if (exists) continue;
       if (renamed) result.skipped.push(`strain "${name}" imported as ${id}: its plain id was taken`);
       strains.set(id, name);
-      toCreate.push({ id, r });
+      toCreate.push({ id, r: { ...r, name } });
     }
     const createdStrains = new Set<string>();
     // Parents first, so every parent id exists when its child is saved.
@@ -166,7 +174,11 @@ export function importLegacy(store: Store, sql: string): LegacyImport {
         .split(',')
         .map((x) => strainIds.get(Number(x.trim())))
         .filter(
-          (x): x is string => !!x && x !== id && (createdStrains.has(x) || store.listStrains().some((s) => s.id === x)),
+          (x): x is string =>
+            !!x &&
+            x !== id &&
+            !placeholderIds.has(x) &&
+            (createdStrains.has(x) || store.listStrains().some((s) => s.id === x)),
         );
       store.putStrain({
         id,
