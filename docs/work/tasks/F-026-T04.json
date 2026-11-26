@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "F-026-T04",
+  "parent": "F-026",
+  "title": "Off-host copy of the backup",
+  "goal": "Each backup is copied to the chosen destination",
+  "status": "planned",
+  "acceptance": [
+    "After each backup the copy is sent to the destination chosen in F-026-T03; a failed copy raises a hub alert and the next run retries",
+    "A test with a fake destination covers success and failure",
+    "Failing test committed first: the failed-destination case expects an alert against the current scheduler; the change never edits that test to pass"
+  ],
+  "dependsOn": [
+    "F-026-T03"
+  ],
+  "resources": [
+    "apps/hub/src/**",
+    "README.md",
+    "docs/work/records/F-026.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "Depends on the chosen destination; size assumes a simple file copy or upload. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  },
+  "prs": [
+    {
+      "pr": 52,
+      "note": "plan"
+    }
+  ]
+}

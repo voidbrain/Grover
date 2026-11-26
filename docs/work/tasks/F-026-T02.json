@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "F-026-T02",
+  "parent": "F-026",
+  "title": "Restore drill as an automated test",
+  "goal": "A test proves the newest copy restores into a working hub",
+  "status": "planned",
+  "acceptance": [
+    "A test creates readings, runs the scheduled backup, restores the newest copy into a fresh data directory, starts the hub and reads the same rooms and readings; a corrupt or empty copy is refused with a message",
+    "The restore steps are in the README as copy-paste commands",
+    "Failing test committed first: the corrupt-copy case expects a refusal against the current restore path; the change never edits that test to pass"
+  ],
+  "dependsOn": [
+    "F-026-T01"
+  ],
+  "resources": [
+    "apps/hub/test/**",
+    "README.md",
+    "docs/work/records/F-026.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "The existing backup test restores once; the drill adds the schedule and a corrupt copy. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  },
+  "prs": [
+    {
+      "pr": 52,
+      "note": "plan"
+    }
+  ]
+}

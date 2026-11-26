@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "F-023-T01",
+  "parent": "F-023",
+  "title": "Axe pass per main route in the Playwright e2e",
+  "goal": "The e2e runs axe on each main route",
+  "status": "planned",
+  "acceptance": [
+    "`e2e/` runs axe on the eight client routes and fails on serious or critical violations; moderate ones are listed",
+    "A seeded fixture (an unlabeled input on a test-only page) proves the test fails when it should; findings on real routes are fixed here or recorded with ids",
+    "Fixture data is invented",
+    "Failing test committed first: the seeded-violation fixture expects a failure before the axe pass is wired; the change never edits that test to pass"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "e2e/**",
+    "apps/client/src/**",
+    "package.json",
+    "docs/work/records/F-023.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "2.5 h agent",
+    "basis": "The report's 3 h for the first use of the helper; the Playwright suite exists. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 2.5,
+    "baselineAgentHours": 2.5,
+    "estimateAgentHours": 2.5
+  },
+  "prs": [
+    {
+      "pr": 52,
+      "note": "plan"
+    }
+  ]
+}

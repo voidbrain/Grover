@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "F-026-T03",
+  "parent": "F-026",
+  "title": "Owner: choose where the off-host copy goes",
+  "goal": "The owner picks the destination for the off-host copy",
+  "status": "planned",
+  "acceptance": [
+    "The owner chooses one option (another machine on the network via a file share, a cloud bucket, or nerv:F-062's off-host mechanism); the choice is recorded here with the date"
+  ],
+  "dependsOn": [
+    "F-026-T01"
+  ],
+  "resources": [
+    "docs/decisions/**",
+    "docs/work/records/F-026.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "The choice is recorded on F-026"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "One decision; the options page is written by T01. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "decision"
+  },
+  "prs": [
+    {
+      "pr": 52,
+      "note": "plan"
+    }
+  ]
+}

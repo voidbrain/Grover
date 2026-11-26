@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-025-T01",
+  "parent": "F-025",
+  "title": "arm64 CI job for apps/agent",
+  "goal": "The agent tests run on arm64 in CI",
+  "status": "planned",
+  "acceptance": [
+    "`ci.yml` has a job on `ubuntu-24.04-arm` that runs `npm ci` and the `apps/agent` tests, actions pinned by SHA",
+    "The job is green on `main`; the job name appears in the required checks list of the PR checks"
+  ],
+  "dependsOn": [],
+  "resources": [
+    ".github/workflows/ci.yml",
+    "docs/work/records/F-025.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "The report's 1 h. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  },
+  "prs": [
+    {
+      "pr": 52,
+      "note": "plan"
+    }
+  ]
+}
