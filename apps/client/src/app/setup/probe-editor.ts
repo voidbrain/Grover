@@ -94,7 +94,7 @@ import { Hub } from '../hub';
               <input type="number" [formField]="f.channel" />
               <gr-field-error [state]="f.channel()" />
             </label>
-            <p class="hint field wide">Analog probes report volts until calibration exists (backlog F-004).</p>
+            <p class="hint field wide">Analog probes report volts until they are calibrated.</p>
           }
           @case ('hcsr04') {
             <p class="hint field wide">The agent refuses this sensor: Node cannot time its echo. Use an analog or I²C level sensor.</p>
