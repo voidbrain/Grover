@@ -3,7 +3,7 @@
 Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 27 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
+**Remaining effort:** 25 h agent + 13.25 h owner across 52 open steps of 18 features and 4 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -826,9 +826,9 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🔴 Large | 5 h | — | — | 🤖 | — | — |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 3 h | — | — | 🤖 | — | — |
 
-💻 **→** Next: F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent (Ready).
+💻 **→** Next: F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent (Implemented; verification pending).
 
 | | |
 |---|---|
@@ -838,12 +838,12 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks |
-|---|---|---|---|---|---|---|---|
-| 🟡 Medium | <a id="f-009-t01"></a>F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent | 2 h | 0 h | 2 h | Ready | — | [F-009-T02](#f-009-t02) |
-| 🟡 Medium | <a id="f-009-t02"></a>F-009-T02 — Browser scenarios: run a pump, switch the mode, axe scan | 2 h | 0 h | 2 h | Planned | [F-009-T01](#f-009-t01) | [F-009-T03](#f-009-t03) |
-| 🟢 Small | <a id="f-009-t03"></a>F-009-T03 — Run the browser suite in CI | 1 h | 0 h | 1 h | Planned | [F-009-T02](#f-009-t02) | — |
-| 🔴 Large | **Total** | 5 h | 0 h (0 of 3 steps recorded) | 5 h | 0 of 3 completed | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
+|---|---|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-009-t01"></a>F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent | 2 h | 0 h | 0 h | Implemented; verification pending | — | [F-009-T02](#f-009-t02) | [PR #48](https://github.com/voidbrain/Grover/pull/48) npm run e2e and the dashboard test |
+| 🟡 Medium | <a id="f-009-t02"></a>F-009-T02 — Browser scenarios: run a pump, switch the mode, axe scan | 2 h | 0 h | 2 h | Planned | [F-009-T01](#f-009-t01) | [F-009-T03](#f-009-t03) | — |
+| 🟢 Small | <a id="f-009-t03"></a>F-009-T03 — Run the browser suite in CI | 1 h | 0 h | 1 h | Planned | [F-009-T02](#f-009-t02) | — | — |
+| 🟡 Medium | **Total** | 5 h | 0 h (0 of 3 steps recorded) | 3 h | 0 of 3 completed | | | |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -852,10 +852,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30) |
+| PR / evidence | Steps: F-009-T01: [PR #48](https://github.com/voidbrain/Grover/pull/48) npm run e2e and the dashboard test. [#30](https://github.com/voidbrain/Grover/pull/30); [#48](https://github.com/voidbrain/Grover/pull/48) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
-| Reviewed | 2026-11-24 |
+| Reviewed | 2026-11-26 |
 
 </details>
 
