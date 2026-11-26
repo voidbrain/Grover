@@ -44,7 +44,7 @@ Portable repository/ref references are versioned; machine-specific checkout arra
 An optional `order` in `.solution.json` names a coordinator file (for example `docs/SOLUTION-ORDER.md`) holding the owner's order across the solution: a numbered list of `repo:ID` references between `<!-- order:start -->` and `<!-- order:end -->` (one such list per file), each a record (`api:F-101`) or a step (`web:F-012-T03`) with an optional note after ` — `. The rules:
 
 - Take the first ready item in the order. Work not listed follows each repository's own priority.
-- The order changes only by an owner instruction, landed as a PR in the coordinator.
+- The order changes only by an owner instruction, landed as a PR in the coordinator. One exception (B-058): an item the dashboard shows ✅ Done (a record that closed, or a step completed in its repository) leaves the order in the next refresh PR (`node tools/solution.mjs dashboard --write --prune-order`).
 - The order never skips a prerequisite or an owner decision: an item whose step waits on either is not ready, whatever its place.
 - The list holds references only, never status: the state comes from the owning backlogs at the dashboard's resolved commits.
 
@@ -58,4 +58,4 @@ How the dashboard reads each backlog (layouts, built views, remaining hours) is 
 
 ## Dashboard sections
 
-Since 10.20.0 (F-095, F-097) the dashboard holds, in order: the sources and their revisions; the owner view (a summary per project, the solution order with live state, waiting for the owner, blocked with the root cause, nothing to do); the agent runway; audits, reviews and harness release per project; the gap review; each project's open steps, collapsed; remaining effort; integration outcomes; component work; source and link problems. [Solution dashboard](solution-dashboard.md) says how each is read, [solution gaps](solution-gaps.md) what the gap review proposes, and [solution refresh](solution-refresh.md), "Moving from project tools", how a coordinator with its own order or overview tools moves to them.
+Since 10.20.0 (F-095, F-097) the dashboard holds, in order: the sources and their revisions; the owner view (a summary per project with harness and next audit, the solution order with live state, hours and open prerequisites, blocked with the block reached, nothing to do, waiting for the owner; since 10.21.0 in the layout of a coordinator's own overview, F-099); the agent runway; audits, reviews and harness release per project; the gap review; each project's open steps, collapsed; remaining effort; integration outcomes; component work; source and link problems. [Solution dashboard](solution-dashboard.md) says how each is read, [solution gaps](solution-gaps.md) what the gap review proposes, and [solution refresh](solution-refresh.md), "Moving from project tools", how a coordinator with its own order or overview tools moves to them.
