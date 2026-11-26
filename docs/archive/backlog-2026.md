@@ -2,6 +2,17 @@
 
 Closed records, in closing-date order. History, not current status: see the [backlog](../BACKLOG.md).
 
+<!-- archive-recap:start -->
+## Weekly closure recaps
+
+Closed records in this archive, grouped by closing date (Monday–Sunday). Links open the first section for that week; current status stays in the active backlog.
+
+| Closing week | Features closed | Bugs closed |
+|---|---:|---:|
+| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 6 |
+<!-- archive-recap:end -->
+
+<a id="archive-week-2026-11-23"></a>
 ## Closed 2026-11-24
 
 ### F-001
@@ -273,6 +284,42 @@ Closed records, in closing-date order. History, not current status: see the [bac
 | Opened | 2026-11-24 |
 | Verification | Verified 2026-11-25: planted-problem check, check:conventions exit 1 |
 | Reviewed | 2026-11-25 |
+
+</details>
+
+---
+
+## Closed 2026-11-26
+
+### F-099
+
+**Reconcile project-harness v10.20.0 → v10.21.4**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-26: Reconciled to v10.21.4 in #45: copied files from the tag, pull-requests.md refreshed, version bumped; check:freshness reports no harness update, check:fast green; the merge waits for green PR CI.
+
+| | |
+|---|---|
+| **Issue** | `.harness.json` names v10.20.0 while the template has released up to v10.21.4. Coordinator gap review 2026-11-26, proposal 14 ("Behind the harness"), accepted by the owner. |
+| **Reproduce** | `npm run check:freshness` on `main`: it reports the harness template v10.21.4 and the files to update or reconcile. |
+| **Check** | `.harness.json` names v10.21.4; `check:freshness` reports no harness update; `check:fast` and CI on the PR pass. |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+**Next action / closure evidence:** Closed 2026-11-26: Reconciled to v10.21.4 in #45: copied files from the tag, pull-requests.md refreshed, version bumped; check:freshness reports no harness update, check:fast green; the merge waits for green PR CI. Opened 2026-11-26 from the coordinator gap review (proposal 14, owner accepted all proposals). F-099-T01 does the reconcile in a session of this repository, under APPLY.md.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Opened in [#43](https://github.com/voidbrain/Grover/pull/43) |
+| Opened | 2026-11-26 |
+| Verification | check:freshness and check:harness clean 2026-11-26 |
+| Reviewed | 2026-11-26 |
 
 </details>
 

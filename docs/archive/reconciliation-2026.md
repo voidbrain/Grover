@@ -4,6 +4,8 @@ Entries moved from the "Other changes" section of the [active backlog](../BACKLO
 
 ## 2026-11-25
 
+**Reconciliation, 2026-11-25 (main `911544e`).** PRs #33, #34 and #35 merged with green PR CI and green main runs after merge: F-008-T02 closed (#35). Harness reconciled from v10.9.0 to v10.20.0 (#36, owner-approved 2026-11-25; built backlog views not adopted), which sets `conventions.sourceDirs` to `apps/client/src`: B-002 closed.
+
 **Reconciliation, 2026-11-25 (main `b62a29b`).** PRs #30, #31 and #32 merged with green PR CI and green main runs after merge: B-007 closed (#32); F-019 stays Implemented until the owner installs the app. B-002-T01 closed on the owner's decision; B-002-T02 waits on project-harness:F-098-T01 (released).
 
 ## 2026-11-24

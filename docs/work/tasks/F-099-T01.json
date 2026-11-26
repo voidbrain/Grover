@@ -2,13 +2,13 @@
   "version": 1,
   "id": "F-099-T01",
   "parent": "F-099",
-  "title": "Reconcile harness files v10.20.0 -> v10.21.3",
-  "goal": "The project carries every harness change released after v10.20.0 up to v10.21.3",
-  "status": "planned",
+  "title": "Reconcile harness files v10.20.0 -> v10.21.4",
+  "goal": "The project carries every harness change released after v10.20.0 up to v10.21.4",
+  "status": "closed",
   "acceptance": [
-    "Copied files byte-identical to v10.21.3 (check-harness --strict)",
+    "Copied files byte-identical to v10.21.4 (check-harness --strict)",
     "Adapted files reconciled from the template diff, project lines kept",
-    "version 10.21.3 in .harness.json"
+    "version 10.21.4 in .harness.json"
   ],
   "dependsOn": [],
   "resources": [
@@ -32,11 +32,17 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h agent",
-    "basis": "Estimated 2026-11-26 from earlier reconciles of similar size at agent speed. Not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Estimated 2026-11-26 from earlier reconciles of similar size at agent speed. Not a measurement. Closed 2026-11-26.",
     "reviewed": "2026-11-26",
-    "agentHours": 1,
+    "agentHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
-  }
+  },
+  "prs": [
+    {
+      "pr": 45,
+      "note": "feature"
+    }
+  ]
 }
