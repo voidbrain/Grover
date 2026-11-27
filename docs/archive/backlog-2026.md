@@ -9,7 +9,7 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 
 | Closing week | Features closed | Bugs closed |
 |---|---:|---:|
-| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 4 | 14 |
+| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 5 | 15 |
 <!-- archive-recap:end -->
 
 <a id="archive-week-2026-11-23"></a>
@@ -634,6 +634,84 @@ Answer in chat, for example: "1b: Northern Lights, Sensi Seeds; 2 leave". You ca
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
 | Opened | 2026-11-24 |
 | Verification | Unit/integration · 2026-11-27 · apps/hub/test/retention.test.ts (#46 CI 45783622309) and apps/hub/test/backup.test.ts (#47 CI 45784283819) green |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-017
+
+**grover_strains and the other MCP read results are pretty-printed with every null field and repeated strain objects: NERV cuts them to fit its budget and shows only part of the list**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: Owner check passed 2026-11-27 about 09:30 CET on NERV-01 (runs 556b518a+; Calvary hub abaa053 after the compact-MCP fix and the removal, with a backup, of the repeated importer note from all 33 strains; grover_strains now 5,188 characters). nerv chat "quali genetiche ho?" called grover.grover_strains (grant, Sync Ratio 100%) and answered in Italian grouping 32 strains by sativa/indica/balanced (Haze, Amnesia Haze, Brain Damage, Skunk #1, Cheese; about 19 balanced incl. Northern Lights #5 x Haze; Acapulco, Afgani, Hawaii 93, KC36, Mango 2001, Northern Lights #5, Frosted Guava, Lava Cake); nothing cut off, no incomplete note, no refusal; the 33rd strain is the placeholder Unknown (old record), reasonably omitted. Sortie 606e811f-9650-4359-a6de-4cdf5843a0d1. Fix: #74 merged on green CI. Live note cleanup on Calvary via the hub API, backup ~/grover-backups/hub-before-notes-20261127-0924.sqlite.
+
+| | |
+|---|---|
+| **Issue** | Found by the owner 2026-11-27 08:38 (NERV sortie S-DFCA, "quali genetiche ho?"): `grover_strains` returned about 9 KB for 33 strains (2-space indentation, every null field, and an `ancestry` block repeating full strain objects). NERV shortens tool results to its model budget, so Misato saw 8 of 33 strains and said the list may be incomplete. |
+| **Reproduce** | Call `grover_strains` with 33 strains in the hub: the text is indented and several times larger than the information in it. Test: `apps/hub/test/e2e.test.ts`, "MCP: a list of 33 strains stays compact" (fails before the change). |
+| **Check** | MCP results are compact JSON (no indentation; null, empty text and empty lists left out; `ancestry` as nested ids and names; `parentIds` and `sativaPercent` left out of strain views because `ancestry` and `genetics` carry them); 33 strains stay within 4 KB; in `nerv chat "quali genetiche ho?"` lists all strains. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: Owner check passed 2026-11-27 about 09:30 CET on NERV-01 (runs 556b518a+; Calvary hub abaa053 after the compact-MCP fix and the removal, with a backup, of the repeated importer note from all 33 strains; grover_strains now 5,188 characters). nerv chat "quali genetiche ho?" called grover.grover_strains (grant, Sync Ratio 100%) and answered in Italian grouping 32 strains by sativa/indica/balanced (Haze, Amnesia Haze, Brain Damage, Skunk #1, Cheese; about 19 balanced incl. Northern Lights #5 x Haze; Acapulco, Afgani, Hawaii 93, KC36, Mango 2001, Northern Lights #5, Frosted Guava, Lava Cake); nothing cut off, no incomplete note, no refusal; the 33rd strain is the placeholder Unknown (old record), reasonably omitted. Sortie 606e811f-9650-4359-a6de-4cdf5843a0d1. Fix: #74 merged on green CI. Live note cleanup on Calvary via the hub API, backup ~/grover-backups/hub-before-notes-20261127-0924.sqlite. Owner check passed 2026-11-27; see the close command.
+
+**Live data change (2026-11-27, Calvary hub, via the hub API, with the owner's OK):** the importer had put the same note "Imported from the old Grover (sativa % as recorded there)." on all 33 strains, which cost bytes in every result; it was removed from all 33. Backup first: `~/grover-backups/hub-before-notes-20261127-0924.sqlite`. `grover_strains` is now 5,188 characters (compact-MCP fix in B-017-T01, hub at abaa053).
+
+**Done (B-017-T01):** one serializer (`text` in `apps/hub/src/mcp.ts`) for every MCP result, and one `strainView` for `grover_plants` and `grover_strains`.
+
+**Owner check (B-017-T02), after the hub is updated (bundle over SSH, `npm run build`, restart: README, "Updating the hub on a Raspberry Pi"):**
+```
+nerv chat "quali genetiche ho?"
+# expect: a reply listing all the strains, none cut off
+```
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found by the owner 2026-11-27. [#74](https://github.com/voidbrain/Grover/pull/74). Code: `apps/hub/src/mcp.ts`. Related: 🪴 grover:F-012; 𖣂 nerv:B-176. |
+| Opened | 2026-11-27 |
+| Verification | Owner ran `nerv chat "quali genetiche ho?"` on NERV-01 (runs 556b518a+) 2026-11-27 about 09:30 CET: all strains listed, sortie 606e811f-9650-4359-a6de-4cdf5843a0d1. |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### F-012
+
+**Plants and strains: origin, generation, breeder, ancestry**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: The remaining closing check passed 2026-11-27: nerv chat "quali genetiche ho?" on NERV-01 (runs 556b518a+; Calvary hub abaa053) read the strains over MCP (grover.grover_strains, granted) and answered in Italian, 32 of 33 strains grouped by sativa/indica/balanced, nothing cut off (B-017, nerv:B-176), sortie 606e811f-9650-4359-a6de-4cdf5843a0d1. Pots stay unassigned until the owner sets up rooms and pots: setup, not part of this check. #65 and #67 merged on green CI.
+
+| | |
+|---|---|
+| **Issue** | The rebuild dropped the plant records of the old Grover (tables `grover_plants`, `grover_strains`, `grover_companies` at tag `legacy-v1`). The owner needs each plant's origin: strain, breeder, generation (0 from seed, 1 first cutting, 2 cutting of a cutting…) and the plant it was cut from, which pot it is in, its dates; and each strain's breeder, ancestry (parent strains), indica/sativa split, THC (and CBD) when known. Example from the owner, 2026-11-24: Northern Lights #5 x Haze, generation 2, in pot 3; legacy: Sensi Seeds, parents Northern Lights #5 and Haze, 50 % sativa. |
+| **Reproduce** | `git show legacy-v1:Documentation/MYSQL-DB/Sql_backup_2024_07_25.sql`, tables above; the new hub has no plants. |
+| **Check** | Breeders, strains (parents, sativa %, THC/CBD %, flowering days, notes) and plants (strain, breeder, generation, mother plant, pot, dates, yield, notes) can be added and edited in Setup; a pot card shows its plant; the legacy strains, breeders and plants import once (`npm run hub -- import-legacy`) without guessing pots; NERV can read them (MCP); tests cover the schemas, the import and the API. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: The remaining closing check passed 2026-11-27: nerv chat "quali genetiche ho?" on NERV-01 (runs 556b518a+; Calvary hub abaa053) read the strains over MCP (grover.grover_strains, granted) and answered in Italian, 32 of 33 strains grouped by sativa/indica/balanced, nothing cut off (B-017, nerv:B-176), sortie 606e811f-9650-4359-a6de-4cdf5843a0d1. Pots stay unassigned until the owner sets up rooms and pots: setup, not part of this check. #65 and #67 merged on green CI. 2026-11-26 (after #65 merged on green CI): the record stays Implemented until the hub on Calvary runs a build with `grover_strains` and NERV answers "quali genetiche ho?" through it. 2026-11-26: F-012-T02 done on the Calvary hub (`/var/lib/grover/hub.sqlite`, hub at 3ac705a), by an agent over SSH with the owner's OK: backup first (`hub-before-import-20261126-2140.sqlite`), then `npm run hub -- import-legacy` on the legacy-v1 dump: "6 breeders, 33 strains, 16 plants". The owner then added plant NL5xHaze in Setup: strain northern-lights-5-x-haze, Sensi Seeds, generation 0 (the owner's deliberate choice, not the generation 2 the step planned) and no pot, because the hub has no rooms or pots configured yet. A read-only MCP call of `grover_plants` on the hub the same day returned the 17 plants with strains and breeders. F-012-T03, findings: (1) old strain id 20, named '–' in the dump (a placeholder), was imported with id `item` (the slug fallback); plants legacy-1 and legacy-4 use it, with old breeder id 89 unknown. Fixed for future imports: a name with no letters or digits now gets `legacy-strain-<old id>` / `legacy-breeder-<old id>` (test committed failing first). The rows already on the hub: [B-013](#b-013). (2) legacy-8 (Dos Si Dos 33) has bloom 2022-04-01 before its start 2022-06-04: that is what the old record says; kept as imported, no dates invented; the owner's answer is asked in B-013. (3) NERV could read plants over MCP (`grover_plants`) but not strains no plant grows (27 of the 33 imported): new read-only tool `grover_strains` (breeder, genetics, ancestry, plant ids), and both descriptions carry the owner's Italian phrasings ("quali piante ho?", "che genetica è nel vaso 3?", "quali genetiche ho?"); the e2e MCP test pins both. `grover_strains` reaches Calvary with the next hub update. 2026-11-24: step plan adopted (owner decision, `workItems.featurePlans`): F-012-T01, F-012-T02, F-012-T03. Requested 2026-11-24; built the same day on `feat/f012-plants`. Breeders, strains (parents, sativa %, THC/CBD, flowering, autoflower, notes with sources) and plants (strain, breeder, generation, mother, pot, medium, dates, yield) in contracts, migration 4, store, API, MCP (`grover_plants`) and the client (Plants and strains page; the pot card names its plant). Importer: dry run on the real dump 2026-11-24 gave 6 breeders, 33 strains, 16 plants; Northern Lights #5 x Haze with parents Northern Lights #5 and Haze, its seed plant (Sensi Seeds, 2021-11-05 → 2022-04-01) as generation 0; no pots (old ids do not map). Strain figures checked online the same day: Sensi Seeds lists 70 % sativa / 30 % indica and 65-75 days flowering (the old record says 50 %); Sensi publishes no THC, retailers say about 20 % (Zamnesia, Cannapot; Leafly 19 %). The demo seed carries this example in pot 3 (generation 2, its mother, the seed plant). Checks: 11 new backend tests (plants, legacy incl. truncated dumps and id collisions, API incl. unknown references and ancestry loops), 2 client tests, build, lint; dev smoke of the page, snapshot and MCP tool. An independent review of #18 found nothing blocking; its seven minor points were fixed the same day (parser bounds, dumps without column lists, id collisions, a doc contradiction, 400 for unknown references, the import message, the mother list on strain change). Remaining: the owner imports the real records and enters the generation-2 plant in pot 3 on the deployed hub.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02); [#65](https://github.com/voidbrain/Grover/pull/65) (CI 45894638239 green); [#67](https://github.com/voidbrain/Grover/pull/67) (CI 45895675518 green) |
+| Opened | 2026-11-24 |
+| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. 2026-11-26: the import on the Calvary hub (F-012-T02, see the closure evidence above), and a read-only `grover_plants` MCP call there returned its 17 plants; `grover_strains` (#65 CI 45894638239 green) awaits Calvary hub update and NERV check. 2026-11-27: the owner ran `nerv chat "quali genetiche ho?"` on NERV-01 (runs 556b518a+; Calvary hub abaa053): NERV read the strains over MCP (`grover.grover_strains`, granted) and answered in Italian, 32 of 33 strains grouped by sativa/indica/balanced (the 33rd is the placeholder "Unknown (old record)"), sortie 606e811f-9650-4359-a6de-4cdf5843a0d1; see B-017 and nerv:B-176. Pots are unassigned: the hub has no rooms or pots yet, the owner's later setup, not part of this check (the pot card showing its plant is covered by the client tests). |
 | Reviewed | 2026-11-27 |
 
 </details>

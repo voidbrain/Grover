@@ -1,9 +1,9 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 27 November 2026 against main `740b782`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 27 November 2026 against main `abaa053`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 54.25 h agent + 13.25 h owner across 69 open steps of 26 features and 3 other records. Generated from the task files.
+**Remaining effort:** 53.25 h agent + 13 h owner across 66 open steps of 25 features and 2 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -287,57 +287,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 ---
 
-### <a id="f-012"></a>[✨ F-012](#top)
-
-**Plants and strains: origin, generation, breeder, ancestry**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-012-T03 — Record the try of the import; fix what it found (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | The rebuild dropped the plant records of the old Grover (tables `grover_plants`, `grover_strains`, `grover_companies` at tag `legacy-v1`). The owner needs each plant's origin: strain, breeder, generation (0 from seed, 1 first cutting, 2 cutting of a cutting…) and the plant it was cut from, which pot it is in, its dates; and each strain's breeder, ancestry (parent strains), indica/sativa split, THC (and CBD) when known. Example from the owner, 2026-11-24: Northern Lights #5 x Haze, generation 2, in pot 3; legacy: Sensi Seeds, parents Northern Lights #5 and Haze, 50 % sativa. |
-| **Reproduce** | `git show legacy-v1:Documentation/MYSQL-DB/Sql_backup_2024_07_25.sql`, tables above; the new hub has no plants. |
-| **Check** | Breeders, strains (parents, sativa %, THC/CBD %, flowering days, notes) and plants (strain, breeder, generation, mother plant, pot, dates, yield, notes) can be added and edited in Setup; a pot card shows its plant; the legacy strains, breeders and plants import once (`npm run hub -- import-legacy`) without guessing pots; NERV can read them (MCP); tests cover the schemas, the import and the API. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Who | PRs |
-|---|---|---|---|---|---|:---:|---|
-| 🟢 Small | <a id="f-012-t03"></a>F-012-T03 — Record the try of the import; fix what it found | 0.25 h | 0 h | 0 h | Implemented; verification pending | 🤖 | — |
-| 🟢 Small | **Total** | 0.25 h (2 of 3 steps) | 0 h (0 of 3 steps recorded) | 0 h | 2 of 3 completed | | |
-
-<details><summary>Done steps (2)</summary>
-
-| Effort | Step | Estimate | Actual | Status | PRs |
-|---|---|---|---|---|---|
-| — | <a id="f-012-t01"></a>F-012-T01 — Build plants, strains and the legacy import | — | 0 h | Completed | [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation |
-| — | <a id="f-012-t02"></a>F-012-T02 — Owner imports the old records on the Pi and enters the generation-2 plant | 0 h | 0 h | Completed | — |
-
-</details>
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-012.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02); [#65](https://github.com/voidbrain/Grover/pull/65) (CI 45894638239 green); [#67](https://github.com/voidbrain/Grover/pull/67) (CI 45895675518 green) |
-| Opened | 2026-11-24 |
-| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. 2026-11-26: the import on the Calvary hub (F-012-T02, see the closure evidence above), and a read-only `grover_plants` MCP call there returned its 17 plants; `grover_strains` (#65 CI 45894638239 green) awaits Calvary hub update and NERV check. |
-| Reviewed | 2026-11-27 |
-
-</details>
-
----
-
-
-
-
 ### <a id="f-026"></a>[✨ F-026](#top)
 
 **Hub backup schedule, off-host copy and restore drill**
@@ -374,45 +323,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-026-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T03: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T04: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T05: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan, green CI); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-27 |
-
-</details>
-
----
-### <a id="b-017"></a>[🐞 B-017](#top)
-
-**grover_strains and the other MCP read results are pretty-printed with every null field and repeated strain objects: NERV cuts them to fit its budget and shows only part of the list**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 1 h agent + 0.25 h owner | — | — | 🤖 | 🧑‍🔧 | — |
-
-🧑 **→** Next: B-017-T02, the owner check after the hub is updated.
-
-| | |
-|---|---|
-| **Issue** | Found by the owner 2026-11-27 08:38 (NERV sortie S-DFCA, "quali genetiche ho?"): `grover_strains` returned about 9 KB for 33 strains (2-space indentation, every null field, and an `ancestry` block repeating full strain objects). NERV shortens tool results to its model budget, so Misato saw 8 of 33 strains and said the list may be incomplete. |
-| **Reproduce** | Call `grover_strains` with 33 strains in the hub: the text is indented and several times larger than the information in it. Test: `apps/hub/test/e2e.test.ts`, "MCP: a list of 33 strains stays compact" (fails before the change). |
-| **Check** | MCP results are compact JSON (no indentation; null, empty text and empty lists left out; `ancestry` as nested ids and names; `parentIds` and `sativaPercent` left out of strain views because `ancestry` and `genetics` carry them); 33 strains stay within 4 KB; in `nerv chat "quali genetiche ho?"` lists all strains. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
-|---|---|---|---|---|---|---|---|:---:|
-| 🟢 Small | <a id="b-017-t01"></a>B-017-T01 — Make MCP read results compact | 1 h | 0 h | 1 h | Implemented; verification pending | — | [B-017-T02](#b-017-t02) | 🤖 |
-| 🟢 Small | <a id="b-017-t02"></a>B-017-T02 — Owner asks NERV which strains exist after the hub update | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [B-017-T01](#b-017-t01) | — | ⏳ 🧑‍🔧 |
-| 🟢 Small | **Total** | 1 h | 0 h (0 of 2 steps recorded) | 1 h agent + 0.25 h owner | 0 of 2 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-017.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Found by the owner 2026-11-27. [#74](https://github.com/voidbrain/Grover/pull/74). Code: `apps/hub/src/mcp.ts`. Related: 🪴 grover:F-012; 𖣂 nerv:B-176. |
-| Opened | 2026-11-27 |
 | Verification | Pending |
 | Reviewed | 2026-11-27 |
 
