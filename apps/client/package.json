@@ -17,7 +17,7 @@
     "@angular/platform-browser": "^22.3.0",
     "@angular/router": "^22.3.0",
     "@grover/contracts": "*",
-    "@voidbrain/bricks": "0.1.0",
+    "@voidbrain/bricks": "0.5.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
