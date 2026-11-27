@@ -4,9 +4,9 @@
   "parent": "F-029",
   "title": "Upgrade bricks and replace plant-chart.ts with the bricks line chart",
   "goal": "The plant page's readings chart comes from bricks",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
-    "@voidbrain/bricks moves from 0.1.0 to the chart release (bricks:F-014-T07); the token mapping in docs/STYLE-GUIDE.md is checked against it",
+    "@voidbrain/bricks moves from 0.1.0 to 0.5.0, the chart release (bricks:F-014-T07); the token mapping in docs/STYLE-GUIDE.md is checked against it",
     "The plant page shows readings with target bands and markers through the bricks line chart; plant-chart.ts and its now-unused code and tests are removed",
     "e2e covers the chart's presence and its data-table alternative"
   ],
@@ -35,12 +35,13 @@
   ],
   "effort": {
     "size": "medium",
-    "estimate": "2 h agent",
-    "basis": "A bricks upgrade over three minor releases plus one chart swap. Estimated 2026-11-26. Not a measurement.",
-    "reviewed": "2026-11-26",
-    "agentHours": 2,
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-27: bricks 0.5.0, Grover theme sets the 0.4.0 tokens, four bx-line-chart readings charts in local time (bricks labels UTC: workaround in plant-charts.ts, bricks:F-016 asks for an option), plant-chart.ts removed; unit and e2e tests.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
     "baselineAgentHours": 2,
-    "estimateAgentHours": 2
+    "estimateAgentHours": 2,
+    "ownerHours": 0
   },
   "prs": [
     {

@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "F-029-T03",
+  "parent": "F-029",
+  "title": "Update the Calvary hub to the merged main",
+  "goal": "Calvary serves the bricks charts",
+  "status": "planned",
+  "acceptance": [
+    "After the F-029 PR merges: README \"Updating the hub on a Raspberry Pi\" on Calvary (backup, git bundle over SSH, npm ci because package-lock.json changed, npm run build, restart); systemctl is-active grover-hub prints active and GET /api/health answers"
+  ],
+  "dependsOn": [
+    "F-029-T02"
+  ],
+  "resources": [
+    "docs/work/records/F-029.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented data only; no personal data, tokens or private reports in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "Same procedure as earlier Calvary updates. Estimated 2026-11-27. Not a measurement.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0.25,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25
+  },
+  "prs": []
+}

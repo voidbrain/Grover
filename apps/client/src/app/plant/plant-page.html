@@ -109,21 +109,35 @@
       </div>
       @if (!r.potId) {
         <p class="muted">Not placed in a pot yet: nothing measured.</p>
-      } @else if (window(); as w) {
+      } @else {
         <div class="charts">
           @for (c of charts(); track c.title) {
-            <gr-plant-chart
-              [title]="c.title"
+            <bx-line-chart
+              [label]="c.title"
               [unit]="c.unit"
-              [points]="c.points"
+              axisMode="time"
+              [series]="c.series"
               [bands]="c.bands"
               [markers]="c.markers"
-              [from]="w.from"
-              [to]="w.to"
+              [domainX]="c.domain"
+              xHeader="Time"
+              [yHeader]="c.title"
+              emptyText="No readings in this range."
             />
           }
         </div>
         <p class="hint">Green bands: the phase's range. Dashed lines: feeds, placing, bloom, flush, harvest.</p>
+        @if (perDay(); as d) {
+          <bx-stacked-bar-chart
+            label="Given per day"
+            unit="mL"
+            [categories]="d.days"
+            [series]="d.series"
+            legendLabel="Tanks"
+            categoryHeader="Day"
+            emptyText="No feeds in this range."
+          />
+        }
       }
     </section>
 

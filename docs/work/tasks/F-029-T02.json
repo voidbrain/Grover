@@ -4,9 +4,9 @@
   "parent": "F-029",
   "title": "Feeds and doses per day as a bricks bar or stacked bar chart",
   "goal": "The owner sees what each pump gave per day at a glance",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
-    "The plant or room page shows mL per nutrient per day (stacked bar) from the feed history the hub already serves",
+    "The plant page shows mL per nutrient per day (stacked bar) from the finished feeds in the plant report's range (the feed history the hub already serves)",
     "Empty state when there are no feeds; e2e checks the chart and its table"
   ],
   "dependsOn": [
@@ -35,12 +35,13 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h agent",
-    "basis": "Data exists (/api/feeds); one chart. Estimated 2026-11-26. Not a measurement.",
-    "reviewed": "2026-11-26",
-    "agentHours": 1,
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-27: \"Given per day\" bx-stacked-bar-chart from dosesPerDay (finished feeds, local days, water left out), empty state; unit test with data, e2e on the empty state.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
     "baselineAgentHours": 1,
-    "estimateAgentHours": 1
+    "estimateAgentHours": 1,
+    "ownerHours": 0
   },
   "prs": [
     {
