@@ -411,7 +411,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Found by the owner 2026-11-27. Code: `apps/hub/src/mcp.ts`. Related: 🪴 grover:F-012; 𖣂 nerv:B-176. |
+| PR / evidence | Found by the owner 2026-11-27. [#74](https://github.com/voidbrain/Grover/pull/74). Code: `apps/hub/src/mcp.ts`. Related: 🪴 grover:F-012; 𖣂 nerv:B-176. |
 | Opened | 2026-11-27 |
 | Verification | Pending |
 | Reviewed | 2026-11-27 |
