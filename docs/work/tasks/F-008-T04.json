@@ -4,7 +4,7 @@
   "parent": "F-008",
   "title": "Write the alert contract for NERV",
   "goal": "NERV and any other consumer can read Grover's alert format, key grammar and level meaning from DESIGN.md, and a test pins them",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "docs/DESIGN.md \"NERV\" (or \"Alerts\") gains the alert shape (`key`, `roomId`, `potId`, `level` `warn|bad`, `message`, `since`), the key grammar (`probe:<id>:below`, `probe:<id>:above`, `feed:<pot>`, `agent:<id>`; stable while the condition lasts, so `(key, since)` names an episode), and what each level means (`warn` when a feed is refused or a probe leaves its range, `bad` when a feed stopped partway or an agent is offline), as the hub raises them today",
     "A hub or contracts test pins the key shapes and levels the hub emits for each condition, so a change to them fails a test",
@@ -34,10 +34,10 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.25 h agent remaining (CI and landing)",
-    "basis": "Implemented 2026-11-26: alert contract in docs/DESIGN.md and apps/hub/test/alert-contract.test.ts, which pins the behaviour as it is (no runtime change, so no test failed first). Not a measurement.",
-    "reviewed": "2026-11-26",
-    "agentHours": 1.5,
+    "estimate": "0 remaining",
+    "basis": "Implemented 2026-11-26 in #53 (CI 45839382908 green): alert contract in docs/DESIGN.md and apps/hub/test/alert-contract.test.ts. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,
     "estimateAgentHours": 1.5,

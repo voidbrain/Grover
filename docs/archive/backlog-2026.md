@@ -9,7 +9,7 @@ Closed records in this archive, grouped by closing date (Monday–Sunday). Links
 
 | Closing week | Features closed | Bugs closed |
 |---|---:|---:|
-| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 3 | 10 |
+| [2026-11-23 – 2026-11-29](#archive-week-2026-11-23) | 4 | 14 |
 <!-- archive-recap:end -->
 
 <a id="archive-week-2026-11-23"></a>
@@ -464,6 +464,176 @@ Answer in chat, for example: "1b: Northern Lights, Sensi Seeds; 2 leave". You ca
 | PR / evidence | [#72](https://github.com/voidbrain/Grover/pull/72) (README section; also closes B-015) |
 | Opened | 2026-11-27 |
 | Verification | Pending |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-006
+
+**An upgraded agent drops its cached config until the hub answers**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #44 merged at 2eceb42, CI 45769844330 green.
+
+| | |
+|---|---|
+| **Issue** | `AgentConfig.protocol` must equal `PROTOCOL_VERSION`. After an agent upgrade (each protocol bump: 4 for calibration, 5 for weekdays), the agent fails to parse its own cached `config.json` on start and runs nothing (lights, fans, loops, reads) until the hub reconnects and sends a new config. The agent must keep working without the hub (AGENTS.md). Found in the review of #27 on 2026-11-24. |
+| **Reproduce** | Start an agent with a cached config whose `protocol` is one lower and no hub: no schedule runs. |
+| **Check** | An agent test: a cached config of the previous protocol is used (its new fields at their defaults) and the agent's schedules run with no hub; a config of a newer or unknown protocol is still refused with a fault. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #44 merged at 2eceb42, CI 45769844330 green. 2026-11-26: B-006-T01 implemented: the agent runs a cached config of the previous protocol (`parseCachedConfig`) and refuses a newer, unknown or unreadable one with a `config` fault. Test: `apps/agent/test/agent.test.ts` ("a cached config of the previous protocol runs its schedules with no hub (B-006)" and the two refusal tests), committed failing first; the fix did not edit them. Close on green CI with `npm run work:close`. 2026-11-24: step plan adopted (owner decision, `workItems.featurePlans`): B-006-T01. Found 2026-11-24 in the review of #27. Start with the failing agent test.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#44](https://github.com/voidbrain/Grover/pull/44) |
+| Opened | 2026-11-24 |
+| Verification | Unit/integration · 2026-11-27 · Test: apps/agent/test/agent.test.ts passed in #44 CI 45769844330 |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-008
+
+**The feed end-to-end test fails now and then on CI: feed done, mixing tank not emptied**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P1 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #38 merged at 14dfdff, CI 45609993978 green and >28 subsequent CI runs passed e2e.test.ts; independent review clean.
+
+| | |
+|---|---|
+| **Issue** | `apps/hub/test/e2e.test.ts`, "a feed runs end to end": the feed ends `done`, yet the simulated mixing tank still holds 0.3 L or more (`mixing tank emptied` fails). PR CI run 45487054804 failed on `a790c83`; run 45487113564 passed on `55c7c70`, a docs-only commit on the same code. Earlier failures of the feed tests (runs 45460424727, 45461154747) were on branches still changing. Not known: a race in the test or the simulated drivers, or a feed reported done before the transfer pump emptied the tank (a product defect). Found by the delivery audit of 2026-11-25. |
+| **Reproduce** | 10 serial local runs all passed. Under load it fails: 2026-11-25, `node --test apps/hub/test/e2e.test.ts` ten at a time with 12 CPU burners failed 3 to 11 of 30 runs, each ending `done (time allowed used)` with 0.35 to 3.7 L in the mixing tank. Deterministic: `apps/hub/test/fast-rig.test.ts`. |
+| **Check** | The cause is named with evidence; if it is the feed logic, a failing test shows it first and the fix makes it pass; the test passes in 30 repeated runs under CPU load (for example `stress` or several runs in parallel) and on the next 10 CI runs. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #38 merged at 14dfdff, CI 45609993978 green and >28 subsequent CI runs passed e2e.test.ts; independent review clean. 2026-11-25: cause found, a test-rig race, not feed logic. The e2e rig ran every pump at 1000 times its flow. The simulated pumps deliver for as long as they are really on, and on a busy runner each pump goes off tens of ms late. A feed's water is five 20 ms runs, so about 50 ms of lateness per run added up to 4.7 L to a 2 L batch. The transfer's allowance (1.5 times the batch, one 120 ms slice) could not move that, so the feed ended `done` with the tank full. On the real rig a run lasts seconds and the same lateness is a few mL. Fix in [#38](https://github.com/voidbrain/Grover/pull/38): `apps/hub/test/fast-rig.ts` runs supply pumps at 100 times their flow and transfer pumps at 1000 times. No assertion or timeout changed. 60 of 60 runs passed under the same load. Next: Verified after the next 10 CI runs pass this test.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Test: `apps/hub/test/fast-rig.test.ts` (fails without the fix: 5.33 L left). [#38](https://github.com/voidbrain/Grover/pull/38) (CI 45609993978 green). Review: independent fresh-context subagent review of #38 (2026-11-27), no findings. CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change); [#37](https://github.com/voidbrain/Grover/pull/37) |
+| Opened | 2026-11-25 |
+| Verification | Unit/integration · 2026-11-27 · Test: apps/hub/test/fast-rig.test.ts passed in #38 CI 45609993978, 60/60 local CPU-load runs, and >28 consecutive CI runs through #72 (45909002027) |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-010
+
+**Held threshold alerts read as if the value were still past the threshold, and threshold checks lack float tolerance**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #39 merged at ec23d79, CI 45656882670 green.
+
+| | |
+|---|---|
+| **Issue** | While a threshold alert is held inside its hysteresis margin (`F-008-T02`), `Alerts` formats the same message as when the reading is past the threshold — for example `Grow tank low (3.4, alert below 3): refill it. Feeds that need it are refused until then.` when `tank-grow` is at `3.4` (`alertBelow: 3`, clear point `3.5`), or `Air temperature at 31.6, above 32.` when `air-temp` is at `31.6` (`alertAbove: 32`, clear point `31.5`). In addition, `r.value < probe.alertBelow` and `r.value > probe.alertAbove` used exact comparisons without floating-point tolerance (`0.7 - 0.4 < 0.3` and `0.1 + 0.2 > 0.3` in IEEE-754). |
+| **Reproduce** | Push `2.9` then `3.4` on `tank-grow` (`alertBelow: 3`, margin `0.5`), or push `0.7 - 0.4` on an EC probe with `alertBelow: 0.3` (`apps/hub/test/alerts.test.ts`). |
+| **Check** | While held inside the hysteresis margin, the alert message states the current value, the threshold, and that the alert is held until the value passes the clear point (`at least <clear>` for `alertBelow`, `at most <clear>` for `alertAbove`); threshold comparisons use a tolerance (`EPSILON`) so floating-point noise at the threshold neither trips nor misclassifies an alert; failing test committed first in `apps/hub/test/alerts.test.ts` and kept unchanged by the fix. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #39 merged at ec23d79, CI 45656882670 green. 2026-11-25: B-010-T01 implemented in [#39](https://github.com/voidbrain/Grover/pull/39): failing tests committed first in `apps/hub/test/alerts.test.ts`, then `apps/hub/src/alerts.ts` updated to compare thresholds with `EPSILON` tolerance, strip IEEE-754 rounding noise from formatted numbers, and state the value, threshold and clear point while held inside the hysteresis margin (`docs/DESIGN.md` updated). Closes after [#39](https://github.com/voidbrain/Grover/pull/39) merges on green CI.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Test: `apps/hub/test/alerts.test.ts` (`B-010: held threshold alerts state the value, threshold and clear point…`, `B-010: threshold comparisons use a tolerance…`; committed failing first). [#39](https://github.com/voidbrain/Grover/pull/39) |
+| Opened | 2026-11-25 |
+| Verification | Unit/integration · 2026-11-27 · Test: apps/hub/test/alerts.test.ts passed in #39 CI 45656882670 |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-011
+
+**Client specs are type-checked; the hysteresis test reads the probe kinds from the contract**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #50 merged at aeada6c, CI 45801466993 green.
+
+| | |
+|---|---|
+| **Issue** | Two dormant checks found by the coordinator's sweep, 2026-11-26: `typecheck` ran `apps/client/tsconfig.app.json`, which excludes `*.spec.ts`, so the client specs ran unchecked under Vitest (T5, proposal 9); and "threshold alerts have a positive hysteresis margin for every probe kind" iterated a hand-written list of five kinds, so a new probe kind was not checked (C5, proposal 15). |
+| **Reproduce** | On `main` `080194c`: `package.json` `typecheck` has no spec config; `apps/hub/test/alerts.test.ts:29-33` lists the kinds by hand. |
+| **Check** | `npm run typecheck` (CI) also runs `tsc -p apps/client/tsconfig.spec.json --noEmit` and passes (no error found when added); the hysteresis test iterates `PROBE_KIND_IDS` from `@grover/contracts` and asserts `ALERT_HYSTERESIS` has exactly those keys. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #50 merged at aeada6c, CI 45801466993 green. 2026-11-26: owner accepted every fix of the dormant-checks sweep in chat ("Accept all fixes"). B-011-T01 implemented: spec config added to `typecheck` (10 spec files, no error); the test derives the kinds from the contract (passes; no defect found, the test was weak, not the code). Closes when the PR merges on green CI.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#50](https://github.com/voidbrain/Grover/pull/50) |
+| Opened | 2026-11-26 |
+| Verification | Unit/integration · 2026-11-27 · Test: apps/hub/test/alerts.test.ts and tsc -p apps/client/tsconfig.spec.json passed in #50 CI 45801466993 |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### F-010
+
+**Hub data retention and backups**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #46 (CI 45783622309) and #47 (CI 45784283819) merged on green CI.
+
+| | |
+|---|---|
+| **Issue** | Readings every 5 minutes for 5 probes grow the SQLite file on the Pi's SD card without bound, and there is no backup. |
+| **Reproduce** | `npm run dev` for a while, then inspect `data/dev/hub.sqlite`. |
+| **Check** | Old readings are downsampled (for example hourly after 30 days), a `backup` command writes a consistent copy, and both are tested. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #46 (CI 45783622309) and #47 (CI 45784283819) merged on green CI. 2026-11-26: F-010-T02 implemented: `npm run hub -- backup <file>` writes a consistent copy with `VACUUM INTO` and refuses an existing file or a missing database (`apps/hub/src/backup.ts`); `apps/hub/test/backup.test.ts` backs up a running hub, restores the copy and reads its rooms and readings, and runs the command itself; README "Backups" names it. Both steps implemented: close on green CI with `npm run work:close`. 2026-11-26: F-010-T01 implemented: readings older than 30 days keep the first of each clock hour per probe (`Store.downsampleReadings`, `apps/hub/src/retention.ts`), run when the hub starts and hourly; tested in `apps/hub/test/retention.test.ts` (invented readings, including the start-up run); DESIGN.md "Data retention" names the rule. 2026-11-24: step plan adopted (owner decision, `workItems.featurePlans`): F-010-T01, F-010-T02. Use SQLite `VACUUM INTO` for the backup.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
+| Opened | 2026-11-24 |
+| Verification | Unit/integration · 2026-11-27 · apps/hub/test/retention.test.ts (#46 CI 45783622309) and apps/hub/test/backup.test.ts (#47 CI 45784283819) green |
 | Reviewed | 2026-11-27 |
 
 </details>

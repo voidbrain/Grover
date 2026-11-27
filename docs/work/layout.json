@@ -2,7 +2,7 @@
   "version": 1,
   "segments": [
     {
-      "text": "# <a id=\"top\"></a>Grover backlog\n\nCurrent work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).\n\n<!-- totals:start -->\n<!-- totals:end -->\n\n## Work items\n\nBugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = remaining agent time (🟢 up to 1 h · 🟡 4 h · 🔴 8 h · 🟣 more); `h` = agent hours, owner time apart; a step status is not the record's acceptance.\n\n"
+      "text": "# <a id=\"top\"></a>Grover backlog\n\nCurrent work ledger, reviewed 27 November 2026 against main `740b782`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).\n\n<!-- totals:start -->\n<!-- totals:end -->\n\n## Work items\n\nBugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = remaining agent time (🟢 up to 1 h · 🟡 4 h · 🔴 8 h · 🟣 more); `h` = agent hours, owner time apart; a step status is not the record's acceptance.\n\n"
     },
     {
       "records": "all"

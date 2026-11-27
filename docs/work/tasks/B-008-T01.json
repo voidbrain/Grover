@@ -4,7 +4,7 @@
   "parent": "B-008",
   "title": "Find why the feed e2e test fails now and then",
   "goal": "The cause of the intermittent 'mixing tank emptied' failure is named with evidence",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "The test is repeated under CPU load until it fails or 30 runs pass, with the mixing tank level and feed state logged at the failure",
     "The cause is recorded in B-008: a test or simulator race, or the feed reporting done too early"
@@ -31,8 +31,8 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-25 in #38: reproduced under load (3 to 11 of 30 runs failed), logged 'time allowed used' and the litres left; cause: late switch-off on the 1000x test rig.",
-    "reviewed": "2026-11-25",
+    "basis": "Done 2026-11-25 in #38 (CI 45609993978 green): reproduced under load (3 to 11 of 30 runs failed), logged 'time allowed used' and the litres left; cause: late switch-off on the 1000x test rig. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,

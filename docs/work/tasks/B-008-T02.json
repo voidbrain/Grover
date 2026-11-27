@@ -4,7 +4,7 @@
   "parent": "B-008",
   "title": "Failing test if the feed logic is wrong, then the fix",
   "goal": "The feed e2e test is reliable on CI",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "If the feed logic is at fault, a test committed failing first shows it and the fix makes it pass",
     "The test passes 30 times under load and on the next 10 CI runs"
@@ -34,8 +34,8 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-25 in #38: failing test fast-rig.test.ts committed first, then supply pumps at 100x on the rig; 60 of 60 runs passed under load. Verification: the next 10 CI runs.",
-    "reviewed": "2026-11-25",
+    "basis": "Done 2026-11-25 in #38 (CI 45609993978 green): failing test fast-rig.test.ts committed first, then supply pumps at 100x on the rig; 60 of 60 runs passed under load and >28 CI runs since #38 passed. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,

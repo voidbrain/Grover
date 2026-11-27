@@ -4,7 +4,7 @@
   "parent": "F-010",
   "title": "Downsample old readings",
   "goal": "Readings older than 30 days are kept hourly",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "A hub job keeps one reading per probe per hour after 30 days",
     "A test with invented readings shows what is kept",
@@ -35,8 +35,8 @@
   "effort": {
     "size": "medium",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26 in #46: Store.downsampleReadings and the hourly retention job in the hub, with apps/hub/test/retention.test.ts.",
-    "reviewed": "2026-11-26",
+    "basis": "Done 2026-11-26 in #46 (CI 45783622309 green): Store.downsampleReadings and the hourly retention job in the hub, with apps/hub/test/retention.test.ts. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,

@@ -4,7 +4,7 @@
   "parent": "F-022",
   "title": "Reviews, coverage enforcement, work usage and behaviour runner settings",
   "goal": "The four settings are on in .harness.json",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "`reviews` token, architecture, skills at 30 days",
     "`coverage.enforce` stays false until the baseline on `main` is current; F-022-T04 turns it on",
@@ -30,8 +30,8 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26 in one PR from the dormant-checks sweep, owner decisions in chat that day. Not timed.",
-    "reviewed": "2026-11-26",
+    "basis": "Done 2026-11-26 in #50 (CI 45801466993 green) from the dormant-checks sweep, owner decisions in chat that day. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 0.25,
