@@ -3,8 +3,16 @@ import { Component, computed, inject, input, resource, signal } from '@angular/c
 import { RouterLink } from '@angular/router';
 import type { PlantReport, PlantReportRange } from '@grover/contracts';
 import { doseTank, generationLabel, geneticsLabel, lineage, tankColour } from '@grover/contracts/kinds';
+import {
+  BxLineChart,
+  BxStackedBarChart,
+  type ChartTone,
+  type LineChartBand,
+  type LineChartMarker,
+  type StackedBarSeries,
+} from '@voidbrain/bricks/components';
 import { Hub } from '../hub';
-import { PlantChart, type ChartBand, type ChartMarker } from './plant-chart';
+import { dosesPerDay, localAxis, localStamp } from './plant-charts';
 
 const RANGES: { id: PlantReportRange; label: string }[] = [
   { id: 'day', label: 'Today' },
@@ -21,6 +29,15 @@ const DOSE_TITLES: Record<string, string> = {
   bloom: 'Bloom',
   ripen: 'Ripen',
   phDown: 'pH down',
+};
+
+/** One fixed tone (and so pattern order) per dose tank, whichever tanks a range shows. */
+const DOSE_TONES: Record<string, ChartTone> = {
+  grow: 'green',
+  micro: 'blue',
+  bloom: 'orange',
+  ripen: 'warn',
+  phDown: 'info',
 };
 
 const MARKER_TITLES = {
@@ -45,7 +62,7 @@ interface LogLine {
 /** A plant's page (F-014): who it is, how its pot held over its time in the tent, what it was given. */
 @Component({
   selector: 'gr-plant-page',
-  imports: [RouterLink, DecimalPipe, PercentPipe, DatePipe, PlantChart],
+  imports: [RouterLink, DecimalPipe, PercentPipe, DatePipe, BxLineChart, BxStackedBarChart],
   templateUrl: './plant-page.html',
   styleUrl: './plant-page.scss',
 })
@@ -121,40 +138,68 @@ export class PlantPage {
     return span ? { name: span.name, day: daysFrom(span.from, r.to) + 1 } : null;
   });
 
-  protected readonly window = computed(() => {
-    const r = this.report.value();
-    return r ? { from: r.fromMs, to: r.toMs } : null;
-  });
-
+  /** The readings charts: x in local wall-clock ms (localAxis), so the bricks axis labels read local time. */
   protected readonly charts = computed(() => {
     const r = this.report.value();
     if (!r) return [];
     const kinds = this.snap()?.probeKinds;
-    const bands = (pick: (s: PlantReport['timeline'][number]) => { min: number; max: number }): ChartBand[] =>
-      r.timeline.map((s) => ({ from: s.fromMs, to: s.toMs, ...pick(s) }));
-    const markers: ChartMarker[] = r.markers.map((m) =>
+    const domain: [number, number] = [localAxis(r.fromMs), localAxis(r.toMs)];
+    const bands = (pick: (s: PlantReport['timeline'][number]) => { min: number; max: number }): LineChartBand[] =>
+      r.timeline.map((s) => ({ from: localAxis(s.fromMs), to: localAxis(s.toMs), ...pick(s) }));
+    const markers: LineChartMarker[] = r.markers.map((m) =>
       m.kind === 'feed'
-        ? { at: m.at, label: `Feed (${m.state})` }
-        : { at: m.at, label: `${MARKER_TITLES[m.kind]} ${m.day}` },
+        ? { at: localAxis(m.at), label: `Feed (${m.state})` }
+        : { at: localAxis(m.at), label: `${MARKER_TITLES[m.kind]} ${m.day}` },
     );
+    const chart = (title: string, unit: string, points: { at: number; value: number }[], b: LineChartBand[]) => ({
+      title,
+      unit,
+      series: [
+        { name: title, points: points.map((p) => ({ x: localAxis(p.at), y: p.value, label: localStamp(p.at) })) },
+      ],
+      bands: b,
+      markers,
+      domain,
+    });
     return [
-      {
-        title: 'Level',
-        unit: kinds?.water_level.unit ?? 'cm',
-        points: r.series.level,
-        bands: bands((s) => s.waterLevel),
-        markers,
-      },
-      { title: 'EC', unit: kinds?.ec.unit ?? 'mS/cm', points: r.series.ec, bands: bands((s) => s.ec), markers },
-      { title: 'pH', unit: kinds?.ph.unit ?? 'pH', points: r.series.ph, bands: bands((s) => s.ph), markers },
-      {
-        title: 'Water temperature',
-        unit: kinds?.water_temperature.unit ?? '°C',
-        points: r.series.waterTemp,
-        bands: bands((s) => s.waterTemp),
-        markers,
-      },
+      chart(
+        'Level',
+        kinds?.water_level.unit ?? 'cm',
+        r.series.level,
+        bands((s) => s.waterLevel),
+      ),
+      chart(
+        'EC',
+        kinds?.ec.unit ?? 'mS/cm',
+        r.series.ec,
+        bands((s) => s.ec),
+      ),
+      chart(
+        'pH',
+        kinds?.ph.unit ?? 'pH',
+        r.series.ph,
+        bands((s) => s.ph),
+      ),
+      chart(
+        'Water temperature',
+        kinds?.water_temperature.unit ?? '°C',
+        r.series.waterTemp,
+        bands((s) => s.waterTemp),
+      ),
     ];
+  });
+
+  /** mL per tank per local day, from the finished feeds in the chosen range (F-029-T02). */
+  protected readonly perDay = computed(() => {
+    const r = this.report.value();
+    if (!r) return null;
+    const { days, tanks } = dosesPerDay(r.feeds, r.fromMs, r.toMs);
+    const series: StackedBarSeries[] = tanks.map((t) => ({
+      name: DOSE_TITLES[t.key] ?? t.key,
+      values: t.values,
+      tone: DOSE_TONES[t.key],
+    }));
+    return { days, series };
   });
 
   /** The tent of the plant's pot: its nutrient colours colour the dose bars (F-017). */
