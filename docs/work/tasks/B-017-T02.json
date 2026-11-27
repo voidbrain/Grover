@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "B-017-T02",
+  "parent": "B-017",
+  "title": "Owner asks NERV which strains exist after the hub update",
+  "goal": "nerv chat lists all strains",
+  "status": "planned",
+  "acceptance": [
+    "nerv chat \"quali genetiche ho?\" lists all strains, none cut off"
+  ],
+  "dependsOn": [
+    "B-017-T01"
+  ],
+  "resources": [
+    "README.md",
+    "docs/work/records/B-017.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "Estimated 2026-11-27. Not a measurement.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "baselineAgentHours": 0,
+    "estimateAgentHours": 0,
+    "ownerKind": "procedure"
+  },
+  "ownerLink": "docs/work/records/B-017.md"
+}

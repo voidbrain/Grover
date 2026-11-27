@@ -1,9 +1,40 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { OperatingMode, PROBE_KINDS, ancestry, generationLabel, geneticsLabel, lineage } from '@grover/contracts';
+import {
+  OperatingMode,
+  PROBE_KINDS,
+  ancestry,
+  generationLabel,
+  geneticsLabel,
+  lineage,
+  type Strain,
+  type StrainNode,
+} from '@grover/contracts';
 import type { Hub } from './hub.ts';
 
-const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] });
+/**
+ * Results are read by a model with a small budget, so they are compact JSON: no indentation, and a field that is
+ * null, empty text or an empty list is left out (absent means none).
+ */
+const compact = (_key: string, value: unknown) =>
+  value === null || value === '' || (Array.isArray(value) && value.length === 0) ? undefined : value;
+const text = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(data, compact) }] });
+
+/** The parents of a strain, up the tree, as names and ids (the full strains are listed once, by grover_strains). */
+type Ancestor = { id: string; name: string; parents: Ancestor[] };
+const parentsOf = (node: StrainNode | null): Ancestor[] =>
+  (node?.parents ?? []).map((p) => ({ id: p.strain.id, name: p.strain.name, parents: parentsOf(p) }));
+
+/** A strain as the tools show it; its parents are in `ancestry` (ids and names), so `parentIds` is left out, as is `sativaPercent` (the `genetics` label says it). */
+const strainView = (strain: Strain, strains: readonly Strain[], breeders: ReadonlyMap<string, { name: string }>) => {
+  const { parentIds: _parentIds, sativaPercent: _sativaPercent, ...rest } = strain;
+  return {
+    ...rest,
+    genetics: geneticsLabel(strain.sativaPercent),
+    breeder: strain.breederId ? (breeders.get(strain.breederId)?.name ?? strain.breederId) : null,
+    ancestry: parentsOf(ancestry(strain.id, strains)),
+  };
+};
 
 /**
  * MCP tools for NERV (or any MCP client). Read tools are free; tools that move hardware go through
@@ -76,12 +107,7 @@ export function createMcpServer(hub: Hub): McpServer {
               plant: p,
               origin: generationLabel(p.generation),
               breeder: p.breederId ? (breeders.get(p.breederId)?.name ?? p.breederId) : null,
-              strain: strain && {
-                ...strain,
-                genetics: geneticsLabel(strain.sativaPercent),
-                breeder: strain.breederId ? (breeders.get(strain.breederId)?.name ?? strain.breederId) : null,
-                ancestry: ancestry(strain.id, strains),
-              },
+              strain: strain && strainView(strain, strains, breeders),
               mothers: lineage(p.id, plants).map((m) => ({ id: m.id, name: m.name, generation: m.generation })),
             };
           }),
@@ -102,10 +128,7 @@ export function createMcpServer(hub: Hub): McpServer {
       const plants = store.listPlants();
       return text(
         strains.map((strain) => ({
-          ...strain,
-          genetics: geneticsLabel(strain.sativaPercent),
-          breeder: strain.breederId ? (breeders.get(strain.breederId)?.name ?? strain.breederId) : null,
-          ancestry: ancestry(strain.id, strains),
+          ...strainView(strain, strains, breeders),
           plantIds: plants.filter((p) => p.strainId === strain.id).map((p) => p.id),
         })),
       );
