@@ -367,11 +367,11 @@ test('MCP: tools are listed and a read-only tool answers', async () => {
     (await rpc('tools/call', { name: 'grover_strains', arguments: {} }, 6)).result.content[0].text,
   );
   const haze = strains.find((x: any) => x.id === 'haze');
-  assert.deepEqual(haze.plantIds, [], 'a strain no plant grows is still readable');
+  assert.equal(haze.plantIds, undefined, 'a strain no plant grows is still readable, with no plant ids');
   const cross = strains.find((x: any) => x.id === 'northern-lights-5-x-haze');
   assert.equal(cross.genetics, '70 % sativa / 30 % indica');
   assert.deepEqual(
-    cross.ancestry.parents.map((x: any) => x.strain.id),
+    cross.ancestry.map((x: any) => x.id),
     ['northern-lights-5', 'haze'],
   );
   const overview = await rpc('tools/call', { name: 'grover_overview', arguments: {} }, 3);
@@ -385,8 +385,39 @@ test('MCP: tools are listed and a read-only tool answers', async () => {
   assert.equal(report.series, undefined);
   const viaHttp = await api('GET', '/api/plants/nl5h-gen2/report?range=week');
   assert.equal(viaHttp.status, 200);
-  assert.deepEqual(viaHttp.json.stats, report.stats);
+  // MCP leaves out null fields (absent means none).
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(viaHttp.json.stats, (_k, v) => (v === null ? undefined : v))),
+    report.stats,
+  );
   assert.ok(Array.isArray(viaHttp.json.series.ec));
+});
+
+test('MCP: a list of 33 strains stays compact, so NERV can show all of them within its budget', async () => {
+  const call = async (name: string, id: number) => {
+    const res = await fetch(`${base}/mcp`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream' },
+      body: JSON.stringify({ jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: {} } }),
+    });
+    return (((await res.json()) as any).result.content[0].text as string) ?? '';
+  };
+  for (let i = 0; i < 33; i++)
+    hub.store.putStrain({
+      id: `bulk-${i}`,
+      name: `Bulk strain ${i}`,
+      parentIds: i % 3 === 2 ? [`bulk-${i - 1}`, `bulk-${i - 2}`] : [],
+      ...(i % 2 ? { sativaPercent: 60, floweringDays: 63 } : {}),
+    });
+  const raw = await call('grover_strains', 20);
+  const strains = JSON.parse(raw);
+  assert.ok(strains.length >= 33);
+  assert.equal(raw.includes('\n'), false, 'no indentation');
+  assert.equal(raw.includes('null'), false, 'no null fields');
+  assert.ok(raw.length <= 4096 * 2, `33 strains took ${raw.length} characters`);
+  const bulk = strains.filter((x: any) => x.id.startsWith('bulk-'));
+  assert.equal(bulk.length, 33);
+  assert.ok(JSON.stringify(bulk).length <= 4096, `the 33 strains took ${JSON.stringify(bulk).length} characters`);
 });
 
 test('events queued while the hub is unreachable arrive once after reconnect', async () => {

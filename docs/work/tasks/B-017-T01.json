@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "B-017-T01",
+  "parent": "B-017",
+  "title": "Make MCP read results compact",
+  "goal": "33 strains stay within 4 KB and keep their information",
+  "status": "implemented",
+  "acceptance": [
+    "33 strains stay within 4 KB; no indentation, null or repeated strain objects"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "apps/hub/src/mcp.ts",
+    "apps/hub/test/e2e.test.ts",
+    "docs/work/records/B-017.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:fast",
+    "npm test"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h",
+    "basis": "Estimated 2026-11-27: one serializer and one view. Not a measurement.",
+    "reviewed": "2026-11-27",
+    "agentHours": 1,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

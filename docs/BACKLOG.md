@@ -3,7 +3,7 @@
 Current work ledger, reviewed 27 November 2026 against main `740b782`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 53.25 h agent + 13 h owner across 67 open steps of 26 features and 2 other records. Generated from the task files.
+**Remaining effort:** 54.25 h agent + 13.25 h owner across 69 open steps of 26 features and 3 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
@@ -374,6 +374,45 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | Steps: F-026-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T03: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T04: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T05: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan, green CI); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+### <a id="b-017"></a>[🐞 B-017](#top)
+
+**grover_strains and the other MCP read results are pretty-printed with every null field and repeated strain objects: NERV cuts them to fit its budget and shows only part of the list**
+
+| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
+|---|---|---|---|---|---|:---:|:---:|:---:|
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 1 h agent + 0.25 h owner | — | — | 🤖 | 🧑‍🔧 | — |
+
+🧑 **→** Next: B-017-T02, the owner check after the hub is updated.
+
+| | |
+|---|---|
+| **Issue** | Found by the owner 2026-11-27 08:38 (NERV sortie S-DFCA, "quali genetiche ho?"): `grover_strains` returned about 9 KB for 33 strains (2-space indentation, every null field, and an `ancestry` block repeating full strain objects). NERV shortens tool results to its model budget, so Misato saw 8 of 33 strains and said the list may be incomplete. |
+| **Reproduce** | Call `grover_strains` with 33 strains in the hub: the text is indented and several times larger than the information in it. Test: `apps/hub/test/e2e.test.ts`, "MCP: a list of 33 strains stays compact" (fails before the change). |
+| **Check** | MCP results are compact JSON (no indentation; null, empty text and empty lists left out; `ancestry` as nested ids and names; `parentIds` and `sativaPercent` left out of strain views because `ancestry` and `genetics` carry them); 33 strains stay within 4 KB; in `nerv chat "quali genetiche ho?"` lists all strains. |
+
+**Steps**
+
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who |
+|---|---|---|---|---|---|---|---|:---:|
+| 🟢 Small | <a id="b-017-t01"></a>B-017-T01 — Make MCP read results compact | 1 h | 0 h | 1 h | Implemented; verification pending | — | [B-017-T02](#b-017-t02) | 🤖 |
+| 🟢 Small | <a id="b-017-t02"></a>B-017-T02 — Owner asks NERV which strains exist after the hub update | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | [B-017-T01](#b-017-t01) | — | ⏳ 🧑‍🔧 |
+| 🟢 Small | **Total** | 1 h | 0 h (0 of 2 steps recorded) | 1 h agent + 0.25 h owner | 0 of 2 completed | | | |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-017.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found by the owner 2026-11-27. Code: `apps/hub/src/mcp.ts`. Related: 🪴 grover:F-012; 𖣂 nerv:B-176. |
+| Opened | 2026-11-27 |
 | Verification | Pending |
 | Reviewed | 2026-11-27 |
 
