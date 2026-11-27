@@ -863,7 +863,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-029-T01: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan · F-029-T02: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan. Plan: [#71](https://github.com/voidbrain/Grover/pull/71) (green CI) |
+| PR / evidence | Steps: F-029-T01: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan · F-029-T02: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan. Plan: [#71](https://github.com/voidbrain/Grover/pull/71) (green CI); [#76](https://github.com/voidbrain/Grover/pull/76) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-27 |
