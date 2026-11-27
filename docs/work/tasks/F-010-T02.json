@@ -4,7 +4,7 @@
   "parent": "F-010",
   "title": "Backup command for the hub database",
   "goal": "`npm run hub -- backup <file>` writes a consistent copy",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "The command uses SQLite VACUUM INTO and refuses an existing file",
     "A test restores the copy and reads it",
@@ -34,8 +34,8 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26 in #47: `npm run hub -- backup <file>` (apps/hub/src/backup.ts, VACUUM INTO), tested in apps/hub/test/backup.test.ts.",
-    "reviewed": "2026-11-26",
+    "basis": "Done 2026-11-26 in #47 (CI 45784283819 green): `npm run hub -- backup <file>` (apps/hub/src/backup.ts, VACUUM INTO), tested in apps/hub/test/backup.test.ts. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1,

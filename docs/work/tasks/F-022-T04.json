@@ -4,7 +4,7 @@
   "parent": "F-022",
   "title": "Turn coverage.enforce on",
   "goal": "coverage.enforce true once the refreshed baseline is on main",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "`coverage.enforce` is true",
     "CI's coverage table passes against the baseline on `main`"
@@ -29,8 +29,8 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26 in a follow-up PR once the baseline was on main. Not timed.",
-    "reviewed": "2026-11-26",
+    "basis": "Done 2026-11-26 in #51 (CI 45802364347 green) once the baseline was on main. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 0.25,

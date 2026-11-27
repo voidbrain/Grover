@@ -1,54 +1,15 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 26 November 2026 against main `2eceb42`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 27 November 2026 against main `740b782`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
-**Remaining effort:** 55 h agent + 13 h owner across 79 open steps of 27 features and 6 other records. Generated from the task files.
+**Remaining effort:** 53.25 h agent + 13 h owner across 67 open steps of 26 features and 2 other records. Generated from the task files.
 <!-- totals:end -->
 
 ## Work items
 
 Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = remaining agent time (🟢 up to 1 h · 🟡 4 h · 🔴 8 h · 🟣 more); `h` = agent hours, owner time apart; a step status is not the record's acceptance.
 
-### <a id="b-008"></a>[🐞 B-008](#top)
-
-**The feed end-to-end test fails now and then on CI: feed done, mixing tank not emptied**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔺 P1 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-008-T01 — Find why the feed e2e test fails now and then (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | `apps/hub/test/e2e.test.ts`, "a feed runs end to end": the feed ends `done`, yet the simulated mixing tank still holds 0.3 L or more (`mixing tank emptied` fails). PR CI run 45487054804 failed on `a790c83`; run 45487113564 passed on `55c7c70`, a docs-only commit on the same code. Earlier failures of the feed tests (runs 45460424727, 45461154747) were on branches still changing. Not known: a race in the test or the simulated drivers, or a feed reported done before the transfer pump emptied the tank (a product defect). Found by the delivery audit of 2026-11-25. |
-| **Reproduce** | 10 serial local runs all passed. Under load it fails: 2026-11-25, `node --test apps/hub/test/e2e.test.ts` ten at a time with 12 CPU burners failed 3 to 11 of 30 runs, each ending `done (time allowed used)` with 0.35 to 3.7 L in the mixing tank. Deterministic: `apps/hub/test/fast-rig.test.ts`. |
-| **Check** | The cause is named with evidence; if it is the feed logic, a failing test shows it first and the fix makes it pass; the test passes in 30 repeated runs under CPU load (for example `stress` or several runs in parallel) and on the next 10 CI runs. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
-|---|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-008-t01"></a>B-008-T01 — Find why the feed e2e test fails now and then | 1 h | 0 h | 0 h | Implemented; verification pending | — | [B-008-T02](#b-008-t02) | [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix |
-| 🟢 Small | <a id="b-008-t02"></a>B-008-T02 — Failing test if the feed logic is wrong, then the fix | 1 h | 0 h | 0 h | Implemented; verification pending | [B-008-T01](#b-008-t01) | — | [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix |
-| 🟢 Small | **Total** | 2 h | 0 h (0 of 2 steps recorded) | 0 h | 0 of 2 completed | | | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-008.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: B-008-T01: [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix · B-008-T02: [PR #38](https://github.com/voidbrain/Grover/pull/38) cause, failing test and fix. Test: `apps/hub/test/fast-rig.test.ts` (fails without the fix: 5.33 L left). [#38](https://github.com/voidbrain/Grover/pull/38). CI runs [45487054804](https://github.com/voidbrain/Grover/actions/runs/45487054804) (fail) and [45487113564](https://github.com/voidbrain/Grover/actions/runs/45487113564) (pass, docs-only change); [#37](https://github.com/voidbrain/Grover/pull/37) |
-| Opened | 2026-11-25 |
-| Verification | Pending: the next 10 CI runs |
-| Reviewed | 2026-11-25 |
-
-</details>
-
----
 ### <a id="f-005"></a>[✨ F-005](#top)
 
 **Deploy hub and agent on the Pi behind Tailscale**
@@ -91,8 +52,8 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|
 | PR / evidence | [#30](https://github.com/voidbrain/Grover/pull/30), [#60](https://github.com/voidbrain/Grover/pull/60); [#61](https://github.com/voidbrain/Grover/pull/61); [#62](https://github.com/voidbrain/Grover/pull/62); [#63](https://github.com/voidbrain/Grover/pull/63); [#64](https://github.com/voidbrain/Grover/pull/64) |
 | Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-25 |
+| Verification | 2026-11-26: F-005-T01 and F-005-T02 passed on Calvary (#60–#64 green CI; reboot test and NERV MCP 19 tools verified); F-005-T03 and F-005-T04 (tent Pi) pending |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -269,128 +230,63 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan; [PR #56](https://github.com/voidbrain/Grover/pull/56) timed-switch case note · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-027-T01: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan · F-027-T02: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan; [PR #56](https://github.com/voidbrain/Grover/pull/56) timed-switch case note · F-027-T03: [PR #54](https://github.com/voidbrain/Grover/pull/54) plan. [#54](https://github.com/voidbrain/Grover/pull/54) (plan, green CI); [#59](https://github.com/voidbrain/Grover/pull/59) (coordinator prefix, green CI); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-grover.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
 ---
-### <a id="b-006"></a>[🐞 B-006](#top)
+### <a id="f-008"></a>[✨ F-008](#top)
 
-**An upgraded agent drops its cached config until the hub answers**
+**Alerts for NERV: out-of-range values, offline agent, faults**
 
 | Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
 |---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0.25 h owner | `nerv:F-122-T02` | — | — | — | — |
 
-💻 **→** Next: B-006-T01 — Failing agent test, then run a cached config of the previous protocol (Implemented; verification pending).
+💻 **→** Next: F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) (Planned).
 
 | | |
 |---|---|
-| **Issue** | `AgentConfig.protocol` must equal `PROTOCOL_VERSION`. After an agent upgrade (each protocol bump: 4 for calibration, 5 for weekdays), the agent fails to parse its own cached `config.json` on start and runs nothing (lights, fans, loops, reads) until the hub reconnects and sends a new config. The agent must keep working without the hub (AGENTS.md). Found in the review of #27 on 2026-11-24. |
-| **Reproduce** | Start an agent with a cached config whose `protocol` is one lower and no hub: no schedule runs. |
-| **Check** | An agent test: a cached config of the previous protocol is used (its new fields at their defaults) and the agent's schedules run with no hub; a config of a newer or unknown protocol is still refused with a fault. |
+| **Issue** | Nothing tells the owner when pH, EC, temperature or level leave the phase range, when an agent goes offline or a driver faults; NERV can only poll `grover_overview`. |
+| **Reproduce** | Stop the agent or push a reading outside the range: nothing is raised. |
+| **Check** | The hub raises and clears alerts with hysteresis, lists them in the client and through an MCP tool, and NERV can deliver them (its own pack, recorded in NERV's backlog). |
 
-**Steps**
+**Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
-|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-006-t01"></a>B-006-T01 — Failing agent test, then run a cached config of the previous protocol | 1 h | 0 h | 0 h | Implemented; verification pending | [PR #44](https://github.com/voidbrain/Grover/pull/44) cached config of the previous protocol; refusal fault |
-| 🟢 Small | **Total** | 1 h | 0 h (0 of 1 steps recorded) | 0 h | 0 of 1 completed | |
+| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
+|---|---|---|---|---|---|---|---|:---:|---|
+| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | `nerv:F-122-T02` | — | ⏳ 🧑‍🔧 | — |
+| 🟢 Small | **Total** | 3 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 0.25 h owner | 3 of 4 completed | | | | |
+
+<details><summary>Done steps (3)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-008-t01"></a>F-008-T01 — Build Grover-side alerts (thresholds, feeds, offline agents) | — | 0 h | Completed | [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation |
+| — | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | Completed | [PR #35](https://github.com/voidbrain/Grover/pull/35) feature |
+| — | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | Completed | [PR #53](https://github.com/voidbrain/Grover/pull/53) feature |
+
+</details>
 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-[Full notes & evidence](work/records/B-006.md)
+[Full notes & evidence](work/records/F-008.md)
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: B-006-T01: [PR #44](https://github.com/voidbrain/Grover/pull/44) cached config of the previous protocol; refusal fault. [#30](https://github.com/voidbrain/Grover/pull/30); [#44](https://github.com/voidbrain/Grover/pull/44) |
+| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature · F-008-T04: [PR #53](https://github.com/voidbrain/Grover/pull/53) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35); [#49](https://github.com/voidbrain/Grover/pull/49); [#53](https://github.com/voidbrain/Grover/pull/53) (CI 45839382908 green) |
 | Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Verification | Unit/integration · 2026-11-27 · F-008-T02 (#35) and F-008-T04 (#53 CI 45839382908, `apps/hub/test/alert-contract.test.ts`) green; Human · Pending (F-008-T03 NERV alert delivery) |
+| Reviewed | 2026-11-27 |
 
 </details>
 
 ---
-### <a id="b-010"></a>[🐞 B-010](#top)
 
-**Held threshold alerts read as if the value were still past the threshold, and threshold checks lack float tolerance**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-010-T01 — Failing test, then held-alert wording and threshold tolerance (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | While a threshold alert is held inside its hysteresis margin (`F-008-T02`), `Alerts` formats the same message as when the reading is past the threshold — for example `Grow tank low (3.4, alert below 3): refill it. Feeds that need it are refused until then.` when `tank-grow` is at `3.4` (`alertBelow: 3`, clear point `3.5`), or `Air temperature at 31.6, above 32.` when `air-temp` is at `31.6` (`alertAbove: 32`, clear point `31.5`). In addition, `r.value < probe.alertBelow` and `r.value > probe.alertAbove` used exact comparisons without floating-point tolerance (`0.7 - 0.4 < 0.3` and `0.1 + 0.2 > 0.3` in IEEE-754). |
-| **Reproduce** | Push `2.9` then `3.4` on `tank-grow` (`alertBelow: 3`, margin `0.5`), or push `0.7 - 0.4` on an EC probe with `alertBelow: 0.3` (`apps/hub/test/alerts.test.ts`). |
-| **Check** | While held inside the hysteresis margin, the alert message states the current value, the threshold, and that the alert is held until the value passes the clear point (`at least <clear>` for `alertBelow`, `at most <clear>` for `alertAbove`); threshold comparisons use a tolerance (`EPSILON`) so floating-point noise at the threshold neither trips nor misclassifies an alert; failing test committed first in `apps/hub/test/alerts.test.ts` and kept unchanged by the fix. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
-|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-010-t01"></a>B-010-T01 — Failing test, then held-alert wording and threshold tolerance | 0.5 h | 0 h | 0.25 h | Implemented; verification pending | [PR #39](https://github.com/voidbrain/Grover/pull/39) |
-| 🟢 Small | **Total** | 0.5 h | 0 h (0 of 1 steps recorded) | 0.25 h | 0 of 1 completed | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-010.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: B-010-T01: [PR #39](https://github.com/voidbrain/Grover/pull/39). Test: `apps/hub/test/alerts.test.ts` (`B-010: held threshold alerts state the value, threshold and clear point…`, `B-010: threshold comparisons use a tolerance…`; committed failing first). [#39](https://github.com/voidbrain/Grover/pull/39) |
-| Opened | 2026-11-25 |
-| Verification | Unit/integration: 2026-11-25, passed locally (`npm test`, `npm run test:client`, `npm run build`); CI pending on [#39](https://github.com/voidbrain/Grover/pull/39) |
-| Reviewed | 2026-11-25 |
-
-</details>
-
----
-### <a id="b-011"></a>[🐞 B-011](#top)
-
-**Client specs are type-checked; the hysteresis test reads the probe kinds from the contract**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: B-011-T01 — Spec type check and contract-derived probe kinds in the hysteresis test (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | Two dormant checks found by the coordinator's sweep, 2026-11-26: `typecheck` ran `apps/client/tsconfig.app.json`, which excludes `*.spec.ts`, so the client specs ran unchecked under Vitest (T5, proposal 9); and "threshold alerts have a positive hysteresis margin for every probe kind" iterated a hand-written list of five kinds, so a new probe kind was not checked (C5, proposal 15). |
-| **Reproduce** | On `main` `080194c`: `package.json` `typecheck` has no spec config; `apps/hub/test/alerts.test.ts:29-33` lists the kinds by hand. |
-| **Check** | `npm run typecheck` (CI) also runs `tsc -p apps/client/tsconfig.spec.json --noEmit` and passes (no error found when added); the hysteresis test iterates `PROBE_KIND_IDS` from `@grover/contracts` and asserts `ALERT_HYSTERESIS` has exactly those keys. |
-
-**Steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
-|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="b-011-t01"></a>B-011-T01 — Spec type check and contract-derived probe kinds in the hysteresis test | 0.5 h | 0 h | 0 h | Implemented; verification pending | [PR #50](https://github.com/voidbrain/Grover/pull/50) spec type check, contract kinds |
-| 🟢 Small | **Total** | 0.5 h | 0 h (0 of 1 steps recorded) | 0 h | 0 of 1 completed | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-011.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: B-011-T01: [PR #50](https://github.com/voidbrain/Grover/pull/50) spec type check, contract kinds. [#50](https://github.com/voidbrain/Grover/pull/50) |
-| Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
 ### <a id="f-012"></a>[✨ F-012](#top)
 
 **Plants and strains: origin, generation, breeder, ancestry**
@@ -430,10 +326,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02); [#65](https://github.com/voidbrain/Grover/pull/65); [#67](https://github.com/voidbrain/Grover/pull/67) |
+| PR / evidence | Steps: F-012-T01: [PR #18](https://github.com/voidbrain/Grover/pull/18) implementation. [#18](https://github.com/voidbrain/Grover/pull/18); [#30](https://github.com/voidbrain/Grover/pull/30); owner's import 2026-11-26 (F-012-T02); [#65](https://github.com/voidbrain/Grover/pull/65) (CI 45894638239 green); [#67](https://github.com/voidbrain/Grover/pull/67) (CI 45895675518 green) |
 | Opened | 2026-11-24 |
-| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. 2026-11-26: the import on the Calvary hub (F-012-T02, see the closure evidence above), and a read-only `grover_plants` MCP call there returned its 17 plants. |
-| Reviewed | 2026-11-26 |
+| Verification | 2026-11-24: PR CI green on #18; the first main run after merge (448a499) failed in the e2e read test (a race with scheduled reads, fixed in the test by #19, 789002c); main green since bc36108. 2026-11-26: the import on the Calvary hub (F-012-T02, see the closure evidence above), and a read-only `grover_plants` MCP call there returned its 17 plants; `grover_strains` (#65 CI 45894638239 green) awaits Calvary hub update and NERV check. |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -441,55 +337,6 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 
 
-
-### <a id="f-008"></a>[✨ F-008](#top)
-
-**Alerts for NERV: out-of-range values, offline agent, faults**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | 1.5 h agent + 0.25 h owner | `nerv:F-122-T02` | — | 🤖 | — | — |
-
-💻 **→** Next: F-008-T04 — Write the alert contract for NERV (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | Nothing tells the owner when pH, EC, temperature or level leave the phase range, when an agent goes offline or a driver faults; NERV can only poll `grover_overview`. |
-| **Reproduce** | Stop the agent or push a reading outside the range: nothing is raised. |
-| **Check** | The hub raises and clears alerts with hysteresis, lists them in the client and through an MCP tool, and NERV can deliver them (its own pack, recorded in NERV's backlog). |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | Who | PRs |
-|---|---|---|---|---|---|---|---|:---:|---|
-| 🟡 Medium | <a id="f-008-t04"></a>F-008-T04 — Write the alert contract for NERV | 1.5 h | 0 h | 1.5 h | Implemented; verification pending | — | — | 🤖 | [PR #53](https://github.com/voidbrain/Grover/pull/53) feature |
-| 🟢 Small | <a id="f-008-t03"></a>F-008-T03 — Owner sees a Grover alert delivered by NERV (waits on nerv:F-122-T02) | 0 h | 0 h | 0 h agent + 0.25 h owner | Planned | `nerv:F-122-T02` | — | ⏳ 🧑‍🔧 | — |
-| 🟡 Medium | **Total** | 3 h (3 of 4 steps) | 0 h (0 of 4 steps recorded) | 1.5 h agent + 0.25 h owner | 2 of 4 completed | | | | |
-
-<details><summary>Done steps (2)</summary>
-
-| Effort | Step | Estimate | Actual | Status | PRs |
-|---|---|---|---|---|---|
-| — | <a id="f-008-t01"></a>F-008-T01 — Build Grover-side alerts (thresholds, feeds, offline agents) | — | 0 h | Completed | [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation |
-| — | <a id="f-008-t02"></a>F-008-T02 — Hysteresis at alert thresholds | 1.5 h | 0 h | Completed | [PR #35](https://github.com/voidbrain/Grover/pull/35) feature |
-
-</details>
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-008.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-008-T01: [PR #17](https://github.com/voidbrain/Grover/pull/17) implementation · F-008-T02: [PR #35](https://github.com/voidbrain/Grover/pull/35) feature · F-008-T04: [PR #53](https://github.com/voidbrain/Grover/pull/53) feature. [#17](https://github.com/voidbrain/Grover/pull/17) (stacked on #16); [#30](https://github.com/voidbrain/Grover/pull/30); [#35](https://github.com/voidbrain/Grover/pull/35); [#53](https://github.com/voidbrain/Grover/pull/53) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-25 |
-
-</details>
-
----
 
 ### <a id="f-026"></a>[✨ F-026](#top)
 
@@ -525,10 +372,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-026-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T03: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T04: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T05: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-026-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T03: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T04: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-026-T05: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan, green CI); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -899,54 +746,14 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: B-012-T01: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan · B-012-T02: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan. [#57](https://github.com/voidbrain/Grover/pull/57) (plan); owner decision 2026-11-26 "2 ok" |
+| PR / evidence | Steps: B-012-T01: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan · B-012-T02: [PR #57](https://github.com/voidbrain/Grover/pull/57) plan. [#57](https://github.com/voidbrain/Grover/pull/57) (plan, green CI); owner decision 2026-11-26 "2 ok" |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
 ---
-### <a id="f-010"></a>[✨ F-010](#top)
-
-**Hub data retention and backups**
-
-| Status | Priority | Effort | Remaining | Depends on | Unlocks | Agent | Procedures | Decisions |
-|---|---|---|---|---|---|:---:|:---:|:---:|
-| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0 h | — | — | 🤖 | — | — |
-
-💻 **→** Next: F-010-T01 — Downsample old readings (Implemented; verification pending).
-
-| | |
-|---|---|
-| **Issue** | Readings every 5 minutes for 5 probes grow the SQLite file on the Pi's SD card without bound, and there is no backup. |
-| **Reproduce** | `npm run dev` for a while, then inspect `data/dev/hub.sqlite`. |
-| **Check** | Old readings are downsampled (for example hourly after 30 days), a `backup` command writes a consistent copy, and both are tested. |
-
-**Feature steps**
-
-| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
-|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-010-t01"></a>F-010-T01 — Downsample old readings | 1.5 h | 0 h | 0 h | Implemented; verification pending | [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests |
-| 🟢 Small | <a id="f-010-t02"></a>F-010-T02 — Backup command for the hub database | 1 h | 0 h | 0 h | Implemented; verification pending | [PR #47](https://github.com/voidbrain/Grover/pull/47) backup command and tests |
-| 🟢 Small | **Total** | 2.5 h | 0 h (0 of 2 steps recorded) | 0 h | 0 of 2 completed | |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-010.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | Steps: F-010-T01: [PR #46](https://github.com/voidbrain/Grover/pull/46) downsampling job and tests · F-010-T02: [PR #47](https://github.com/voidbrain/Grover/pull/47) backup command and tests. [#30](https://github.com/voidbrain/Grover/pull/30); [#46](https://github.com/voidbrain/Grover/pull/46); [#47](https://github.com/voidbrain/Grover/pull/47) |
-| Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
-
 ### <a id="f-019"></a>[✨ F-019](#top)
 
 **Install Grover as a web app on the phone**
@@ -996,7 +803,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|---|---|---|---|:---:|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — | 🤖 | — | — |
 
-💻 **→** Next: F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings (Implemented; verification pending).
+💻 **→** Next: F-022-T03 — First token and skills reviews (Planned).
 
 | | |
 |---|---|
@@ -1006,13 +813,20 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 **Feature steps**
 
-| Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
-|---|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-022-t01"></a>F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings | 0.25 h | 0 h | 0 h | Implemented; verification pending | — | [F-022-T04](#f-022-t04) | [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on |
-| 🟢 Small | <a id="f-022-t02"></a>F-022-T02 — First architecture review with outside-landscape comparison | 0.5 h | 0 h | 0 h | Implemented; verification pending | — | — | [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review |
-| 🟢 Small | <a id="f-022-t03"></a>F-022-T03 — First token and skills reviews | 1 h | 0 h | 1 h | Planned | — | — | — |
-| 🟢 Small | <a id="f-022-t04"></a>F-022-T04 — Turn coverage.enforce on | 0.25 h | 0 h | 0 h | Implemented; verification pending | [F-022-T01](#f-022-t01) | — | [PR #51](https://github.com/voidbrain/Grover/pull/51) coverage.enforce on |
-| 🟢 Small | **Total** | 2 h | 0 h (0 of 4 steps recorded) | 1 h | 0 of 4 completed | | | |
+| Effort | Step | Estimate | Actual | Remaining | Status | PRs |
+|---|---|---|---|---|---|---|
+| 🟢 Small | <a id="f-022-t03"></a>F-022-T03 — First token and skills reviews | 1 h | 0 h | 1 h | Planned | — |
+| 🟢 Small | **Total** | 2 h | 0 h (0 of 4 steps recorded) | 1 h | 3 of 4 completed | |
+
+<details><summary>Done steps (3)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-022-t01"></a>F-022-T01 — Reviews, coverage enforcement, work usage and behaviour runner settings | 0.25 h | 0 h | Completed | [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on |
+| — | <a id="f-022-t02"></a>F-022-T02 — First architecture review with outside-landscape comparison | 0.5 h | 0 h | Completed | [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review |
+| — | <a id="f-022-t04"></a>F-022-T04 — Turn coverage.enforce on | 0.25 h | 0 h | Completed | [PR #51](https://github.com/voidbrain/Grover/pull/51) coverage.enforce on |
+
+</details>
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -1021,10 +835,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-022-T01: [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on · F-022-T02: [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review · F-022-T04: [PR #51](https://github.com/voidbrain/Grover/pull/51) coverage.enforce on. [#50](https://github.com/voidbrain/Grover/pull/50); [#51](https://github.com/voidbrain/Grover/pull/51) |
+| PR / evidence | Steps: F-022-T01: [PR #50](https://github.com/voidbrain/Grover/pull/50) settings on · F-022-T02: [PR #50](https://github.com/voidbrain/Grover/pull/50) first architecture review · F-022-T04: [PR #51](https://github.com/voidbrain/Grover/pull/51) coverage.enforce on. [#50](https://github.com/voidbrain/Grover/pull/50) (CI 45801466993 green); [#51](https://github.com/voidbrain/Grover/pull/51) (CI 45802364347 green) |
 | Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Verification | Unit/integration · 2026-11-27 · F-022-T01, F-022-T02 (#50 CI 45801466993) and F-022-T04 (#51 CI 45802364347, coverage enforced) green; Documentation · Pending (F-022-T03) |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1059,10 +873,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-025-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-025-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan, green CI); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1075,7 +889,7 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 |---|---|---|---|---|---|:---:|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟡 Medium | 3 h | — | — | 🤖 | — | — |
 
-💻 **→** Next: F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent (Implemented; verification pending).
+💻 **→** Next: F-009-T02 — Browser scenarios: run a pump, switch the mode, axe scan (Planned).
 
 | | |
 |---|---|
@@ -1087,10 +901,17 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Effort | Step | Estimate | Actual | Remaining | Status | Depends on | Unlocks | PRs |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 Small | <a id="f-009-t01"></a>F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent | 2 h | 0 h | 0 h | Implemented; verification pending | — | [F-009-T02](#f-009-t02) | [PR #48](https://github.com/voidbrain/Grover/pull/48) npm run e2e and the dashboard test |
-| 🟡 Medium | <a id="f-009-t02"></a>F-009-T02 — Browser scenarios: run a pump, switch the mode, axe scan | 2 h | 0 h | 2 h | Planned | [F-009-T01](#f-009-t01) | [F-009-T03](#f-009-t03) | — |
+| 🟡 Medium | <a id="f-009-t02"></a>F-009-T02 — Browser scenarios: run a pump, switch the mode, axe scan | 2 h | 0 h | 2 h | Planned | — | [F-009-T03](#f-009-t03) | — |
 | 🟢 Small | <a id="f-009-t03"></a>F-009-T03 — Run the browser suite in CI | 1 h | 0 h | 1 h | Planned | [F-009-T02](#f-009-t02) | — | — |
-| 🟡 Medium | **Total** | 5 h | 0 h (0 of 3 steps recorded) | 3 h | 0 of 3 completed | | | |
+| 🟡 Medium | **Total** | 5 h | 0 h (0 of 3 steps recorded) | 3 h | 1 of 3 completed | | | |
+
+<details><summary>Done steps (1)</summary>
+
+| Effort | Step | Estimate | Actual | Status | PRs |
+|---|---|---|---|---|---|
+| — | <a id="f-009-t01"></a>F-009-T01 — Playwright against the dev stack: the dashboard renders the demo tent | 2 h | 0 h | Completed | [PR #48](https://github.com/voidbrain/Grover/pull/48) npm run e2e and the dashboard test |
+
+</details>
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -1099,10 +920,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-009-T01: [PR #48](https://github.com/voidbrain/Grover/pull/48) npm run e2e and the dashboard test. [#30](https://github.com/voidbrain/Grover/pull/30); [#48](https://github.com/voidbrain/Grover/pull/48) |
+| PR / evidence | Steps: F-009-T01: [PR #48](https://github.com/voidbrain/Grover/pull/48) npm run e2e and the dashboard test. [#30](https://github.com/voidbrain/Grover/pull/30); [#48](https://github.com/voidbrain/Grover/pull/48) (CI 45784861970 green) |
 | Opened | 2026-11-24 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Verification | Browser/accessibility · 2026-11-26 · F-009-T01 `e2e/dashboard.spec.ts` passed headless locally (Chromium), #48 CI 45784861970 green; CI e2e and axe · Pending (F-009-T02, F-009-T03) |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1139,10 +960,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#49](https://github.com/voidbrain/Grover/pull/49) |
+| PR / evidence | [#49](https://github.com/voidbrain/Grover/pull/49) (green CI) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1178,10 +999,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-023-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-023-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-023-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-023-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan, green CI); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1217,10 +1038,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-024-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-024-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | Steps: F-024-T01: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan · F-024-T02: [PR #52](https://github.com/voidbrain/Grover/pull/52) plan. [#52](https://github.com/voidbrain/Grover/pull/52) (plan, green CI); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1256,10 +1077,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-029-T01: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan · F-029-T02: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan. Plan: [#71](https://github.com/voidbrain/Grover/pull/71) |
+| PR / evidence | Steps: F-029-T01: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan · F-029-T02: [PR #71](https://github.com/voidbrain/Grover/pull/71) plan. Plan: [#71](https://github.com/voidbrain/Grover/pull/71) (green CI) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1297,10 +1118,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-028-T01: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T02: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T03: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T04: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan. Plan: [#56](https://github.com/voidbrain/Grover/pull/56) |
+| PR / evidence | Steps: F-028-T01: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T02: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T03: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan · F-028-T04: [PR #56](https://github.com/voidbrain/Grover/pull/56) plan. Plan: [#56](https://github.com/voidbrain/Grover/pull/56) (green CI) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -1349,10 +1170,10 @@ Bugs (B-) and features (F-) in one list, in work-queue order. Steps: `effort` = 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Steps: F-020-T01: [PR #41](https://github.com/voidbrain/Grover/pull/41) mapping check · F-020-T02: [PR #42](https://github.com/voidbrain/Grover/pull/42) tokens and Grover theme. [#40](https://github.com/voidbrain/Grover/pull/40) (record); [#41](https://github.com/voidbrain/Grover/pull/41); [#42](https://github.com/voidbrain/Grover/pull/42) |
+| PR / evidence | Steps: F-020-T01: [PR #41](https://github.com/voidbrain/Grover/pull/41) mapping check · F-020-T02: [PR #42](https://github.com/voidbrain/Grover/pull/42) tokens and Grover theme. [#40](https://github.com/voidbrain/Grover/pull/40) (record); [#41](https://github.com/voidbrain/Grover/pull/41) (green CI); [#42](https://github.com/voidbrain/Grover/pull/42) (green CI); [#59](https://github.com/voidbrain/Grover/pull/59) (coordinator prefix, green CI) |
 | Opened | 2026-11-25 |
-| Verification | Pending |
-| Reviewed | 2026-11-25 |
+| Verification | Unit/integration · 2026-11-26 · F-020-T01 (#41) and F-020-T02 (#42, `theme.spec.ts`) green CI; remaining components and Human check (F-020-T08) · Pending |
+| Reviewed | 2026-11-27 |
 
 </details>
 
