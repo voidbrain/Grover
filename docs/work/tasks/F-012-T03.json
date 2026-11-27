@@ -4,7 +4,7 @@
   "parent": "F-012",
   "title": "Record the try of the import; fix what it found",
   "goal": "The owner's findings are fixed (test first for a defect) or recorded as new records, and the record closes",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "Each finding is fixed in a PR with a test or has its own B-/F- record",
     "The record's Verification row names the owner's try and its date"
@@ -31,7 +31,7 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Fixes done 2026-11-26: the placeholder id and the grover_strains MCP tool; the owner questions went to B-013. Not timed.",
+    "basis": "Fixes done 2026-11-26: the placeholder id and the grover_strains MCP tool; the owner questions went to B-013. Not timed. Closed 2026-11-27.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "ownerHours": 0,

@@ -4,7 +4,7 @@
   "parent": "B-017",
   "title": "Make MCP read results compact",
   "goal": "33 strains stay within 4 KB and keep their information",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "33 strains stay within 4 KB; no indentation, null or repeated strain objects"
   ],
@@ -28,10 +28,10 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "1 h",
-    "basis": "Estimated 2026-11-27: one serializer and one view. Not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Estimated 2026-11-27: one serializer and one view. Not a measurement. Closed 2026-11-27.",
     "reviewed": "2026-11-27",
-    "agentHours": 1,
+    "agentHours": 0,
     "baselineAgentHours": 1,
     "estimateAgentHours": 1
   }

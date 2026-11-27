@@ -4,7 +4,7 @@
   "parent": "B-017",
   "title": "Owner asks NERV which strains exist after the hub update",
   "goal": "nerv chat lists all strains",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "nerv chat \"quali genetiche ho?\" lists all strains, none cut off"
   ],
@@ -27,14 +27,13 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.25 h owner",
-    "basis": "Estimated 2026-11-27. Not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Closed 2026-11-27: the owner ran the step on NERV-01 after the hub update (Calvary hub abaa053); evidence on the record. Not timed.",
     "reviewed": "2026-11-27",
     "agentHours": 0,
-    "ownerHours": 0.25,
+    "ownerHours": 0,
     "baselineAgentHours": 0,
     "estimateAgentHours": 0,
     "ownerKind": "procedure"
-  },
-  "ownerLink": "docs/work/records/B-017.md"
+  }
 }
