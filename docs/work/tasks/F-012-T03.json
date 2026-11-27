@@ -37,5 +37,11 @@
     "ownerHours": 0,
     "baselineAgentHours": 0.25,
     "estimateAgentHours": 0.25
-  }
+  },
+  "prs": [
+    {
+      "pr": 75,
+      "note": "records the owner check; merged on green CI"
+    }
+  ]
 }

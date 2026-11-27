@@ -1,6 +1,6 @@
 # <a id="top"></a>Grover backlog
 
-Current work ledger, reviewed 27 November 2026 against main `740b782`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 27 November 2026 against main `abaa053`. Generated from [record sources](work/records) and [steps](work/tasks) by `npm run work:build`: edit those, not this file. [Rules](BACKLOG-RULES.md) · [Archive](archive/README.md) · [Reading the records](#how-to-use-this-file).
 
 <!-- totals:start -->
 **Remaining effort:** 53.25 h agent + 13 h owner across 66 open steps of 25 features and 2 other records. Generated from the task files.
