@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "F-029-T04",
+  "parent": "F-029",
+  "title": "Owner looks at the plant page charts on Calvary, light and dark",
+  "goal": "The bricks charts read right on the real hub, in local time",
+  "status": "planned",
+  "acceptance": [
+    "The owner follows the steps in docs/work/records/F-029.md (\"Owner check\") and says what each showed; an agent records the answer as evidence"
+  ],
+  "dependsOn": [
+    "F-029-T03"
+  ],
+  "resources": [
+    "docs/work/records/F-029.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented data only; no personal data, tokens or private reports in Git.",
+  "validation": [
+    "npm run check:work"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "ownerLink": "docs/work/records/F-029.md",
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "A look at one page in two colour schemes. Estimated 2026-11-27. Not a measurement.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "procedure"
+  },
+  "prs": []
+}

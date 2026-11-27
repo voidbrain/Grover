@@ -23,3 +23,7 @@ PR #58 reconciles the harness to v10.24.2 (from 10.24.1; project-harness B-129).
 ## 2026-11-27 — main `740b782`
 
 PRs #45–#72 merged on green CI. Closed B-006 (#44), B-008 (#38, >28 green CI runs), B-010 (#39), B-011 (#50) and F-010 (#46, #47), plus steps F-008-T04 (#53), F-009-T01 (#48) and F-022-T01/T02/T04 (#50, #51); #55, #58 harness reconciles (no record).
+
+## 2026-11-27 — main `f616a30`
+
+PR #75 merged on green CI: it closed and archived B-017 and F-012 on the owner's 2026-11-27 evidence (records only, so no active record names it).
